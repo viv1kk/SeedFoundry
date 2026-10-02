@@ -1,0 +1,197 @@
+# SeedFoundry: Requirements
+
+Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline with strike-through.
+
+## 1. Goals
+
+| Id | Goal |
+|---|---|
+| G-1 | Show the full journey from knowledge files to a working, validated Seed in one sitting |
+| G-2 | Make the improvement loop the centrepiece: flawed iteration, human feedback, refined iteration |
+| G-3 | Prove the Seed was tested: visible phases, live logs, a report backed by real checks |
+| G-4 | Feel like a lab: rich, legible build stages beyond Seed v0.1's own lifecycle |
+| G-5 | Run fully offline, deterministically, with no LLM, on a presenter's laptop |
+| G-6 | Leave clean seams so simulated LLM and Seed API calls can be replaced by real ones |
+| G-7 | Share Seed v0.1's visual language so the two products look like one family |
+
+## 2. Scope
+
+| Real (actually implemented) | Simulated |
+|---|---|
+| Intake editor, file list, categories, import, persistence | LLM extraction, distillation, cross-examination |
+| Ensemble boundary check (rule-based lint over intake text) | Seed v0.1 API, sandbox, planting, Life |
+| Assay statistics (sections found, sizes, completeness) | Token counts, latencies, model names in logs |
+| Validators that recompute dashboard figures from source data | Human gates inside Life (auto-resolved) |
+| Generation of core.md, adaptation.md, protection.md from intake (template-based) | Effect of observer feedback on iteration 2 (scripted, D-5) |
+| Report, dashboard rendering, downloads | Voice input (mic icon only, D-8) |
+
+## 3. Out of scope
+
+- Any real LLM or network call, API keys, accounts, auth, multi-user.
+- Functional voice input or speech recognition.
+- More than two iterations, or more than one Seed in progress at a time.
+- Editing the generated core/adaptation/protection files inside SeedFoundry.
+- Running the real Seed v0.1 code. SeedFoundry simulates its API.
+- Mobile layouts below 1280 px wide (desktop demo only; must not break, need not be optimised).
+
+## 4. Functional requirements
+
+### FR-IN: Intake
+
+| Id | Requirement |
+|---|---|
+| FR-IN-1 | The intake page has a large editor (left) and a file panel (right). See `ui-spec.md` §2 |
+| FR-IN-2 | Every file has a name and exactly one category: Person, Instrument Awareness, Environment, Music, Misc Context |
+| FR-IN-3 | At most one file each for Person, Instrument Awareness, Environment and Music. Misc Context is unlimited. Creating or importing a second core-category file asks to replace the existing one |
+| FR-IN-4 | The editor has an Edit / Preview toggle. Edit is raw markdown with monospace font; Preview renders markdown (headings, lists, tables, code, emphasis, links) |
+| FR-IN-5 | The editor shows a mic icon with a "Voice input" tooltip. It is visual only (D-8) |
+| FR-IN-6 | Users can create a new file, rename, change category, and delete (with confirmation). Unsaved changes show a dot; saving is automatic after a short pause and on file switch |
+| FR-IN-7 | Import accepts one or more `.md` files. A dialog asks for each file's category, pre-selected from the filename where possible (`person.md`, `player.md`, `instrument-awareness.md`, `instrument_awareness.md`, `environment.md`, `music.md`; anything else defaults to Misc Context) |
+| FR-IN-8 | A core-file checklist shows four slots that turn complete when that category has a non-empty file |
+| FR-IN-9 | Start Build is disabled until all four core slots are complete, with a tooltip listing what is missing |
+| FR-IN-10 | Intake content persists across browser refresh and server restart |
+| FR-IN-11 | Files are limited to 1 MB each and UTF-8 text; violations show a clear inline error |
+
+### FR-B: Build
+
+| Id | Requirement |
+|---|---|
+| FR-B-1 | Start Build creates a build for the current iteration and opens the build page |
+| FR-B-2 | The build runs the phase catalogue in `build-simulation.md` §2 in order, with no human input |
+| FR-B-3 | The build page shows each phase as a step with its sub-steps and a state: pending, active, done, done-with-findings, failed |
+| FR-B-4 | A console on the right streams log lines live (format in `build-simulation.md` §4) |
+| FR-B-5 | Every human gate that Seed v0.1 would raise ~~during Life~~ during the simulated Seed v0.1 run (phase 8, Seeding & Life) is auto-resolved and logged with the gate id and the knowledge used to resolve it (A-1) |
+| FR-B-6 | A build takes 60 to 90 seconds at 1x speed (D-7) |
+| FR-B-7 | Refreshing the page mid-build reconnects and shows the same state and full log (snapshot then replay) |
+| FR-B-8 | Intake is read-only while a build runs |
+| FR-B-9 | When the build completes, the report panel appears with View Dashboard, Approve and Rebuild |
+
+### FR-T: Testing and validation
+
+| Id | Requirement |
+|---|---|
+| FR-T-1 | The Assay phase runs the Ensemble boundary check over intake text (rules in `build-simulation.md` §6.1) and reports findings with file, line and suggested home |
+| FR-T-2 | The Germination Trial includes a data-swap test: the same logic produces structurally valid output on a second, different dataset |
+| FR-T-3 | Harvest Validation recomputes every dashboard figure from source data and compares it to what the dashboard payload shows (numeric reconciliation) |
+| FR-T-4 | Harvest Validation runs visual QA rules over the dashboard descriptor and its applied styles (palette, chart type fitness, number formats, labels, layout, contrast) |
+| FR-T-5 | Stress and Probe measures panel latency against a budget and runs protection probes |
+| FR-T-6 | With the sample Seed, iteration 1 validators find exactly the 14 planted defects in `build-simulation.md` §5, no more, no fewer, and iteration 2 finds none. Boundary advisories from user-supplied files are reported separately and do not affect the verdict (D-12) |
+| FR-T-7 | Each finding has an id, category (Numeric, Visual, Latency, Boundary), panel or file, expected value, shown value, severity, and the phase that found it |
+
+### FR-R: Report
+
+| Id | Requirement |
+|---|---|
+| FR-R-1 | The report shows: verdict, iteration, duration, phase results, test table, findings, auto-resolved gates, simulated usage metrics |
+| FR-R-2 | Findings are grouped by category, each with its id so the observer can cite it in feedback |
+| FR-R-3 | The iteration 2 report has a "Changes since iteration 1" section listing every iteration 1 finding as resolved, and quoting the observer feedback |
+| FR-R-4 | Report actions: View Dashboard, Approve, Rebuild. Rebuild is not shown on iteration 2 (D-6) |
+
+### FR-D: Dashboard
+
+| Id | Requirement |
+|---|---|
+| FR-D-1 | The dashboard is Seed v0.1's License Optimization dashboard, ~~using its data and figures as recorded in `seed-reuse-notes.md`~~ following its methodology and layout as recorded in `seed-reuse-notes.md` §5. The underlying data is SeedFoundry's own (A-3) |
+| FR-D-2 | Iteration 1 renders the "rough" variant with every planted defect from `build-simulation.md` §5 visible |
+| FR-D-3 | Iteration 2 renders the "polished" variant, matching Seed v0.1's quality bar and design system |
+| FR-D-4 | Both variants are descriptor-driven from the same source data. The rough variant differs only by a defect overlay (descriptor patches plus a scoped defect stylesheet) |
+| FR-D-5 | The dashboard has a clear way back to the report |
+| FR-D-6 | The dashboard supports drill-down in both iterations, along Seed v0.1's hierarchy: all products, vendor, product, utilisation class, seat. Clicking a chart element drills; every panel follows the current drill; a breadcrumb shows the path and Back pops one step; the deepest level lists individual seats. The drill path is in the URL, so reload and the browser's Back keep it (A-2, D-29) |
+
+### FR-RB: Rebuild
+
+| Id | Requirement |
+|---|---|
+| FR-RB-1 | Rebuild opens a modal with the same editor as intake (Edit / Preview, mic icon) for observer feedback |
+| FR-RB-2 | The modal has a view toggle: Feedback only, Feedback + Report, Feedback + Dashboard (side by side) |
+| FR-RB-3 | Start Rebuild requires non-empty feedback |
+| FR-RB-4 | The feedback is saved as a Misc Context file named `observer-feedback-iteration-1.md`, visible in the intake file list |
+| FR-RB-5 | Start Rebuild starts iteration 2 from phase 1 with all original intake plus the feedback file, and opens the build page |
+| FR-RB-6 | Iteration 2 logs show the feedback being ingested and acted on (scripted, D-5) |
+
+### FR-F: Final page
+
+| Id | Requirement |
+|---|---|
+| FR-F-1 | Approve (either iteration) opens the final page |
+| FR-F-2 | The final page shows: Seed name, what it does (from the Music purpose), tests conducted with results, iteration history, and known issues |
+| FR-F-3 | Downloads: `core.md`, `adaptation.md`, `protection.md`, each individually and as one zip |
+| FR-F-4 | If iteration 1 was approved, every open finding is listed as a known issue on the page and in a "Known issues" section of each generated file (D-10) |
+| FR-F-5 | Generated files contain no em dashes and follow the structure in `build-simulation.md` §7 |
+
+### FR-DC: Demo controller
+
+| Id | Requirement |
+|---|---|
+| FR-DC-1 | A hidden demo controller panel toggles with a Shift-based shortcut, following Seed v0.1's operator pattern. Shortcuts are ignored while focus is in a text field |
+| FR-DC-2 | Actions: Load sample Seed, Clear intake, Speed (1x, 2x, 4x), Skip to end of phase, Skip to end of build, Prefill rebuild feedback, Reset to start, Toggle light/dark |
+| FR-DC-3 | The sample Seed is a complete, Ensemble-clean set of four License Optimization files written for this project (content guidance in `build-simulation.md` §8) |
+| FR-DC-4 | Demo controller actions never change determinism: speed and skip change pacing only, not content |
+
+## 5. Naming
+
+| Code term | Screen term |
+|---|---|
+| `intake` | Knowledge |
+| `build` | Build |
+| `iteration` | Iteration |
+| `finding` | Finding |
+| `report` | Build Report |
+| `seed_package` | Seed |
+| `observer_feedback` | Observer feedback |
+| Seed v0.1 terms | As in `seed_docs` (INIT = Planting, RUNTIME = Life, CLOSING_SEEDING = Cleanup) |
+
+## 6. Non-functional requirements
+
+| Id | Area | Requirement |
+|---|---|---|
+| NFR-1 | Determinism | Same intake + same actions = identical event stream (ignoring `wall_ts`), report, dashboard payload and generated files. Covered by a test |
+| NFR-2 | Offline | Works with the network disabled. No runtime fetches outside localhost |
+| NFR-3 | Performance | Intake editor stays responsive with a 1 MB file. Console handles a full build's log without jank. Dashboard first render under 1 s, except the deliberately slow panel in iteration 1 |
+| NFR-4 | Architecture | State is the single source of truth on the server; event log + SSE with snapshot-then-replay; `LLMClient` and `SeedClient` interfaces with simulated implementations; descriptor-driven dashboard |
+| NFR-5 | Visual | SeedFoundry's own UI follows Seed v0.1's design system (tokens, type, colour meaning, contrast). Only the iteration 1 dashboard breaks it, and only through the scoped defect overlay |
+| NFR-6 | Accessibility | WCAG AA contrast for SeedFoundry's own UI in both themes (test). Keyboard reachable controls |
+| NFR-7 | Delivery | One command to launch both processes, with a Windows fallback like Seed v0.1's `run.ps1`. Operator guide with a timed demo script |
+| NFR-8 | Writing | No em dashes in any UI text, log line, report or generated file. Enforced by a test |
+
+## 7. Acceptance criteria
+
+| Id | Criterion |
+|---|---|
+| AC-1 | From a fresh start: Load sample Seed, Start Build, iteration 1 completes in 60 to 90 s with findings matching the catalogue exactly |
+| AC-2 | The iteration 1 dashboard visibly shows every planted defect; the report lists each one with expected vs shown |
+| AC-3 | Rebuild with feedback, iteration 2 completes with zero findings, the polished dashboard matches Seed v0.1, and the report shows all iteration 1 findings resolved |
+| AC-4 | Approve on iteration 2 shows the final page; the three files and the zip download and contain no em dashes |
+| AC-5 | Approve on iteration 1 shows the final page with known issues listed on the page and in each file |
+| AC-6 | Start Build stays disabled until the four core files exist; import asks for category and pre-selects it |
+| AC-7 | Refresh mid-build resumes with full log; server restart keeps intake |
+| AC-8 | Two complete runs with the same inputs produce identical event streams |
+| AC-9 | The app runs with the network disabled |
+| AC-10 | The demo controller toggles with its shortcut, is ignored in text fields, and every action works |
+
+## 8. Assumptions
+
+- Presented on a single desktop machine, Chrome, 1440 to 1920 px wide.
+- One person uses it at a time.
+
+## 9. What we take from Seed v0.1
+
+Recorded in detail in `seed-reuse-notes.md` (written in M0).
+
+| Take | Do not take |
+|---|---|
+| Design system: tokens, type, colour meaning, contrast test | ACME environment specifics beyond the License Optimization data |
+| Architecture patterns: state snapshot, event log + SSE, EventSource seam, beat engine with weights, descriptor-driven dashboards, policy evaluation | Seed v0.1 rule ids as SeedFoundry ids |
+| Lifecycle names and order for the Planting, Life and Cleanup phases | The growth tree |
+| Human gate ids and types (to auto-resolve them in Life) | Seed/Life naming for SeedFoundry's own screens |
+| License Optimization dashboard: panels, data, figures | |
+| Operator pattern: Shift shortcuts, ignored in text fields, demo script, rehearsal tools | |
+| Process: requirements, decisions, milestone plan, build log, amendments | |
+
+## 10. Amendments
+
+| Id | Date | Amends | Change | Ruling |
+|---|---|---|---|---|
+| A-1 | 2026-10-03 | FR-B-5 | Gates are auto-resolved during the simulated Seed v0.1 run in phase 8, not "during Life": Seed v0.1 raises no gate in Life | D-26 (OQ-11) |
+| A-2 | 2026-10-03 | FR-D (new FR-D-6) | The dashboard supports drill-down along Seed v0.1's hierarchy | D-29 (OQ-14) |
+| A-3 | 2026-10-03 | FR-D-1 | The dashboard follows Seed v0.1's methodology and layout; its data is SeedFoundry's own, not Seed v0.1's figures | D-30 |

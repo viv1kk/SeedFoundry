@@ -1,0 +1,22 @@
+# Runtime data (D-3)
+var/*
+!var/.gitkeep
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+
+# Editors and OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Local code index
+.codegraph/

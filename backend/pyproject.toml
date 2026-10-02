@@ -1,0 +1,20 @@
+[project]
+name = "seedfoundry"
+version = "0.1.0"
+description = "SeedFoundry: a deterministic, offline lab that generates, tests and refines Seeds"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "httpx2>=2.13",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
