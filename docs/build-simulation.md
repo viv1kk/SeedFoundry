@@ -45,6 +45,8 @@ Each event: `{ seq, build_id, iteration, phase, step, type, level, code, message
 
 Types: `build.started`, `phase.started`, `step.started`, `log`, `llm.call`, `api.call`, `test.result`, `gate.auto_resolved`, `finding.raised`, `step.completed`, `phase.completed`, `build.completed`, `report.ready`.
 
+*As built (M1):* the same shape carries events outside a build, with `build_id`, `phase`, `step`, `code` and `sim_t` null and `iteration` the current one. M1 added these types: `intake.file_created`, `intake.file_updated`, `intake.file_deleted` (D-32), `build.interrupted` (D-33) and `stream.resync`, which the SSE stream sends when it cannot replay exactly and which is never stored in the log (D-31). The list lives in `backend/seedfoundry/events.py` as `EVENT_TYPES`.
+
 ## 4. Console log format
 
 ```

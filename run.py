@@ -93,7 +93,9 @@ def launch() -> int:
     try:
         backend = subprocess.Popen(
             [python, "-m", "uvicorn", "seedfoundry.main:app",
-             "--host", BACKEND_HOST, "--port", str(BACKEND_PORT)],
+             "--host", BACKEND_HOST, "--port", str(BACKEND_PORT),
+             # An open SSE stream never ends by itself; do not wait on it at shutdown.
+             "--timeout-graceful-shutdown", "2"],
             cwd=BACKEND,
         )
         processes.append(backend)

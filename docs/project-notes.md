@@ -131,3 +131,49 @@ One entry per milestone, newest last. Format in `docs/methodology.md` §4.
 - Still open for the stakeholder: OQ-2, OQ-3, OQ-7, OQ-8, OQ-9, OQ-15.
 - Later the same day (D-30, A-3): the dashboard's underlying data need not match Seed v0.1; the methodology and the layout must. `seed-reuse-notes.md` §5.5 is now reference only and §5.7 lists what the data must follow and the constraints the tests need. M7's generator no longer reproduces Seed's figures. CHANGE: decisions.md, requirements.md (FR-D-1), implementation-plan.md (M7), build-simulation.md (§4 example figures), seed-reuse-notes.md (§5).
 - Then: the stakeholder accepted every remaining assumption. OQ-2, OQ-3, OQ-7, OQ-8, OQ-9 and OQ-15 are closed as assumed. No open question remains. CHANGE: decisions.md.
+
+### M1: Backend core (2026-10-03)
+
+**What changed**
+- Knowledge files now live on the server and survive a restart. The API can create, read, rename, recategorise, rewrite and delete them, and import a `.md` file with its category picked from the filename (FR-IN-7).
+- One file each for Person, Instrument Awareness, Environment and Music: a second one, whether by create, import or a category change, is refused with a "Replace it?" message naming the current file, and goes through only when the request asks to replace (FR-IN-3). Misc Context is unlimited.
+- Files over 1 MB, or that are not UTF-8 text, are refused with a message the UI can show as written (FR-IN-11). Intake is read-only while a build runs (FR-B-8).
+- One state object on the server holds intake, builds, the current iteration and approval. It is saved atomically to `var/state.json` before any client hears about a change.
+- Every change emits events in the `build-simulation.md` §3 shape. `GET /api/state` gives the snapshot and its seq; `GET /api/events` replays from that seq over SSE, then follows. A reconnect with `Last-Event-ID` replays exactly, and a client whose history was lost in a restart is told to fetch a new snapshot.
+- Two guard tests: no URL in the code names another host, and no model or LLM library is a dependency.
+
+**Files**
+- CHANGE backend/seedfoundry/store.py (atomic JSON store)
+- CHANGE backend/seedfoundry/state.py (state model, categories, StateManager)
+- CHANGE backend/seedfoundry/events.py (event model and types, in-memory log, SSE stream)
+- CHANGE backend/seedfoundry/main.py (`create_app()`, state, events and intake routes)
+- CHANGE backend/seedfoundry/config.py (`var_dir()`)
+- NEW backend/seedfoundry/intake/files.py (intake rules and changes)
+- NEW backend/tests/conftest.py, test_intake_api.py, test_persistence.py, test_events.py, test_guards.py
+- CHANGE run.py (uvicorn graceful shutdown timeout, D-31)
+- CHANGE .gitignore (`.codegraph/`, the local code index, before the M0 commit)
+- CHANGE docs/decisions.md (D-31 to D-35)
+- CHANGE docs/build-simulation.md (§3 as-built note on the M1 event types)
+- CHANGE docs/implementation-plan.md (M1 status; as-built note)
+- CHANGE docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 86 passed, frontend: 1 passed (through `python run.py test`); frontend typecheck: pass
+- determinism: not yet applicable (from M5); file ids and seqs come from saved counters | no-em-dash: no test yet (from M3); every file written in M1 was searched and has none | network: guard test passes
+- assertions edited: none
+
+**Hand checks**
+- Started the backend as `run.py` does (port 8100, the real `var/`), created `hand-check.md` through the API, stopped the process, started it again: `GET /api/intake/files` returned the file unchanged. `GET /api/events` with `Last-Event-ID: 0` then sent a `stream.resync`, as designed, because the log before the restart was not kept. The hand-check file was then removed so `var/` starts empty. Checked over HTTP from the terminal, not in a browser; there is no UI in M1.
+- The same check runs as a test (`test_file_survives_a_real_server_restart`) against a real uvicorn process, killed hard between the two starts.
+- `python run.py` launched both processes; a file created through `http://127.0.0.1:5273/api` (the Vite proxy) arrived at once on `GET /api/events` through the same proxy, so SSE is not buffered. Ports 8100 and 5273 were free after stopping, and `var/` was emptied again.
+
+**Decisions and questions**
+- New: D-31 (in-memory event log, saved seq, resync), D-32 (transactional changes, intake events carry no content, counter ids), D-33 (running builds marked interrupted on restart), D-34 (FR-IN-11 at the API, raw-body import), D-35 (intake API shape, replace rule on category change, names need not be unique)
+- Opened: none. Closed: none.
+
+**Notes for next milestone**
+- M3 should fetch file content with `GET /api/intake/files/{id}` after an `intake.file_updated` event whose `changed` includes `content`: events carry no content (D-32). Category labels and the filename hints come from `GET /api/intake/categories`, so the frontend needs no copy of them.
+- Import is one request per file, with the file's raw bytes as the body. The import dialog can show the "Replaces existing" warning from the snapshot, and a 409 `core_slot_taken` is the server's answer if it is skipped.
+- Duplicate file names are allowed (D-35). If the stakeholder wants unique names, M3 is the place to raise it.
+- The frontend has no event type list yet. When M2 or M6 adds one, add Seed v0.1's contract test: the backend's `EVENT_TYPES` must all be known to the frontend.
+- M1 is committed on `master` (the M0 scaffold first, as its own commit).

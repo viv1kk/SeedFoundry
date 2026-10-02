@@ -7,7 +7,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | Phase | Milestone | Title | Status |
 |---|---|---|---|
 | A. Foundations | M0 | Read, reuse notes, scaffold | Done (2026-10-03) |
-| | M1 | Backend core: state, persistence, events, SSE | Not started |
+| | M1 | Backend core: state, persistence, events, SSE | Done (2026-10-03) |
 | | M2 | Frontend shell and design system | Not started |
 | B. Knowledge | M3 | Intake page | Not started |
 | | M4 | Demo controller and sample Seed | Not started |
@@ -62,6 +62,8 @@ seedfoundry/
 ```
 
 *As built (M0):* the repository root is the `seedfoundry/` folder above, so there is no extra wrapper directory. There is no Makefile or justfile: `run.py` launches both processes and `run.py test` runs both suites (D-23). Also at the root: `.gitignore`. In `backend/`: `uv.lock`, `requirements.txt` and `requirements-dev.txt` (D-25), and `seedfoundry/config.py` holding the two ports. In `frontend/`: `index.html`, `vite.config.ts`, `tsconfig.json`, `src/main.ts`, `src/App.vue` (placeholder), `src/env.d.ts`.
+
+*As built (M1):* intake rules live in `backend/seedfoundry/intake/files.py`. `config.py` also gives `var_dir()`, which `SEEDFOUNDRY_VAR_DIR` overrides (tests use it). `main.py` builds the app with `create_app()`, which loads the state when the app starts. `backend/tests/conftest.py` can start a real uvicorn process over a temporary `var/` for restart and SSE tests.
 
 ## 3. Milestones
 
