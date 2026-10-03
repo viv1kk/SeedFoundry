@@ -14,7 +14,7 @@ How a build runs: phases, sub-steps, timing, events, logs, planted defects, vali
 
 | # | Phase (screen name) | Code id | Weight | Sub-steps | Tests in this phase |
 |---|---|---|---|---|---|
-| 1 | Assay | `assay` | 6 | Inventory files; Measure Ensemble coverage per file; Ensemble boundary check; Fingerprint intake | T-01 core files present, T-02 coverage, T-03 boundary check |
+| 1 | Assay | `assay` | 6 | (iter 2, first) Apply observer feedback: Route feedback to Ensemble files; Update person.md; Update instrument-awareness.md; Update environment.md; Update music.md (D-36, see §9); Inventory files; Measure Ensemble coverage per file; Ensemble boundary check; Fingerprint intake | T-01 core files present, T-02 coverage, T-03 boundary check |
 | 2 | Distillation | `distill` | 12 | Load model profile from Instrument Awareness; Plan context budget; Distil Music (purpose, principles, value, decisions); Distil Person; Distil Environment layers; Merge Misc Context; (iter 2) Ingest observer feedback and prior findings | T-04 all Music sections extracted |
 | 3 | Synthesis | `synth` | 10 | Draft core.md; Draft adaptation.md; Draft protection.md; Assemble Seed manifest | T-05 manifest schema valid |
 | 4 | Cross-Examination | `xexam` | 8 | Reviewer pass on core; Reviewer pass on adaptation and protection; Resolve contradictions; Sign off drafts | T-06 no contradictions between files |
@@ -163,6 +163,24 @@ Aim for one to two screens of markdown per file. Use real headings matching the 
 ## 9. Iteration 2 script
 
 Same phases and sub-steps. Differences:
+
+- Assay opens with **Apply observer feedback** (FR-RB-7, FR-RB-8, D-36), before any other sub-step, so everything after it builds from the updated files:
+  - *Route feedback to Ensemble files*: one `LLMClient` call (simulated). Logs the segment count and where each went.
+  - *Update person.md*, *Update instrument-awareness.md*, *Update environment.md*, *Update music.md*: one sub-step per core file, each appending its routed segments verbatim under `### Observer feedback (iteration 1)` in the matched section. A file that receives nothing still shows its sub-step, completed with "no change".
+  - Segments that fit no core file are logged as kept in `observer-feedback-iteration-1.md` only.
+  - Illustrative lines (wording refined in M10; figures come from the real routing):
+
+    ```
+    00:00.4  LLM    route observer feedback: 6 segments to 4 files (simulated)
+    00:00.9  INFO   environment.md: +4 lines in Styling (segments 1, 2)
+    00:01.2  INFO   environment.md: +2 lines in Protection (segment 3)
+    00:01.5  INFO   music.md: +2 lines in Decision Logic (segment 4)
+    00:01.8  INFO   person.md: +1 line in Reasoning methods (segment 5)
+    00:02.1  INFO   instrument-awareness.md: +1 line in Hallucination risks (segment 6)
+    00:02.4  PASS   Intake updated: 4 files changed, fingerprint 3f9a1c (was 8b20d4)
+    ```
+
+  - The boundary check (T-03) then runs on the updated files. Routing by the same rules keeps them clean; a segment that mixes concerns may still raise an advisory, which never changes the verdict (D-12). The demo's prefilled feedback is written to reach all four files and raise none.
 
 - Distillation adds "Ingest observer feedback and prior findings": logs feedback length and the 14 prior findings, then "Planning corrections for all prior findings". It never claims the feedback text mentioned anything it did not (D-5).
 - Synthesis logs the learned rules added to protection.md.

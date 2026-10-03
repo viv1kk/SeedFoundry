@@ -37,6 +37,7 @@ The four screens, the rebuild modal and the demo controller. This describes inte
 - **Import dialog:** one row per selected file: filename, category dropdown (pre-selected per FR-IN-7), and a "Replaces existing person.md" warning when relevant. Confirm / Cancel.
 - **Start Build:** disabled until all four core slots are complete; tooltip lists what is missing.
 - During a build the page is read-only, with a banner linking to the running build.
+- After a rebuild starts, the four core files show the feedback added to them under `### Observer feedback (iteration 1)` in the sections it was routed to (FR-RB-7).
 
 ## 3. Build page
 
@@ -62,6 +63,7 @@ The four screens, the rebuild modal and the demo controller. This describes inte
 - **Left (~55%):** header with iteration badge, elapsed time, overall progress. Vertical stepper of the 11 phases. The active phase is expanded to show its sub-steps; completed phases collapse to one line with duration and a result chip (Passed, Findings: 3). Click any completed phase to expand it.
 - State shown by weight and colour, not motion, per Seed v0.1 ("weight not motion shows state"). A restrained progress animation on the active sub-step is fine.
 - **Right (~45%): console.** Monospace, dark surface in both themes, auto-scroll with a pause control, level filter (All, LLM, API, TEST, WARN, FAIL). Lines are colour-coded by level using status tokens; red only for FAIL.
+- **Iteration 2 (FR-RB-8, D-36):** phase 1 opens with "Apply observer feedback": a routing sub-step, then one sub-step per core file (person.md, instrument-awareness.md, environment.md, music.md), each showing the section it changed and the lines added, or "no change". The console shows the matching log lines.
 - **On completion:** the stepper is replaced (or overlaid) by the report panel (§4). The console stays available, collapsible.
 
 ## 4. Review: report

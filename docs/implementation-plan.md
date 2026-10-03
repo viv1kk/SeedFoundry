@@ -120,9 +120,9 @@ Each milestone lists scope, exit criteria and hand checks. Tag changes in the bu
 - **Hand check:** every finding in the report is visible on the dashboard where it says.
 
 ### M10: Rebuild and iteration 2
-- **Scope:** rebuild modal with editor and split views, feedback saved as Misc Context, iteration 2 run with its script, "Changes since iteration 1", Rebuild hidden on iteration 2, demo controller prefill.
-- **Exit:** full two-iteration flow test (API level); FR-RB-1..6, FR-R-3.
-- **Hand check:** write feedback while viewing the dashboard in split view; rebuild; iteration 2 dashboard is clean.
+- **Scope:** rebuild modal with editor and split views, feedback saved as Misc Context, iteration 2 run with its script, "Changes since iteration 1", Rebuild hidden on iteration 2, demo controller prefill. *Added by D-36:* feedback routing into the four core files (segmenting, boundary-rule scoring, verbatim append under `### Observer feedback (iteration 1)`), iteration 1 file versions kept with build 1, the "Apply observer feedback" sub-steps and log lines in phase 1 of iteration 2, and prefill text that reaches all four files.
+- **Exit:** full two-iteration flow test (API level); FR-RB-1..~~6~~8, FR-R-3. *Added by D-36:* routing tests (each rule set sends a segment to the right file and section; ties break in the fixed order; an unmatched segment changes no file; same feedback gives the same edits); the prefilled feedback updates all four files and raises no boundary advisory; the log lines match the edits actually made.
+- **Hand check:** write feedback while viewing the dashboard in split view; rebuild; watch phase 1 route the feedback and update the files at 1x; open Knowledge and read the added sections; iteration 2 dashboard is clean.
 
 ### M11: Generation and final page
 - **Scope:** core/adaptation/protection templates, learned rules in iteration 2, known issues on iteration 1 approval, zip, final page per `ui-spec.md` §7.

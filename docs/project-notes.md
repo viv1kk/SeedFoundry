@@ -177,3 +177,20 @@ One entry per milestone, newest last. Format in `docs/methodology.md` §4.
 - Duplicate file names are allowed (D-35). If the stakeholder wants unique names, M3 is the place to raise it.
 - The frontend has no event type list yet. When M2 or M6 adds one, add Seed v0.1's contract test: the backend's `EVENT_TYPES` must all be known to the frontend.
 - M1 is committed on `master` (the M0 scaffold first, as its own commit).
+
+### Change request: feedback updates the four files (2026-10-03)
+
+**What changed**
+- The stakeholder asked that, in iteration 2, the observer feedback updates the four Ensemble files, the system decides what goes where, and the rebuild runs from the updated files, visibly in the build page's steps and logs.
+- Recorded as D-36 and A-4 (FR-RB-6 amended, FR-RB-7 and FR-RB-8 added). Routing is real and deterministic, using the boundary rule sets, and logged as a simulated LLM call. Segments are appended verbatim, so every log line is true (D-5 still holds: the outcome stays scripted).
+- Iteration 2's phase 1 now opens with "Apply observer feedback": one routing sub-step and one sub-step per core file. No phase, weight or test id changes.
+
+**Files**
+- CHANGE docs/requirements.md (FR-RB-6 to FR-RB-8, A-4), docs/decisions.md (D-36), docs/build-simulation.md (phase 1 row, §9), docs/implementation-plan.md (M10), docs/ui-spec.md (§2, §3)
+
+**Gates**
+- No code changed. Assertions edited: none.
+
+**Notes for next milestone**
+- Built in M10. M5 only needs the iteration 2 script to have room for these sub-steps; the routing itself, and its tests, land in M10 with the boundary rule sets from M5.
+- Assay's weight (6, about 4.5 s at 1x) now holds the routing steps in iteration 2. M10's 1x hand check judges whether that is readable; if not, a weight change is an amendment.

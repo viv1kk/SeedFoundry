@@ -107,7 +107,9 @@ Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline wit
 | FR-RB-3 | Start Rebuild requires non-empty feedback |
 | FR-RB-4 | The feedback is saved as a Misc Context file named `observer-feedback-iteration-1.md`, visible in the intake file list |
 | FR-RB-5 | Start Rebuild starts iteration 2 from phase 1 with all original intake plus the feedback file, and opens the build page |
-| FR-RB-6 | Iteration 2 logs show the feedback being ingested and acted on (scripted, D-5) |
+| FR-RB-6 | Iteration 2 logs show the feedback being ingested and acted on (scripted, D-5), including how it updated the four Ensemble files (FR-RB-7, A-4) |
+| FR-RB-7 | Before iteration 2 rebuilds, the observer feedback updates the four core files. The feedback is split into segments (paragraphs and list items); each segment is routed to the one Ensemble file, and section, its content belongs in; routed segments are appended verbatim to that file under an "Observer feedback (iteration 1)" subsection; a segment that fits no core file stays in the feedback file only. The routing is shown as an LLM decision (simulated) but is deterministic. The updated files are what iteration 2 builds from, and the Knowledge page shows them (A-4, D-36) |
+| FR-RB-8 | On the build page in iteration 2, the feedback routing and each file update are visible as sub-steps of phase 1 and as log lines naming the file, the section and the lines added (A-4) |
 
 ### FR-F: Final page
 
@@ -195,3 +197,4 @@ Recorded in detail in `seed-reuse-notes.md` (written in M0).
 | A-1 | 2026-10-03 | FR-B-5 | Gates are auto-resolved during the simulated Seed v0.1 run in phase 8, not "during Life": Seed v0.1 raises no gate in Life | D-26 (OQ-11) |
 | A-2 | 2026-10-03 | FR-D (new FR-D-6) | The dashboard supports drill-down along Seed v0.1's hierarchy | D-29 (OQ-14) |
 | A-3 | 2026-10-03 | FR-D-1 | The dashboard follows Seed v0.1's methodology and layout; its data is SeedFoundry's own, not Seed v0.1's figures | D-30 |
+| A-4 | 2026-10-03 | FR-RB-6; new FR-RB-7, FR-RB-8 | Iteration 2 first routes the observer feedback into the four Ensemble files and updates them, visibly, then rebuilds from them | D-36 |
