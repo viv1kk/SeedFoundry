@@ -96,6 +96,12 @@ function onPicked(event: Event): void {
 }
 
 const runningIteration = computed(() => lab.runningBuild?.iteration ?? 1)
+
+// Start Build (FR-B-1): create the build, then open its page.
+async function startBuild(): Promise<void> {
+  const build = await intake.startBuild()
+  if (build) await router.push({ name: 'build', params: { iteration: String(build.iteration) } })
+}
 </script>
 
 <template>
@@ -117,7 +123,7 @@ const runningIteration = computed(() => lab.runningBuild?.iteration ?? 1)
         @select="select"
         @new="openNew"
         @import="openImport"
-        @start-build="intake.startBuild"
+        @start-build="startBuild"
       />
     </div>
 

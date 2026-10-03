@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from fastapi import FastAPI, Header, Query, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -17,6 +17,8 @@ from pydantic import BaseModel
 
 from seedfoundry import demo, events
 from seedfoundry.config import var_dir
+from seedfoundry.engine.clock import Clock
+from seedfoundry.engine.runner import BuildEngine
 from seedfoundry.intake import files
 from seedfoundry.state import (
     CATEGORY_DESCRIPTIONS,
@@ -39,6 +41,20 @@ class LoadSample(BaseModel):
     replace: bool = False
 
 
+class StartBuild(BaseModel):
+    # Omitted: the current iteration (FR-B-1). 2 starts iteration 2 after a completed
+    # iteration 1, until M10's rebuild does it with the feedback (D-49).
+    iteration: Literal[1, 2] | None = None
+
+
+class SetSpeed(BaseModel):
+    speed: Literal[1, 2, 4]
+
+
+class Skip(BaseModel):
+    to: Literal["phase", "build"]
+
+
 class FileChanges(BaseModel):
     name: str | None = None
     category: Category | None = None
@@ -46,11 +62,15 @@ class FileChanges(BaseModel):
     replace: bool = False
 
 
-def create_app(data_dir: Path | None = None) -> FastAPI:
+def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.lab = StateManager.open(data_dir or var_dir())
+        app.state.engine = BuildEngine(app.state.lab, clock)
         yield
+        # A build cannot outlive the server: it stays "running" on disk and is marked
+        # interrupted at the next start (D-33).
+        await app.state.engine.stop()
 
     app = FastAPI(title="SeedFoundry", lifespan=lifespan)
 
@@ -63,6 +83,9 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
 
     def lab(request: Request) -> StateManager:
         return request.app.state.lab
+
+    def engine(request: Request) -> BuildEngine:
+        return request.app.state.engine
 
     @app.get("/api/health")
     async def health() -> dict[str, str]:
@@ -145,6 +168,24 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
         lab(request).apply(files.delete(file_id))
         return Response(status_code=204)
 
+    # Builds (FR-B-1, D-49)
+
+    @app.post("/api/builds", status_code=201)
+    async def start_build(request: Request, body: StartBuild | None = None) -> dict[str, Any]:
+        """Start a build of the current iteration. 409 while a build runs or a core file is missing."""
+        return engine(request).start(body.iteration if body else None).summary()
+
+    @app.get("/api/builds/{build_id}/events")
+    async def build_events(request: Request, build_id: str) -> dict[str, Any]:
+        """A build's events in order: the kept log of a finished build, or what the
+        in-memory log holds of a running or interrupted one (D-49)."""
+        manager = lab(request)
+        build = manager.state.build(build_id)
+        if build is None:
+            raise files.IntakeError(404, "build_not_found", f"No build with id {build_id}.")
+        events = build.log or [e for e in manager.log.after(0) if e.build_id == build_id]
+        return {"build_id": build_id, "status": build.status, "seq": manager.state.seq, "events": events}
+
     # Demo controller (D-46). The client asks before replacing or clearing; the server
     # applies the same intake rules as for the user's own changes.
 
@@ -160,8 +201,25 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
 
     @app.post("/api/demo/reset")
     async def reset(request: Request) -> dict[str, int]:
-        """Reset to start: no files, no builds, iteration 1. Allowed while a build runs."""
+        """Reset to start: no files, no builds, iteration 1. Allowed while a build runs:
+        the engine is stopped first, so no beat lands after the reset."""
+        await engine(request).stop()
         return lab(request).apply(demo.reset())
+
+    @app.get("/api/demo/speed")
+    async def get_speed(request: Request) -> dict[str, int]:
+        """The build speed, held by the engine and not saved (D-48)."""
+        return {"speed": engine(request).speed}
+
+    @app.post("/api/demo/speed")
+    async def set_speed(request: Request, body: SetSpeed) -> dict[str, int]:
+        """Speed 1x, 2x or 4x: pacing only (FR-DC-4). Kept across builds and Reset; emits no event."""
+        return {"speed": engine(request).set_speed(body.speed)}
+
+    @app.post("/api/demo/skip")
+    async def skip(request: Request, body: Skip) -> dict[str, Any]:
+        """Skip to the end of the phase or the build: pacing only. 409 when no build runs."""
+        return engine(request).skip(body.to)
 
     return app
 

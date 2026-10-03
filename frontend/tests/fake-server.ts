@@ -1,7 +1,9 @@
-// An in-memory stand-in for the intake API (D-34, D-35) and the demo actions (D-46), for page
-// tests. It keeps the server's rules that the page relies on (one file per core category
-// unless `replace`, trimmed names, the lock while a build runs, Load sample only on an empty
-// intake unless `replace`) and records every request. Canned refusals (413, 415) are queued
+// An in-memory stand-in for the intake API (D-34, D-35), the demo actions (D-46) and builds
+// (D-48, D-49), for page tests. It keeps the server's rules that the page relies on (one file
+// per core category unless `replace`, trimmed names, the lock while a build runs, Load sample
+// only on an empty intake unless `replace`, Start Build only with four filled core files and
+// no build running, skip only while one runs) and records every request. A started build stays
+// running until a test ends it; no engine runs here. Canned refusals (413, 415) are queued
 // with `refuseNext`, as the real checks live in the backend's tests. Load sample serves the
 // real sample files from backend/seedfoundry/sample.
 
@@ -71,8 +73,11 @@ function refusal(status: number, code: string, message: string, extra: Record<st
 export class FakeServer {
   files: IntakeFile[] = []
   builds: Build[] = []
+  iteration = 1
+  speed = 1
   seq = 0
   nextId = 1
+  nextBuild = 1
   calls: Call[] = []
   /** Requests whose reply is held until `release()`. */
   held: { resolve: () => void }[] = []
@@ -111,8 +116,9 @@ export class FakeServer {
       JSON.stringify({
         schema: 1,
         seq: this.seq,
-        iteration: 1,
+        iteration: this.iteration,
         next_file_id: this.nextId,
+        next_build_id: this.nextBuild,
         intake: { files: this.files },
         builds: this.builds,
         approval: null,
@@ -163,11 +169,37 @@ export class FakeServer {
       const file = this.find(fileMatch[1])
       return file ? { status: 200, body: file } : refusal(404, 'file_not_found', `No file with id ${fileMatch[1]}.`)
     }
+    if (method === 'GET' && path === '/api/demo/speed') return { status: 200, body: { speed: this.speed } }
+    if (method === 'POST' && path === '/api/demo/speed') {
+      const speed = (call.body as { speed?: number }).speed
+      if (speed !== 1 && speed !== 2 && speed !== 4) return { status: 422, body: { detail: [] } }
+      this.speed = speed
+      return { status: 200, body: { speed } }
+    }
+    const running = this.builds.find((b) => b.status === 'running')
+    if (method === 'POST' && path === '/api/demo/skip') {
+      if (!running) return refusal(409, 'no_build_running', 'No build is running, so there is nothing to skip.')
+      const to = (call.body as { to?: string }).to
+      return { status: 200, body: to === 'phase' ? { skipping: 'phase', phase: 'assay', name: 'Assay' } : { skipping: 'build' } }
+    }
+    if (method === 'POST' && path === '/api/builds') {
+      if (running) return refusal(409, 'build_running', 'A build is running. Wait for it to finish, or use Reset to start.')
+      const missing = [...CORE].filter((c) => !this.files.some((f) => f.category === c && f.content.trim()))
+      if (missing.length) {
+        const labels = missing.map((c) => LABELS[c]).join(', ')
+        return refusal(409, 'core_files_missing', `Start Build needs every core file. Missing: ${labels}.`, { missing })
+      }
+      const build: Build = { id: `b-${this.nextBuild++}`, iteration: this.iteration, status: 'running', seed_name: 'License Optimization', phase: null, plan: [] }
+      this.builds = [...this.builds.filter((b) => b.iteration !== build.iteration), build]
+      this.seq++
+      return { status: 201, body: build }
+    }
     // Reset to start is allowed while a build runs (D-46).
     if (method === 'POST' && path === '/api/demo/reset') {
       const removed = { files_removed: this.files.length, builds_removed: this.builds.length }
       this.files = []
       this.builds = []
+      this.iteration = 1
       this.seq++
       return { status: 200, body: removed }
     }

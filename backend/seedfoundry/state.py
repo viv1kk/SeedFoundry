@@ -78,12 +78,38 @@ class Intake(BaseModel):
 BuildStatus = Literal["running", "completed", "interrupted"]
 
 
+class PlanItem(BaseModel):
+    id: str
+    name: str
+
+
+class PhasePlan(BaseModel):
+    """One phase of a build as planned at its start (build-simulation.md §2)."""
+
+    id: str
+    name: str
+    weight: int
+    steps: list[PlanItem] = []
+    tests: list[PlanItem] = []
+
+
 class Build(BaseModel):
-    """One run of the phase catalogue for one iteration. The engine fills it in from M5."""
+    """One run of the phase catalogue for one iteration (D-49). The engine creates it with
+    build.started, sets `phase` at each phase.started, and on build.completed sets the status
+    and keeps the build's events in `log`, which the snapshot leaves out."""
 
     id: str
     iteration: int
     status: BuildStatus = "running"
+    seed_name: str = ""
+    fingerprint: str = ""
+    phase: str | None = None
+    plan: list[PhasePlan] = []
+    log: list[Event] = []
+
+    def summary(self) -> dict[str, Any]:
+        """The record without its log, as build.started carries it and the snapshot shows it."""
+        return self.model_dump(mode="json", exclude={"log"})
 
 
 class Approval(BaseModel):
@@ -95,6 +121,7 @@ class State(BaseModel):
     seq: int = 0
     iteration: int = 1
     next_file_id: int = 1
+    next_build_id: int = 1
     intake: Intake = Intake()
     builds: list[Build] = []
     approval: Approval | None = None
@@ -104,6 +131,9 @@ class State(BaseModel):
     @property
     def build_running(self) -> bool:
         return any(build.status == "running" for build in self.builds)
+
+    def build(self, build_id: str) -> Build | None:
+        return next((b for b in self.builds if b.id == build_id), None)
 
     def file(self, file_id: str) -> IntakeFile | None:
         return next((f for f in self.intake.files if f.id == file_id), None)
@@ -136,12 +166,14 @@ class StateManager:
         return manager
 
     def snapshot(self) -> dict[str, Any]:
-        return self.state.model_dump(mode="json")
+        """The state without build logs, which GET /api/builds/{id}/events serves (D-49)."""
+        return self.state.model_dump(mode="json", exclude={"builds": {"__all__": {"log"}}})
 
-    def apply(self, change: Callable[[State, Emit], T]) -> T:
+    def apply(self, change: Callable[[State, Emit], T], then: Callable[[State, list[Event]], None] | None = None) -> T:
         """Run a change on a copy of the state. The change calls emit(type=...,
         message=..., ...) once per event. Nothing is saved or published when it
-        emits nothing."""
+        emits nothing. `then` sees the copy and the numbered events before the
+        save, for a change that keeps its own events (a finished build's log)."""
         draft = self.state.model_copy(deep=True)
         pending: list[dict[str, Any]] = []
         result = change(draft, lambda **fields: pending.append(fields))
@@ -152,6 +184,8 @@ class StateManager:
             draft.seq += 1
             fields.setdefault("iteration", draft.iteration)
             events.append(Event(seq=draft.seq, wall_ts=wall_now(), **fields))
+        if then is not None:
+            then(draft, events)
         self.store.save(draft.model_dump(mode="json"))
         self.state = draft
         self.log.extend(events)

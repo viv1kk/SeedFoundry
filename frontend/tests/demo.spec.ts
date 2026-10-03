@@ -267,7 +267,8 @@ describe('Shift+R: Reset to start', () => {
       'This deletes all knowledge files and builds and returns to the Knowledge page. Speed and theme stay as they are.',
     )
     await click('[data-test="confirm-ok"]')
-    expect(demoWrites()).toEqual([expect.objectContaining({ path: '/api/demo/reset' })])
+    // D-53: the speed set before Reset now goes to the server too.
+    expect(demoWrites().map((c) => c.path)).toEqual(['/api/demo/speed', '/api/demo/reset'])
     expect(router.currentRoute.value.fullPath).toBe('/knowledge')
     expect(useLabStore().snapshot?.builds).toEqual([])
     expect(useLabStore().files).toEqual([])
@@ -285,7 +286,7 @@ describe('Shift+R: Reset to start', () => {
   })
 })
 
-describe('Shift+Enter: Start Build (D-42 (c) until M5)', () => {
+describe('Shift+Enter: Start Build (FR-B-1)', () => {
   it('with files missing, says what is missing and does nothing', async () => {
     server.add('music.md', 'music', '# Tune')
     await open()
@@ -295,11 +296,16 @@ describe('Shift+Enter: Start Build (D-42 (c) until M5)', () => {
     expect(server.writes()).toEqual([])
   })
 
-  it('with all four, does what the Start Build button does', async () => {
+  // D-53: in M4 this said builds arrive in M5; it now does what the button does from M5.
+  it('with all four, does what the Start Build button does: starts the build and opens its page', async () => {
     await open()
     await letter('P')
+    await letter('O')
     await shift('Enter', 'Enter', document.body)
-    expect($('[data-test="build-note"]')?.textContent).toBe('Files saved. Builds arrive in M5, so nothing starts yet.')
+    expect(server.writes().filter((c) => c.path === '/api/builds')).toHaveLength(1)
+    expect(router.currentRoute.value.fullPath).toBe('/build/1')
+    expect(status()).toBe('Build started: iteration 1.')
+    expect($('main [data-test="placeholder"] p')?.textContent).toContain('Build running')
   })
 
   it('on a focused button, Shift+Enter belongs to that button', async () => {
@@ -323,8 +329,26 @@ describe('Speed: Shift+1, Shift+2, Shift+4 by key code', () => {
     expect(useDemoStore().speed).toBe(4)
     await shift('1', 'Digit1')
     expect(useDemoStore().speed).toBe(1)
-    expect(status()).toBe('Speed 1x. It paces builds once they arrive in M5.')
-    expect(server.writes()).toEqual([])
+    // D-53: speed is now kept on the server (D-48), so each press is sent there.
+    expect(status()).toBe('Speed 1x.')
+    expect(server.writes().map((c) => c.body)).toEqual([{ speed: 2 }, { speed: 4 }, { speed: 1 }])
+    expect(server.speed).toBe(1)
+  })
+
+  it("shows the server's speed when it loads, as it survives Reset and reloads", async () => {
+    server.speed = 4
+    await open()
+    await letter('O')
+    expect($$('[data-test="demo-panel"] [aria-pressed="true"]').map((b) => b.dataset.action)).toEqual(['speed4'])
+  })
+
+  it('a refused speed goes back and says why', async () => {
+    server.refuseNext((c) => c.path === '/api/demo/speed' && c.method === 'POST', 409, 'nope', 'Speed cannot change now.')
+    await open()
+    await letter('O')
+    await shift('@', 'Digit2')
+    expect(useDemoStore().speed).toBe(1)
+    expect(status()).toBe('Speed cannot change now.')
   })
 
   it('the speed buttons set it too', async () => {
@@ -335,23 +359,39 @@ describe('Speed: Shift+1, Shift+2, Shift+4 by key code', () => {
   })
 })
 
-describe('stubbed until later milestones: they say so and do nothing', () => {
-  it('Shift+S and Shift+E say builds arrive in M5', async () => {
+describe('Shift+S and Shift+E: skip (D-48)', () => {
+  // D-53: in M4 these said builds arrive in M5; without a build they now say there is none.
+  it('without a running build, say there is nothing to skip and send nothing', async () => {
     await open()
     await letter('O')
     for (const key of ['S', 'E']) {
       await letter(key)
-      expect(status()).toBe('Builds arrive in M5, so there is nothing to skip yet.')
+      expect(status()).toBe('No build is running, so there is nothing to skip.')
     }
     expect(server.writes()).toEqual([])
     for (const name of ['skipPhase', 'skipEnd']) {
       const button = action(name)!
       expect(button.getAttribute('aria-disabled')).toBe('true')
       expect(document.getElementById(button.getAttribute('aria-describedby')!)?.textContent?.trim()).toBe(
-        'Builds arrive in M5, so there is nothing to skip yet.',
+        'No build is running, so there is nothing to skip.',
       )
     }
   })
+
+  it('while a build runs, skip the phase or the build', async () => {
+    server.builds = [{ id: 'b-1', iteration: 1, status: 'running' }]
+    await open('/build/1')
+    await letter('O')
+    expect(action('skipPhase')!.getAttribute('aria-disabled')).toBeNull()
+    await letter('S')
+    expect(status()).toBe('Skipping to the end of Assay.')
+    await click('[data-action="skipEnd"]')
+    expect(status()).toBe('Skipping to the end of the build.')
+    expect(demoWrites().map((c) => c.body)).toEqual([{ to: 'phase' }, { to: 'build' }])
+  })
+})
+
+describe('stubbed until later milestones: they say so and do nothing', () => {
 
   it('Shift+F does nothing without the rebuild modal; its button says it arrives in M10', async () => {
     await open()

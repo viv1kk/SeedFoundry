@@ -10,6 +10,8 @@ How a build runs: phases, sub-steps, timing, events, logs, planted defects, vali
 - RNG: seeded from `sha256(intake content) + iteration`. Used only for cosmetic variety (sandbox id, simulated latencies within fixed bands, token counts jitter).
 - State is held server-side; the client receives a snapshot then replays the event log, then streams new events over SSE.
 
+*As built (M5, D-48):* the engine is `backend/seedfoundry/engine/`: `catalogue.py` (phases, weights, sub-steps, tests), `script.py` (each sub-step a generator of beats that returns a one-line summary; the whole script is written when the build starts, as a pure function of the intake, the iteration and the earlier build), `runner.py` (plays the beats on the server's event loop) and `clock.py` (the loop's clock, and `FakeClock` for tests). A phase's beats share its time in proportion to their weights, so `sim_t` is fixed by the script and the build ends at 75.0 s. The runner reads progress from the clock times the speed and waits at most 50 ms at a time; speed and skip change only when beats are played. The RNG is Python's `random.Random` seeded with `sha256("<intake sha256>:<iteration>")`, where the intake sha256 covers every file's category, name and content (the first six hex digits are the fingerprint in logs). The simulated clients are `backend/seedfoundry/clients/` (D-22).
+
 ## 2. Phase catalogue
 
 | # | Phase (screen name) | Code id | Weight | Sub-steps | Tests in this phase |
@@ -30,6 +32,8 @@ Sub-step names may be refined in M5, but phase count, order, weights and test id
 
 *Changed 2026-10-03 (D-26, OQ-11):* Seed v0.1 runs Cleanup before Life and raises no gate in Life, so its Seeding stages, Cleanup and Life all sit in phase 8 in that order, and phase 11 is SeedFoundry's own teardown. Count, order, weights and test ids are unchanged.
 
+*As built (M5):* sub-step names are as in the table, with Planting's refined to Plant the three layers; Heading summary per layer; List the declared stack. In code a sub-step's id is `<phase>.<step>` (`assay.inventory`, `seeding.discovery`, `assay.feedback-route`), in `backend/seedfoundry/engine/catalogue.py`, which a test checks against this table. Each test result is emitted inside the sub-step that computes it, so test ids appear in order T-01 to T-21. What is real, simulated or not yet run in M5 is D-51: real T-01 to T-05, T-09, T-11; simulated T-06, T-07, T-10, T-12, T-21; not run T-08 (until M7) and T-13 to T-20 (until M9), so phases 5, 9 and 10 complete as "incomplete" until then. Synthesis drafts the three layers as outlines (header block and §7's section headings) until M11 fills them; the manifest, upload checksums and Planting's heading summary are computed from those bytes. Planting's declared stack is the bold list items of environment.md's Data Layer (the sample: License Management System (LMS), SAP).
+
 ### Phase results by iteration (sample Seed)
 
 | Phase | Iteration 1 | Iteration 2 |
@@ -46,6 +50,8 @@ Each event: `{ seq, build_id, iteration, phase, step, type, level, code, message
 Types: `build.started`, `phase.started`, `step.started`, `log`, `llm.call`, `api.call`, `test.result`, `gate.auto_resolved`, `finding.raised`, `step.completed`, `phase.completed`, `build.completed`, `report.ready`.
 
 *As built (M1):* the same shape carries events outside a build, with `build_id`, `phase`, `step`, `code` and `sim_t` null and `iteration` the current one. M1 added these types: `intake.file_created`, `intake.file_updated`, `intake.file_deleted` (D-32), `build.interrupted` (D-33) and `stream.resync`, which the SSE stream sends when it cannot replay exactly and which is never stored in the log (D-31). The list lives in `backend/seedfoundry/events.py` as `EVENT_TYPES`. *M4:* `demo.reset` (Reset to start, D-46); Load sample Seed and Clear intake emit the intake types.
+
+*As built (M5):* no new types. In a build every event has `build_id`, `iteration` and `sim_t`; every event inside a phase has `phase` (its code id), and every event inside a sub-step has `step`. `code` is the test id (`test.result`), the gate id (`gate.auto_resolved`) or the finding id (`finding.raised`). `build.started` carries the build record (D-49) and `replaces`, the ids of the iteration's earlier build it replaces; `phase.started` and `phase.completed` carry `index`, `name`, and on completion `result` (`passed`, `findings`, `incomplete`, `failed`) and each test's status; `test.result` carries `id`, `name`, `status` (`pass`, `warn`, `fail`, `not_run`), `detail`, `simulated` and, when not run, `arrives_in`; `llm.call` carries `task`, `model`, `tokens_in`, `tokens_out`, `latency_ms`, `simulated`; `api.call` carries `method`, `path`, `status`, `latency_ms`, `simulated`, `response`; `build.completed` carries the test counts, finding and advisory ids, gates and `sim_seconds`. `report.ready` is not emitted until M9 (D-51). A sample iteration 1 build is 220 events. Speed and skip emit no event (D-48).
 
 ## 4. Console log format
 
@@ -76,6 +82,23 @@ Illustrative lines (wording can be refined, tone must stay matter-of-fact, no em
 01:04.3  FAIL   N-1 Entitled seats: KPI shows 12,480, product chart sums to 14,976
 01:09.9  INFO   Report compiled: 14 findings across 3 categories
 ```
+
+*As built (M5):* the engine writes each event's `level` and `message`; the console itself is M6's. The sample's iteration 1 build reads, for example:
+
+```
+00:00.0  INFO   Build started: iteration 1, seed "License Optimization"
+00:00.0  INFO   Inventory: 4 core files, 1 context file, 16.8 KB
+00:03.6  PASS   T-03 Ensemble boundary check: 0 findings
+00:05.8  LLM    distil music.md: 910 tokens in, 572 out (simulated)
+00:07.2  INFO   Extracted 3 purpose statements, 17 principles, 4 value statements, 7 decision rules
+00:33.6  API    POST /v0.1/seeds 201 (simulated)
+00:34.9  INFO   Sandbox sbx-7d38 provisioned (isolated, no egress, simulated)
+00:48.0  INFO   Gate solution-approval (approval) auto-resolved: approve License Optimization at potential PARTIAL. Basis: music.md, Decision Logic
+01:04.2  TEST   T-16 Numeric reconciliation: not run, this validator arrives in M9
+01:15.0  INFO   Build completed: 12 tests passed, 9 not run; 0 findings, 0 boundary advisories
+```
+
+Gate lines use Seed v0.1's ids (`seed-reuse-notes.md` §4.2), never "H-02". A test not yet run is level TEST, so it reads as neutral, not as a warning (D-51).
 
 ## 5. Planted defect catalogue (iteration 1)
 
@@ -127,6 +150,8 @@ Rule-based lint over intake text using the boundary table in `ensemble/ensemble_
 | B-LOGIC | Prioritisation, scoring or decision rules inside `environment.md` |
 
 Keep rules simple (keyword and pattern sets with a small allowlist) and deterministic. Findings are advisories (D-12): they appear in the report but do not change the verdict. The sample Seed must produce zero.
+
+*As built (M5, D-50):* `backend/seedfoundry/intake/boundary.py`. Only the four core files are checked. Each pattern carries its suggested home (B-DATA: environment.md, Data Layer; B-SEC: environment.md, Protection Layer; B-UI: environment.md, Styling or User Experience; B-MODEL: instrument-awareness.md; B-LOGIC: music.md, Core Principles or Decision Logic). One finding per rule per line, id `<rule>-<n>`. The allowlist holds Seed v0.1's panel title "Optimisation candidates" (either spelling); without it the sample's environment.md would raise one B-LOGIC advisory. The sample gives zero.
 
 ### 6.2 Numeric reconciliation (T-16, real)
 
@@ -190,3 +215,5 @@ Same phases and sub-steps. Differences:
 - Synthesis logs the learned rules added to protection.md.
 - Stress & Probe and Harvest Validation run the same validators against the polished dashboard and pass.
 - Report includes "Changes since iteration 1" (FR-R-3).
+
+*As built (M5, D-52):* routing is M10's, so until then the Apply observer feedback sub-steps read the feedback file and count its segments, route nothing, and say so: "Routing feedback to the Ensemble files arrives in M10, so no segment was routed", then "<file>: no change, no feedback was routed to it" for each core file and "Intake unchanged: 0 files changed, fingerprint <x>". Distillation counts prior findings from iteration 1's kept log (0 until M9's validators raise them). Iteration 2 is started in M5 by API only (`POST /api/builds` with `{"iteration": 2}`, D-49).

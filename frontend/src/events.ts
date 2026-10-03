@@ -2,8 +2,8 @@
 // so a type missing here is never heard. tests/events-contract.spec.ts checks this list
 // against backend/seedfoundry/events.py EVENT_TYPES.
 
-export const EVENT_TYPES = [
-  // build (build-simulation.md section 3)
+/** Build events (build-simulation.md section 3), as backend BUILD_EVENT_TYPES. */
+export const BUILD_EVENT_TYPES = [
   'build.started',
   'phase.started',
   'step.started',
@@ -18,6 +18,10 @@ export const EVENT_TYPES = [
   'build.completed',
   'report.ready',
   'build.interrupted',
+] as const
+
+export const EVENT_TYPES = [
+  ...BUILD_EVENT_TYPES,
   // intake (D-32)
   'intake.file_created',
   'intake.file_updated',

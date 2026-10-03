@@ -1,8 +1,9 @@
 // The demo controller's state and actions (ui-spec.md section 8, FR-DC-2, D-46, D-47).
 // Load sample Seed, Clear and Reset go to the server, which emits the normal events; the
 // answer is also applied here at once, so the Knowledge page changes without waiting for
-// the stream. Build actions arrive with builds (M5, M6) and Prefill with the rebuild modal
-// (M10): until then they say so in the panel's status line and do nothing else.
+// the stream. Speed lives on the server, which paces builds with it and keeps it across
+// Reset; skip works while a build runs (D-48). Prefill arrives with the rebuild modal (M10):
+// until then it says so in the panel's status line and does nothing else.
 
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -11,14 +12,14 @@ import { demoApi } from '../demo/api'
 import type { DemoAction } from '../demo/shortcuts'
 import { toggleTheme } from '../theme'
 import { useIntakeStore } from './intake'
-import { useLabStore } from './lab'
+import { useLabStore, type Build } from './lab'
 
 export type Speed = 1 | 2 | 4
 
 export const SPEEDS: readonly Speed[] = [1, 2, 4]
 
 const LOCKED = 'A build is running. Knowledge files are read-only until it finishes.'
-const NO_BUILDS = 'Builds arrive in M5, so there is nothing to skip yet.'
+const NO_BUILD = 'No build is running, so there is nothing to skip.'
 const NO_REBUILD = 'Prefill fills the rebuild modal, which arrives in M10.'
 
 export function plural(count: number, word: string): string {
@@ -30,7 +31,7 @@ export const useDemoStore = defineStore('demo', () => {
   const intake = useIntakeStore()
 
   const visible = ref(false)
-  /** Build pacing (FR-DC-4: pacing only). Kept in the browser until builds read it in M5. */
+  /** Build pacing (FR-DC-4: pacing only), as the server holds it. */
   const speed = ref<Speed>(1)
   /** The last action's outcome, shown in the panel. */
   const status = ref('')
@@ -48,7 +49,7 @@ export const useDemoStore = defineStore('demo', () => {
         return intake.ready ? null : `Start Build needs every core file. Missing: ${intake.missing.join(', ')}.`
       case 'skipPhase':
       case 'skipEnd':
-        return NO_BUILDS
+        return lab.runningBuild ? null : NO_BUILD
       case 'prefill':
         return NO_REBUILD
       default:
@@ -101,19 +102,46 @@ export const useDemoStore = defineStore('demo', () => {
     })
   }
 
-  async function startBuild(): Promise<void> {
-    await intake.startBuild()
-    status.value = intake.buildNote ?? ''
+  /** Start Build, as the page's button does. Returns the build, for the caller to open its page. */
+  async function startBuild(): Promise<Build | null> {
+    const build = await intake.startBuild()
+    status.value = build ? `Build started: iteration ${build.iteration}.` : (intake.buildNote ?? '')
+    return build
   }
 
-  function setSpeed(next: Speed): void {
+  /** The server's speed, which survives Reset and a page reload. */
+  async function loadSpeed(): Promise<void> {
+    try {
+      const { speed: current } = await demoApi.speed()
+      if (SPEEDS.includes(current as Speed)) speed.value = current as Speed
+    } catch {
+      // Offline: keep what is shown; the next change sends it.
+    }
+  }
+
+  /** Shown as pressed at once, then confirmed by the server, or put back with its message. */
+  async function setSpeed(next: Speed): Promise<void> {
+    const before = speed.value
     speed.value = next
-    status.value = `Speed ${next}x. It paces builds once they arrive in M5.`
+    status.value = `Speed ${next}x.`
+    try {
+      await demoApi.setSpeed(next)
+    } catch (error) {
+      speed.value = before
+      status.value = messageOf(error)
+    }
+  }
+
+  function skip(to: 'phase' | 'build'): Promise<boolean> {
+    return attempt(async () => {
+      const answer = await demoApi.skip(to)
+      return to === 'phase' ? `Skipping to the end of ${answer.name ?? 'the phase'}.` : 'Skipping to the end of the build.'
+    })
   }
 
   function theme(): void {
     status.value = `Theme: ${toggleTheme()}.`
   }
 
-  return { visible, speed, status, busy, unavailable, loadSample, clearIntake, reset, startBuild, setSpeed, theme }
+  return { visible, speed, status, busy, unavailable, loadSample, clearIntake, reset, startBuild, loadSpeed, setSpeed, skip, theme }
 })

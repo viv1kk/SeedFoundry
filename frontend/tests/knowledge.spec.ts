@@ -532,13 +532,27 @@ describe('FR-IN-8 and FR-IN-9: core checklist and Start Build', () => {
     expect(server.writes()).toEqual([])
   })
 
-  it('in M3, an enabled Start Build saves every draft and starts nothing (D-42)', async () => {
+  // D-53: in M3 this saved every draft and started nothing; from M5 it starts the build.
+  it('an enabled Start Build saves every draft, then starts the build and opens its page (FR-B-1)', async () => {
     for (const name of CORE_FIXTURES) server.add(name, useIntakeCategory(name), fixture(name))
     await open()
     await type('[data-test="text"]', '# Person, edited')
     await click('[data-test="start-build"]')
-    expect(server.writes().map((c) => [c.method, c.body])).toEqual([['PATCH', { content: '# Person, edited' }]])
-    expect(text('[data-test="build-note"]')).toBe('Files saved. Builds arrive in M5, so nothing starts yet.')
+    expect(server.writes().map((c) => [c.method, c.path, c.body])).toEqual([
+      ['PATCH', '/api/intake/files/f-1', { content: '# Person, edited' }],
+      ['POST', '/api/builds', {}],
+    ])
+    expect(text('[data-test="build-note"]')).toBe('')
+    expect(router.currentRoute.value.fullPath).toBe('/build/1')
+    expect(useLabStore().runningBuild?.id).toBe('b-1')
+  })
+
+  it("a refused Start Build shows the server's message and stays on Knowledge", async () => {
+    for (const name of CORE_FIXTURES) server.add(name, useIntakeCategory(name), fixture(name))
+    server.refuseNext((c) => c.path === '/api/builds', 409, 'build_running', 'A build is running. Wait for it to finish, or use Reset to start.')
+    await open()
+    await click('[data-test="start-build"]')
+    expect(text('[data-test="build-note"]')).toBe('A build is running. Wait for it to finish, or use Reset to start.')
     expect(router.currentRoute.value.name).toBe('knowledge')
   })
 })

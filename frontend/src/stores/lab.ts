@@ -1,30 +1,55 @@
 // Live server state (D-38): GET /api/state, then GET /api/events after its seq.
 // Intake events are applied in place (D-41): they carry no content (D-32), so a file whose
 // content changed is fetched with GET /api/intake/files/{id}, unless the change is this
-// client's own save, whose content it already has. Any other newer event, a gap in the seqs,
-// an intake event that cannot be applied, and stream.resync re-fetch the snapshot, one
-// request at a time. Build reducers arrive in M5 and M6.
+// client's own save, whose content it already has. Build events are applied in place too
+// (M5): build.started adds the build, phase.started moves it on, build.completed and
+// build.interrupted end it, and the rest (log lines, several a second) only move the seq,
+// as the console that shows them is M6's. Any other newer event, a gap in the seqs, an
+// event that cannot be applied, and stream.resync re-fetch the snapshot, one request at a time.
 
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { EVENT_TYPES, type LabEvent } from '../events'
+import { BUILD_EVENT_TYPES, EVENT_TYPES, type LabEvent } from '../events'
 import { intakeApi, utf8Size, type FileSummary, type IntakeFile } from '../intake'
 
 export type { IntakeFile } from '../intake'
 
 export type BuildStatus = 'running' | 'completed' | 'interrupted'
 
+export interface PlanItem {
+  id: string
+  name: string
+}
+
+/** One phase of a build as planned at its start (build-simulation.md section 2). */
+export interface PhasePlan {
+  id: string
+  name: string
+  weight: number
+  steps: PlanItem[]
+  tests: PlanItem[]
+}
+
 export interface Build {
   id: string
   iteration: number
   status: BuildStatus
+  // Set by the server from M5 (D-49); optional so earlier fixtures still type.
+  seed_name?: string
+  fingerprint?: string
+  /** The phase that started last. */
+  phase?: string | null
+  plan?: PhasePlan[]
 }
+
+const BUILD_TYPES = new Set<string>(BUILD_EVENT_TYPES)
 
 export interface Snapshot {
   schema: number
   seq: number
   iteration: number
   next_file_id: number
+  next_build_id?: number
   intake: { files: IntakeFile[] }
   builds: Build[]
   approval: { iteration: number } | null
@@ -34,6 +59,12 @@ export interface Snapshot {
 export const ITERATIONS = 2
 
 const RETRY_MS = 2000
+
+function isBuild(value: unknown): value is Build {
+  if (!value || typeof value !== 'object') return false
+  const build = value as Record<string, unknown>
+  return typeof build.id === 'string' && typeof build.iteration === 'number' && typeof build.status === 'string'
+}
 
 function isSummary(value: unknown): value is FileSummary {
   if (!value || typeof value !== 'object') return false
@@ -121,6 +152,16 @@ export const useLabStore = defineStore('lab', () => {
     else snapshot.value.intake.files.push({ ...fresh })
   }
 
+  function build(id: string | null | undefined): Build | undefined {
+    return id ? snapshot.value?.builds.find((b) => b.id === id) : undefined
+  }
+
+  /** A build as POST /api/builds returned it. Events are newer, so a known build is left alone. */
+  function upsertBuild(fresh: Build): void {
+    if (!snapshot.value || build(fresh.id)) return
+    snapshot.value.builds = [...snapshot.value.builds.filter((b) => b.iteration !== fresh.iteration), { ...fresh }]
+  }
+
   function removeFile(id: string): void {
     if (!snapshot.value) return
     invalidate(id)
@@ -186,6 +227,27 @@ export const useLabStore = defineStore('lab', () => {
     }
   }
 
+  /** Apply one build event to the snapshot. False, before changing anything, if it cannot be applied. */
+  function reduceBuild(event: LabEvent): boolean {
+    if (!snapshot.value) return false
+    if (event.type === 'build.started') {
+      const started = event.data.build
+      if (!isBuild(started)) return false
+      // A new build replaces the iteration's earlier one, as on the server (D-49).
+      snapshot.value.builds = [...snapshot.value.builds.filter((b) => b.iteration !== started.iteration && b.id !== started.id), { ...started }]
+      snapshot.value.iteration = started.iteration
+      const number = Number(started.id.replace(/^b-/, ''))
+      if (Number.isInteger(number)) snapshot.value.next_build_id = number + 1
+      return true
+    }
+    const known = build(event.build_id)
+    if (!known) return false
+    if (event.type === 'phase.started') known.phase = event.phase
+    else if (event.type === 'build.completed') known.status = 'completed'
+    else if (event.type === 'build.interrupted') known.status = 'interrupted'
+    return true
+  }
+
   function receive(event: LabEvent): void {
     if (event.type === 'stream.resync' || !snapshot.value) {
       refreshLater()
@@ -195,6 +257,10 @@ export const useLabStore = defineStore('lab', () => {
     // While a snapshot is on its way, or after a missed seq, only a new snapshot is exact.
     const next = !fetching && event.seq === snapshot.value.seq + 1
     if (next && event.type.startsWith('intake.') && reduceIntake(event)) {
+      snapshot.value.seq = event.seq
+      return
+    }
+    if (next && BUILD_TYPES.has(event.type) && reduceBuild(event)) {
       snapshot.value.seq = event.seq
       return
     }
@@ -244,11 +310,13 @@ export const useLabStore = defineStore('lab', () => {
     runningBuild,
     files,
     file,
+    build,
     connect,
     disconnect,
     receive,
     refresh,
     upsertFile,
+    upsertBuild,
     removeFile,
     expectEcho,
     forgetEcho,

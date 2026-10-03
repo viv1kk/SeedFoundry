@@ -45,7 +45,7 @@ const GROUPS: Group[] = [
       { action: 'skipPhase', label: 'Skip phase' },
       { action: 'skipEnd', label: 'Skip to end' },
     ],
-    note: 'Builds arrive in M5. Speed is kept for them; skip does nothing yet.',
+    note: 'Speed paces builds and is kept across Reset. Skip works while a build runs.',
   },
   {
     title: 'Rebuild',
@@ -147,13 +147,21 @@ async function run(action: DemoAction): Promise<void> {
     case 'reset':
       ask('reset')
       return
-    case 'start':
-      await demo.startBuild()
+    case 'start': {
+      const build = await demo.startBuild()
+      if (build) await router.push({ name: 'build', params: { iteration: String(build.iteration) } })
       return
+    }
     case 'speed1':
     case 'speed2':
     case 'speed4':
-      demo.setSpeed(Number(action.slice(5)) as Speed)
+      await demo.setSpeed(Number(action.slice(5)) as Speed)
+      return
+    case 'skipPhase':
+      await demo.skip('phase')
+      return
+    case 'skipEnd':
+      await demo.skip('build')
       return
     case 'theme':
       demo.theme()
@@ -168,7 +176,10 @@ function onKeydown(event: KeyboardEvent): void {
   void run(action)
 }
 
-onMounted(() => window.addEventListener('keydown', onKeydown))
+onMounted(() => {
+  window.addEventListener('keydown', onKeydown)
+  void demo.loadSpeed()
+})
 onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
 const whyId = (action: DemoAction) => `${uid}-why-${action}`

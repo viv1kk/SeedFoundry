@@ -128,3 +128,71 @@ describe('lab store', () => {
     vi.useRealTimers()
   })
 })
+
+// D-53: build events are applied in place, so a build's log lines, several a second, never
+// re-fetch the snapshot. An event the store cannot place still does.
+describe('lab store: build events (M5)', () => {
+  const plan = [
+    { id: 'assay', name: 'Assay', weight: 6, steps: [], tests: [] },
+    { id: 'distill', name: 'Distillation', weight: 12, steps: [], tests: [] },
+  ]
+  const build = { id: 'b-2', iteration: 1, status: 'running' as const, seed_name: 'License Optimization', fingerprint: 'a127ba', phase: null, plan }
+
+  function buildEvent(seq: number, type: LabEvent['type'], extra: Partial<LabEvent> = {}): LabEvent {
+    return { ...event(seq, type), build_id: 'b-2', ...extra }
+  }
+
+  async function connected(seq = 10) {
+    serve(emptySnapshot({ seq, builds: [{ id: 'b-1', iteration: 1, status: 'completed' }] }))
+    const lab = useLabStore()
+    await lab.connect()
+    return lab
+  }
+
+  it('applies a whole build without fetching the snapshot again', async () => {
+    const lab = await connected()
+    lab.receive(buildEvent(11, 'build.started', { data: { build, replaces: ['b-1'] } }))
+    expect(lab.snapshot?.builds).toEqual([build]) // the new build replaces the iteration's earlier one
+    expect(lab.runningBuild?.id).toBe('b-2')
+    expect(lab.snapshot?.next_build_id).toBe(3)
+    lab.receive(buildEvent(12, 'phase.started', { phase: 'assay' }))
+    for (let seq = 13; seq < 40; seq++) lab.receive(buildEvent(seq, seq % 2 ? 'log' : 'test.result', { phase: 'assay' }))
+    lab.receive(buildEvent(40, 'phase.started', { phase: 'distill' }))
+    expect(lab.build('b-2')?.phase).toBe('distill')
+    lab.receive(buildEvent(41, 'build.completed'))
+    await flush()
+    expect(lab.build('b-2')?.status).toBe('completed')
+    expect(lab.runningBuild).toBeNull()
+    expect(lab.snapshot?.seq).toBe(41)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('marks an interrupted build', async () => {
+    const lab = await connected()
+    lab.receive(buildEvent(11, 'build.started', { data: { build } }))
+    lab.receive(buildEvent(12, 'build.interrupted', { level: 'WARN' }))
+    expect(lab.build('b-2')?.status).toBe('interrupted')
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('re-fetches for a build it does not know, or after a gap', async () => {
+    const lab = await connected()
+    serve(emptySnapshot({ seq: 11 }), emptySnapshot({ seq: 13 }))
+    lab.receive(buildEvent(11, 'log'))
+    await flush()
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    lab.receive(buildEvent(13, 'build.started', { data: { build } }))
+    await flush()
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+  })
+
+  it('a build returned by Start Build is added once, and never over a newer one from the stream', async () => {
+    const lab = await connected()
+    lab.receive(buildEvent(11, 'build.started', { data: { build } }))
+    lab.receive(buildEvent(12, 'phase.started', { phase: 'assay' }))
+    lab.upsertBuild({ ...build, phase: null })
+    expect(lab.build('b-2')?.phase).toBe('assay')
+    lab.upsertBuild({ ...build, id: 'b-3', iteration: 2 })
+    expect(lab.snapshot?.builds.map((b) => b.id)).toEqual(['b-2', 'b-3'])
+  })
+})

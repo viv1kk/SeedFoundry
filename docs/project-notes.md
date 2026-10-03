@@ -355,3 +355,53 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
 - M7: the generator follows the class rules and fields in the sample (seed-reuse-notes §5.7 as built): `days_active` per month, `assignee_status`, the 1 to 11 and 12-or-more thresholds, and the departments named in environment.md's Adaptation Layer.
 - M10: the rebuild modal marks itself `data-modal="rebuild"` so Shift+F reaches it, and its editor is a textarea, so typing there is already safe. Route feedback to the `##` sections listed in build-simulation §8 as built.
 - M12: the operator guide's shortcut table is `SHORTCUTS` in `frontend/src/demo/shortcuts.ts`.
+
+### M5: Beat engine, phases and simulated clients (2026-10-03)
+
+**What changed**
+- Start Build (button or Shift+Enter) now starts a real build and opens `/build/<iteration>`. The build runs all 11 phases with their sub-steps and tests T-01 to T-21, 220 events for the sample, in 75 s of simulated time: 75.0 s at 1x, 18.75 s at 4x. Until M6 the build page is the placeholder with one live line ("Build running: phase 3 of 11, Synthesis. ...", OQ-18).
+- Knowledge is read-only while the build runs and free again when it ends; Reset stops a running build first; a server restart mid-build marks it interrupted (D-33).
+- The demo controller's Speed (1x, 2x, 4x) is kept on the server and survives Reset; Skip phase and Skip to end work while a build runs. They change pacing only: the events are the same at any speed and with any skips (D-48).
+- Real work: Assay inventory, Ensemble coverage and fingerprint, the boundary lint (five rules, zero on the sample, D-50), the manifest and upload checksums, Planting's heading summary and declared stack, and the three Seed v0.1 gates auto-resolved in phase 8 citing the section they used. LLM and Seed API calls go through simulated clients and say "(simulated)" (D-22).
+- Honest gaps: T-08 and T-13 to T-20 report "not run" until M7 and M9, raise no finding and claim no pass (D-51). Iteration 2 can be started by API only, and its feedback sub-steps read the feedback and say that nothing was routed until M10 (D-52).
+- A completed build keeps its own events with its record, so they survive a restart (D-49, answering D-31).
+
+**Files**
+- NEW backend/seedfoundry/engine/catalogue.py, script.py, runner.py, clock.py
+- NEW backend/seedfoundry/clients/llm.py, seed.py; CHANGE clients/__init__.py
+- NEW backend/seedfoundry/intake/assay.py, boundary.py, feedback.py
+- NEW backend/seedfoundry/generate/outline.py
+- CHANGE backend/seedfoundry/state.py (build record, `next_build_id`, `apply(..., then)`, snapshot without logs), main.py (`/api/builds`, `/api/builds/{id}/events`, `/api/demo/speed`, `/api/demo/skip`; Reset stops the engine)
+- NEW backend/tests/test_assay.py, test_boundary.py, test_engine.py, test_build_api.py
+- NEW frontend/src/builds.ts; CHANGE frontend/src/events.ts (`BUILD_EVENT_TYPES`), stores/lab.ts (build reducers, `upsertBuild`, `build`), stores/intake.ts (`startBuild` calls the server), stores/demo.ts (speed and skip), demo/api.ts, demo/DemoController.vue, views/KnowledgeView.vue, views/BuildView.vue
+- NEW frontend/tests/build-view.spec.ts; CHANGE frontend/tests/lab-store.spec.ts, events-contract.spec.ts, demo.spec.ts, knowledge.spec.ts, fake-server.ts
+- CHANGE docs/decisions.md (D-48 to D-53, OQ-18, OQ-19; notes on D-31, D-46), docs/build-simulation.md (§1, §2, §3, §4, §6.1, §9 as built), docs/ui-spec.md (§3, §8 as built), docs/seed-reuse-notes.md (§4.2, §6.2 as built), docs/implementation-plan.md (M5 status; as-built note), docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 181 passed, frontend: 284 passed (through `python run.py test`)
+- `npm run build`: typecheck, build and `postbuild` network check pass
+- Exit criteria: determinism (`test_two_runs_at_different_speeds_and_with_skips_give_the_same_stream`: a 1x run and a run at 4x, 2x and 1x with three phase skips and a skip to end give the same full event stream, `wall_ts` aside, and the same kept log; also `test_speed_and_skip_do_not_change_the_events` over HTTP); clock (`test_a_build_at_1x_takes_75_simulated_seconds`: last `sim_t` 75.0, fake clock 75.0 s; `test_weights_sum_to_100_over_a_75_second_budget`); boundary lint (each rule flags a planted line in a wrong file and none in its home; zero on the sample); phases and events (every phase, sub-step and test id in order for both iterations, checked against build-simulation §2's table; gates in phase 8 with their citations; types in `EVENT_TYPES` and the frontend contract); speed, skip, Reset during a build, intake lock and release, and restart mid-build with the real engine (`test_a_server_restart_mid_build_marks_it_interrupted`): each tested
+- Checked that the tests can fail: speed written into event data failed both determinism tests and the speed tests; Reset without stopping the engine failed the Reset test (it first passed, as the engine's own guard ends an orphaned build when it next wakes, so the test now starts a new build at once, which the still-running old task would refuse); the lint without its allowlist gives one B-LOGIC advisory on the sample ("Optimisation candidates"), which the zero-findings test catches. All reverted
+- determinism: pass | no-em-dash: pass, and every message and string in a full build's events, both iterations, is checked (`test_no_em_dash_in_a_full_builds_log`) | network: pass
+- assertions edited: five frontend assertions that described M3/M4 stubs (D-53): Start Build in `knowledge.spec.ts` and `demo.spec.ts`, Speed's message and "no request", Shift+S/E's M5 message, and the Reset test's request list (it now includes the speed sent before Reset)
+
+**Hand checks** (terminal, through the Vite proxy at `http://127.0.0.1:5273`; `var/state.json` backed up first and restored after, same SHA-256)
+- 4x: Load sample, Start Build: 220 events in 18.75 s, ending at `sim_t` 75.0; the log reads in order and sensibly (sample lines are in build-simulation §4 as built).
+- 1x end to end: 75.02 s from the request to `build.completed`; each phase started on its schedule (Distillation 4.52 s, Seeding & Life 44.27 s, Teardown 70.53 s). Mid-build, creating a file and Load sample were refused with 409 `intake_locked` ("Knowledge files are read-only while a build runs."); after it, a file could be created. The snapshot leaves the log out and `GET /api/builds/b-2/events` served all 220 events.
+- Speed and skips mid-build: 2x and 4x took effect at once; Skip phase completed Distillation 109 ms after the client sent the request, and Skip to end completed the build 62 ms after it (both through the proxy, HTTP and SSE included; the engine's own waits are at most 50 ms, tested). The event content equalled the 1x run's, seq, `wall_ts` and build id aside. Skip with no build: 409 with "No build is running, so there is nothing to skip."
+- Reset mid-build (in Distillation): 5 files and 1 build removed; the seq did not move in the 3 s after it; speed was kept; the sample loaded and a new build started at once.
+- Restart mid-build: the launcher's process tree was killed in Distillation (state on disk: `running`); after relaunching, the build read `interrupted`, Knowledge was writable, speed was back to 1x (held in memory, D-48), and a new build ran.
+- A browser tab was connected to the stream during the checks, but nothing was checked in a browser. Waiting on the stakeholder, in a browser: Start Build and Shift+Enter open `/build/1`; the build route's line follows the phases and then reads completed; Knowledge shows the read-only banner during the build and not after; the demo controller's Speed buttons show the server's speed after a reload, and Skip phase and Skip to end are disabled with a reason when no build runs and work while one does.
+
+**Decisions and questions**
+- New: D-48 (engine, clock, pacing, speed and skip), D-49 (build API and record; a completed build keeps its log, answering D-31; iteration 2 by API), D-50 (boundary lint and coverage), D-51 (not-run tests, phase results, outlines until M11), D-52 (iteration 2 before M10 routing), D-53 (frontend in M5 and the five changed assertions)
+- Opened: OQ-18 (what the build route shows until M6), OQ-19 (Start Build when the iteration already has a completed build: run again, replacing it, as built; or refuse)
+- Closed: none
+
+**Notes for next milestone**
+- M6: the snapshot's build has `plan` (phases, sub-steps and tests for its iteration) and `phase`; the stepper can draw pending phases from it. `GET /api/builds/{id}/events` returns `{build_id, status, seq, events}`: the whole log of a running build (from memory) or a completed one (kept). Load it, then follow `/api/events?after=<seq>`, skipping events already held. The lab store already applies build events in place, so the console can keep its own list from the same stream.
+- M6: phase results are `passed`, `findings`, `incomplete` and `failed` (`phase.completed` `data.result`); "incomplete" (a test not run) needs a look until M9 makes it rare. Test statuses include `warn` (T-02, T-03 advisories) and `not_run` (level TEST).
+- M7: T-08 is waiting for the alternate dataset (`engine/script.py`, `data_swap`).
+- M9: the validators replace `pending(...)` in `engine/script.py` STEPS for T-13 to T-20; findings go out as `finding.raised` with the FR-T-7 fields, as the boundary advisories do. `build.completed` has no verdict yet, and `report.ready` is not emitted.
+- M10: iteration 2 starts with `POST /api/builds {"iteration": 2}`; Start Rebuild should save the feedback file, then call it. Replace `feedback_route` and `feedback_update` in `engine/script.py` with D-36's routing, using the boundary rules' patterns in `intake/boundary.py`; a beat that edits a file will need a state change carried with its events (the runner applies only events today).
+- M11: `generate/outline.py` drafts the headings; fill the sections there, and the manifest, checksums and Planting's summary follow.

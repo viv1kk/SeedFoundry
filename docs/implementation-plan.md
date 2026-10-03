@@ -11,7 +11,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | | M2 | Frontend shell and design system | Done (2026-10-03) |
 | B. Knowledge | M3 | Intake page | Done (2026-10-03) |
 | | M4 | Demo controller and sample Seed | Done (2026-10-03) |
-| C. Build | M5 | Beat engine, phase catalogue, simulated clients | Not started |
+| C. Build | M5 | Beat engine, phase catalogue, simulated clients | Done (2026-10-03) |
 | | M6 | Build page: stepper and console | Not started |
 | D. Output | M7 | Polished License Optimization dashboard | Not started |
 | | M8 | Defect overlay (iteration 1 dashboard) | Not started |
@@ -70,6 +70,8 @@ seedfoundry/
 *As built (M3):* `frontend/src/` also holds `api.ts` (JSON over `/api`, server errors as `ApiError`), `intake.ts` (intake API calls, types, shared rules), `markdown.ts` (Preview rendering and sanitising, D-40), `stores/intake.ts` (categories, drafts, autosave, file actions, D-41), `components/base/BaseMenu.vue` and `BaseConfirm.vue`, and `components/intake/` (FileEditor, FilePanel, MarkdownPreview, NewFileDialog, ImportDialog, EmptyState). There is no separate Editor component directory: the editor is `components/intake/FileEditor.vue`, which M10's rebuild modal can reuse. `frontend/tests/` holds `fake-server.ts` (an in-memory intake API for page tests) and `fixtures/` (four core files, one Misc Context file, and the hostile sample). The no em dash test is `backend/tests/test_no_em_dash.py` (D-44).
 
 *As built (M4):* `backend/seedfoundry/demo.py` holds the demo controller's server actions (Load sample Seed, Clear intake, Reset to start, D-46), under `/api/demo/`. `backend/seedfoundry/sample/` holds the five sample files and `sample_files()`. `frontend/src/demo/` holds `DemoController.vue` (the panel, mounted in `App.vue`), `shortcuts.ts` (the map and the ignore rules, D-47) and `api.ts`; its store is `frontend/src/stores/demo.ts`, beside the others. Start Build's M3 action moved from `KnowledgeView.vue` into `stores/intake.ts` (`startBuild`, `buildNote`) so Shift+Enter shares it.
+
+*As built (M5):* `backend/seedfoundry/engine/` holds `catalogue.py`, `script.py`, `runner.py` and `clock.py` (D-48). `clients/` holds `llm.py` and `seed.py` (D-22). `intake/` gained `assay.py` (inventory, coverage, statements, Seed name, fingerprint), `boundary.py` (D-50) and `feedback.py` (the feedback file and its segments). `generate/outline.py` drafts the layer outlines and the manifest until M11 (D-51). `validators/` is still empty: the stubbed tests are in `engine/script.py` until M9. Builds are `POST /api/builds` and `GET /api/builds/{id}/events`; speed and skip are `GET`/`POST /api/demo/speed` and `POST /api/demo/skip` (D-49). Frontend: `src/builds.ts` (build API); `events.ts` exports `BUILD_EVENT_TYPES`; the lab store reduces build events (D-53). New tests: `backend/tests/test_assay.py`, `test_boundary.py`, `test_engine.py`, `test_build_api.py`; `frontend/tests/build-view.spec.ts`.
 
 ## 3. Milestones
 

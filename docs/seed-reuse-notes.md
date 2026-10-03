@@ -237,6 +237,8 @@ The cited section is computed: the resolver looks for the named section heading 
 
 **Contradiction:** `build-simulation.md` §4's example line "Gate H-02 auto-resolved" uses an id Seed v0.1 never had. Requirements §9 takes Seed's gate ids, so logs use `servicenow-incident-api`, `solution-approval`, `close-seeding`.
 
+*As built (M5):* as proposed, with `solution-approval` raised once. Each gate is one `gate.auto_resolved` event (`code` the gate id; `data` the kind, stage, resolution and `basis` with file, section and line, or null). The basis lists are: `servicenow-incident-api` environment.md Protection, then Data; `solution-approval` music.md Decision Logic, then Value Logic; `close-seeding` environment.md Protection, then music.md Decision Logic. A heading matches when it contains those words, so the sample cites "Protection Layer" and "Decision Logic". Without any, the line ends "No matching section in Knowledge, so it resolved on default". Seed's request is logged first ("Seed v0.1 raised request ... (simulated)"), and the answer after as an `api.call`.
+
 **Oddity to be aware of:** the credential gate is for ServiceNow's Incident API, which License Optimization does not use (it reads the License Management System and SAP). Seed v0.1's discovery raised it regardless of methodology, so a faithful simulation keeps it.
 
 ---
@@ -426,7 +428,7 @@ Seed read the typed character, so Shift+1 assumed a US layout (it types `!`).
 
 Shortcuts are ignored while focus is in an `input`, `textarea`, `select`, a `contenteditable` element, or the editor. Digits are matched on `KeyboardEvent.code` (`Digit1`, `Digit2`, `Digit4`), so they work on any layout; letters on `key`, case-insensitive. No browser default collides: Chrome uses Ctrl or Alt chords, not Shift plus a letter.
 
-*As built (M4, D-47):* the map is `frontend/src/demo/shortcuts.ts`. Also ignored: any shortcut with Ctrl, Alt or Meta, key repeats, anything under `[data-no-shortcuts]`, every shortcut while a modal is open unless it belongs to that modal (Shift+F belongs to the rebuild modal), and Shift+Enter on a focused button or link, where Enter is already that control's. The Knowledge editor is a `textarea`, so the editor rule is the textarea rule. Speed is kept in the browser until M5 and survives Reset, as Seed's did.
+*As built (M4, D-47):* the map is `frontend/src/demo/shortcuts.ts`. Also ignored: any shortcut with Ctrl, Alt or Meta, key repeats, anything under `[data-no-shortcuts]`, every shortcut while a modal is open unless it belongs to that modal (Shift+F belongs to the rebuild modal), and Shift+Enter on a focused button or link, where Enter is already that control's. The Knowledge editor is a `textarea`, so the editor rule is the textarea rule. Speed is kept in the browser until M5 and survives Reset, as Seed's did. *M5 (D-48):* speed is kept by the server's build engine, still survives Reset, and acts within 50 ms, as do both skips; none of them emits an event.
 
 ### 6.3 Demo script and rehearsal
 

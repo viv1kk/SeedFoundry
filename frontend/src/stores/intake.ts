@@ -7,8 +7,9 @@
 import { defineStore } from 'pinia'
 import { computed, reactive, ref, watch } from 'vue'
 import { ApiError, messageOf } from '../api'
+import { buildsApi } from '../builds'
 import { hintedCategory, intakeApi, isFilled, utf8Size, type CategoryInfo, type IntakeFile } from '../intake'
-import { useLabStore } from './lab'
+import { useLabStore, type Build } from './lab'
 
 /** Quiet time after the last keystroke before an autosave. */
 export const AUTOSAVE_MS = 800
@@ -241,15 +242,27 @@ export const useIntakeStore = defineStore('intake', () => {
   const missing = computed(() => coreSlots.value.filter((slot) => !slot.complete).map((slot) => slot.category.label))
   const ready = computed(() => coreSlots.value.length > 0 && missing.value.length === 0)
 
-  // Start Build: M3 owns its gating only. There is no build API until M5, so the enabled
-  // button saves every draft and says so; it starts nothing (D-42 (c)). The demo
-  // controller's Shift+Enter runs the same action (D-47).
+  // Start Build (FR-B-1): save every draft, then ask the server for a build of the current
+  // iteration. The build is returned so the caller can open its page; a refusal is shown as
+  // the server wrote it. The demo controller's Shift+Enter runs the same action (D-47).
   const buildNote = ref<string | null>(null)
 
-  async function startBuild(): Promise<void> {
-    if (!ready.value || lab.runningBuild) return
+  async function startBuild(): Promise<Build | null> {
+    if (!ready.value || lab.runningBuild) return null
     await flushAll()
-    buildNote.value = anyDirty.value ? 'Some changes are not saved yet.' : 'Files saved. Builds arrive in M5, so nothing starts yet.'
+    if (anyDirty.value) {
+      buildNote.value = 'Some changes are not saved yet.'
+      return null
+    }
+    try {
+      const build = await buildsApi.start()
+      lab.upsertBuild(build)
+      buildNote.value = null
+      return build
+    } catch (error) {
+      buildNote.value = messageOf(error)
+      return null
+    }
   }
 
   watch(ready, () => {

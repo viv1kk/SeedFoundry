@@ -4,7 +4,7 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { EVENT_TYPES } from '../src/events'
+import { BUILD_EVENT_TYPES, EVENT_TYPES } from '../src/events'
 
 const SOURCE = readFileSync(resolve(__dirname, '..', '..', 'backend', 'seedfoundry', 'events.py'), 'utf8')
 
@@ -31,6 +31,10 @@ describe('event type contract', () => {
   it('every backend EVENT_TYPES entry is known to the frontend', () => {
     const known = new Set<string>(EVENT_TYPES)
     expect(backend.filter((type) => !known.has(type))).toEqual([])
+  })
+
+  it('the build types the lab store reduces are the backend build types (M5)', () => {
+    expect([...BUILD_EVENT_TYPES]).toEqual(tuple('BUILD_EVENT_TYPES'))
   })
 
   it('the frontend lists no type the backend cannot emit', () => {
