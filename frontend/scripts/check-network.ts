@@ -29,6 +29,16 @@ const PROTOCOL_RELATIVE =
 
 const TEXT_EXTENSIONS = new Set(['.html', '.js', '.mjs', '.cjs', '.css', '.json', '.svg', '.webmanifest', '.txt', '.map', '.ts', '.vue'])
 
+export interface ScanOptions {
+  /**
+   * Accept a URL whose host is wholly a template interpolation, as in `http://${text}`: it
+   * names no host. Only the dist/ scan sets this, for markdown-it's linkify code, which
+   * prefixes text the user typed and is switched off (D-40, D-45). The src/ scan leaves it
+   * off, so SeedFoundry's own code cannot build an absolute URL from a variable.
+   */
+  allowTemplatedHosts?: boolean
+}
+
 export interface Violation {
   file: string
   line: number
@@ -40,20 +50,22 @@ function hostOf(url: string): string {
   return rest.split(/[/?#]/, 1)[0].replace(/:\d+$/, '').toLowerCase()
 }
 
-export function isAllowed(url: string): boolean {
-  if (LOCAL_HOSTS.has(hostOf(url))) return true
+export function isAllowed(url: string, options: ScanOptions = {}): boolean {
+  const host = hostOf(url)
+  if (LOCAL_HOSTS.has(host)) return true
+  if (options.allowTemplatedHosts && /^\$\{[^}]*\}$/.test(host)) return true
   return NEVER_FETCHED.some((entry) => url.startsWith(entry.prefix))
 }
 
 /** URLs in the text that name a host other than this machine and are not allowed by name. */
-export function findExternalUrls(text: string): { url: string; index: number }[] {
+export function findExternalUrls(text: string, options: ScanOptions = {}): { url: string; index: number }[] {
   const found: { url: string; index: number }[] = []
   for (const match of text.matchAll(ABSOLUTE)) {
-    if (!isAllowed(match[0])) found.push({ url: match[0], index: match.index ?? 0 })
+    if (!isAllowed(match[0], options)) found.push({ url: match[0], index: match.index ?? 0 })
   }
   for (const match of text.matchAll(PROTOCOL_RELATIVE)) {
     const url = match[1]
-    if (!isAllowed(url)) found.push({ url, index: (match.index ?? 0) + match[0].length - url.length })
+    if (!isAllowed(url, options)) found.push({ url, index: (match.index ?? 0) + match[0].length - url.length })
   }
   return found.sort((a, b) => a.index - b.index)
 }
@@ -66,13 +78,13 @@ function walk(dir: string): string[] {
 }
 
 /** Every violation in the text files under the given paths (files or directories). */
-export function scan(paths: string[], root: string = process.cwd()): Violation[] {
+export function scan(paths: string[], root: string = process.cwd(), options: ScanOptions = {}): Violation[] {
   const files = paths.flatMap((path) => (statSync(path).isDirectory() ? walk(path) : [path]))
   const violations: Violation[] = []
   for (const file of files) {
     if (!TEXT_EXTENSIONS.has(extname(file))) continue
     const text = readFileSync(file, 'utf8')
-    for (const { url, index } of findExternalUrls(text)) {
+    for (const { url, index } of findExternalUrls(text, options)) {
       const line = text.slice(0, index).split('\n').length
       violations.push({ file: relative(root, file).replaceAll('\\', '/'), line, url })
     }
@@ -82,7 +94,7 @@ export function scan(paths: string[], root: string = process.cwd()): Violation[]
 
 function main(): void {
   const dir = resolve(process.argv[2] ?? 'dist')
-  const violations = scan([dir])
+  const violations = scan([dir], process.cwd(), { allowTemplatedHosts: true })
   if (violations.length) {
     console.error(`Network check failed: ${violations.length} external URL(s) in ${relative(process.cwd(), dir) || dir}`)
     for (const v of violations) console.error(`  ${v.file}:${v.line}: ${v.url}`)

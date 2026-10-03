@@ -240,6 +240,15 @@ def test_categories_endpoint_serves_labels_and_hints(client):
     assert body["max_file_bytes"] == 1024 * 1024
 
 
+def test_categories_endpoint_serves_one_line_descriptions(client):
+    # The Knowledge page's empty state explains each category from here (ui-spec.md §2), so
+    # the frontend keeps no copy of the category list.
+    body = client.get("/api/intake/categories").json()
+    descriptions = [c["description"] for c in body["categories"]]
+    assert all(d.strip() and "\n" not in d for d in descriptions)
+    assert len(set(descriptions)) == len(descriptions)
+
+
 # Size and encoding (FR-IN-11)
 
 

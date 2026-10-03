@@ -39,6 +39,8 @@ The four screens, the rebuild modal and the demo controller. This describes inte
 - During a build the page is read-only, with a banner linking to the running build.
 - After a rebuild starts, the four core files show the feedback added to them under `### Observer feedback (iteration 1)` in the sections it was routed to (FR-RB-7).
 
+*As built (M3):* the name field saves on Enter or when it loses focus, and Escape puts it back; the category picker is a menu button, not a select; Rename and Change category in the overflow menu focus those two controls (D-42). Preview shows raw HTML as text, an image as an "Image" label with its alt text and address, and a link as link-styled text followed by its address; nothing in Preview loads or navigates (D-40). The selected file is in the URL (`/knowledge?file=f-3`). The file panel shows Core files (checklist, Start Build, a status line under it), then Files with New and Import. New file starts on the first empty core slot with that slot's usual name (`person.md`). Start Build's tooltip reads "Missing: ..."; in M3 the enabled button saves every draft and says builds arrive in M5 (D-42). The import dialog blocks Import while two files are set to the same core category. The empty state lists the four core files with the server's one-line descriptions, then the Misc Context line. The read-only banner reads "A build is running. Knowledge files are read-only until it finishes." with "Go to the build".
+
 ## 3. Build page
 
 ```

@@ -9,7 +9,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | A. Foundations | M0 | Read, reuse notes, scaffold | Done (2026-10-03) |
 | | M1 | Backend core: state, persistence, events, SSE | Done (2026-10-03) |
 | | M2 | Frontend shell and design system | Done (2026-10-03) |
-| B. Knowledge | M3 | Intake page | Not started |
+| B. Knowledge | M3 | Intake page | Done (2026-10-03) |
 | | M4 | Demo controller and sample Seed | Not started |
 | C. Build | M5 | Beat engine, phase catalogue, simulated clients | Not started |
 | | M6 | Build page: stepper and console | Not started |
@@ -66,6 +66,8 @@ seedfoundry/
 *As built (M1):* intake rules live in `backend/seedfoundry/intake/files.py`. `config.py` also gives `var_dir()`, which `SEEDFOUNDRY_VAR_DIR` overrides (tests use it). `main.py` builds the app with `create_app()`, which loads the state when the app starts. `backend/tests/conftest.py` can start a real uvicorn process over a temporary `var/` for restart and SSE tests.
 
 *As built (M2):* `frontend/src/` also holds `router.ts`, `theme.ts`, `events.ts` (event types the client listens for), `stores/lab.ts` (live state), `styles/base.css`, `components/base/` (button, chip, card, modal, tooltip), `components/shell/` (top bar, journey indicator, iteration badge, theme toggle) and `components/ScreenPlaceholder.vue`. Views are `KnowledgeView`, `BuildView`, `ReviewView`, `SeedView`; the dashboard is an overlay on the review route, so it will be a component, not a view (OQ-4). `frontend/scripts/check-network.ts` runs as `postbuild` (D-38).
+
+*As built (M3):* `frontend/src/` also holds `api.ts` (JSON over `/api`, server errors as `ApiError`), `intake.ts` (intake API calls, types, shared rules), `markdown.ts` (Preview rendering and sanitising, D-40), `stores/intake.ts` (categories, drafts, autosave, file actions, D-41), `components/base/BaseMenu.vue` and `BaseConfirm.vue`, and `components/intake/` (FileEditor, FilePanel, MarkdownPreview, NewFileDialog, ImportDialog, EmptyState). There is no separate Editor component directory: the editor is `components/intake/FileEditor.vue`, which M10's rebuild modal can reuse. `frontend/tests/` holds `fake-server.ts` (an in-memory intake API for page tests) and `fixtures/` (four core files, one Misc Context file, and the hostile sample). The no em dash test is `backend/tests/test_no_em_dash.py` (D-44).
 
 ## 3. Milestones
 

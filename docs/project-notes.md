@@ -241,3 +241,57 @@ One entry per milestone, newest last. Format in `docs/methodology.md` §4.
 - `stores/lab.ts` has no reducers: every newer event re-fetches the snapshot. M3 should add intake reducers (events carry no content, so re-fetch a file after an `intake.file_updated` whose `changed` includes `content`), and M5/M6 must add build reducers before log events arrive several times a second.
 - Build, Review and Seed in the journey indicator become links in M6, M9 and M11 (`LINKED` in `JourneyIndicator.vue`).
 - Charts (M7) read `--chart-<role>` and the three `--chart-label-on-*` tokens at paint time and repaint on theme change; `theme` in `src/theme.ts` is a ref they can watch.
+
+### M3: Intake page (2026-10-03)
+
+**What changed**
+- The Knowledge page replaces its placeholder: the editor on the left (about 70%), the file panel on the right (about 30%), in the M2 tokens with no new colour.
+- Editor: name field and category picker above it; Edit / Preview toggle; a mic button with a "Voice input" tooltip that does nothing; an overflow menu with Rename, Change category and Delete. Edit is a plain textarea in JetBrains Mono.
+- Preview renders headings, lists, tables, code, emphasis and links. It cannot run or fetch anything: raw HTML shows as text, images show as an "Image" label with their alt text and address, and links show their text and address but are not followed (D-40). Two layers: `markdown-it` with HTML off, then DOMPurify with an allowlist.
+- Files: new file, rename, change category, and delete with a confirmation. A second file in a core category, by create, import or category change, asks "Replace it?" naming the current file, then sends `replace`; the server's 409 is the backstop and asks the same question in its own words.
+- Autosave 800 ms after typing stops, and at once on file switch, on leaving the page and before Start Build. The unsaved dot shows on the file until the server has the text. Small drafts go out with `keepalive` when the tab closes; a larger one makes the browser ask first. The echo of your own save never overwrites what you typed since (D-41).
+- File panel: the core checklist (a slot needs a file with something other than whitespace, D-42), Start Build with a "Missing: ..." tooltip, then the files in Ensemble order with "Add file" in empty categories. Categories, labels, descriptions and filename hints all come from the server.
+- Import: one row per file, category pre-selected from the server's hints, "Replaces existing person.md" where it applies, and two files for the same core category block Import until one changes. One raw request per file; 413 and 415 messages show on their row as the server wrote them.
+- Empty state: one line on each of the four Ensemble files, with New file and Import.
+- During a build the page is read-only with a banner and a link to the build; a save refused with 409 `intake_locked` keeps its text and is sent again when the build ends.
+- The lab store applies intake events in place instead of re-fetching the snapshot, and fetches a file's content only when someone else changed it.
+- The selected file is in the URL, so a refresh opens it again.
+- The no em dash test now runs over frontend, backend, tests, launchers and docs (`docs/seed_docs/` excluded).
+
+**Files**
+- NEW frontend/src/api.ts, src/intake.ts, src/markdown.ts, src/stores/intake.ts
+- NEW frontend/src/components/base/BaseMenu.vue, BaseConfirm.vue
+- NEW frontend/src/components/intake/ (FileEditor, FilePanel, MarkdownPreview, NewFileDialog, ImportDialog, EmptyState)
+- CHANGE frontend/src/views/KnowledgeView.vue (the page), src/stores/lab.ts (intake reducers, D-41), src/components/base/BaseButton.vue (`explainDisabled`)
+- CHANGE frontend/scripts/check-network.ts (templated hosts in `dist/` only, D-45)
+- CHANGE frontend/package.json, package-lock.json (`markdown-it`, `dompurify`)
+- NEW frontend/tests/markdown.spec.ts, knowledge.spec.ts, intake-store.spec.ts, fake-server.ts, fixtures/ (person.md, instrument-awareness.md, environment.md, music.md, vendor-notes.md, hostile.md)
+- CHANGE frontend/tests/shell.spec.ts (assertion moved by D-43), tests/network.spec.ts (new cases)
+- CHANGE backend/seedfoundry/state.py (`CATEGORY_DESCRIPTIONS`), backend/seedfoundry/main.py (categories endpoint serves them)
+- NEW backend/tests/test_no_em_dash.py; CHANGE backend/tests/test_intake_api.py (new test)
+- CHANGE docs/decisions.md (D-40 to D-45, OQ-16, pointers on D-35 and D-38), docs/ui-spec.md (§2 as built), docs/implementation-plan.md (M3 status; as-built note), docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 90 passed, frontend: 216 passed (through `python run.py test`); the frontend suite passed three runs in a row
+- `npm run build`: typecheck, build and `postbuild` network check pass. The bundle's URL-like strings are the XML namespaces, Vue's error-reference link and two `http://${...}` templates in `markdown-it`'s linkify code (D-45)
+- FR-IN-1 to FR-IN-11 each have tests named for them in `knowledge.spec.ts`, `markdown.spec.ts` and `intake-store.spec.ts`; FR-IN-10 across a server restart is also the M1 test `test_file_survives_a_real_server_restart`
+- Checked that the tests can fail: raw HTML switched on fails the R-7 test (the sanitiser still strips every hazard); HTML on with the sanitiser bypassed fails four; the typographer switched on fails the em dash test; links rendered with `href` fail; fetching on every own save fails the echo test; an em dash added to `SeedView.vue` fails the no em dash test. All reverted
+- determinism: not yet applicable (from M5) | no-em-dash: test passes | network: tested over `src/`, enforced over `dist/`
+- assertions edited: one, the M2 route test's `/knowledge` row, by D-43 (it checked the placeholder M3 replaces; it now checks that the Knowledge page renders in the shell)
+
+**Hand checks**
+- `python run.py` started both processes with `var/` empty. Through `http://127.0.0.1:5273/api` (the Vite proxy): the categories endpoint served labels and descriptions; the four core fixtures and `vendor-notes.md` imported with their hinted categories; a second Person file got 409 `core_slot_taken` naming `person.md`; a new file was created, renamed, refused a move into the filled Music slot (409), and deleted (204); a 1,048,577-byte file got 413 `file_too_large`, a Latin-1 file 415 `not_utf8_text`, and `notes.txt` 415 `not_markdown`, each with its message. An SSE client on the same proxy saw 6 created, 1 updated and 1 deleted event. `/knowledge?file=f-1` answered 200.
+- Stopped and started again: all five files were still there, and `music.md` matched the fixture byte for byte. Ports were free after each stop; `var/state.json` was then removed so `var/` starts empty.
+- Checked over HTTP from the terminal, not in a browser. Waiting on the stakeholder, in a browser: see the M3 report.
+
+**Decisions and questions**
+- New: D-40 (Preview: markdown-it and DOMPurify, images and links as text), D-41 (textarea, autosave, drafts, own-save echo, intake reducers), D-42 (page rulings: whitespace-only slots, selection in the URL, Start Build in M3, import clashes, replace question, name and category controls, New file defaults, category descriptions, banner), D-43 (shell test assertion), D-44 (no em dash test scope), D-45 (templated hosts in the `dist/` network scan)
+- Opened: OQ-16 (should file names be unique? assumed no). Closed: none.
+
+**Notes for next milestone**
+- M4's Shift shortcuts must be ignored in the Knowledge page's name field and textarea (they are plain `input` and `textarea`), and in the import dialog's selects.
+- M4's "Load sample Seed" and "Clear intake" can go through the intake API; the page follows the events, and a file the user is editing keeps their unsaved text (D-41).
+- M5's T-01 "core files present" should use the same rule as the checklist: a file with something other than whitespace (D-42 (a)). M5/M6 replace M3's Start Build note with FR-B-1 (create the build, open `/build/<iteration>`); `intake.flushAll()` should still run first.
+- M5/M6 add build reducers to `stores/lab.ts`: today any non-intake event still re-fetches the snapshot.
+- M10's rebuild modal can reuse `components/intake/FileEditor.vue`'s parts (`MarkdownPreview`, the mic button); the editor itself reads a file from the store, so the modal needs a version that edits a local draft.
+- NFR-3 (1 MB in the editor) is a browser check: jsdom cannot measure typing latency. M12's performance pass should time it.

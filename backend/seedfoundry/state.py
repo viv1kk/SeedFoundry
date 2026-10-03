@@ -40,6 +40,16 @@ CATEGORY_LABELS = {
     Category.MISC_CONTEXT: "Misc Context",
 }
 
+# One line each, for the Knowledge page's empty state (ui-spec.md §2), from the Ensemble
+# one-line summaries in docs/ensemble/ensemble_context.md.
+CATEGORY_DESCRIPTIONS = {
+    Category.PERSON: "Who does the work: how the AI thinks, reasons and decides.",
+    Category.INSTRUMENT_AWARENESS: "Which tool it uses: how the AI works with the model, its context and its limits.",
+    Category.ENVIRONMENT: "Where the work happens: data, user experience, styling, adaptation and protection.",
+    Category.MUSIC: "Why the work exists: purpose, principles, value logic and decisions.",
+    Category.MISC_CONTEXT: "Anything else worth knowing. Optional, and any number of files.",
+}
+
 # One file each (FR-IN-3, D-4). Misc Context is unlimited.
 CORE_CATEGORIES = (Category.PERSON, Category.INSTRUMENT_AWARENESS, Category.ENVIRONMENT, Category.MUSIC)
 

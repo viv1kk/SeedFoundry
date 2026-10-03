@@ -8,8 +8,8 @@ afterEach(() => {
 })
 
 describe('routes', () => {
+  // D-43: /knowledge renders the Knowledge page from M3, so it left this placeholder table.
   it.each([
-    ['/knowledge', 'knowledge', 'Knowledge'],
     ['/build/1', 'build', 'Build, iteration 1'],
     ['/build/2', 'build', 'Build, iteration 2'],
     ['/review/1', 'review', 'Review, iteration 1'],
@@ -21,6 +21,15 @@ describe('routes', () => {
     expect(wrapper.find('header [data-test="wordmark"]').exists()).toBe(true)
     expect(wrapper.find('nav[aria-label="Journey"]').exists()).toBe(true)
     expect(wrapper.find('main [data-test="placeholder"] h1').text()).toBe(title)
+  })
+
+  it('/knowledge renders the Knowledge page inside the shell (D-43)', async () => {
+    const { wrapper, router } = await mountApp('/knowledge', emptySnapshot())
+    expect(router.currentRoute.value.name).toBe('knowledge')
+    expect(wrapper.find('header [data-test="wordmark"]').exists()).toBe(true)
+    expect(wrapper.find('main [data-test="knowledge"]').exists()).toBe(true)
+    expect(wrapper.find('main [data-test="file-panel"]').exists()).toBe(true)
+    expect(wrapper.find('main [data-test="placeholder"]').exists()).toBe(false)
   })
 
   it('redirects / to /knowledge', async () => {

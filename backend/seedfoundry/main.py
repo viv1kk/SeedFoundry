@@ -18,7 +18,14 @@ from pydantic import BaseModel
 from seedfoundry import events
 from seedfoundry.config import var_dir
 from seedfoundry.intake import files
-from seedfoundry.state import CATEGORY_LABELS, CORE_CATEGORIES, Category, IntakeFile, StateManager
+from seedfoundry.state import (
+    CATEGORY_DESCRIPTIONS,
+    CATEGORY_LABELS,
+    CORE_CATEGORIES,
+    Category,
+    IntakeFile,
+    StateManager,
+)
 
 
 class NewFile(BaseModel):
@@ -82,10 +89,17 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
 
     @app.get("/api/intake/categories")
     async def categories() -> dict[str, Any]:
-        """Categories in Ensemble order, and the filename hints import uses (FR-IN-7)."""
+        """Categories in Ensemble order with their screen labels and one-line descriptions,
+        and the filename hints import uses (FR-IN-7)."""
         return {
             "categories": [
-                {"id": c.value, "label": CATEGORY_LABELS[c], "core": c in CORE_CATEGORIES} for c in Category
+                {
+                    "id": c.value,
+                    "label": CATEGORY_LABELS[c],
+                    "core": c in CORE_CATEGORIES,
+                    "description": CATEGORY_DESCRIPTIONS[c],
+                }
+                for c in Category
             ],
             "filename_hints": {name: c.value for name, c in files.FILENAME_HINTS.items()},
             "max_file_bytes": files.MAX_FILE_BYTES,

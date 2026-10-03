@@ -49,6 +49,20 @@ describe('the checker', () => {
     expect(urls(text)).toEqual([])
   })
 
+  it('finds a template-built host in source (D-45)', () => {
+    expect(urls('fetch(`http://${host}/api`)')).toEqual(['http://${host}/api'])
+  })
+
+  it('allows a template-built host only when scanning dist/, for vendor code (D-45)', () => {
+    const vendor = 'e.schema||(e.url=`http://${e.url}`)'
+    expect(findExternalUrls(vendor, { allowTemplatedHosts: true })).toEqual([])
+    expect(findExternalUrls(vendor).map((f) => f.url)).toEqual(['http://${e.url}'])
+    // A literal host next to a template is still found.
+    expect(findExternalUrls('`https://cdn.example.com/${path}`', { allowTemplatedHosts: true }).map((f) => f.url)).toEqual([
+      'https://cdn.example.com/${path}',
+    ])
+  })
+
   it('reports the file and line', () => {
     const found = findExternalUrls('ok\nok\n<script src="https://x.example.com/a.js">')
     expect(found).toHaveLength(1)
