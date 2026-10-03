@@ -24,7 +24,7 @@ from typing import Any
 from pydantic import BaseModel
 
 # The machine contract: build-simulation.md §3, plus the intake, resync and
-# interrupted types added in M1 (D-31, D-33).
+# interrupted types added in M1 (D-31, D-33) and demo.reset in M4 (D-46).
 BUILD_EVENT_TYPES = (
     "build.started",
     "phase.started",
@@ -46,8 +46,10 @@ INTAKE_EVENT_TYPES = (
     "intake.file_updated",
     "intake.file_deleted",
 )
+# Demo controller (D-46): Reset to start. Load sample and Clear intake emit intake events.
+DEMO_EVENT_TYPES = ("demo.reset",)
 STREAM_EVENT_TYPES = ("stream.resync",)
-EVENT_TYPES = BUILD_EVENT_TYPES + INTAKE_EVENT_TYPES + STREAM_EVENT_TYPES
+EVENT_TYPES = BUILD_EVENT_TYPES + INTAKE_EVENT_TYPES + DEMO_EVENT_TYPES + STREAM_EVENT_TYPES
 
 LEVELS = ("INFO", "LLM", "API", "TEST", "PASS", "WARN", "FAIL")
 

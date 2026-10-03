@@ -15,7 +15,7 @@ from fastapi import FastAPI, Header, Query, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from seedfoundry import events
+from seedfoundry import demo, events
 from seedfoundry.config import var_dir
 from seedfoundry.intake import files
 from seedfoundry.state import (
@@ -32,6 +32,10 @@ class NewFile(BaseModel):
     name: str
     category: Category
     content: str = ""
+    replace: bool = False
+
+
+class LoadSample(BaseModel):
     replace: bool = False
 
 
@@ -140,6 +144,24 @@ def create_app(data_dir: Path | None = None) -> FastAPI:
     async def delete_file(request: Request, file_id: str) -> Response:
         lab(request).apply(files.delete(file_id))
         return Response(status_code=204)
+
+    # Demo controller (D-46). The client asks before replacing or clearing; the server
+    # applies the same intake rules as for the user's own changes.
+
+    @app.post("/api/demo/sample", status_code=201)
+    async def load_sample(request: Request, body: LoadSample) -> list[IntakeFile]:
+        """Load sample Seed. 409 intake_not_empty unless intake is empty or `replace` is set."""
+        return lab(request).apply(demo.load_sample(body.replace))
+
+    @app.post("/api/demo/clear")
+    async def clear_intake(request: Request) -> dict[str, int]:
+        """Clear intake: delete every file."""
+        return {"deleted": lab(request).apply(demo.clear_intake())}
+
+    @app.post("/api/demo/reset")
+    async def reset(request: Request) -> dict[str, int]:
+        """Reset to start: no files, no builds, iteration 1. Allowed while a build runs."""
+        return lab(request).apply(demo.reset())
 
     return app
 

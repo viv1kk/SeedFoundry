@@ -95,23 +95,6 @@ function onPicked(event: Event): void {
   importOpen.value = true
 }
 
-// Start Build: M3 owns its gating only. There is no build API until M5, so the enabled
-// button saves every draft and says so; it starts nothing (D-42).
-const buildNote = ref<string | null>(null)
-
-async function startBuild(): Promise<void> {
-  if (!intake.ready || readOnly.value) return
-  await intake.flushAll()
-  buildNote.value = intake.anyDirty ? 'Some changes are not saved yet.' : 'Files saved. Builds arrive in M5, so nothing starts yet.'
-}
-
-watch(
-  () => intake.ready,
-  () => {
-    buildNote.value = null
-  },
-)
-
 const runningIteration = computed(() => lab.runningBuild?.iteration ?? 1)
 </script>
 
@@ -130,11 +113,11 @@ const runningIteration = computed(() => lab.runningBuild?.iteration ?? 1)
       <FilePanel
         :selected-id="selectedId"
         :read-only="readOnly"
-        :build-note="buildNote"
+        :build-note="intake.buildNote"
         @select="select"
         @new="openNew"
         @import="openImport"
-        @start-build="startBuild"
+        @start-build="intake.startBuild"
       />
     </div>
 

@@ -1,8 +1,12 @@
-// An in-memory stand-in for the intake API (D-34, D-35), for page tests. It keeps the
-// server's rules that the page relies on (one file per core category unless `replace`,
-// trimmed names, the lock while a build runs) and records every request. Canned refusals
-// (413, 415) are queued with `refuseNext`, as the real checks live in the backend's tests.
+// An in-memory stand-in for the intake API (D-34, D-35) and the demo actions (D-46), for page
+// tests. It keeps the server's rules that the page relies on (one file per core category
+// unless `replace`, trimmed names, the lock while a build runs, Load sample only on an empty
+// intake unless `replace`) and records every request. Canned refusals (413, 415) are queued
+// with `refuseNext`, as the real checks live in the backend's tests. Load sample serves the
+// real sample files from backend/seedfoundry/sample.
 
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { vi } from 'vitest'
 import type { IntakeFile } from '../src/intake'
 import type { Build, Snapshot } from '../src/stores/lab'
@@ -25,6 +29,23 @@ export const CATEGORIES = {
   },
   max_file_bytes: 1048576,
 }
+
+const SAMPLE_DIR = resolve(__dirname, '../../backend/seedfoundry/sample')
+
+/** The sample Seed in load order, line ends normalised as the server stores them. */
+export const SAMPLE = (
+  [
+    ['person.md', 'person'],
+    ['instrument-awareness.md', 'instrument_awareness'],
+    ['environment.md', 'environment'],
+    ['music.md', 'music'],
+    ['vendor-notes.md', 'misc_context'],
+  ] as const
+).map(([name, category]) => ({
+  name,
+  category,
+  content: readFileSync(resolve(SAMPLE_DIR, name), 'utf8').replace(/\r\n?/g, '\n'),
+}))
 
 const LABELS: Record<string, string> = Object.fromEntries(CATEGORIES.categories.map((c) => [c.id, c.label]))
 const CORE = new Set(CATEGORIES.categories.filter((c) => c.core).map((c) => c.id))
@@ -142,7 +163,31 @@ export class FakeServer {
       const file = this.find(fileMatch[1])
       return file ? { status: 200, body: file } : refusal(404, 'file_not_found', `No file with id ${fileMatch[1]}.`)
     }
+    // Reset to start is allowed while a build runs (D-46).
+    if (method === 'POST' && path === '/api/demo/reset') {
+      const removed = { files_removed: this.files.length, builds_removed: this.builds.length }
+      this.files = []
+      this.builds = []
+      this.seq++
+      return { status: 200, body: removed }
+    }
     if (method !== 'GET' && locked) return refusal(409, 'intake_locked', 'Knowledge files are read-only while a build runs.')
+    if (method === 'POST' && path === '/api/demo/sample') {
+      const count = this.files.length
+      if (count && (call.body as { replace?: boolean }).replace !== true) {
+        const files = count === 1 ? '1 file' : `${count} files`
+        return refusal(409, 'intake_not_empty', `Knowledge has ${files}. Loading the sample Seed replaces them all.`, { files: count })
+      }
+      this.files = []
+      this.seq += count + SAMPLE.length
+      return { status: 201, body: SAMPLE.map((f) => this.add(f.name, f.category, f.content)) }
+    }
+    if (method === 'POST' && path === '/api/demo/clear') {
+      const deleted = this.files.length
+      this.files = []
+      this.seq += deleted
+      return { status: 200, body: { deleted } }
+    }
     if (method === 'POST' && (path === '/api/intake/files' || path === '/api/intake/import')) {
       const json = (path === '/api/intake/import' ? {} : call.body) as Record<string, unknown>
       const name = String(path === '/api/intake/import' ? call.query.filename : json.name).trim()

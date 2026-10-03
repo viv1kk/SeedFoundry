@@ -355,7 +355,7 @@ The underlying data does not need to match Seed v0.1 (stakeholder, 2026-10-03). 
 
 **Free for SeedFoundry to choose:** vendor and product names, number of vendors and products, seat count, departments, unit prices, class splits, the monthly series. Seed's scale (about 13,600 seats, 20 products, 10 vendors) is a sensible density for the panels, not a requirement. Names follow Seed's style: realistic software products.
 
-**Not stated by Seed, so SeedFoundry defines it** (in the sample `music.md` in M4 and the generator in M7): the Underused threshold (days of use in 90), and how a leaver is identified.
+**Not stated by Seed, so SeedFoundry defines it** (in the sample `music.md` in M4 and the generator in M7): the Underused threshold (days of use in 90), and how a leaver is identified. *Defined in M4:* in the sample `music.md`, classes are tested in the order Unassigned, Leaver, Unused, Underused, Active; Unused is no days active in the last 90, Underused 1 to 11, Active 12 or more; a Leaver is a seat assigned to someone who has left, whatever its usage. The sample `environment.md` reads "the last 90 days" as the three most recent monthly usage records and gives the seat an `assignee_status` (`employed` or `left`) from the LMS. M7's generator follows these.
 
 **Constraints the data must meet so the tests work:**
 
@@ -425,6 +425,8 @@ Seed read the typed character, so Shift+1 assumed a US layout (it types `!`).
 | Shift+D | Toggle light and dark | as Seed |
 
 Shortcuts are ignored while focus is in an `input`, `textarea`, `select`, a `contenteditable` element, or the editor. Digits are matched on `KeyboardEvent.code` (`Digit1`, `Digit2`, `Digit4`), so they work on any layout; letters on `key`, case-insensitive. No browser default collides: Chrome uses Ctrl or Alt chords, not Shift plus a letter.
+
+*As built (M4, D-47):* the map is `frontend/src/demo/shortcuts.ts`. Also ignored: any shortcut with Ctrl, Alt or Meta, key repeats, anything under `[data-no-shortcuts]`, every shortcut while a modal is open unless it belongs to that modal (Shift+F belongs to the rebuild modal), and Shift+Enter on a focused button or link, where Enter is already that control's. The Knowledge editor is a `textarea`, so the editor rule is the textarea rule. Speed is kept in the browser until M5 and survives Reset, as Seed's did.
 
 ### 6.3 Demo script and rehearsal
 

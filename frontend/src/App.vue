@@ -1,6 +1,8 @@
 <script setup lang="ts">
-// The app shell (ui-spec.md section 1): the top bar over the current screen.
+// The app shell (ui-spec.md section 1): the top bar over the current screen, and the hidden
+// demo controller (ui-spec.md section 8), whose shortcuts work on every screen.
 import TopBar from './components/shell/TopBar.vue'
+import DemoController from './demo/DemoController.vue'
 </script>
 
 <template>
@@ -9,6 +11,7 @@ import TopBar from './components/shell/TopBar.vue'
     <main class="screen">
       <RouterView />
     </main>
+    <DemoController />
   </div>
 </template>
 

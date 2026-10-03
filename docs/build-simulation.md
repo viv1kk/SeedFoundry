@@ -45,7 +45,7 @@ Each event: `{ seq, build_id, iteration, phase, step, type, level, code, message
 
 Types: `build.started`, `phase.started`, `step.started`, `log`, `llm.call`, `api.call`, `test.result`, `gate.auto_resolved`, `finding.raised`, `step.completed`, `phase.completed`, `build.completed`, `report.ready`.
 
-*As built (M1):* the same shape carries events outside a build, with `build_id`, `phase`, `step`, `code` and `sim_t` null and `iteration` the current one. M1 added these types: `intake.file_created`, `intake.file_updated`, `intake.file_deleted` (D-32), `build.interrupted` (D-33) and `stream.resync`, which the SSE stream sends when it cannot replay exactly and which is never stored in the log (D-31). The list lives in `backend/seedfoundry/events.py` as `EVENT_TYPES`.
+*As built (M1):* the same shape carries events outside a build, with `build_id`, `phase`, `step`, `code` and `sim_t` null and `iteration` the current one. M1 added these types: `intake.file_created`, `intake.file_updated`, `intake.file_deleted` (D-32), `build.interrupted` (D-33) and `stream.resync`, which the SSE stream sends when it cannot replay exactly and which is never stored in the log (D-31). The list lives in `backend/seedfoundry/events.py` as `EVENT_TYPES`. *M4:* `demo.reset` (Reset to start, D-46); Load sample Seed and Clear intake emit the intake types.
 
 ## 4. Console log format
 
@@ -161,6 +161,8 @@ Write four files for the License Optimization domain, consistent with Seed v0.1'
 - Optionally one Misc Context file (e.g. vendor contract notes).
 
 Aim for one to two screens of markdown per file. Use real headings matching the Ensemble sections so Assay coverage reads 100%.
+
+*As built (M4):* the files are in `backend/seedfoundry/sample/`: `person.md`, `instrument-awareness.md`, `environment.md`, `music.md` and the Misc Context file `vendor-notes.md` (vendor contract notes), loaded in that order (D-46). Each core file's `##` headings are its Ensemble sections, named as `ensemble/ensemble_context.md` names them: person.md the seven "What belongs here" categories (Domain expertise to Thinking frameworks); instrument-awareness.md Context Management, Model Behaviour (with `###` Strengths, Weaknesses, Failure patterns, Hallucination risks) and Execution Constraints; environment.md Data Layer, User Experience, Styling, Adaptation Layer, Protection Layer; music.md Purpose, Core Principles, Value Logic, Decision Logic. `backend/tests/test_sample.py` checks them against that doc. For M10's routing (D-36), these `##` headings are the sections feedback is appended to; the first heading of music.md is "License Optimization" (OQ-7). music.md also defines what `seed-reuse-notes.md` §5.7 left to it: the class test order (Unassigned, Leaver, Unused, Underused, Active), Underused as active on 1 to 11 days in the last 90 days, Active as 12 or more, and a leaver as an assignee who has left the organisation (`assignee_status` `left` in environment.md's Data Layer). environment.md's Data Layer describes the seat record of §5.7 with its own sources and no Seed v0.1 figures (D-30). The boundary lint is M5's; each file was reviewed by hand against every §6.1 rule (build log, M4).
 
 ## 9. Iteration 2 script
 

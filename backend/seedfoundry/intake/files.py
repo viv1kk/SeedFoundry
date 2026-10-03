@@ -102,7 +102,7 @@ def _not_text(name: str) -> IntakeError:
     return IntakeError(415, "not_utf8_text", f"{name} is not UTF-8 text. Only markdown or plain text files can be added.")
 
 
-def _check_unlocked(state: State) -> None:
+def check_unlocked(state: State) -> None:
     if state.build_running:
         raise IntakeError(409, "intake_locked", "Knowledge files are read-only while a build runs.")
 
@@ -136,17 +136,18 @@ def _claim_slot(state: State, emit: Emit, category: Category, replace: bool, new
 
 
 def create(name: str, category: Category, content: str = "", replace: bool = False, source: str = "new"):
-    """A change that adds a file. Returns the new file."""
+    """A change that adds a file. Returns the new file. `source` is "new", "import"
+    or "sample" (Load sample Seed, D-46), and goes into the event."""
 
     def change(state: State, emit: Emit) -> IntakeFile:
-        _check_unlocked(state)
+        check_unlocked(state)
         clean_name = check_name(name)
         text = content if source == "import" else check_text(clean_name, content)
         _claim_slot(state, emit, category, replace, clean_name)
         file = IntakeFile(id=f"f-{state.next_file_id}", name=clean_name, category=category, content=text)
         state.next_file_id += 1
         state.intake.files.append(file)
-        verb = "Imported" if source == "import" else "Created"
+        verb = {"import": "Imported", "sample": "Loaded"}.get(source, "Created")
         emit(
             type="intake.file_created",
             message=f"{verb} {file.name} ({CATEGORY_LABELS[category]})",
@@ -170,7 +171,7 @@ def update(file_id: str, name: str | None = None, category: Category | None = No
     """A change that renames, recategorises or rewrites a file. No event when nothing changes."""
 
     def change(state: State, emit: Emit) -> IntakeFile:
-        _check_unlocked(state)
+        check_unlocked(state)
         file = _get(state, file_id)
         new_name = file.name if name is None else check_name(name)
         new_content = file.content if content is None else check_text(new_name, content)
@@ -209,7 +210,7 @@ def update(file_id: str, name: str | None = None, category: Category | None = No
 
 def delete(file_id: str):
     def change(state: State, emit: Emit) -> None:
-        _check_unlocked(state)
+        check_unlocked(state)
         file = _get(state, file_id)
         state.intake.files.remove(file)
         emit(

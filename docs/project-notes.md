@@ -295,3 +295,63 @@ One entry per milestone, newest last. Format in `docs/methodology.md` §4.
 - M5/M6 add build reducers to `stores/lab.ts`: today any non-intake event still re-fetches the snapshot.
 - M10's rebuild modal can reuse `components/intake/FileEditor.vue`'s parts (`MarkdownPreview`, the mic button); the editor itself reads a file from the store, so the modal needs a version that edits a local draft.
 - NFR-3 (1 MB in the editor) is a browser check: jsdom cannot measure typing latency. M12's performance pass should time it.
+
+### M4: Demo controller and sample Seed (2026-10-03)
+
+**What changed**
+- A hidden demo controller: Shift+O shows a small "Demo" panel bottom right, with a button for every action, each showing its shortcut. The shortcuts work with the panel hidden, and are ignored in any text field, in the editor and name field, in a modal that is not theirs, and (Shift+Enter) on a focused button (D-47).
+- Load sample Seed (Shift+P) fills Knowledge with a License Optimization sample: person.md, instrument-awareness.md, environment.md, music.md and vendor-notes.md. On an empty intake it loads at once; otherwise it asks first and replaces every file, Misc Context included (OQ-17). The four core slots complete and Start Build turns on.
+- Clear Knowledge (Shift+C) and Reset to start (Shift+R) ask first. Reset removes files, builds and the approval and goes back to Knowledge; speed and theme stay. Shift+D switches the theme; Shift+Enter does what Start Build does today (saves and says builds arrive in M5).
+- Stubs that say so and do nothing else: Skip phase and Skip to end (M5), Prefill feedback (M10; its shortcut cannot fire until the rebuild modal exists). Speed 1x/2x/4x is remembered in the browser and shown as pressed, for M5 to use.
+- The server does the work (`/api/demo/sample`, `/clear`, `/reset`) under the intake rules (409 `intake_locked` during a build, except Reset), with the normal intake events plus a new `demo.reset`, so every open page follows (D-46).
+
+**Files**
+- NEW backend/seedfoundry/sample/person.md, instrument-awareness.md, environment.md, music.md, vendor-notes.md
+- CHANGE backend/seedfoundry/sample/__init__.py (`SAMPLE_FILES`, `sample_files()`)
+- NEW backend/seedfoundry/demo.py
+- CHANGE backend/seedfoundry/main.py (`/api/demo/*`), intake/files.py (`check_unlocked` made public; "sample" source), events.py (`demo.reset`)
+- NEW backend/tests/test_demo_api.py, test_sample.py
+- NEW frontend/src/demo/DemoController.vue, shortcuts.ts, api.ts; frontend/src/stores/demo.ts
+- CHANGE frontend/src/App.vue (mounts the controller), src/events.ts (`demo.reset`), src/stores/intake.ts (`startBuild`, `buildNote`, `discardMissing`), src/views/KnowledgeView.vue (uses the store's Start Build)
+- NEW frontend/tests/demo.spec.ts, shortcuts.spec.ts; CHANGE frontend/tests/fake-server.ts (demo endpoints, serving the real sample)
+- CHANGE docs/decisions.md (D-46, D-47, OQ-17), docs/ui-spec.md (§8 as built), docs/build-simulation.md (§3, §8 as built), docs/seed-reuse-notes.md (§5.7, §6.2 as built), docs/implementation-plan.md (M4 status; as-built note), docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 114 passed, frontend: 271 passed (through `python run.py test`)
+- `npm run build`: typecheck, build and `postbuild` network check pass
+- Exit criteria: Load sample fills intake with the four core slots complete (API: `test_load_sample_fills_the_four_core_slots`; page: "fills an empty intake at once: the four core slots complete and Start Build enabled"). Every shortcut has a page test; capital P, C, R, D (and O, S, E, F, Shift+1, Shift+Enter) typed in the editor and the name field do nothing; a select and a contenteditable element likewise; Shift+O toggles; Shift+1/2/4 match by code whatever the character (`!`, `1`, `&`; `@`; `$`)
+- Sample: deterministic (`test_loading_the_sample_is_deterministic`: two fresh labs give the same files, ids, content hashes and events, seq and `wall_ts` aside; a reload changes only the ids); every Ensemble section present, read from `ensemble/ensemble_context.md` (`test_each_core_file_has_every_ensemble_section`); D-36's routing targets present; line ends normalised (`core.autocrlf` is on here, so a checkout can give the files CRLF)
+- Checked that the tests can fail: the text-field rule removed failed 9 tests; digits matched on the character failed 3; the modal rule removed failed 4; Load sample without its confirm failed 3; dropping the unsaved-draft cleanup failed 1 (that test first passed without it, because switching files already drops the open file's draft, so it was rewritten to put the draft on a file that is not open). All reverted
+- determinism: not yet applicable to builds (from M5); the sample's own test passes | no-em-dash: pass, and covers the sample files (`test_the_no_em_dash_scan_covers_the_sample`) | network: pass
+- assertions edited: none
+
+**Ensemble boundary self-review** (build-simulation §6.1; the lint itself is M5's). Each file was read against each rule, then searched for the obvious words of each rule:
+
+| Rule | Searched for | person.md | instrument-awareness.md | environment.md | music.md | vendor-notes.md |
+|---|---|---|---|---|---|---|
+| B-DATA (outside environment.md) | schema, column, field, mapping, file paths, record ids, SAP, records, rows | clean | clean | n/a (its home) | clean | clean |
+| B-SEC (person.md, music.md) | security, access, guardrail, permission, credential, privacy, protect, safety, compliance, audit, risk | clean | n/a | n/a | clean | n/a |
+| B-UI (outside environment.md) | colour, theme, layout, navigation, screen, page, button, click, font, palette, chart, dashboard, display, red, green, style | clean | clean | n/a (its home) | clean | clean |
+| B-MODEL (outside instrument-awareness.md) | token, context, model, prompt, LLM, hallucination, truncation | clean | n/a (its home) | clean | clean | clean |
+| B-LOGIC (environment.md) | prioritise, priority, rank, score, decision, decide, recommend, threshold, should, must, candidate | n/a | n/a | one hit: "Optimisation candidates", Seed v0.1's panel title in User Experience, not a rule | n/a | n/a |
+
+Choices made to keep it clean: the classification thresholds and the leaver rule sit in music.md, and environment.md's Data Layer only says the class is "as music.md defines"; the Leaver class is not called an access finding in music.md (B-SEC); person.md says "frameworks", not "mental models" (B-MODEL); environment.md says "situation", not "context". M5's lint should allowlist panel titles such as "Optimisation candidates".
+
+**Hand checks**
+- `python run.py` started both processes. Through `http://127.0.0.1:5273/api` (the Vite proxy), on the existing intake (one file): Load sample without `replace` got 409 `intake_not_empty` ("Knowledge has 1 file. Loading the sample Seed replaces them all."); with `replace` it gave the five files in Ensemble order; Clear deleted 5; Load sample again 201; Reset removed 5 files and 0 builds, and a second Reset changed nothing. An SSE client on the proxy saw every step in order: 1 delete then 5 "Loaded ..." creates, 5 deletes, 5 creates, 5 deletes then `demo.reset`, 5 creates. `/knowledge` answered 200.
+- Stopped and started again: the five sample files were still there, each with the same SHA-256 as before the restart; seq carried on (42). Ports were free after each stop.
+- `var/state.json` was copied aside before the check and put back afterwards, so Knowledge holds what it held before M4 (one file, `KICKOFF_PROMPT.md`).
+- Checked over HTTP from the terminal, not in a browser. Waiting on the stakeholder, in a browser: Shift+O shows and hides the panel; Load sample fills the Knowledge page live; the four sample files read like a real Ensemble bundle; Clear and Reset ask first; capitals typed in the editor and the name field trigger nothing; every panel action by keyboard; both themes.
+
+**Decisions and questions**
+- New: D-46 (server endpoints, Load sample and replace, Reset's scope, `demo.reset`, the sample's load order and bytes), D-47 (shortcut rules, panel focus, stubs, speed in the browser, shared Start Build, "Clear Knowledge" on screen)
+- Opened: OQ-17. Closed: OQ-17 (replace all, ask first; stakeholder, 2026-10-03)
+
+**Notes for next milestone**
+- M5: speed lives in `stores/demo.ts` (`speed`, 1, 2 or 4); send it to the engine and keep it there across Reset. Skip phase and Skip to end are wired to `unavailable()` in `stores/demo.ts`: give them real actions and make them available only while a build runs.
+- M5: Reset to start (`demo.reset()` in `demo.py`) removes a running build's record but there is no engine to stop yet; the engine must be cancelled first, and the client should then leave the build page (Reset already routes to `/knowledge`).
+- M5: replace `intake.startBuild()` (M3's note) with FR-B-1; Shift+Enter already calls it. `intake.flushAll()` should still run first.
+- M5's boundary lint must give zero on the sample (see the self-review above for the words that were avoided). Its Assay coverage can read a file's `##` headings against the section names in `ensemble/ensemble_context.md`, as `test_sample.py` does.
+- M7: the generator follows the class rules and fields in the sample (seed-reuse-notes §5.7 as built): `days_active` per month, `assignee_status`, the 1 to 11 and 12-or-more thresholds, and the departments named in environment.md's Adaptation Layer.
+- M10: the rebuild modal marks itself `data-modal="rebuild"` so Shift+F reaches it, and its editor is a textarea, so typing there is already safe. Route feedback to the `##` sections listed in build-simulation §8 as built.
+- M12: the operator guide's shortcut table is `SHORTCUTS` in `frontend/src/demo/shortcuts.ts`.

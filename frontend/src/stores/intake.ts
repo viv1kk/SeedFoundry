@@ -241,6 +241,26 @@ export const useIntakeStore = defineStore('intake', () => {
   const missing = computed(() => coreSlots.value.filter((slot) => !slot.complete).map((slot) => slot.category.label))
   const ready = computed(() => coreSlots.value.length > 0 && missing.value.length === 0)
 
+  // Start Build: M3 owns its gating only. There is no build API until M5, so the enabled
+  // button saves every draft and says so; it starts nothing (D-42 (c)). The demo
+  // controller's Shift+Enter runs the same action (D-47).
+  const buildNote = ref<string | null>(null)
+
+  async function startBuild(): Promise<void> {
+    if (!ready.value || lab.runningBuild) return
+    await flushAll()
+    buildNote.value = anyDirty.value ? 'Some changes are not saved yet.' : 'Files saved. Builds arrive in M5, so nothing starts yet.'
+  }
+
+  watch(ready, () => {
+    buildNote.value = null
+  })
+
+  /** Drop the drafts of files that no longer exist, after Load sample, Clear or Reset. */
+  function discardMissing(): void {
+    for (const id of Object.keys(drafts)) if (!lab.file(id)) dropDraft(id)
+  }
+
   // File actions. Each applies the server's answer at once; the matching event then finds
   // the snapshot already up to date.
 
@@ -319,6 +339,9 @@ export const useIntakeStore = defineStore('intake', () => {
     coreSlots,
     missing,
     ready,
+    buildNote,
+    startBuild,
+    discardMissing,
     create,
     importFile,
     rename,

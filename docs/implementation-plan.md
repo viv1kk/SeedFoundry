@@ -10,7 +10,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | | M1 | Backend core: state, persistence, events, SSE | Done (2026-10-03) |
 | | M2 | Frontend shell and design system | Done (2026-10-03) |
 | B. Knowledge | M3 | Intake page | Done (2026-10-03) |
-| | M4 | Demo controller and sample Seed | Not started |
+| | M4 | Demo controller and sample Seed | Done (2026-10-03) |
 | C. Build | M5 | Beat engine, phase catalogue, simulated clients | Not started |
 | | M6 | Build page: stepper and console | Not started |
 | D. Output | M7 | Polished License Optimization dashboard | Not started |
@@ -68,6 +68,8 @@ seedfoundry/
 *As built (M2):* `frontend/src/` also holds `router.ts`, `theme.ts`, `events.ts` (event types the client listens for), `stores/lab.ts` (live state), `styles/base.css`, `components/base/` (button, chip, card, modal, tooltip), `components/shell/` (top bar, journey indicator, iteration badge, theme toggle) and `components/ScreenPlaceholder.vue`. Views are `KnowledgeView`, `BuildView`, `ReviewView`, `SeedView`; the dashboard is an overlay on the review route, so it will be a component, not a view (OQ-4). `frontend/scripts/check-network.ts` runs as `postbuild` (D-38).
 
 *As built (M3):* `frontend/src/` also holds `api.ts` (JSON over `/api`, server errors as `ApiError`), `intake.ts` (intake API calls, types, shared rules), `markdown.ts` (Preview rendering and sanitising, D-40), `stores/intake.ts` (categories, drafts, autosave, file actions, D-41), `components/base/BaseMenu.vue` and `BaseConfirm.vue`, and `components/intake/` (FileEditor, FilePanel, MarkdownPreview, NewFileDialog, ImportDialog, EmptyState). There is no separate Editor component directory: the editor is `components/intake/FileEditor.vue`, which M10's rebuild modal can reuse. `frontend/tests/` holds `fake-server.ts` (an in-memory intake API for page tests) and `fixtures/` (four core files, one Misc Context file, and the hostile sample). The no em dash test is `backend/tests/test_no_em_dash.py` (D-44).
+
+*As built (M4):* `backend/seedfoundry/demo.py` holds the demo controller's server actions (Load sample Seed, Clear intake, Reset to start, D-46), under `/api/demo/`. `backend/seedfoundry/sample/` holds the five sample files and `sample_files()`. `frontend/src/demo/` holds `DemoController.vue` (the panel, mounted in `App.vue`), `shortcuts.ts` (the map and the ignore rules, D-47) and `api.ts`; its store is `frontend/src/stores/demo.ts`, beside the others. Start Build's M3 action moved from `KnowledgeView.vue` into `stores/intake.ts` (`startBuild`, `buildNote`) so Shift+Enter shares it.
 
 ## 3. Milestones
 
