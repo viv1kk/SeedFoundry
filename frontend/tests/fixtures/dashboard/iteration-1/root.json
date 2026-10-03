@@ -1,0 +1,3346 @@
+{
+ "id": "license-optimization",
+ "iteration": 1,
+ "variant": "rough",
+ "descriptor": {
+  "id": "license-optimization",
+  "title": "License Optimization",
+  "variant": "rough",
+  "methodology": "License Optimization",
+  "sources": [
+   "License Management System",
+   "SAP"
+  ],
+  "record": "seat",
+  "hierarchy": [
+   "vendor",
+   "product",
+   "class",
+   "seat"
+  ],
+  "classes": [
+   {
+    "id": "active",
+    "label": "Active",
+    "role": "positive",
+    "recoverable": false
+   },
+   {
+    "id": "underused",
+    "label": "Underused",
+    "role": "warning",
+    "recoverable": false
+   },
+   {
+    "id": "unused",
+    "label": "Unused",
+    "role": "anomaly",
+    "recoverable": true
+   },
+   {
+    "id": "leaver",
+    "label": "Leaver",
+    "role": "negative",
+    "recoverable": true
+   },
+   {
+    "id": "unassigned",
+    "label": "Unassigned",
+    "role": "muted",
+    "recoverable": true
+   }
+  ],
+  "fonts": {
+   "title": "sans",
+   "label": "sans",
+   "figure": "mono",
+   "id": "mono"
+  },
+  "measures": {
+   "seats": {
+    "chart": "count",
+    "kpi": "count",
+    "table": "count"
+   },
+   "recoverable_year": {
+    "chart": "usd_compact",
+    "kpi": "usd_compact",
+    "table": "usd"
+   },
+   "unit_cost": {
+    "table": "usd"
+   },
+   "share": {
+    "legend": "percent"
+   },
+   "days_idle": {
+    "table": "count"
+   }
+  },
+  "grid": {
+   "columns": 12,
+   "gutter": "space-4"
+  },
+  "surface": "surface-raised",
+  "bands": [
+   {
+    "id": "kpis",
+    "title": "Key figures"
+   },
+   {
+    "id": "charts",
+    "title": "Charts"
+   },
+   {
+    "id": "focus",
+    "title": "Optimisation candidates"
+   },
+   {
+    "id": "records",
+    "title": "Seats"
+   }
+  ],
+  "panels": [
+   {
+    "id": "k-entitled",
+    "band": "kpis",
+    "title": "Entitled",
+    "mark": "kpi",
+    "field": "entitled",
+    "measure": "seats",
+    "format": "plain",
+    "span": 2,
+    "emphasis": "primary",
+    "rule_role": "anomaly"
+   },
+   {
+    "id": "k-assigned",
+    "band": "kpis",
+    "title": "Assigned",
+    "mark": "kpi",
+    "field": "assigned",
+    "measure": "seats",
+    "format": "count",
+    "span": 2
+   },
+   {
+    "id": "k-active",
+    "band": "kpis",
+    "title": "Active",
+    "mark": "kpi",
+    "field": "active",
+    "measure": "seats",
+    "format": "compact",
+    "span": 2
+   },
+   {
+    "id": "k-idle",
+    "band": "kpis",
+    "title": "Unused or underused",
+    "mark": "kpi",
+    "field": "idle",
+    "measure": "seats",
+    "format": "count",
+    "span": 3
+   },
+   {
+    "id": "k-recoverable",
+    "band": "kpis",
+    "title": "Recoverable a year",
+    "mark": "kpi",
+    "field": "recoverable_year",
+    "measure": "recoverable_year",
+    "format": "usd_compact",
+    "span": 3,
+    "note": {
+     "text": "priced products only, {withheld_seats} seats withheld",
+     "role": "text-secondary"
+    }
+   },
+   {
+    "id": "seats-treemap",
+    "band": "charts",
+    "title": "Seats by vendor and product",
+    "mark": "treemap",
+    "span": 12,
+    "height": 360,
+    "binding": {
+     "path": [
+      "vendor",
+      "product",
+      "class"
+     ],
+     "size": "seats",
+     "colour": "class"
+    },
+    "measure": "seats",
+    "format": "count",
+    "legend": {
+     "items": "classes",
+     "measure": "share",
+     "format": "percent",
+     "of": "entitled seats"
+    },
+    "drill": true,
+    "latency_ms": 4500,
+    "class_colours": {
+     "unused": {
+      "colour": "#5470c6"
+     }
+    }
+   },
+   {
+    "id": "entitlement",
+    "band": "charts",
+    "title": "Entitled, assigned and active by product",
+    "subtitle": "The gap is the finding",
+    "mark": "bar",
+    "orientation": "horizontal",
+    "grouped": true,
+    "span": 4,
+    "height": 440,
+    "category": {
+     "field": "product",
+     "axis": {
+      "name": "",
+      "unit": null
+     }
+    },
+    "value": {
+     "measure": "seats",
+     "format": "count",
+     "axis": {
+      "name": "",
+      "unit": null
+     }
+    },
+    "series": [
+     {
+      "id": "entitled",
+      "label": "Entitled",
+      "role": "baseline"
+     },
+     {
+      "id": "assigned",
+      "label": "Assigned",
+      "role": "series-1"
+     },
+     {
+      "id": "active",
+      "label": "Active",
+      "role": "series-3"
+     }
+    ],
+    "drill": true,
+    "latency_ms": 0
+   },
+   {
+    "id": "trend",
+    "band": "charts",
+    "title": "Assigned and in use, by month",
+    "mark": "line",
+    "span": 4,
+    "height": 440,
+    "category": {
+     "field": "month",
+     "format": "month",
+     "axis": {
+      "name": "",
+      "unit": null
+     }
+    },
+    "value": {
+     "measure": "seats",
+     "format": "count",
+     "axis": {
+      "name": "",
+      "unit": null
+     }
+    },
+    "series": [
+     {
+      "id": "assigned",
+      "label": "Assigned",
+      "role": "series-1"
+     },
+     {
+      "id": "in_use",
+      "label": "In use",
+      "role": "negative"
+     }
+    ],
+    "drill": false,
+    "latency_ms": 0
+   },
+   {
+    "id": "recoverable",
+    "band": "charts",
+    "title": "Recoverable cost by product",
+    "subtitle": "A year, priced products; unpriced products are withheld",
+    "mark": "pie",
+    "orientation": "horizontal",
+    "grouped": false,
+    "span": 4,
+    "height": 440,
+    "category": {
+     "field": "product",
+     "axis": {
+      "name": "Product",
+      "unit": null
+     }
+    },
+    "value": {
+     "measure": "recoverable_year",
+     "format": "usd_compact",
+     "axis": {
+      "name": "Recoverable a year",
+      "unit": "USD"
+     }
+    },
+    "series": [
+     {
+      "id": "recoverable_year",
+      "label": "Recoverable a year",
+      "role": "anomaly"
+     }
+    ],
+    "withheld": {
+     "label": "Withheld",
+     "role": "text-muted"
+    },
+    "drill": true,
+    "latency_ms": 0,
+    "slice_roles": [
+     "series-1",
+     "series-2",
+     "series-3",
+     "series-4",
+     "series-5",
+     "series-6",
+     "series-7",
+     "series-8"
+    ]
+   },
+   {
+    "id": "candidates",
+    "band": "focus",
+    "title": "Optimisation candidates",
+    "caption": "Per product, largest recoverable cost first; withheld products by recoverable seats",
+    "caption_role": "text-secondary",
+    "mark": "table",
+    "span": 12,
+    "row_key": "product_id",
+    "drill": true,
+    "total_row": true,
+    "columns": [
+     {
+      "id": "product",
+      "label": "Product",
+      "format": "text",
+      "drill": true
+     },
+     {
+      "id": "vendor",
+      "label": "Vendor",
+      "format": "text"
+     },
+     {
+      "id": "entitled",
+      "label": "Entitled",
+      "format": "count",
+      "measure": "seats",
+      "align": "end"
+     },
+     {
+      "id": "active",
+      "label": "Active",
+      "format": "count",
+      "measure": "seats",
+      "align": "end",
+      "class": "active"
+     },
+     {
+      "id": "underused",
+      "label": "Underused",
+      "format": "count",
+      "measure": "seats",
+      "align": "end",
+      "class": "underused"
+     },
+     {
+      "id": "unused",
+      "label": "Unused",
+      "format": "count",
+      "measure": "seats",
+      "align": "end",
+      "class": "unused"
+     },
+     {
+      "id": "leaver",
+      "label": "Leaver",
+      "format": "count",
+      "measure": "seats",
+      "align": "end",
+      "class": "leaver"
+     },
+     {
+      "id": "unassigned",
+      "label": "Unassigned",
+      "format": "count",
+      "measure": "seats",
+      "align": "end",
+      "class": "unassigned"
+     },
+     {
+      "id": "recoverable_year",
+      "label": "Recoverable a year",
+      "format": "number",
+      "measure": "recoverable_year",
+      "align": "end",
+      "null": "Withheld"
+     }
+    ]
+   },
+   {
+    "id": "seats",
+    "band": "records",
+    "title": "Seats",
+    "mark": "table",
+    "span": 12,
+    "row_key": "seat_id",
+    "page_size": 25,
+    "sortable": true,
+    "default_sort": {
+     "column": "seat_id",
+     "direction": "asc"
+    },
+    "footer": "class_counts",
+    "columns": [
+     {
+      "id": "seat_id",
+      "label": "Seat",
+      "format": "id",
+      "font": "id"
+     },
+     {
+      "id": "product",
+      "label": "Product",
+      "format": "text"
+     },
+     {
+      "id": "department",
+      "label": "Department",
+      "format": "text"
+     },
+     {
+      "id": "assignee",
+      "label": "Assignee",
+      "format": "text",
+      "null": "Unassigned"
+     },
+     {
+      "id": "last_used",
+      "label": "Last used",
+      "format": "date",
+      "null": "Never"
+     },
+     {
+      "id": "days_idle",
+      "label": "Days idle",
+      "format": "count",
+      "measure": "days_idle",
+      "align": "end"
+     },
+     {
+      "id": "utilisation_class",
+      "label": "Class",
+      "format": "class"
+     },
+     {
+      "id": "unit_cost",
+      "label": "Unit cost a month",
+      "format": "usd",
+      "measure": "unit_cost",
+      "align": "end",
+      "null": "No price"
+     }
+    ]
+   }
+  ],
+  "styles": {
+   "root_class": "defects-overlay",
+   "sheet": "defects.css"
+  }
+ },
+ "payload": {
+  "dashboard": "license-optimization",
+  "dataset": {
+   "name": "primary",
+   "title": "Primary estate",
+   "snapshot_date": "2026-09-30",
+   "period": {
+    "from": "2025-10",
+    "to": "2026-09"
+   },
+   "seats": 13050
+  },
+  "drill": {
+   "path": "",
+   "level": "all",
+   "depth": 0,
+   "deepest": false,
+   "filter": {
+    "vendor": null,
+    "product": null,
+    "class": null
+   },
+   "crumbs": [
+    {
+     "label": "All products",
+     "path": "",
+     "levels": []
+    }
+   ]
+  },
+  "panels": {
+   "k-entitled": {
+    "value": 13050
+   },
+   "k-assigned": {
+    "value": 12401
+   },
+   "k-active": {
+    "value": 8286
+   },
+   "k-idle": {
+    "value": 3642
+   },
+   "k-recoverable": {
+    "value": 1191396,
+    "withheld_seats": 657,
+    "recoverable_seats": 2942
+   },
+   "seats-treemap": {
+    "nodes": [
+     {
+      "id": "microsoft",
+      "name": "Microsoft",
+      "level": "vendor",
+      "value": 6680,
+      "step": [
+       "microsoft"
+      ],
+      "children": [
+       {
+        "id": "microsoft-365-e3",
+        "name": "Microsoft 365 E3",
+        "level": "product",
+        "value": 4200,
+        "step": [
+         "microsoft",
+         "microsoft-365-e3"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 3422,
+          "step": [
+           "microsoft",
+           "microsoft-365-e3",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 240,
+          "step": [
+           "microsoft",
+           "microsoft-365-e3",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 260,
+          "step": [
+           "microsoft",
+           "microsoft-365-e3",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 152,
+          "step": [
+           "microsoft",
+           "microsoft-365-e3",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 126,
+          "step": [
+           "microsoft",
+           "microsoft-365-e3",
+           "unassigned"
+          ]
+         }
+        ]
+       },
+       {
+        "id": "microsoft-365-e5",
+        "name": "Microsoft 365 E5",
+        "level": "product",
+        "value": 900,
+        "step": [
+         "microsoft",
+         "microsoft-365-e5"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 627,
+          "step": [
+           "microsoft",
+           "microsoft-365-e5",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 111,
+          "step": [
+           "microsoft",
+           "microsoft-365-e5",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 84,
+          "step": [
+           "microsoft",
+           "microsoft-365-e5",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 33,
+          "step": [
+           "microsoft",
+           "microsoft-365-e5",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 45,
+          "step": [
+           "microsoft",
+           "microsoft-365-e5",
+           "unassigned"
+          ]
+         }
+        ]
+       },
+       {
+        "id": "power-bi-pro",
+        "name": "Power BI Pro",
+        "level": "product",
+        "value": 800,
+        "step": [
+         "microsoft",
+         "power-bi-pro"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 406,
+          "step": [
+           "microsoft",
+           "power-bi-pro",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 155,
+          "step": [
+           "microsoft",
+           "power-bi-pro",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 159,
+          "step": [
+           "microsoft",
+           "power-bi-pro",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 32,
+          "step": [
+           "microsoft",
+           "power-bi-pro",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 48,
+          "step": [
+           "microsoft",
+           "power-bi-pro",
+           "unassigned"
+          ]
+         }
+        ]
+       },
+       {
+        "id": "visio-plan-2",
+        "name": "Visio Plan 2",
+        "level": "product",
+        "value": 420,
+        "step": [
+         "microsoft",
+         "visio-plan-2"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 149,
+          "step": [
+           "microsoft",
+           "visio-plan-2",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 90,
+          "step": [
+           "microsoft",
+           "visio-plan-2",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 127,
+          "step": [
+           "microsoft",
+           "visio-plan-2",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 16,
+          "step": [
+           "microsoft",
+           "visio-plan-2",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 38,
+          "step": [
+           "microsoft",
+           "visio-plan-2",
+           "unassigned"
+          ]
+         }
+        ]
+       },
+       {
+        "id": "project-plan-3",
+        "name": "Project Plan 3",
+        "level": "product",
+        "value": 360,
+        "step": [
+         "microsoft",
+         "project-plan-3"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 157,
+          "step": [
+           "microsoft",
+           "project-plan-3",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 59,
+          "step": [
+           "microsoft",
+           "project-plan-3",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 92,
+          "step": [
+           "microsoft",
+           "project-plan-3",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 12,
+          "step": [
+           "microsoft",
+           "project-plan-3",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 40,
+          "step": [
+           "microsoft",
+           "project-plan-3",
+           "unassigned"
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "atlassian",
+      "name": "Atlassian",
+      "level": "vendor",
+      "value": 1700,
+      "step": [
+       "atlassian"
+      ],
+      "children": [
+       {
+        "id": "confluence",
+        "name": "Confluence",
+        "level": "product",
+        "value": 900,
+        "step": [
+         "atlassian",
+         "confluence"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 491,
+          "step": [
+           "atlassian",
+           "confluence",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 200,
+          "step": [
+           "atlassian",
+           "confluence",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 144,
+          "step": [
+           "atlassian",
+           "confluence",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 38,
+          "step": [
+           "atlassian",
+           "confluence",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 27,
+          "step": [
+           "atlassian",
+           "confluence",
+           "unassigned"
+          ]
+         }
+        ]
+       },
+       {
+        "id": "jira-software",
+        "name": "Jira Software",
+        "level": "product",
+        "value": 800,
+        "step": [
+         "atlassian",
+         "jira-software"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 578,
+          "step": [
+           "atlassian",
+           "jira-software",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 85,
+          "step": [
+           "atlassian",
+           "jira-software",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 82,
+          "step": [
+           "atlassian",
+           "jira-software",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 23,
+          "step": [
+           "atlassian",
+           "jira-software",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 32,
+          "step": [
+           "atlassian",
+           "jira-software",
+           "unassigned"
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "adobe",
+      "name": "Adobe",
+      "level": "vendor",
+      "value": 1440,
+      "step": [
+       "adobe"
+      ],
+      "children": [
+       {
+        "id": "acrobat-pro",
+        "name": "Acrobat Pro",
+        "level": "product",
+        "value": 1200,
+        "step": [
+         "adobe",
+         "acrobat-pro"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 649,
+          "step": [
+           "adobe",
+           "acrobat-pro",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 275,
+          "step": [
+           "adobe",
+           "acrobat-pro",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 188,
+          "step": [
+           "adobe",
+           "acrobat-pro",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 40,
+          "step": [
+           "adobe",
+           "acrobat-pro",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 48,
+          "step": [
+           "adobe",
+           "acrobat-pro",
+           "unassigned"
+          ]
+         }
+        ]
+       },
+       {
+        "id": "creative-cloud-all-apps",
+        "name": "Creative Cloud All Apps",
+        "level": "product",
+        "value": 240,
+        "step": [
+         "adobe",
+         "creative-cloud-all-apps"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 128,
+          "step": [
+           "adobe",
+           "creative-cloud-all-apps",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 40,
+          "step": [
+           "adobe",
+           "creative-cloud-all-apps",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 44,
+          "step": [
+           "adobe",
+           "creative-cloud-all-apps",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 11,
+          "step": [
+           "adobe",
+           "creative-cloud-all-apps",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 17,
+          "step": [
+           "adobe",
+           "creative-cloud-all-apps",
+           "unassigned"
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "zoom",
+      "name": "Zoom",
+      "level": "vendor",
+      "value": 900,
+      "step": [
+       "zoom"
+      ],
+      "children": [
+       {
+        "id": "zoom-workplace-business",
+        "name": "Zoom Workplace Business",
+        "level": "product",
+        "value": 900,
+        "step": [
+         "zoom",
+         "zoom-workplace-business"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 469,
+          "step": [
+           "zoom",
+           "zoom-workplace-business",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 196,
+          "step": [
+           "zoom",
+           "zoom-workplace-business",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 160,
+          "step": [
+           "zoom",
+           "zoom-workplace-business",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 30,
+          "step": [
+           "zoom",
+           "zoom-workplace-business",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 45,
+          "step": [
+           "zoom",
+           "zoom-workplace-business",
+           "unassigned"
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "salesforce",
+      "name": "Salesforce",
+      "level": "vendor",
+      "value": 800,
+      "step": [
+       "salesforce"
+      ],
+      "children": [
+       {
+        "id": "sales-cloud-enterprise",
+        "name": "Sales Cloud Enterprise",
+        "level": "product",
+        "value": 620,
+        "step": [
+         "salesforce",
+         "sales-cloud-enterprise"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 442,
+          "step": [
+           "salesforce",
+           "sales-cloud-enterprise",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 53,
+          "step": [
+           "salesforce",
+           "sales-cloud-enterprise",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 72,
+          "step": [
+           "salesforce",
+           "sales-cloud-enterprise",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 22,
+          "step": [
+           "salesforce",
+           "sales-cloud-enterprise",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 31,
+          "step": [
+           "salesforce",
+           "sales-cloud-enterprise",
+           "unassigned"
+          ]
+         }
+        ]
+       },
+       {
+        "id": "tableau-creator",
+        "name": "Tableau Creator",
+        "level": "product",
+        "value": 180,
+        "step": [
+         "salesforce",
+         "tableau-creator"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 83,
+          "step": [
+           "salesforce",
+           "tableau-creator",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 32,
+          "step": [
+           "salesforce",
+           "tableau-creator",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 44,
+          "step": [
+           "salesforce",
+           "tableau-creator",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 7,
+          "step": [
+           "salesforce",
+           "tableau-creator",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 14,
+          "step": [
+           "salesforce",
+           "tableau-creator",
+           "unassigned"
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "miro",
+      "name": "Miro",
+      "level": "vendor",
+      "value": 520,
+      "step": [
+       "miro"
+      ],
+      "children": [
+       {
+        "id": "miro-business",
+        "name": "Miro Business",
+        "level": "product",
+        "value": 520,
+        "step": [
+         "miro",
+         "miro-business"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 169,
+          "step": [
+           "miro",
+           "miro-business",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 116,
+          "step": [
+           "miro",
+           "miro-business",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 155,
+          "step": [
+           "miro",
+           "miro-business",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 18,
+          "step": [
+           "miro",
+           "miro-business",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 62,
+          "step": [
+           "miro",
+           "miro-business",
+           "unassigned"
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "docusign",
+      "name": "DocuSign",
+      "level": "vendor",
+      "value": 310,
+      "step": [
+       "docusign"
+      ],
+      "children": [
+       {
+        "id": "docusign-esignature",
+        "name": "DocuSign eSignature",
+        "level": "product",
+        "value": 310,
+        "step": [
+         "docusign",
+         "docusign-esignature"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 122,
+          "step": [
+           "docusign",
+           "docusign-esignature",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 86,
+          "step": [
+           "docusign",
+           "docusign-esignature",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 69,
+          "step": [
+           "docusign",
+           "docusign-esignature",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 14,
+          "step": [
+           "docusign",
+           "docusign-esignature",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 19,
+          "step": [
+           "docusign",
+           "docusign-esignature",
+           "unassigned"
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "smartsheet",
+      "name": "Smartsheet",
+      "level": "vendor",
+      "value": 300,
+      "step": [
+       "smartsheet"
+      ],
+      "children": [
+       {
+        "id": "smartsheet-business",
+        "name": "Smartsheet Business",
+        "level": "product",
+        "value": 300,
+        "step": [
+         "smartsheet",
+         "smartsheet-business"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 124,
+          "step": [
+           "smartsheet",
+           "smartsheet-business",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 58,
+          "step": [
+           "smartsheet",
+           "smartsheet-business",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 79,
+          "step": [
+           "smartsheet",
+           "smartsheet-business",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 9,
+          "step": [
+           "smartsheet",
+           "smartsheet-business",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 30,
+          "step": [
+           "smartsheet",
+           "smartsheet-business",
+           "unassigned"
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "thomson-reuters",
+      "name": "Thomson Reuters",
+      "level": "vendor",
+      "value": 260,
+      "step": [
+       "thomson-reuters"
+      ],
+      "children": [
+       {
+        "id": "westlaw-edge",
+        "name": "Westlaw Edge",
+        "level": "product",
+        "value": 260,
+        "step": [
+         "thomson-reuters",
+         "westlaw-edge"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 192,
+          "step": [
+           "thomson-reuters",
+           "westlaw-edge",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 14,
+          "step": [
+           "thomson-reuters",
+           "westlaw-edge",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 29,
+          "step": [
+           "thomson-reuters",
+           "westlaw-edge",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 12,
+          "step": [
+           "thomson-reuters",
+           "westlaw-edge",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 13,
+          "step": [
+           "thomson-reuters",
+           "westlaw-edge",
+           "unassigned"
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "autodesk",
+      "name": "Autodesk",
+      "level": "vendor",
+      "value": 140,
+      "step": [
+       "autodesk"
+      ],
+      "children": [
+       {
+        "id": "autocad-lt",
+        "name": "AutoCAD LT",
+        "level": "product",
+        "value": 140,
+        "step": [
+         "autodesk",
+         "autocad-lt"
+        ],
+        "children": [
+         {
+          "id": "active",
+          "name": "Active",
+          "level": "class",
+          "class": "active",
+          "value": 78,
+          "step": [
+           "autodesk",
+           "autocad-lt",
+           "active"
+          ]
+         },
+         {
+          "id": "underused",
+          "name": "Underused",
+          "level": "class",
+          "class": "underused",
+          "value": 12,
+          "step": [
+           "autodesk",
+           "autocad-lt",
+           "underused"
+          ]
+         },
+         {
+          "id": "unused",
+          "name": "Unused",
+          "level": "class",
+          "class": "unused",
+          "value": 32,
+          "step": [
+           "autodesk",
+           "autocad-lt",
+           "unused"
+          ]
+         },
+         {
+          "id": "leaver",
+          "name": "Leaver",
+          "level": "class",
+          "class": "leaver",
+          "value": 4,
+          "step": [
+           "autodesk",
+           "autocad-lt",
+           "leaver"
+          ]
+         },
+         {
+          "id": "unassigned",
+          "name": "Unassigned",
+          "level": "class",
+          "class": "unassigned",
+          "value": 14,
+          "step": [
+           "autodesk",
+           "autocad-lt",
+           "unassigned"
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "legend": [
+     {
+      "class": "active",
+      "label": "Active",
+      "count": 8286,
+      "share": 71.1
+     },
+     {
+      "class": "underused",
+      "label": "Underused",
+      "count": 1822,
+      "share": 15.7
+     },
+     {
+      "class": "unused",
+      "label": "Unused",
+      "count": 1820,
+      "share": 15.6
+     },
+     {
+      "class": "leaver",
+      "label": "Leaver",
+      "count": 473,
+      "share": 4.0
+     },
+     {
+      "class": "unassigned",
+      "label": "Unassigned",
+      "count": 649,
+      "share": 5.6
+     }
+    ],
+    "total": 13050,
+    "targets": [
+     {
+      "label": "Microsoft",
+      "value": 6680,
+      "step": [
+       "microsoft"
+      ]
+     },
+     {
+      "label": "Atlassian",
+      "value": 1700,
+      "step": [
+       "atlassian"
+      ]
+     },
+     {
+      "label": "Adobe",
+      "value": 1440,
+      "step": [
+       "adobe"
+      ]
+     },
+     {
+      "label": "Zoom",
+      "value": 900,
+      "step": [
+       "zoom"
+      ]
+     },
+     {
+      "label": "Salesforce",
+      "value": 800,
+      "step": [
+       "salesforce"
+      ]
+     },
+     {
+      "label": "Miro",
+      "value": 520,
+      "step": [
+       "miro"
+      ]
+     },
+     {
+      "label": "DocuSign",
+      "value": 310,
+      "step": [
+       "docusign"
+      ]
+     },
+     {
+      "label": "Smartsheet",
+      "value": 300,
+      "step": [
+       "smartsheet"
+      ]
+     },
+     {
+      "label": "Thomson Reuters",
+      "value": 260,
+      "step": [
+       "thomson-reuters"
+      ]
+     },
+     {
+      "label": "Autodesk",
+      "value": 140,
+      "step": [
+       "autodesk"
+      ]
+     }
+    ]
+   },
+   "entitlement": {
+    "categories": [
+     {
+      "id": "microsoft-365-e3",
+      "name": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "microsoft-365-e3"
+      ]
+     },
+     {
+      "id": "acrobat-pro",
+      "name": "Acrobat Pro",
+      "vendor": "Adobe",
+      "step": [
+       "adobe",
+       "acrobat-pro"
+      ]
+     },
+     {
+      "id": "confluence",
+      "name": "Confluence",
+      "vendor": "Atlassian",
+      "step": [
+       "atlassian",
+       "confluence"
+      ]
+     },
+     {
+      "id": "microsoft-365-e5",
+      "name": "Microsoft 365 E5",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "microsoft-365-e5"
+      ]
+     },
+     {
+      "id": "zoom-workplace-business",
+      "name": "Zoom Workplace Business",
+      "vendor": "Zoom",
+      "step": [
+       "zoom",
+       "zoom-workplace-business"
+      ]
+     },
+     {
+      "id": "jira-software",
+      "name": "Jira Software",
+      "vendor": "Atlassian",
+      "step": [
+       "atlassian",
+       "jira-software"
+      ]
+     },
+     {
+      "id": "power-bi-pro",
+      "name": "Power BI Pro",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "power-bi-pro"
+      ]
+     },
+     {
+      "id": "sales-cloud-enterprise",
+      "name": "Sales Cloud Enterprise",
+      "vendor": "Salesforce",
+      "step": [
+       "salesforce",
+       "sales-cloud-enterprise"
+      ]
+     },
+     {
+      "id": "miro-business",
+      "name": "Miro Business",
+      "vendor": "Miro",
+      "step": [
+       "miro",
+       "miro-business"
+      ]
+     },
+     {
+      "id": "visio-plan-2",
+      "name": "Visio Plan 2",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "visio-plan-2"
+      ]
+     },
+     {
+      "id": "project-plan-3",
+      "name": "Project Plan 3",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "project-plan-3"
+      ]
+     },
+     {
+      "id": "docusign-esignature",
+      "name": "DocuSign eSignature",
+      "vendor": "DocuSign",
+      "step": [
+       "docusign",
+       "docusign-esignature"
+      ]
+     },
+     {
+      "id": "smartsheet-business",
+      "name": "Smartsheet Business",
+      "vendor": "Smartsheet",
+      "step": [
+       "smartsheet",
+       "smartsheet-business"
+      ]
+     },
+     {
+      "id": "westlaw-edge",
+      "name": "Westlaw Edge",
+      "vendor": "Thomson Reuters",
+      "step": [
+       "thomson-reuters",
+       "westlaw-edge"
+      ]
+     },
+     {
+      "id": "creative-cloud-all-apps",
+      "name": "Creative Cloud All Apps",
+      "vendor": "Adobe",
+      "step": [
+       "adobe",
+       "creative-cloud-all-apps"
+      ]
+     },
+     {
+      "id": "tableau-creator",
+      "name": "Tableau Creator",
+      "vendor": "Salesforce",
+      "step": [
+       "salesforce",
+       "tableau-creator"
+      ]
+     },
+     {
+      "id": "autocad-lt",
+      "name": "AutoCAD LT",
+      "vendor": "Autodesk",
+      "step": [
+       "autodesk",
+       "autocad-lt"
+      ]
+     }
+    ],
+    "series": {
+     "entitled": [
+      5040,
+      1440,
+      1080,
+      1080,
+      1080,
+      960,
+      960,
+      744,
+      624,
+      504,
+      432,
+      372,
+      360,
+      312,
+      288,
+      216,
+      168
+     ],
+     "assigned": [
+      4074,
+      1152,
+      873,
+      855,
+      855,
+      768,
+      752,
+      589,
+      458,
+      382,
+      320,
+      291,
+      270,
+      247,
+      223,
+      166,
+      126
+     ],
+     "active": [
+      3422,
+      649,
+      491,
+      627,
+      469,
+      578,
+      406,
+      442,
+      169,
+      149,
+      157,
+      122,
+      124,
+      192,
+      128,
+      83,
+      78
+     ]
+    },
+    "targets": [
+     {
+      "label": "Microsoft 365 E3",
+      "value": 5040,
+      "step": [
+       "microsoft",
+       "microsoft-365-e3"
+      ]
+     },
+     {
+      "label": "Acrobat Pro",
+      "value": 1440,
+      "step": [
+       "adobe",
+       "acrobat-pro"
+      ]
+     },
+     {
+      "label": "Confluence",
+      "value": 1080,
+      "step": [
+       "atlassian",
+       "confluence"
+      ]
+     },
+     {
+      "label": "Microsoft 365 E5",
+      "value": 1080,
+      "step": [
+       "microsoft",
+       "microsoft-365-e5"
+      ]
+     },
+     {
+      "label": "Zoom Workplace Business",
+      "value": 1080,
+      "step": [
+       "zoom",
+       "zoom-workplace-business"
+      ]
+     },
+     {
+      "label": "Jira Software",
+      "value": 960,
+      "step": [
+       "atlassian",
+       "jira-software"
+      ]
+     },
+     {
+      "label": "Power BI Pro",
+      "value": 960,
+      "step": [
+       "microsoft",
+       "power-bi-pro"
+      ]
+     },
+     {
+      "label": "Sales Cloud Enterprise",
+      "value": 744,
+      "step": [
+       "salesforce",
+       "sales-cloud-enterprise"
+      ]
+     },
+     {
+      "label": "Miro Business",
+      "value": 624,
+      "step": [
+       "miro",
+       "miro-business"
+      ]
+     },
+     {
+      "label": "Visio Plan 2",
+      "value": 504,
+      "step": [
+       "microsoft",
+       "visio-plan-2"
+      ]
+     },
+     {
+      "label": "Project Plan 3",
+      "value": 432,
+      "step": [
+       "microsoft",
+       "project-plan-3"
+      ]
+     },
+     {
+      "label": "DocuSign eSignature",
+      "value": 372,
+      "step": [
+       "docusign",
+       "docusign-esignature"
+      ]
+     },
+     {
+      "label": "Smartsheet Business",
+      "value": 360,
+      "step": [
+       "smartsheet",
+       "smartsheet-business"
+      ]
+     },
+     {
+      "label": "Westlaw Edge",
+      "value": 312,
+      "step": [
+       "thomson-reuters",
+       "westlaw-edge"
+      ]
+     },
+     {
+      "label": "Creative Cloud All Apps",
+      "value": 288,
+      "step": [
+       "adobe",
+       "creative-cloud-all-apps"
+      ]
+     },
+     {
+      "label": "Tableau Creator",
+      "value": 216,
+      "step": [
+       "salesforce",
+       "tableau-creator"
+      ]
+     },
+     {
+      "label": "AutoCAD LT",
+      "value": 168,
+      "step": [
+       "autodesk",
+       "autocad-lt"
+      ]
+     }
+    ]
+   },
+   "trend": {
+    "months": [
+     "2025-10",
+     "2025-11",
+     "2025-12",
+     "2026-01",
+     "2026-02",
+     "2026-03",
+     "2026-04",
+     "2026-05",
+     "2026-06",
+     "2026-07",
+     "2026-08",
+     "2026-09"
+    ],
+    "series": {
+     "assigned": [
+      11297,
+      11398,
+      11476,
+      11578,
+      11663,
+      11794,
+      11913,
+      12027,
+      12118,
+      12205,
+      12306,
+      12401
+     ],
+     "in_use": [
+      9646,
+      9640,
+      9554,
+      9571,
+      9420,
+      9391,
+      9288,
+      9259,
+      9208,
+      9137,
+      9289,
+      9237
+     ]
+    }
+   },
+   "recoverable": {
+    "categories": [
+     {
+      "id": "sales-cloud-enterprise",
+      "name": "Sales Cloud Enterprise",
+      "vendor": "Salesforce",
+      "step": [
+       "salesforce",
+       "sales-cloud-enterprise"
+      ]
+     },
+     {
+      "id": "microsoft-365-e3",
+      "name": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "microsoft-365-e3"
+      ]
+     },
+     {
+      "id": "microsoft-365-e5",
+      "name": "Microsoft 365 E5",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "microsoft-365-e5"
+      ]
+     },
+     {
+      "id": "creative-cloud-all-apps",
+      "name": "Creative Cloud All Apps",
+      "vendor": "Adobe",
+      "step": [
+       "adobe",
+       "creative-cloud-all-apps"
+      ]
+     },
+     {
+      "id": "acrobat-pro",
+      "name": "Acrobat Pro",
+      "vendor": "Adobe",
+      "step": [
+       "adobe",
+       "acrobat-pro"
+      ]
+     },
+     {
+      "id": "tableau-creator",
+      "name": "Tableau Creator",
+      "vendor": "Salesforce",
+      "step": [
+       "salesforce",
+       "tableau-creator"
+      ]
+     },
+     {
+      "id": "project-plan-3",
+      "name": "Project Plan 3",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "project-plan-3"
+      ]
+     },
+     {
+      "id": "zoom-workplace-business",
+      "name": "Zoom Workplace Business",
+      "vendor": "Zoom",
+      "step": [
+       "zoom",
+       "zoom-workplace-business"
+      ]
+     },
+     {
+      "id": "docusign-esignature",
+      "name": "DocuSign eSignature",
+      "vendor": "DocuSign",
+      "step": [
+       "docusign",
+       "docusign-esignature"
+      ]
+     },
+     {
+      "id": "power-bi-pro",
+      "name": "Power BI Pro",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "power-bi-pro"
+      ]
+     },
+     {
+      "id": "smartsheet-business",
+      "name": "Smartsheet Business",
+      "vendor": "Smartsheet",
+      "step": [
+       "smartsheet",
+       "smartsheet-business"
+      ]
+     },
+     {
+      "id": "confluence",
+      "name": "Confluence",
+      "vendor": "Atlassian",
+      "step": [
+       "atlassian",
+       "confluence"
+      ]
+     },
+     {
+      "id": "miro-business",
+      "name": "Miro Business",
+      "vendor": "Miro",
+      "step": [
+       "miro",
+       "miro-business"
+      ]
+     },
+     {
+      "id": "visio-plan-2",
+      "name": "Visio Plan 2",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "visio-plan-2"
+      ]
+     },
+     {
+      "id": "jira-software",
+      "name": "Jira Software",
+      "vendor": "Atlassian",
+      "step": [
+       "atlassian",
+       "jira-software"
+      ]
+     },
+     {
+      "id": "westlaw-edge",
+      "name": "Westlaw Edge",
+      "vendor": "Thomson Reuters",
+      "step": [
+       "thomson-reuters",
+       "westlaw-edge"
+      ]
+     },
+     {
+      "id": "autocad-lt",
+      "name": "AutoCAD LT",
+      "vendor": "Autodesk",
+      "step": [
+       "autodesk",
+       "autocad-lt"
+      ]
+     }
+    ],
+    "values": [
+     247500,
+     232416,
+     110808,
+     77760,
+     66240,
+     58500,
+     51840,
+     50760,
+     48960,
+     40152,
+     35400,
+     15048,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "seats": [
+     125,
+     538,
+     162,
+     72,
+     276,
+     65,
+     144,
+     235,
+     102,
+     239,
+     118,
+     209,
+     235,
+     181,
+     137,
+     54,
+     50
+    ],
+    "withheld": [
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "targets": [
+     {
+      "label": "Sales Cloud Enterprise",
+      "value": 247500,
+      "step": [
+       "salesforce",
+       "sales-cloud-enterprise"
+      ]
+     },
+     {
+      "label": "Microsoft 365 E3",
+      "value": 232416,
+      "step": [
+       "microsoft",
+       "microsoft-365-e3"
+      ]
+     },
+     {
+      "label": "Microsoft 365 E5",
+      "value": 110808,
+      "step": [
+       "microsoft",
+       "microsoft-365-e5"
+      ]
+     },
+     {
+      "label": "Creative Cloud All Apps",
+      "value": 77760,
+      "step": [
+       "adobe",
+       "creative-cloud-all-apps"
+      ]
+     },
+     {
+      "label": "Acrobat Pro",
+      "value": 66240,
+      "step": [
+       "adobe",
+       "acrobat-pro"
+      ]
+     },
+     {
+      "label": "Tableau Creator",
+      "value": 58500,
+      "step": [
+       "salesforce",
+       "tableau-creator"
+      ]
+     },
+     {
+      "label": "Project Plan 3",
+      "value": 51840,
+      "step": [
+       "microsoft",
+       "project-plan-3"
+      ]
+     },
+     {
+      "label": "Zoom Workplace Business",
+      "value": 50760,
+      "step": [
+       "zoom",
+       "zoom-workplace-business"
+      ]
+     },
+     {
+      "label": "DocuSign eSignature",
+      "value": 48960,
+      "step": [
+       "docusign",
+       "docusign-esignature"
+      ]
+     },
+     {
+      "label": "Power BI Pro",
+      "value": 40152,
+      "step": [
+       "microsoft",
+       "power-bi-pro"
+      ]
+     },
+     {
+      "label": "Smartsheet Business",
+      "value": 35400,
+      "step": [
+       "smartsheet",
+       "smartsheet-business"
+      ]
+     },
+     {
+      "label": "Confluence",
+      "value": 15048,
+      "step": [
+       "atlassian",
+       "confluence"
+      ]
+     },
+     {
+      "label": "Miro Business",
+      "value": null,
+      "step": [
+       "miro",
+       "miro-business"
+      ]
+     },
+     {
+      "label": "Visio Plan 2",
+      "value": null,
+      "step": [
+       "microsoft",
+       "visio-plan-2"
+      ]
+     },
+     {
+      "label": "Jira Software",
+      "value": null,
+      "step": [
+       "atlassian",
+       "jira-software"
+      ]
+     },
+     {
+      "label": "Westlaw Edge",
+      "value": null,
+      "step": [
+       "thomson-reuters",
+       "westlaw-edge"
+      ]
+     },
+     {
+      "label": "AutoCAD LT",
+      "value": null,
+      "step": [
+       "autodesk",
+       "autocad-lt"
+      ]
+     }
+    ]
+   },
+   "candidates": {
+    "rows": [
+     {
+      "product_id": "sales-cloud-enterprise",
+      "product": "Sales Cloud Enterprise",
+      "vendor": "Salesforce",
+      "step": [
+       "salesforce",
+       "sales-cloud-enterprise"
+      ],
+      "entitled": 620,
+      "active": 442,
+      "underused": 53,
+      "unused": 72,
+      "leaver": 22,
+      "unassigned": 31,
+      "recoverable_year": 247500,
+      "recoverable_seats": 125
+     },
+     {
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "microsoft-365-e3"
+      ],
+      "entitled": 4200,
+      "active": 3422,
+      "underused": 240,
+      "unused": 260,
+      "leaver": 152,
+      "unassigned": 126,
+      "recoverable_year": 232416,
+      "recoverable_seats": 538
+     },
+     {
+      "product_id": "microsoft-365-e5",
+      "product": "Microsoft 365 E5",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "microsoft-365-e5"
+      ],
+      "entitled": 900,
+      "active": 627,
+      "underused": 111,
+      "unused": 84,
+      "leaver": 33,
+      "unassigned": 45,
+      "recoverable_year": 110808,
+      "recoverable_seats": 162
+     },
+     {
+      "product_id": "creative-cloud-all-apps",
+      "product": "Creative Cloud All Apps",
+      "vendor": "Adobe",
+      "step": [
+       "adobe",
+       "creative-cloud-all-apps"
+      ],
+      "entitled": 240,
+      "active": 128,
+      "underused": 40,
+      "unused": 44,
+      "leaver": 11,
+      "unassigned": 17,
+      "recoverable_year": 77760,
+      "recoverable_seats": 72
+     },
+     {
+      "product_id": "acrobat-pro",
+      "product": "Acrobat Pro",
+      "vendor": "Adobe",
+      "step": [
+       "adobe",
+       "acrobat-pro"
+      ],
+      "entitled": 1200,
+      "active": 649,
+      "underused": 275,
+      "unused": 188,
+      "leaver": 40,
+      "unassigned": 48,
+      "recoverable_year": 66240,
+      "recoverable_seats": 276
+     },
+     {
+      "product_id": "tableau-creator",
+      "product": "Tableau Creator",
+      "vendor": "Salesforce",
+      "step": [
+       "salesforce",
+       "tableau-creator"
+      ],
+      "entitled": 180,
+      "active": 83,
+      "underused": 32,
+      "unused": 44,
+      "leaver": 7,
+      "unassigned": 14,
+      "recoverable_year": 58500,
+      "recoverable_seats": 65
+     },
+     {
+      "product_id": "project-plan-3",
+      "product": "Project Plan 3",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "project-plan-3"
+      ],
+      "entitled": 360,
+      "active": 157,
+      "underused": 59,
+      "unused": 92,
+      "leaver": 12,
+      "unassigned": 40,
+      "recoverable_year": 51840,
+      "recoverable_seats": 144
+     },
+     {
+      "product_id": "zoom-workplace-business",
+      "product": "Zoom Workplace Business",
+      "vendor": "Zoom",
+      "step": [
+       "zoom",
+       "zoom-workplace-business"
+      ],
+      "entitled": 900,
+      "active": 469,
+      "underused": 196,
+      "unused": 160,
+      "leaver": 30,
+      "unassigned": 45,
+      "recoverable_year": 50760,
+      "recoverable_seats": 235
+     },
+     {
+      "product_id": "docusign-esignature",
+      "product": "DocuSign eSignature",
+      "vendor": "DocuSign",
+      "step": [
+       "docusign",
+       "docusign-esignature"
+      ],
+      "entitled": 310,
+      "active": 122,
+      "underused": 86,
+      "unused": 69,
+      "leaver": 14,
+      "unassigned": 19,
+      "recoverable_year": 48960,
+      "recoverable_seats": 102
+     },
+     {
+      "product_id": "power-bi-pro",
+      "product": "Power BI Pro",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "power-bi-pro"
+      ],
+      "entitled": 800,
+      "active": 406,
+      "underused": 155,
+      "unused": 159,
+      "leaver": 32,
+      "unassigned": 48,
+      "recoverable_year": 40152,
+      "recoverable_seats": 239
+     },
+     {
+      "product_id": "smartsheet-business",
+      "product": "Smartsheet Business",
+      "vendor": "Smartsheet",
+      "step": [
+       "smartsheet",
+       "smartsheet-business"
+      ],
+      "entitled": 300,
+      "active": 124,
+      "underused": 58,
+      "unused": 79,
+      "leaver": 9,
+      "unassigned": 30,
+      "recoverable_year": 35400,
+      "recoverable_seats": 118
+     },
+     {
+      "product_id": "confluence",
+      "product": "Confluence",
+      "vendor": "Atlassian",
+      "step": [
+       "atlassian",
+       "confluence"
+      ],
+      "entitled": 900,
+      "active": 491,
+      "underused": 200,
+      "unused": 144,
+      "leaver": 38,
+      "unassigned": 27,
+      "recoverable_year": 15048,
+      "recoverable_seats": 209
+     },
+     {
+      "product_id": "miro-business",
+      "product": "Miro Business",
+      "vendor": "Miro",
+      "step": [
+       "miro",
+       "miro-business"
+      ],
+      "entitled": 520,
+      "active": 169,
+      "underused": 116,
+      "unused": 155,
+      "leaver": 18,
+      "unassigned": 62,
+      "recoverable_year": null,
+      "recoverable_seats": 235
+     },
+     {
+      "product_id": "visio-plan-2",
+      "product": "Visio Plan 2",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft",
+       "visio-plan-2"
+      ],
+      "entitled": 420,
+      "active": 149,
+      "underused": 90,
+      "unused": 127,
+      "leaver": 16,
+      "unassigned": 38,
+      "recoverable_year": null,
+      "recoverable_seats": 181
+     },
+     {
+      "product_id": "jira-software",
+      "product": "Jira Software",
+      "vendor": "Atlassian",
+      "step": [
+       "atlassian",
+       "jira-software"
+      ],
+      "entitled": 800,
+      "active": 578,
+      "underused": 85,
+      "unused": 82,
+      "leaver": 23,
+      "unassigned": 32,
+      "recoverable_year": null,
+      "recoverable_seats": 137
+     },
+     {
+      "product_id": "westlaw-edge",
+      "product": "Westlaw Edge",
+      "vendor": "Thomson Reuters",
+      "step": [
+       "thomson-reuters",
+       "westlaw-edge"
+      ],
+      "entitled": 260,
+      "active": 192,
+      "underused": 14,
+      "unused": 29,
+      "leaver": 12,
+      "unassigned": 13,
+      "recoverable_year": null,
+      "recoverable_seats": 54
+     },
+     {
+      "product_id": "autocad-lt",
+      "product": "AutoCAD LT",
+      "vendor": "Autodesk",
+      "step": [
+       "autodesk",
+       "autocad-lt"
+      ],
+      "entitled": 140,
+      "active": 78,
+      "underused": 12,
+      "unused": 32,
+      "leaver": 4,
+      "unassigned": 14,
+      "recoverable_year": null,
+      "recoverable_seats": 50
+     }
+    ],
+    "total": {
+     "product": "Total",
+     "vendor": "",
+     "entitled": 17250,
+     "active": 11708,
+     "underused": 2062,
+     "unused": 2080,
+     "leaver": 625,
+     "unassigned": 775,
+     "recoverable_year": 1267800,
+     "recoverable_seats": 3480,
+     "withheld_seats": 657
+    }
+   },
+   "seats": {
+    "rows": [
+     {
+      "seat_id": "LIC-000001",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Omar Pereira",
+      "last_used": "2026-09-27",
+      "days_idle": 3,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000002",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Marketing",
+      "assignee": "Rahul Larsen",
+      "last_used": "2026-03-24",
+      "days_idle": 190,
+      "utilisation_class": "leaver",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000003",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Andrei Ali",
+      "last_used": "2026-01-24",
+      "days_idle": 249,
+      "utilisation_class": "unused",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000004",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Naomi Eriksson",
+      "last_used": "2026-09-17",
+      "days_idle": 13,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000005",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Operations",
+      "assignee": "Victor Kumar",
+      "last_used": "2026-09-15",
+      "days_idle": 15,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000006",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Legal",
+      "assignee": "Mateo Ivanova",
+      "last_used": "2026-09-18",
+      "days_idle": 12,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000007",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Mei Banerjee",
+      "last_used": "2026-09-30",
+      "days_idle": 0,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000008",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "People",
+      "assignee": "Jonas Olsen",
+      "last_used": "2026-09-27",
+      "days_idle": 3,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000009",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Julia Zhang",
+      "last_used": "2026-09-12",
+      "days_idle": 18,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000010",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Mei Wilson",
+      "last_used": "2026-09-27",
+      "days_idle": 3,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000011",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Tomas Garcia",
+      "last_used": "2026-09-17",
+      "days_idle": 13,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000012",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Finance",
+      "assignee": "Wei Jansen",
+      "last_used": "2026-09-24",
+      "days_idle": 6,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000013",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Thandiwe Williams",
+      "last_used": "2026-09-23",
+      "days_idle": 7,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000014",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Samir Chen",
+      "last_used": "2026-09-11",
+      "days_idle": 19,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000015",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Samir Jones",
+      "last_used": "2026-09-27",
+      "days_idle": 3,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000016",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Finance",
+      "assignee": "Valentina Van Dijk",
+      "last_used": "2026-09-21",
+      "days_idle": 9,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000017",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Kai Singh",
+      "last_used": "2026-09-29",
+      "days_idle": 1,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000018",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Operations",
+      "assignee": "Oscar Hughes",
+      "last_used": "2026-09-15",
+      "days_idle": 15,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000019",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Marketing",
+      "assignee": "Thomas Edwards",
+      "last_used": "2026-09-24",
+      "days_idle": 6,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000020",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Laila Williams",
+      "last_used": "2026-09-28",
+      "days_idle": 2,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000021",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Finance",
+      "assignee": "Elena Olsen",
+      "last_used": "2026-09-28",
+      "days_idle": 2,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000022",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Omar Das",
+      "last_used": "2026-09-20",
+      "days_idle": 10,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000023",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Sales",
+      "assignee": "Nadia Okafor",
+      "last_used": "2026-09-26",
+      "days_idle": 4,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000024",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Andrei Garcia",
+      "last_used": "2026-09-19",
+      "days_idle": 11,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000025",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Arjun Fernandes",
+      "last_used": "2026-09-13",
+      "days_idle": 17,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     }
+    ],
+    "page": 1,
+    "pages": 522,
+    "page_size": 25,
+    "total": 13050,
+    "first": 1,
+    "last": 25,
+    "sort": "seat_id",
+    "direction": "asc",
+    "footer": {
+     "active": 8286,
+     "underused": 1822,
+     "unused": 1820,
+     "leaver": 473,
+     "unassigned": 649,
+     "total": 12401
+    }
+   }
+  }
+ }
+}

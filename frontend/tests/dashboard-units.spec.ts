@@ -1,23 +1,28 @@
 // The dashboard's pure parts (D-56, D-59): formats, the drill path in the URL, and the ECharts
 // options built from descriptor, payload and token values, in both themes. Payloads are the
-// backend's own (tests/fixtures/dashboard).
+// backend's own (tests/fixtures/dashboard): the polished checks read iteration 2's (D-61), and
+// iteration 1's defect overlay has its own tests (D-60).
 
 import { readdirSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { dashboardUrl } from '../src/dashboard/api'
 import { deeper, drillOf, parent, steps } from '../src/dashboard/drill'
-import { axisTitle, count, format, month, percent, usd, usdCompact } from '../src/dashboard/format'
-import { barOption, chartOption, lineOption, treemapOption } from '../src/dashboard/options'
+import { axisTitle, compact, count, format, month, percent, plain, usd, usdCompact } from '../src/dashboard/format'
+import { barOption, chartOption, lineOption, pieOption, treemapOption } from '../src/dashboard/options'
 import { readTokens } from '../src/dashboard/tokens'
 import type { DashboardResponse, Panel } from '../src/dashboard/types'
 import { dashboardFixture } from './fake-server'
 
 const SRC = resolve(__dirname, '../src')
 const TOKENS_CSS = readFileSync(join(SRC, 'styles/tokens.css'), 'utf8')
-const root = dashboardFixture('root.json') as unknown as DashboardResponse
+const root = dashboardFixture(2, 'root.json') as unknown as DashboardResponse
 const panel = (id: string) => root.descriptor.panels.find((p) => p.id === id) as Panel
 const data = (id: string) => root.payload.panels[id]
+const rough = dashboardFixture(1, 'root.json') as unknown as DashboardResponse
+const roughPanel = (id: string) => rough.descriptor.panels.find((p) => p.id === id) as Panel
+const roughData = (id: string) => rough.payload.panels[id]
+const DEFECTS_CSS = readFileSync(join(SRC, 'styles/defects.css'), 'utf8')
 
 let style: HTMLStyleElement
 beforeAll(() => {
@@ -168,11 +173,11 @@ describe('chart options (colours from tokens at paint time, D-37)', () => {
   })
 })
 
-describe('source', () => {
-  function files(dir: string): string[] {
-    return readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? files(join(dir, e.name)) : [join(dir, e.name)]))
-  }
+function files(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? files(join(dir, e.name)) : [join(dir, e.name)]))
+}
 
+describe('source', () => {
   it('the dashboard writes no colour value of its own: chart and status tokens only (D-37)', () => {
     const sources = [...files(join(SRC, 'dashboard')), ...files(join(SRC, 'components/dashboard'))]
     expect(sources.length).toBeGreaterThan(8)
@@ -181,5 +186,73 @@ describe('source', () => {
       // A colour literal; an HTML character reference such as &#8250; is not one.
       expect(text.match(/(?<!&)#[0-9a-fA-F]{3,8}\b(?![\w-])|rgba?\(|hsla?\(/g), file).toBeNull()
     }
+  })
+})
+
+describe("iteration 1's overlay in the options (D-60)", () => {
+  it('names the three V-4 formats: no separators, compact, and grouped without a currency', () => {
+    expect([plain(13050), plain(12.6), compact(8286), compact(950), compact(1_191_396)]).toEqual(['13050', '13', '8.3k', '950', '1.2M'])
+    expect([format(13050, 'plain'), format(8286, 'compact'), format(1267800, 'number')]).toEqual(['13050', '8.3k', '1,267,800'])
+  })
+
+  it.each(['light', 'dark'] as const)('draws the recoverable cost as a pie, one slice per priced product, in token colours (V-1, %s)', (theme) => {
+    const values = roughData('recoverable').values!
+    const pie = pieOption(roughPanel('recoverable'), roughData('recoverable'), paint(theme)) as any
+    const slices = pie.series[0].data
+    expect(slices).toHaveLength(values.filter((v) => v !== null).length)
+    expect(slices.length).toBeGreaterThan(8)
+    const roles = roughPanel('recoverable').slice_roles!
+    expect(slices.map((s: any) => s.itemStyle.color)).toEqual(slices.map((_: unknown, n: number) => declared(theme, `--chart-${roles[n % roles.length]}`)))
+    const priced = roughData('recoverable').categories!.filter((_, i) => values[i] !== null)
+    expect(slices.map((s: any) => s.step)).toEqual(priced.map((c) => c.step))
+    expect((chartOption(roughPanel('recoverable'), roughData('recoverable'), paint(theme)) as any).series).toEqual(pie.series)
+    expect(pie.tooltip.formatter({ name: priced[0].name, value: slices[0].value })).toContain(usdCompact(slices[0].value))
+  })
+
+  it("draws Unused in the descriptor's own colour on the treemap, and every other colour from tokens (V-3)", () => {
+    for (const theme of ['light', 'dark'] as const) {
+      const own = roughPanel('seats-treemap').class_colours!.unused.colour
+      const tree = treemapOption(roughPanel('seats-treemap'), roughData('seats-treemap'), paint(theme)) as any
+      const leaves = tree.series[0].data.flatMap((v: any) => v.children.flatMap((p: any) => p.children))
+      expect(leaves.filter((l: any) => l.id === 'unused').every((l: any) => l.itemStyle.color === own)).toBe(true)
+      expect(leaves.filter((l: any) => l.id === 'active').every((l: any) => l.itemStyle.color === declared(theme, '--chart-positive'))).toBe(true)
+      const tokenValues = new Set(TOKENS_CSS.match(/#[0-9a-f]{6}\b|rgba\([^)]*\)/gi)!.map((c) => c.toLowerCase().replace(/\s+/g, '')).concat(['transparent']))
+      for (const p of rough.descriptor.panels.filter((x) => ['treemap', 'bar', 'line', 'pie'].includes(x.mark))) {
+        const colours = JSON.stringify(chartOption(p, roughData(p.id), paint(theme))).match(/#[0-9a-f]{3,8}\b|rgba?\([^)]*\)/gi) ?? []
+        const strays = colours.filter((c) => !tokenValues.has(c.toLowerCase().replace(/\s+/g, '')))
+        expect(new Set(strays), `${p.id} ${theme}`).toEqual(p.id === 'seats-treemap' ? new Set([own]) : new Set())
+      }
+    }
+  })
+})
+
+describe('defects.css stays inside the iteration 1 dashboard (R-1)', () => {
+  const css = DEFECTS_CSS.replace(/\/\*[\s\S]*?\*\//g, '')
+  const selectors = [...css.matchAll(/([^{}]+)\{[^{}]*\}/g)].flatMap((m) => m[1].split(',').map((x) => x.trim().replace(/\s+/g, ' ')))
+
+  it('scopes every selector under .defects-overlay, with no sibling combinator to step outside it', () => {
+    expect(selectors.length).toBeGreaterThan(8)
+    for (const selector of selectors) {
+      expect(selector.startsWith('.defects-overlay '), selector).toBe(true)
+      expect(selector.replace(/\([^)]*\)/g, ''), selector).not.toMatch(/[~+]/)
+    }
+    expect(css).not.toMatch(/@import|@font-face|:root|\bhtml\b|\bbody\b/)
+    expect(css).not.toMatch(/--[\w-]+\s*:/) // defines no token
+  })
+
+  it('writes no colour value: its grey is a token used as text (V-8)', () => {
+    expect(css.match(/#[0-9a-fA-F]{3,8}\b|rgba?\(|hsla?\(/g)).toBeNull()
+    expect(css).toContain('var(--border-default)')
+  })
+
+  it('names a defect for every rule: V-6, V-7 and V-8 only', () => {
+    expect([...new Set([...DEFECTS_CSS.matchAll(/\/\* (V-\d+):/g)].map((m) => m[1]))]).toEqual(['V-6', 'V-7', 'V-8'])
+  })
+
+  it("is loaded only through a descriptor's named sheet, and nothing imports it at start", () => {
+    const main = readFileSync(join(SRC, 'main.ts'), 'utf8')
+    expect(main).not.toContain('defects')
+    const importers = files(SRC).filter((f) => !f.endsWith('defects.css') && readFileSync(f, 'utf8').includes('defects.css'))
+    expect(importers.map((f) => f.slice(SRC.length + 1).replace(/\\/g, '/'))).toEqual(['dashboard/stylesheets.ts'])
   })
 })

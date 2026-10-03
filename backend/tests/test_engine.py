@@ -306,7 +306,7 @@ def test_the_data_swap_test_runs_the_same_logic_on_both_estates(first):
     germ = next(e for e in events if e.type == "phase.completed" and e.phase == "germ")
     assert germ.data["result"] == "passed" and germ.data["tests"] == {"T-07": "pass", "T-08": "pass"}
     collected = next(e for e in events if e.step == "harvest.collect" and e.type == "log")
-    assert collected.message == "Collected the License Optimization payload (polished): 11 panels at All products, from 13,050 seat rows in the primary estate"
+    assert collected.message == "Collected the License Optimization payload: 11 panels at All products, from 13,050 seat rows in the primary estate"
 
 
 def test_the_data_swap_test_fails_when_the_logic_gives_another_structure(monkeypatch):

@@ -1,6 +1,7 @@
 // The License Optimization dashboard on the review route (FR-D-1 to FR-D-6, ui-spec.md section 5,
 // D-59, OQ-22, OQ-23), against tests/fake-server.ts, which replays the backend's own responses,
-// and a recorder in place of ECharts (tests/fake-echarts.ts).
+// and a recorder in place of ECharts (tests/fake-echarts.ts). The polished checks open iteration 2
+// (D-61); iteration 1's defect overlay has its own tests at the end (D-60).
 
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { readFileSync } from 'node:fs'
@@ -9,6 +10,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, type Router } from 'vue-router'
 import App from '../src/App.vue'
+import { readTokens } from '../src/dashboard/tokens'
 import type { DashboardResponse } from '../src/dashboard/types'
 import { createAppRouter } from '../src/router'
 import { useLabStore, type Build } from '../src/stores/lab'
@@ -18,6 +20,9 @@ import { chartFor, charts } from './fake-echarts'
 import { dashboardFixture, FakeServer } from './fake-server'
 
 vi.mock('../src/dashboard/echarts', () => import('./fake-echarts'))
+// A panel's declared latency waits here until a test releases it (L-1, D-60).
+const latency = vi.hoisted(() => ({ waits: [] as { ms: number; release: () => void }[] }))
+vi.mock('../src/dashboard/latency', () => ({ wait: (ms: number) => new Promise<void>((release) => latency.waits.push({ ms, release })) }))
 
 class FakeEventSource {
   addEventListener() {}
@@ -26,8 +31,10 @@ class FakeEventSource {
   onerror: (() => void) | null = null
 }
 
-const DASHBOARD = '/review/1?dashboard=license-optimization'
-const ROOT = dashboardFixture('root.json') as unknown as DashboardResponse
+const DASHBOARD_1 = '/review/1?dashboard=license-optimization'
+const DASHBOARD = '/review/2?dashboard=license-optimization'
+const ROOT = dashboardFixture(2, 'root.json') as unknown as DashboardResponse
+const ROUGH = dashboardFixture(1, 'root.json') as unknown as DashboardResponse
 const TOKENS_CSS = readFileSync(resolve(__dirname, '../src/styles/tokens.css'), 'utf8')
 
 let server: FakeServer
@@ -48,10 +55,11 @@ function completed(iteration = 1, status: Build['status'] = 'completed'): Build 
 
 beforeEach(() => {
   server = new FakeServer()
-  server.builds = [completed()]
+  server.builds = [completed(1), completed(2)]
   holding = false
   held = []
   charts.length = 0
+  latency.waits.length = 0
   vi.stubGlobal('fetch', async (input: RequestInfo | URL, init?: RequestInit) => {
     if (holding && String(input).includes('/api/dashboards/')) await new Promise<void>((go) => held.push(go))
     return server.fetch(input, init)
@@ -119,16 +127,17 @@ describe('opening the dashboard (OQ-22, OQ-23)', () => {
     server.builds = [build]
     await open('/build/1')
     await click($('[data-test="summary-actions"] [data-action="dashboard"]'))
-    expect(router.currentRoute.value.fullPath).toBe(DASHBOARD)
+    expect(router.currentRoute.value.fullPath).toBe(DASHBOARD_1)
     expect($('[data-test="dashboard-frame"]')).not.toBeNull()
     expect(text('main h1')).toBe('License Optimization')
   })
 
-  it('shows the frame: Back to report, the iteration badge, and for iteration 1 a line on the overlay', async () => {
-    await open(DASHBOARD)
+  it('shows the frame: Back to report and the iteration badge; the M7 line on the overlay is gone (OQ-23)', async () => {
+    await open(DASHBOARD_1)
     expect(text('[data-test="back-to-report"]')).toBe('Back to report')
     expect(text('[data-test="frame-iteration"]')).toBe('Iteration 1 of 2')
-    expect(text('[data-test="overlay-note"]')).toBe("Iteration 1's defect overlay arrives in M8, so until then this is the polished dashboard.")
+    expect($('[data-test="overlay-note"]')).toBeNull()
+    expect(text('[data-test="dashboard-frame"]')).not.toContain('M8')
     expect(text('[data-test="dashboard-source"]')).toBe('Primary estate, 13,050 seats; monthly usage Oct 2025 to Sep 2026, snapshot 2026-09-30')
   })
 
@@ -141,7 +150,7 @@ describe('opening the dashboard (OQ-22, OQ-23)', () => {
   })
 
   it('Back to report closes the dashboard and shows the report stand-in', async () => {
-    await open(DASHBOARD)
+    await open(DASHBOARD_1)
     await click($('[data-test="back-to-report"]'))
     expect(router.currentRoute.value.fullPath).toBe('/review/1')
     expect($('[data-test="dashboard-frame"]')).toBeNull()
@@ -150,7 +159,7 @@ describe('opening the dashboard (OQ-22, OQ-23)', () => {
       "The build report, with its verdict, findings and tests, arrives in M9. Until then the build's summary is on its Build page.",
     )
     await click($('[data-test="view-dashboard"]'))
-    expect(router.currentRoute.value.fullPath).toBe(DASHBOARD)
+    expect(router.currentRoute.value.fullPath).toBe(DASHBOARD_1)
   })
 
   it.each([
@@ -159,7 +168,7 @@ describe('opening the dashboard (OQ-22, OQ-23)', () => {
     [[completed(1, 'interrupted')], 'This build stopped before it finished, so it has no report or dashboard.'],
   ])('does not open without a completed build: %#', async (builds, message) => {
     server.builds = builds
-    await open(DASHBOARD)
+    await open(DASHBOARD_1)
     expect($('[data-test="dashboard-frame"]')).toBeNull()
     expect(text('[data-test="review-state"]')).toBe(message)
     expect(dashboardCalls()).toHaveLength(0)
@@ -260,7 +269,7 @@ describe('drill-down (FR-D-6, D-29)', () => {
   it("every panel follows the drill: the KPIs, the treemap and the tables are that level's", async () => {
     await open(DASHBOARD)
     await click($$('[data-panel="candidates"] [data-test="drill-row"]').find((b) => text(b) === 'Microsoft 365 E3')!)
-    const level = dashboardFixture('product-step.json') as unknown as DashboardResponse
+    const level = dashboardFixture(2, 'product-step.json') as unknown as DashboardResponse
     expect(kpi('k-entitled')).toBe(level.payload.panels['k-entitled'].value!.toLocaleString('en-US'))
     expect(chartFor('seats-treemap').option.series[0].data.map((n: { id: string }) => n.id)).toEqual(
       level.payload.panels['seats-treemap'].nodes!.map((n) => n.id),
@@ -407,5 +416,181 @@ describe('theme and fonts (seed-reuse-notes.md section 1.2 and 1.4)', () => {
     expect(live).toHaveLength(4)
     await click($('[data-test="back-to-report"]'))
     expect(live.every((c) => c.disposed)).toBe(true)
+  })
+})
+
+// Iteration 1: the polished dashboard plus the defect overlay (FR-D-2, D-13, D-60). Every figure
+// and colour below is read from the backend's own rough response, never typed in.
+
+const roughPanel = (id: string) => ROUGH.descriptor.panels.find((p) => p.id === id)!
+const unusedColour = () => roughPanel('seats-treemap').class_colours!.unused.colour
+const release = async () => {
+  latency.waits.splice(0).forEach((w) => w.release())
+  await settle()
+}
+
+describe('iteration 1 carries the defect overlay (D-60)', () => {
+  it('scopes the overlay to the dashboard root: the frame and the shell stay outside it (R-1)', async () => {
+    await open(DASHBOARD_1)
+    const root = $('[data-test="dashboard"]')!
+    expect(root.classList.contains('defects-overlay')).toBe(true)
+    expect(root.dataset.variant).toBe('rough')
+    expect($$('.defects-overlay')).toEqual([root])
+    for (const outside of ['.top-bar', '[data-test="back-to-report"]', '[data-test="frame-iteration"]']) {
+      expect($(outside), outside).not.toBeNull()
+      expect(root.contains($(outside)), outside).toBe(false)
+    }
+  })
+
+  it('iteration 2 has no overlay: no root class, the polished variant, no spinner', async () => {
+    await open(DASHBOARD)
+    expect($$('.defects-overlay')).toEqual([])
+    expect($('[data-test="dashboard"]')!.dataset.variant).toBe('polished')
+    expect($('[data-test="chart-waiting"]')).toBeNull()
+    expect(latency.waits).toEqual([])
+    for (const id of ['seats-treemap', 'entitlement', 'trend', 'recoverable']) expect(chartFor(id).options.length, id).toBeGreaterThan(0)
+  })
+
+  it('shows the KPIs in three formats and a Recoverable figure over the wrong classes (V-4, N-3)', async () => {
+    await open(DASHBOARD_1)
+    const panels = ROUGH.payload.panels
+    expect(kpi('k-entitled')).toBe(String(panels['k-entitled'].value)) // no separators
+    expect(kpi('k-assigned')).toBe(panels['k-assigned'].value!.toLocaleString('en-US'))
+    expect(kpi('k-active')).toBe(`${(panels['k-active'].value! / 1000).toFixed(1)}k`)
+    expect(kpi('k-recoverable')).toBe(`$${(panels['k-recoverable'].value! / 1_000_000).toFixed(1)}M`)
+    expect(panels['k-recoverable'].value).not.toBe(ROOT.payload.panels['k-recoverable'].value)
+  })
+
+  it('shows the inflated legend shares, the wrong footer total and the doubled total row (N-2, N-4, N-5)', async () => {
+    await open(DASHBOARD_1)
+    await release()
+    const legend = ROUGH.payload.panels['seats-treemap'].legend!
+    expect($$('[data-test="legend-item"]').map((li) => text(li))).toEqual(legend.map((l) => `${l.label} ${l.share.toFixed(1)}% ${l.count.toLocaleString('en-US')}`))
+    expect(Math.round(legend.reduce((sum, l) => sum + l.share, 0))).toBe(112)
+    expect(text('[data-test="footer-total"]')).toBe(ROUGH.payload.panels.seats.footer!.total.toLocaleString('en-US'))
+    const total = ROUGH.payload.panels.candidates.total as Record<string, number>
+    const row = text('[data-panel="candidates"] [data-test="total-row"]')
+    expect(row).toContain(total.entitled.toLocaleString('en-US'))
+    expect(row).toContain(total.recoverable_year.toLocaleString('en-US'))
+    expect(text('[data-panel="candidates"] table')).not.toContain('$') // V-4: no currency on the recoverable column
+  })
+
+  it('draws the recoverable cost as a pie of priced products, the in-use line red, Active teal and no axis names (V-1, V-2, V-3, V-5)', async () => {
+    await open(DASHBOARD_1)
+    const read = readTokens()
+    const pie = chartFor('recoverable').option.series[0]
+    expect(pie.type).toBe('pie')
+    expect(pie.data).toHaveLength(ROUGH.payload.panels.recoverable.values!.filter((v) => v !== null).length)
+    expect(pie.data.length).toBeGreaterThan(8)
+    expect(chartFor('trend').option.series[1].lineStyle.color).toBe(read('--chart-negative'))
+    const bars = chartFor('entitlement').option
+    expect(bars.series[2].itemStyle.color).toBe(read('--chart-series-3'))
+    expect([bars.xAxis.name, bars.yAxis.name, chartFor('trend').option.xAxis.name, chartFor('trend').option.yAxis.name]).toEqual(['', '', '', ''])
+    const sums = bars.series[0].data.reduce((sum: number, d: { value: number }) => sum + d.value, 0)
+    expect(sums).toBe(ROUGH.payload.panels.entitlement.series!.entitled.reduce((a, b) => a + b, 0))
+    expect(sums).toBeGreaterThan(ROUGH.payload.panels['k-entitled'].value!) // N-1
+  })
+
+  it('treemap waits its declared 4.5 s behind a spinner while every other panel is ready (L-1, NFR-3)', async () => {
+    await open(DASHBOARD_1)
+    expect(latency.waits.map((w) => w.ms)).toEqual([roughPanel('seats-treemap').latency_ms])
+    expect(latency.waits[0].ms).toBe(4500)
+    expect(text('[data-panel="seats-treemap"] [data-test="chart-waiting"]')).toBe('Loading Seats by vendor and product')
+    expect(chartFor('seats-treemap').options).toHaveLength(0)
+    expect($('[data-panel="seats-treemap"] [data-test="treemap-legend"]')).toBeNull()
+    for (const id of ['entitlement', 'trend', 'recoverable']) expect(chartFor(id).options.length, id).toBe(1)
+    expect($$('[data-test="kpi-figure"]').every((f) => text(f) !== '')).toBe(true)
+    expect($$('[data-panel="seats"] [data-test="row"]')).toHaveLength(25)
+    await release()
+    expect($('[data-test="chart-waiting"]')).toBeNull()
+    expect(chartFor('seats-treemap').options).toHaveLength(1)
+    // V-3: Unused in the descriptor's own off-palette colour, on the cells and the legend swatch.
+    const microsoft = chartFor('seats-treemap').option.series[0].data[0]
+    const unused = microsoft.children[0].children.find((n: { id: string }) => n.id === 'unused')
+    expect(unused.itemStyle.color).toBe(unusedColour())
+    const swatch = $$('[data-test="legend-item"]').find((li) => text(li).startsWith('Unused'))!.querySelector('span') as HTMLElement
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(unusedColour().slice(i, i + 2), 16))
+    expect(swatch.style.background).toBe(`rgb(${r}, ${g}, ${b})`)
+  })
+
+  it('waits again on a drill and on reload, not on paging, sorting or a theme switch (OQ-25)', async () => {
+    await open(DASHBOARD_1)
+    expect(latency.waits).toHaveLength(1) // first draw
+    await release()
+    await click($('[data-test="page-next"]'))
+    applyTheme('dark')
+    await settle()
+    applyTheme('light')
+    await settle()
+    await click($('[data-test="sort"][data-column="days_idle"]'))
+    expect(latency.waits).toEqual([])
+    expect($('[data-test="chart-waiting"]')).toBeNull()
+    expect(chartFor('seats-treemap').options.length).toBeGreaterThan(1) // repainted, not waited
+
+    await open(DASHBOARD_1)
+    await release()
+    await click($$('[data-panel="candidates"] [data-test="drill-row"]').find((b) => text(b) === 'Microsoft 365 E3')!)
+    expect(drillQuery()).toBe('microsoft.microsoft-365-e3')
+    expect(latency.waits).toHaveLength(1)
+    expect($('[data-panel="seats-treemap"] [data-test="chart-waiting"]')).not.toBeNull()
+    await release()
+    await open(router.currentRoute.value.fullPath, true) // reload
+    expect(latency.waits).toHaveLength(1)
+  })
+
+  it('a drill while the treemap waits drops the older wait and draws the newer level', async () => {
+    await open(DASHBOARD_1)
+    chartFor('seats-treemap').click({ step: ['microsoft'] })
+    await settle()
+    expect(latency.waits).toHaveLength(2)
+    latency.waits[0].release()
+    await settle()
+    expect($('[data-panel="seats-treemap"] [data-test="chart-waiting"]')).not.toBeNull()
+    expect(chartFor('seats-treemap').options).toHaveLength(0)
+    latency.waits[1].release()
+    await settle()
+    expect(chartFor('seats-treemap').options).toHaveLength(1)
+  })
+
+  it('the overlay holds after a drill: the same root class, pie, red line and formats (R-9)', async () => {
+    await open(`${DASHBOARD_1}&drill=microsoft/microsoft-365-e3`)
+    const level = dashboardFixture(1, 'vendor-product.json') as unknown as DashboardResponse
+    expect($('[data-test="dashboard"]')!.classList.contains('defects-overlay')).toBe(true)
+    expect(chartFor('recoverable').option.series[0].type).toBe('pie')
+    expect(chartFor('trend').option.series[1].lineStyle.color).toBe(readTokens()('--chart-negative'))
+    expect(kpi('k-entitled')).toBe(String(level.payload.panels['k-entitled'].value))
+    const bars = level.payload.panels.entitlement.series!.entitled
+    expect(bars).toHaveLength(1)
+    expect(bars[0]).toBe(Math.round(level.payload.panels['k-entitled'].value! * 1.2)) // N-1 with one product
+  })
+})
+
+describe('keyboard on iteration 1 (NFR-6)', () => {
+  it('drills from a chart and pages the Seats table by keyboard, as on iteration 2', async () => {
+    await open(DASHBOARD_1)
+    const frame = $('[data-panel="entitlement"] [data-test="chart-frame"]')!
+    frame.focus()
+    await key(frame, 'ArrowDown')
+    const target = ROUGH.payload.panels.entitlement.targets![0]
+    expect(text('[data-panel="entitlement"] [data-test="chart-readout"]')).toBe(`${target.label}: ${target.value!.toLocaleString('en-US')}. Press Enter to drill in.`)
+    await key(frame, 'Enter')
+    expect(drillQuery()).toBe(target.step.join('.'))
+    expect($('[data-test="page-next"]')!.tagName).toBe('BUTTON')
+    expect($$('[data-test="sort"]').every((b) => b.tagName === 'BUTTON')).toBe(true)
+    expect($$('[tabindex="-1"]').filter((el) => el.closest('[data-test="dashboard"]'))).toEqual([])
+  })
+
+  it('the waiting treemap says it is loading and drills nothing until it has drawn', async () => {
+    await open(DASHBOARD_1)
+    const frame = $('[data-panel="seats-treemap"] [data-test="chart-frame"]')!
+    frame.focus()
+    await key(frame, 'ArrowRight')
+    await key(frame, 'Enter')
+    expect(text('[data-panel="seats-treemap"] [data-test="chart-readout"]')).toBe('Loading Seats by vendor and product.')
+    expect(drillQuery()).toBe('')
+    await release()
+    await key(frame, 'ArrowRight')
+    await key(frame, 'Enter')
+    expect(drillQuery()).toBe(ROUGH.payload.panels['seats-treemap'].targets![0].step.join('.'))
   })
 })

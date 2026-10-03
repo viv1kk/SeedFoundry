@@ -225,6 +225,12 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
         known_dashboard(dashboard_id)
         return dashboard.descriptor(iteration)
 
+    @app.get("/api/dashboards/{dashboard_id}/overlay")
+    async def get_overlay(dashboard_id: str) -> dict[str, Any]:
+        """Iteration 1's defect overlay as data: one patch per catalogue defect (D-60)."""
+        known_dashboard(dashboard_id)
+        return dashboard.overlay.as_data()
+
     @app.get("/api/datasets")
     async def list_datasets() -> list[dict[str, Any]]:
         return [dataset(name).summary() for name in DATASETS]

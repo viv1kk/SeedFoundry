@@ -555,3 +555,116 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
   - Finding-to-panel highlight can target `[data-panel="<id>"]`.
   - Settle OQ-21 and OQ-22 together: the review stand-in is `views/ReviewView.vue`.
 - M10: embed `components/dashboard/DashboardView.vue` in the split view; it takes `drill` as a prop and emits `navigate` and `back`, so the modal can keep its own drill path off the URL.
+
+### M8: Defect overlay, iteration 1 dashboard (2026-10-03)
+
+**What changed**
+- Iteration 1's dashboard is the polished dashboard plus a defect overlay, and shows all 14 catalogue defects (FR-D-2, D-13). Iteration 2 is M7's dashboard: its descriptor and payloads are byte for byte M7's (a digest test).
+- The overlay is a named list of fourteen patches, one per defect, each tagged with its id, in `dashboard/overlay.py` (D-60). It has three layers:
+  - Descriptor patches (V-1 to V-5, L-1): a pie, a red series, an off-palette colour and a second colour for Active, mixed formats, no axis names, a declared 4.5 s latency.
+  - Payload rules (N-1 to N-5): fixed rules over the true figures and the rows, so every wrong figure is derived from the data at any drill level. N-1 bars x 1.2, N-2 shares x 1.12, N-3 the KPI over Unused and Underused, N-4 the footer total set to the assigned count, N-5 the largest row counted twice.
+  - Styles (V-6 to V-8): `defects.css`, every rule under `.defects-overlay`, which only the iteration 1 dashboard's root carries. The sheet is loaded on demand when a descriptor names it. It holds no colour value: V-8's grey is a border token used as text.
+- `GET /api/dashboards/license-optimization/overlay` serves the list, so the descriptor, the overlay and the payload are each inspectable.
+- V-3's hex is the only raw colour. It lives in the overlay's descriptor patch, and the renderer draws a descriptor's class colour as given, so SeedFoundry's own source still writes none.
+- L-1: the browser waits the declared latency before drawing the treemap, behind a spinner, while every other panel draws at once (NFR-3). It waits on first draw, reload and each drill, not on paging, sorting or a theme switch (OQ-25). The server answers the whole dashboard in one request, so a server-side wait would have held every panel.
+- ECharts gains the pie chart; the pie keeps the bar's data shape, so T-08 passes on both iterations.
+- The frame's line "Iteration 1's defect overlay arrives in M8, ..." is gone (OQ-23).
+- Validators, still out of the build (D-57):
+  - `validators/styles.py` reads the sheet a descriptor names; visual QA checks its geometry, fonts and contrast.
+  - `validators/latency.py` is T-15.
+  - Visual QA reads pie slices and a panel's own class colours.
+  - When two panels disagree on one measure, the numeric check now names the panel whose figure is off its recount.
+  - Together they find exactly the 14 defects on iteration 1 and nothing on iteration 2. The build still reads "13 tests passed, 8 not run".
+- The "Collect dashboard payload" line no longer names the variant ("Collected the License Optimization payload: 11 panels ..."), so a build does not announce its own defects before M9's validators find them.
+- Fixtures: one set per iteration (`fixtures/dashboard/iteration-1/`, `iteration-2/`). The fake server serves the set for the iteration asked. `tests/dashboard_fixtures.py` now runs as the script CLAUDE.md names (it could not import the package before).
+
+**Files**
+- NEW backend/seedfoundry/dashboard/overlay.py, validators/styles.py, validators/latency.py
+- CHANGE backend/seedfoundry/dashboard/descriptor.py (iteration 1 applies the overlay), payload.py (payload rules), __init__.py; validators/visual.py, numeric.py, structure.py, __init__.py; engine/script.py (payload line); main.py (overlay route)
+- NEW backend/tests/test_overlay.py; CHANGE backend/tests/test_dashboard.py, test_validators.py, test_engine.py, dashboard_fixtures.py
+- NEW frontend/src/dashboard/latency.ts, stylesheets.ts; CHANGE frontend/src/styles/defects.css (the overlay's styles), dashboard/types.ts, format.ts, options.ts, tokens.ts, echarts.ts (pie), components/dashboard/ChartPanel.vue (pie, wait and spinner, class colour on the legend), DashboardView.vue (root class, sheet), DashboardRenderer.vue (level), TablePanel.vue (`data-test="table-scroll"`), DashboardFrame.vue (line removed)
+- MOVE frontend/tests/fixtures/dashboard/*.json to iteration-1/ and iteration-2/ (rewritten by the backend); CHANGE frontend/tests/dashboard.spec.ts, dashboard-units.spec.ts, fake-server.ts
+- CHANGE docs/decisions.md (D-60, D-61, OQ-23 note, OQ-25), docs/seed-reuse-notes.md (§2.5, §5.8 as built), docs/build-simulation.md (§4, §5, §6.2, §6.3, §6.4 as built), docs/ui-spec.md (§5 as built), docs/implementation-plan.md (M8 status, as-built note), docs/CLAUDE.md (fixture command), docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 433 passed, frontend: 376 passed (through `python run.py test`)
+- `npm run build`: typecheck, build and `postbuild` network check pass. `defects.css` is its own 0.8 kB chunk, loaded on demand; the ECharts chunk with the pie is 595 kB.
+- Exit criteria:
+  - The overlay applies only to iteration 1. Iteration 2's descriptor and six payloads equal M7's digests. Iteration 2 has no root class and no spinner, and all its charts paint at once (`test_dashboard.py`, `dashboard.spec.ts`).
+  - All 14 defects are present on iteration 1, and each wrong figure equals its rule over the data at 11 sampled drill levels. Nothing else in the payload differs from the polished one (`test_overlay.py`).
+  - Each defect is detected at All products by the extended minimal checks, mapped by test, check and panel. Removing any one descriptor or payload patch removes exactly its defect. Iteration 2 gives no problem at four levels.
+  - The overlay stays applied at the 11 sampled levels, with only the documented exceptions: N-3 at an unpriced product, Active or Unused; N-4 at a class other than Unassigned.
+  - Contrast test passes with no token changed. `defects.css` has only selectors under `.defects-overlay`, no sibling combinator, no token definition and no colour value. Nothing but `stylesheets.ts` imports it. The top bar and the frame sit outside the root class (tests).
+  - The rest of iteration 1 renders while the treemap waits: the KPIs, three charts and the Seats rows are drawn before the wait is released (test). Iteration 2 makes no wait. The real render time is a browser check (below).
+  - T-08 passes on both iterations; a sample build reads "13 tests passed, 8 not run" (`test_engine.py`, hand check).
+- Checked that the tests can fail. Each change below was made, the matching tests failed, and it was reverted:
+  - the overlay applied to iteration 2 (144 tests);
+  - N-1's factor 1.0 (25);
+  - N-5 adding nothing (16);
+  - the payload rules not applied (25);
+  - one `defects.css` rule unscoped (1);
+  - the styles reader ignoring colour (14);
+  - cross-panel problems blamed on the table (1);
+  - the structure check not knowing the pie (4);
+  - the latency ignored (4);
+  - a wait on every request (1);
+  - no root class (2);
+  - the class colour override ignored (2).
+- determinism: pass | no-em-dash: pass | network: pass | contrast: pass (no new token)
+- Assertions edited, recorded first in D-61:
+  - `test_dashboard.py`: the "same for both iterations until M8" test is replaced by iteration 2 equals M7 and iteration 1 equals polished plus overlay. The endpoint test asks for iteration 2. The fixture test covers both iterations.
+  - `test_validators.py`: visual QA passes on iteration 2 only.
+  - `test_engine.py`: the payload line has no "(polished)".
+  - `dashboard.spec.ts`: polished checks open iteration 2; the iteration 1 frame has no M8 line.
+  - `dashboard-units.spec.ts`: polished options read iteration 2's fixtures.
+
+**Hand checks** (terminal, through the Vite proxy at `http://127.0.0.1:5273`; `var/state.json` backed up first and restored after, same SHA-256)
+- 4x: Reset, Load sample, Start Build. Iteration 1: 223 events in 19.0 s, 135 console lines, last `sim_t` 75.0, T-08 PASS with descriptor `e6a28a`, "Collected the License Optimization payload: 11 panels ...", "Build completed: 13 tests passed, 8 not run; 0 findings, 0 boundary advisories". Iteration 2 by API (`POST /api/builds {"iteration": 2}`): 245 events, 145 lines, T-08 PASS with `abcc42` (M7's), the same completion line.
+- Iteration 1 and 2 side by side:
+  - The payloads differ only at the candidates total row, the Entitled bars and their keyboard targets, the Recoverable KPI, the legend shares and the Seats footer.
+  - The descriptors differ only in the patched fields, plus `variant` and `styles`.
+- Each N-defect against a recount from `GET /api/datasets/primary` (13,050 rows), at seven levels, all as the rules say:
+
+  | Level | N-1 bars (KPI) | N-2 shares | N-3 KPI (true) | N-4 footer (class sum) | N-5 total |
+  |---|---|---|---|---|---|
+  | All products | 15,660 (13,050) | 112.0% | 1,191,396 (1,035,384) | 12,401 (13,050) | 17,250 |
+  | Microsoft | 8,016 (6,680) | 112.0% | 456,492 (435,216) | 6,383 (6,680) | 10,880 |
+  | Microsoft › Microsoft 365 E3 | 5,040 (4,200) | 112.0% | 216,000 (232,416) | 4,074 (4,200) | 8,400 |
+  | Atlassian › Jira Software (unpriced) | 960 (800) | 111.9% | 0 (0): falls away | 768 (800) | 1,600 |
+  | Microsoft 365 E3 › Unused | 312 (260) | 112.0% | 112,320 (112,320): falls away | 260 (260): falls away | 520 |
+  | Microsoft 365 E3 › Unassigned | 151 (126) | 112.0% | 0 (54,432) | 0 (126) | 252 |
+  | Sales Cloud Enterprise › Leaver | 26 (22) | 112.0% | 0 (43,560) | 22 (22): falls away | 44 |
+
+- At every level the descriptor is still rough, with the pie and the 4.5 s treemap.
+- Two identical requests gave identical payloads.
+- Dashboard requests, best of three: iteration 1 at 80, 53 and 42 ms; iteration 2 at 77, 64 and 51 ms (All products, Microsoft, a leaf); 14 to 39 KB.
+- The overlay endpoint lists N-1 to L-1. The review route with a drill path and `defects.css` are served through the proxy.
+- Nothing was checked in a browser. Waiting on the stakeholder, in a browser:
+  - Open iteration 1's dashboard: would a first-time viewer call it unfinished within five seconds?
+  - Find each of the 14 defects on screen, with seed-reuse-notes §5.8's as-built table beside you.
+  - Drill on iteration 1 and check the overlay holds; check iteration 2 is still clean.
+  - Watch the treemap spinner, and check whether the rest of the page is usable meanwhile. Time iteration 2's first render (under 1 s).
+  - Check both themes: the SeedFoundry shell around the rough dashboard stays on the design system.
+  - Use drill and pagination on iteration 1 by keyboard only.
+
+**Decisions and questions**
+- New: D-60 (the overlay: list, layers, rules, deep-drill behaviour, V-3's colour, scoped sheet, L-1 in the browser, validators extended, payload line, fixtures), D-61 (assertions changed)
+- Opened: OQ-25 (when the slow treemap waits again)
+- Updated: OQ-23 (the M8 part is done; the line is gone)
+- Closed: none. OQ-22 to OQ-24 are unanswered, so their assumptions stand.
+
+**Notes for next milestone**
+- M9:
+  - Map validator problems to findings by test, check and panel. `defect_of` in `backend/tests/test_overlay.py` is a working mapping:
+    - T-16 by panel (entitlement N-1, seats-treemap N-2, k-recoverable N-3, seats N-4, candidates N-5);
+    - T-17 V-1;
+    - T-18 axis checks V-5, else V-4;
+    - T-19 red-for-faults V-2, palette and class-colour V-3, font V-7, grid, overflow and truncation V-6;
+    - T-20 V-8;
+    - T-15 L-1.
+  - Run them in place of `pending(...)` in `engine/script.py`. `harvest.collect` already builds the payload.
+  - Several problems make one finding (N-1 alone raises 18 at All products).
+  - The D-14 count is on the unfiltered payload.
+- M9: the T-15 log line can read the latency problem's message ("Seats by vendor and product responds in 4.5 s (budget 1.0 s)").
+- M9: finding-to-panel highlight can target `[data-panel="<id>"]` inside `.defects-overlay`. The "N findings" link goes in `DashboardFrame.vue`, where the M8 line was.
+- M10: `DashboardView` carries the overlay itself (class and sheet), so the split view's iteration 1 dashboard is rough with no extra work. Its treemap will wait 4.5 s there too (OQ-25).

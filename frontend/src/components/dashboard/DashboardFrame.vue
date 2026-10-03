@@ -3,8 +3,8 @@
 // the iteration badge, and the dashboard. The drill path lives in the URL (FR-D-6, D-29), so a
 // reload keeps it and the browser's Back pops one step: each drill is one history entry. The
 // drill bar's Back goes back in history when the entry before is the parent level, and otherwise
-// (after a reload, or a crumb) opens the parent as a new entry. Until M8 iteration 1 shows the
-// polished dashboard, and says so (OQ-23).
+// (after a reload, or a crumb) opens the parent as a new entry. Iteration 1's dashboard carries the
+// defect overlay (D-60); the frame around it is SeedFoundry's own and stays outside it.
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { DASHBOARD_ID } from '../../dashboard/api'
@@ -48,9 +48,6 @@ function invalidDrill(): void {
       <RouterLink :to="`/review/${iteration}`" class="frame__back" data-test="back-to-report">Back to report</RouterLink>
       <BaseChip tone="accent" class="frame__badge" data-test="frame-iteration">Iteration {{ iteration }} of {{ ITERATIONS }}</BaseChip>
     </div>
-    <p v-if="iteration === 1" class="frame__note" data-test="overlay-note">
-      Iteration 1's defect overlay arrives in M8, so until then this is the polished dashboard.
-    </p>
     <p v-if="notice" class="frame__note" role="status" data-test="drill-notice">{{ notice }}</p>
     <DashboardView :dashboard-id="DASHBOARD_ID" :iteration="iteration" :drill="drill" @navigate="navigate" @back="back" @invalid-drill="invalidDrill" />
   </section>

@@ -2,6 +2,8 @@
 // environment.md Styling): counts with thousands separators; money in US dollars, compact on charts
 // and KPIs and whole dollars in tables; percentages to one decimal place; ISO dates; months as
 // "Oct 2025". The payload holds raw values, so the same value reads the same on every panel.
+// `plain`, `compact` and `number` exist for the descriptor that names them (iteration 1's V-4,
+// D-60); the polished descriptor names none of them.
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -24,6 +26,19 @@ export function usdCompact(value: number): string {
   return `$${(value / 1_000_000).toFixed(1)}M`
 }
 
+/** 13050: no separators */
+export function plain(value: number): string {
+  return String(Math.round(value))
+}
+
+/** 850, 8.3k, 1.2M: no currency */
+export function compact(value: number): string {
+  const size = Math.abs(value)
+  if (size < 1000) return String(Math.round(value))
+  if (size < 1_000_000) return `${(value / 1000).toFixed(1)}k`
+  return `${(value / 1_000_000).toFixed(1)}M`
+}
+
 export function percent(value: number): string {
   return `${value.toFixed(1)}%`
 }
@@ -34,14 +49,19 @@ export function month(value: string): string {
   return `${MONTHS[Number(number) - 1] ?? number} ${year}`
 }
 
-export type Format = 'count' | 'usd' | 'usd_compact' | 'percent' | 'month' | 'date' | 'id' | 'text' | 'class'
+export type Format = 'count' | 'number' | 'plain' | 'compact' | 'usd' | 'usd_compact' | 'percent' | 'month' | 'date' | 'id' | 'text' | 'class'
 
 /** A value in a named format; null and missing values are the caller's to word. */
 export function format(value: unknown, name: string): string {
   if (value === null || value === undefined) return ''
   switch (name) {
     case 'count':
+    case 'number':
       return count(Number(value))
+    case 'plain':
+      return plain(Number(value))
+    case 'compact':
+      return compact(Number(value))
     case 'usd':
       return usd(Number(value))
     case 'usd_compact':

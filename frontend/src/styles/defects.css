@@ -1,1 +1,55 @@
-/* Iteration 1 defect overlay (D-13). Scoped under one root class and loaded only inside the iteration 1 dashboard. Written in M8. */
+/* Iteration 1 defect overlay, styles layer (D-13, D-60, seed-reuse-notes.md section 5.8).
+   Loaded only when a dashboard's descriptor names this sheet, which only iteration 1's rough
+   descriptor does, and every rule sits under .defects-overlay, the class only that dashboard's
+   root element carries. Nothing here can reach SeedFoundry's own UI (R-1, a test). The rules
+   break the design system on purpose, and each names its defect. No colour value is written
+   here: V-8's grey is a border token used as text. */
+
+/* V-6: uneven gutters in the KPI row */
+.defects-overlay [data-panel='k-assigned'] {
+  margin-left: 6px;
+}
+
+.defects-overlay [data-panel='k-active'] {
+  margin-left: 22px;
+}
+
+/* V-6: one card off the grid */
+.defects-overlay [data-panel='k-idle'] {
+  position: relative;
+  top: 11px;
+  left: 9px;
+}
+
+/* V-6: the treemap wider than its card */
+.defects-overlay [data-panel='seats-treemap'] [data-test='chart-canvas'] {
+  width: calc(100% + 40px);
+}
+
+/* V-6: the last two Seats columns clipped */
+.defects-overlay [data-panel='seats'] [data-test='table-scroll'] {
+  overflow: hidden;
+}
+
+.defects-overlay [data-panel='seats'] table {
+  table-layout: fixed;
+}
+
+.defects-overlay [data-panel='seats'] th:nth-last-child(-n + 2),
+.defects-overlay [data-panel='seats'] td:nth-last-child(-n + 2) {
+  width: 34px;
+  overflow: hidden;
+  text-overflow: clip;
+}
+
+/* V-7: the monthly trend's title in a system serif */
+.defects-overlay [data-panel='trend'] h3 {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+/* V-8: the candidates caption and Withheld notes in a light grey, below 4.5:1 on the card.
+   The caption's colour is an inline style from the descriptor, hence !important. */
+.defects-overlay [data-panel='candidates'] [data-test='table-caption'],
+.defects-overlay [data-panel='candidates'] td.is-empty {
+  color: var(--border-default) !important;
+}

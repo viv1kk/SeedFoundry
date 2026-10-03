@@ -2,7 +2,7 @@
 // how it looks, and a payload of every panel's data at one drill level, built from the seat rows.
 // The frontend renders them and holds no analytical logic (seed-reuse-notes.md section 2.5).
 
-export type Mark = 'kpi' | 'treemap' | 'bar' | 'line' | 'table'
+export type Mark = 'kpi' | 'treemap' | 'bar' | 'line' | 'pie' | 'table'
 
 /** The level ids one click appends to the drill path, as one step. */
 export type Step = string[]
@@ -59,6 +59,10 @@ export interface Panel {
   category?: { field: string; format?: string; axis: Axis }
   value?: { measure: string; format: string; axis: Axis }
   series?: Series[]
+  /** A pie's slice colours, as chart roles, cycled over the slices. */
+  slice_roles?: string[]
+  /** A class drawn in a colour the descriptor gives as a value, not a role (iteration 1's V-3 only, D-60). */
+  class_colours?: Record<string, { colour: string }>
   withheld?: { label: string; role: string }
   drill?: boolean
   latency_ms?: number
@@ -79,6 +83,8 @@ export interface Descriptor {
   fonts: Record<string, string>
   grid: { columns: number; gutter: string }
   surface: string
+  /** A scoped stylesheet and the root class it is scoped under (iteration 1's defect overlay, D-60). */
+  styles?: { root_class: string; sheet: string }
   bands: { id: string; title: string }[]
   panels: Panel[]
 }

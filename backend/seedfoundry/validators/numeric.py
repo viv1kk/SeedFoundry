@@ -64,6 +64,16 @@ class _Checker:
         if expected != shown:
             self.problems.append(Problem("T-16", check, panel, expected, shown, f"{what}: expected {expected}, shown {shown}"))
 
+    def agree(self, what: str, truth: Any, *shown: tuple[str, Any]) -> None:
+        """The same measure on two panels. When they disagree, the panel whose figure is off its
+        recount is the one reported (both, if both are), so a wrong KPI is not blamed on the
+        table beside it (D-60)."""
+        values = [value for _, value in shown]
+        if all(value == values[0] for value in values):
+            return
+        for panel, value in [(p, v) for p, v in shown if v != truth] or shown[-1:]:
+            self.problems.append(Problem("T-16", "cross-panel", panel, truth, value, f"{what}: the recount is {truth}, {panel} shows {value}"))
+
 
 def reconcile(payload: dict[str, Any], data: Dataset) -> list[Problem]:
     """Every problem found in the payload; none for a correct one."""
@@ -139,7 +149,7 @@ def reconcile(payload: dict[str, Any], data: Dataset) -> list[Problem]:
     check.equal("figure", "trend", list(data.months), trend["months"], "months")
     check.equal("figure", "trend", assigned, trend["series"]["assigned"], "assigned by month")
     check.equal("figure", "trend", in_use, trend["series"]["in_use"], "in use by month")
-    check.equal("cross-panel", "trend", panels["k-assigned"]["value"], trend["series"]["assigned"][-1], "assigned in the last month against the Assigned KPI")
+    check.agree("assigned in the last month against the Assigned KPI", truth["assigned"], ("k-assigned", panels["k-assigned"]["value"]), ("trend", trend["series"]["assigned"][-1]))
 
     # Recoverable cost by product: each bar equals unit cost x 12 over its recoverable seats, or is
     # withheld when the product has no price; the priced bars sum to the KPI.
@@ -151,7 +161,7 @@ def reconcile(payload: dict[str, Any], data: Dataset) -> list[Problem]:
         check.equal("figure", "recoverable", expected, recoverable["values"][i], f"{category['name']} recoverable a year")
         check.equal("figure", "recoverable", not priced, recoverable["withheld"][i], f"{category['name']} withheld")
     priced_sum = sum(v for v in recoverable["values"] if v is not None)
-    check.equal("cross-panel", "k-recoverable", priced_sum, recoverable_kpi["value"], "Recoverable a year against the sum of recoverable cost by product")
+    check.agree("Recoverable a year against the sum of recoverable cost by product", truth["recoverable_year"], ("recoverable", priced_sum), ("k-recoverable", recoverable_kpi["value"]))
 
     # Optimisation candidates: rows equal their recount; the total row equals the row sums.
     candidates = panels["candidates"]
@@ -169,14 +179,14 @@ def reconcile(payload: dict[str, Any], data: Dataset) -> list[Problem]:
         candidates["total"]["recoverable_year"],
         "total recoverable a year",
     )
-    check.equal("cross-panel", "candidates", panels["k-entitled"]["value"], candidates["total"]["entitled"], "total entitled against the Entitled KPI")
-    check.equal("cross-panel", "candidates", recoverable_kpi["value"], candidates["total"]["recoverable_year"], "total recoverable against the KPI")
+    check.agree("total entitled against the Entitled KPI", truth["entitled"], ("k-entitled", panels["k-entitled"]["value"]), ("candidates", candidates["total"]["entitled"]))
+    check.agree("total recoverable against the KPI", truth["recoverable_year"], ("k-recoverable", recoverable_kpi["value"]), ("candidates", candidates["total"]["recoverable_year"]))
 
     # Seats: the footer's class counts sum to its total, which is the Entitled KPI.
     seats = panels["seats"]
     footer = seats["footer"]
     check.equal("table-total", "seats", sum(footer[c] for c in CLASS_IDS), footer["total"], "footer class counts against the footer total")
-    check.equal("cross-panel", "seats", panels["k-entitled"]["value"], footer["total"], "footer total against the Entitled KPI")
+    check.agree("footer total against the Entitled KPI", truth["entitled"], ("k-entitled", panels["k-entitled"]["value"]), ("seats", footer["total"]))
     for c in CLASS_IDS:
         check.equal("figure", "seats", truth[c], footer[c], f"footer {c}")
     check.equal("figure", "seats", truth["entitled"], seats["total"], "seat rows in the filter")

@@ -4,13 +4,14 @@ determinism, the API, and the frontend's fixtures."""
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 
 import pytest
 
-from dashboard_fixtures import FIXTURE_DIR, FIXTURES, render
-from seedfoundry.dashboard import DASHBOARD_ID, QueryError, build, dashboard, descriptor, parse
+from dashboard_fixtures import FIXTURES, ITERATIONS, path, render
+from seedfoundry.dashboard import DASHBOARD_ID, QueryError, build, dashboard, descriptor, overlay, parse
 from seedfoundry.data import CLASSES, dataset
 
 PRIMARY = dataset("primary")
@@ -90,9 +91,43 @@ def test_the_descriptor_binds_colours_to_roles_never_to_hex():
     assert DESC["panels"][0]["rule_role"] == "anomaly"
 
 
-def test_the_descriptor_is_the_same_for_both_iterations_until_m8():
-    assert descriptor(1) == descriptor(2)
-    assert descriptor(1)["variant"] == "polished"
+# Iteration 2 is M7's dashboard; iteration 1 is it plus the overlay (D-13, D-60, D-61)
+
+M7_DIGESTS = {
+    # The polished descriptor and payloads as M7 served them (sha256 of the sorted JSON).
+    "descriptor": "abcc42a0f17c00a9db153fcad385e8c4bf4bd0509feafc706e6c648a1776598e",
+    ("", 1, None, None): "ddb03d6f1d01eaaddbf652a31738bc8ed31be4e929028cd33d70445f142ffe2d",
+    ("", 2, None, None): "989ab35699ace315390e8c5826cbc4c2eb3f7f92a80c761f88c0fcf924bb7b98",
+    ("", 1, "days_idle", "desc"): "10f61990cfd34c7d4306e0a06ba72686ab68ed4233529ed46e8b5948b801392e",
+    ("microsoft", 1, None, None): "31dcc190db9518803a232313991056709b481e6df52404690706f53e4f4d4c86",
+    ("microsoft/microsoft-365-e3", 1, None, None): "fcf5c8a6bb77bbf879704e081d3c1ac8307eea3daf051356ec2d158148ca125b",
+    ("microsoft.microsoft-365-e3.unused", 1, None, None): "fcfe8d6fa40eb3c4722286f92f2eb0c2971701b9122b4a1e6a99d4517ac5e895",
+}
+
+
+def digest(value) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def test_iteration_2_is_the_m7_dashboard_unchanged():
+    assert digest(descriptor(2)) == M7_DIGESTS["descriptor"]
+    assert descriptor(2)["variant"] == "polished" and "styles" not in descriptor(2)
+    for (path, page, sort, direction), expected in ((k, v) for k, v in M7_DIGESTS.items() if k != "descriptor"):
+        assert digest(dashboard(2, drill=path or None, page=page, sort=sort, direction=direction)) == expected, path
+
+
+def test_iteration_1_is_the_polished_descriptor_plus_the_overlay():
+    rough, polished = descriptor(1), descriptor(2)
+    assert rough["variant"] == "rough"
+    assert rough["styles"] == {"root_class": "defects-overlay", "sheet": "defects.css"}
+    assert overlay.apply_descriptor(polished) == rough
+    assert descriptor(2) == polished  # applying the overlay changed nothing in the polished copy
+    # Same panels, bands, classes, measures and grid: only the patched fields differ.
+    assert [p["id"] for p in rough["panels"]] == [p["id"] for p in polished["panels"]]
+    for key in ("bands", "classes", "measures", "grid", "fonts", "surface", "title"):
+        assert rough[key] == polished[key], key
+    changed = {p["id"] for p, q in zip(rough["panels"], polished["panels"], strict=True) if p != q}
+    assert changed == {"k-entitled", "k-active", "seats-treemap", "entitlement", "trend", "recoverable", "candidates"}
 
 
 # The query engine against ground truth, at every level (D-29 exit criterion)
@@ -230,11 +265,11 @@ def test_the_payload_carries_no_wall_clock():
 
 
 def test_the_dashboard_endpoint_serves_descriptor_and_payload(client):
-    response = client.get(f"/api/dashboards/{DASHBOARD_ID}", params={"iteration": 1, "drill": "microsoft.microsoft-365-e3.unused"})
+    response = client.get(f"/api/dashboards/{DASHBOARD_ID}", params={"iteration": 2, "drill": "microsoft.microsoft-365-e3.unused"})
     assert response.status_code == 200
     body = response.json()
-    assert (body["id"], body["iteration"], body["variant"]) == (DASHBOARD_ID, 1, "polished")
-    assert body["descriptor"] == descriptor(1)
+    assert (body["id"], body["iteration"], body["variant"]) == (DASHBOARD_ID, 2, "polished")
+    assert body["descriptor"] == descriptor(2)
     assert body["payload"]["drill"]["crumbs"][-1]["label"] == "Microsoft › Microsoft 365 E3 › Unused"
 
 
@@ -262,8 +297,9 @@ def test_descriptor_payload_and_data_are_each_inspectable(client):
 # The frontend's fixtures
 
 
+@pytest.mark.parametrize("iteration", ITERATIONS)
 @pytest.mark.parametrize("name", FIXTURES)
-def test_the_frontend_fixtures_are_what_the_backend_serves(name):
-    path = FIXTURE_DIR / name
-    assert path.exists(), f"run: uv run python tests/dashboard_fixtures.py ({name} is missing)"
-    assert path.read_text(encoding="utf-8") == render(name), f"{name} is stale: run uv run python tests/dashboard_fixtures.py"
+def test_the_frontend_fixtures_are_what_the_backend_serves(iteration, name):
+    fixture = path(iteration, name)
+    assert fixture.exists(), f"run: uv run python tests/dashboard_fixtures.py (iteration-{iteration}/{name} is missing)"
+    assert fixture.read_text(encoding="utf-8") == render(iteration, name), f"iteration-{iteration}/{name} is stale: run uv run python tests/dashboard_fixtures.py"

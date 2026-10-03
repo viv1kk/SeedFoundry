@@ -53,8 +53,9 @@ def problems(descriptor: dict[str, Any], payload: dict[str, Any], data: Dataset)
             walk(body.get("nodes", []), 0)
             if [item.get("class") for item in body.get("legend", [])] != class_ids:
                 found.append(f"{pid}: legend does not list the classes in order")
-        elif mark in ("bar", "line"):
-            categories = body.get("categories") if mark == "bar" else body.get("months")
+        elif mark in ("bar", "line", "pie"):
+            # A pie keeps the bar's data shape (one value per category), so T-08 reads it alike.
+            categories = body.get("months") if mark == "line" else body.get("categories")
             if not isinstance(categories, list):
                 found.append(f"{pid}: no categories")
                 continue

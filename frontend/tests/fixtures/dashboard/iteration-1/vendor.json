@@ -1,0 +1,1609 @@
+{
+ "id": "license-optimization",
+ "iteration": 1,
+ "variant": "rough",
+ "descriptor": {
+  "id": "license-optimization",
+  "title": "License Optimization",
+  "variant": "rough",
+  "methodology": "License Optimization",
+  "sources": [
+   "License Management System",
+   "SAP"
+  ],
+  "record": "seat",
+  "hierarchy": [
+   "vendor",
+   "product",
+   "class",
+   "seat"
+  ],
+  "classes": [
+   {
+    "id": "active",
+    "label": "Active",
+    "role": "positive",
+    "recoverable": false
+   },
+   {
+    "id": "underused",
+    "label": "Underused",
+    "role": "warning",
+    "recoverable": false
+   },
+   {
+    "id": "unused",
+    "label": "Unused",
+    "role": "anomaly",
+    "recoverable": true
+   },
+   {
+    "id": "leaver",
+    "label": "Leaver",
+    "role": "negative",
+    "recoverable": true
+   },
+   {
+    "id": "unassigned",
+    "label": "Unassigned",
+    "role": "muted",
+    "recoverable": true
+   }
+  ],
+  "fonts": {
+   "title": "sans",
+   "label": "sans",
+   "figure": "mono",
+   "id": "mono"
+  },
+  "measures": {
+   "seats": {
+    "chart": "count",
+    "kpi": "count",
+    "table": "count"
+   },
+   "recoverable_year": {
+    "chart": "usd_compact",
+    "kpi": "usd_compact",
+    "table": "usd"
+   },
+   "unit_cost": {
+    "table": "usd"
+   },
+   "share": {
+    "legend": "percent"
+   },
+   "days_idle": {
+    "table": "count"
+   }
+  },
+  "grid": {
+   "columns": 12,
+   "gutter": "space-4"
+  },
+  "surface": "surface-raised",
+  "bands": [
+   {
+    "id": "kpis",
+    "title": "Key figures"
+   },
+   {
+    "id": "charts",
+    "title": "Charts"
+   },
+   {
+    "id": "focus",
+    "title": "Optimisation candidates"
+   },
+   {
+    "id": "records",
+    "title": "Seats"
+   }
+  ],
+  "panels": [
+   {
+    "id": "k-entitled",
+    "band": "kpis",
+    "title": "Entitled",
+    "mark": "kpi",
+    "field": "entitled",
+    "measure": "seats",
+    "format": "plain",
+    "span": 2,
+    "emphasis": "primary",
+    "rule_role": "anomaly"
+   },
+   {
+    "id": "k-assigned",
+    "band": "kpis",
+    "title": "Assigned",
+    "mark": "kpi",
+    "field": "assigned",
+    "measure": "seats",
+    "format": "count",
+    "span": 2
+   },
+   {
+    "id": "k-active",
+    "band": "kpis",
+    "title": "Active",
+    "mark": "kpi",
+    "field": "active",
+    "measure": "seats",
+    "format": "compact",
+    "span": 2
+   },
+   {
+    "id": "k-idle",
+    "band": "kpis",
+    "title": "Unused or underused",
+    "mark": "kpi",
+    "field": "idle",
+    "measure": "seats",
+    "format": "count",
+    "span": 3
+   },
+   {
+    "id": "k-recoverable",
+    "band": "kpis",
+    "title": "Recoverable a year",
+    "mark": "kpi",
+    "field": "recoverable_year",
+    "measure": "recoverable_year",
+    "format": "usd_compact",
+    "span": 3,
+    "note": {
+     "text": "priced products only, {withheld_seats} seats withheld",
+     "role": "text-secondary"
+    }
+   },
+   {
+    "id": "seats-treemap",
+    "band": "charts",
+    "title": "Seats by vendor and product",
+    "mark": "treemap",
+    "span": 12,
+    "height": 360,
+    "binding": {
+     "path": [
+      "vendor",
+      "product",
+      "class"
+     ],
+     "size": "seats",
+     "colour": "class"
+    },
+    "measure": "seats",
+    "format": "count",
+    "legend": {
+     "items": "classes",
+     "measure": "share",
+     "format": "percent",
+     "of": "entitled seats"
+    },
+    "drill": true,
+    "latency_ms": 4500,
+    "class_colours": {
+     "unused": {
+      "colour": "#5470c6"
+     }
+    }
+   },
+   {
+    "id": "entitlement",
+    "band": "charts",
+    "title": "Entitled, assigned and active by product",
+    "subtitle": "The gap is the finding",
+    "mark": "bar",
+    "orientation": "horizontal",
+    "grouped": true,
+    "span": 4,
+    "height": 440,
+    "category": {
+     "field": "product",
+     "axis": {
+      "name": "",
+      "unit": null
+     }
+    },
+    "value": {
+     "measure": "seats",
+     "format": "count",
+     "axis": {
+      "name": "",
+      "unit": null
+     }
+    },
+    "series": [
+     {
+      "id": "entitled",
+      "label": "Entitled",
+      "role": "baseline"
+     },
+     {
+      "id": "assigned",
+      "label": "Assigned",
+      "role": "series-1"
+     },
+     {
+      "id": "active",
+      "label": "Active",
+      "role": "series-3"
+     }
+    ],
+    "drill": true,
+    "latency_ms": 0
+   },
+   {
+    "id": "trend",
+    "band": "charts",
+    "title": "Assigned and in use, by month",
+    "mark": "line",
+    "span": 4,
+    "height": 440,
+    "category": {
+     "field": "month",
+     "format": "month",
+     "axis": {
+      "name": "",
+      "unit": null
+     }
+    },
+    "value": {
+     "measure": "seats",
+     "format": "count",
+     "axis": {
+      "name": "",
+      "unit": null
+     }
+    },
+    "series": [
+     {
+      "id": "assigned",
+      "label": "Assigned",
+      "role": "series-1"
+     },
+     {
+      "id": "in_use",
+      "label": "In use",
+      "role": "negative"
+     }
+    ],
+    "drill": false,
+    "latency_ms": 0
+   },
+   {
+    "id": "recoverable",
+    "band": "charts",
+    "title": "Recoverable cost by product",
+    "subtitle": "A year, priced products; unpriced products are withheld",
+    "mark": "pie",
+    "orientation": "horizontal",
+    "grouped": false,
+    "span": 4,
+    "height": 440,
+    "category": {
+     "field": "product",
+     "axis": {
+      "name": "Product",
+      "unit": null
+     }
+    },
+    "value": {
+     "measure": "recoverable_year",
+     "format": "usd_compact",
+     "axis": {
+      "name": "Recoverable a year",
+      "unit": "USD"
+     }
+    },
+    "series": [
+     {
+      "id": "recoverable_year",
+      "label": "Recoverable a year",
+      "role": "anomaly"
+     }
+    ],
+    "withheld": {
+     "label": "Withheld",
+     "role": "text-muted"
+    },
+    "drill": true,
+    "latency_ms": 0,
+    "slice_roles": [
+     "series-1",
+     "series-2",
+     "series-3",
+     "series-4",
+     "series-5",
+     "series-6",
+     "series-7",
+     "series-8"
+    ]
+   },
+   {
+    "id": "candidates",
+    "band": "focus",
+    "title": "Optimisation candidates",
+    "caption": "Per product, largest recoverable cost first; withheld products by recoverable seats",
+    "caption_role": "text-secondary",
+    "mark": "table",
+    "span": 12,
+    "row_key": "product_id",
+    "drill": true,
+    "total_row": true,
+    "columns": [
+     {
+      "id": "product",
+      "label": "Product",
+      "format": "text",
+      "drill": true
+     },
+     {
+      "id": "vendor",
+      "label": "Vendor",
+      "format": "text"
+     },
+     {
+      "id": "entitled",
+      "label": "Entitled",
+      "format": "count",
+      "measure": "seats",
+      "align": "end"
+     },
+     {
+      "id": "active",
+      "label": "Active",
+      "format": "count",
+      "measure": "seats",
+      "align": "end",
+      "class": "active"
+     },
+     {
+      "id": "underused",
+      "label": "Underused",
+      "format": "count",
+      "measure": "seats",
+      "align": "end",
+      "class": "underused"
+     },
+     {
+      "id": "unused",
+      "label": "Unused",
+      "format": "count",
+      "measure": "seats",
+      "align": "end",
+      "class": "unused"
+     },
+     {
+      "id": "leaver",
+      "label": "Leaver",
+      "format": "count",
+      "measure": "seats",
+      "align": "end",
+      "class": "leaver"
+     },
+     {
+      "id": "unassigned",
+      "label": "Unassigned",
+      "format": "count",
+      "measure": "seats",
+      "align": "end",
+      "class": "unassigned"
+     },
+     {
+      "id": "recoverable_year",
+      "label": "Recoverable a year",
+      "format": "number",
+      "measure": "recoverable_year",
+      "align": "end",
+      "null": "Withheld"
+     }
+    ]
+   },
+   {
+    "id": "seats",
+    "band": "records",
+    "title": "Seats",
+    "mark": "table",
+    "span": 12,
+    "row_key": "seat_id",
+    "page_size": 25,
+    "sortable": true,
+    "default_sort": {
+     "column": "seat_id",
+     "direction": "asc"
+    },
+    "footer": "class_counts",
+    "columns": [
+     {
+      "id": "seat_id",
+      "label": "Seat",
+      "format": "id",
+      "font": "id"
+     },
+     {
+      "id": "product",
+      "label": "Product",
+      "format": "text"
+     },
+     {
+      "id": "department",
+      "label": "Department",
+      "format": "text"
+     },
+     {
+      "id": "assignee",
+      "label": "Assignee",
+      "format": "text",
+      "null": "Unassigned"
+     },
+     {
+      "id": "last_used",
+      "label": "Last used",
+      "format": "date",
+      "null": "Never"
+     },
+     {
+      "id": "days_idle",
+      "label": "Days idle",
+      "format": "count",
+      "measure": "days_idle",
+      "align": "end"
+     },
+     {
+      "id": "utilisation_class",
+      "label": "Class",
+      "format": "class"
+     },
+     {
+      "id": "unit_cost",
+      "label": "Unit cost a month",
+      "format": "usd",
+      "measure": "unit_cost",
+      "align": "end",
+      "null": "No price"
+     }
+    ]
+   }
+  ],
+  "styles": {
+   "root_class": "defects-overlay",
+   "sheet": "defects.css"
+  }
+ },
+ "payload": {
+  "dashboard": "license-optimization",
+  "dataset": {
+   "name": "primary",
+   "title": "Primary estate",
+   "snapshot_date": "2026-09-30",
+   "period": {
+    "from": "2025-10",
+    "to": "2026-09"
+   },
+   "seats": 13050
+  },
+  "drill": {
+   "path": "microsoft",
+   "level": "vendor",
+   "depth": 1,
+   "deepest": false,
+   "filter": {
+    "vendor": "microsoft",
+    "product": null,
+    "class": null
+   },
+   "crumbs": [
+    {
+     "label": "All products",
+     "path": "",
+     "levels": []
+    },
+    {
+     "label": "Microsoft",
+     "path": "microsoft",
+     "levels": [
+      {
+       "kind": "vendor",
+       "id": "microsoft",
+       "label": "Microsoft"
+      }
+     ]
+    }
+   ]
+  },
+  "panels": {
+   "k-entitled": {
+    "value": 6680
+   },
+   "k-assigned": {
+    "value": 6383
+   },
+   "k-active": {
+    "value": 4761
+   },
+   "k-idle": {
+    "value": 1377
+   },
+   "k-recoverable": {
+    "value": 456492,
+    "withheld_seats": 181,
+    "recoverable_seats": 1264
+   },
+   "seats-treemap": {
+    "nodes": [
+     {
+      "id": "microsoft-365-e3",
+      "name": "Microsoft 365 E3",
+      "level": "product",
+      "value": 4200,
+      "step": [
+       "microsoft-365-e3"
+      ],
+      "children": [
+       {
+        "id": "active",
+        "name": "Active",
+        "level": "class",
+        "class": "active",
+        "value": 3422,
+        "step": [
+         "microsoft-365-e3",
+         "active"
+        ]
+       },
+       {
+        "id": "underused",
+        "name": "Underused",
+        "level": "class",
+        "class": "underused",
+        "value": 240,
+        "step": [
+         "microsoft-365-e3",
+         "underused"
+        ]
+       },
+       {
+        "id": "unused",
+        "name": "Unused",
+        "level": "class",
+        "class": "unused",
+        "value": 260,
+        "step": [
+         "microsoft-365-e3",
+         "unused"
+        ]
+       },
+       {
+        "id": "leaver",
+        "name": "Leaver",
+        "level": "class",
+        "class": "leaver",
+        "value": 152,
+        "step": [
+         "microsoft-365-e3",
+         "leaver"
+        ]
+       },
+       {
+        "id": "unassigned",
+        "name": "Unassigned",
+        "level": "class",
+        "class": "unassigned",
+        "value": 126,
+        "step": [
+         "microsoft-365-e3",
+         "unassigned"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "microsoft-365-e5",
+      "name": "Microsoft 365 E5",
+      "level": "product",
+      "value": 900,
+      "step": [
+       "microsoft-365-e5"
+      ],
+      "children": [
+       {
+        "id": "active",
+        "name": "Active",
+        "level": "class",
+        "class": "active",
+        "value": 627,
+        "step": [
+         "microsoft-365-e5",
+         "active"
+        ]
+       },
+       {
+        "id": "underused",
+        "name": "Underused",
+        "level": "class",
+        "class": "underused",
+        "value": 111,
+        "step": [
+         "microsoft-365-e5",
+         "underused"
+        ]
+       },
+       {
+        "id": "unused",
+        "name": "Unused",
+        "level": "class",
+        "class": "unused",
+        "value": 84,
+        "step": [
+         "microsoft-365-e5",
+         "unused"
+        ]
+       },
+       {
+        "id": "leaver",
+        "name": "Leaver",
+        "level": "class",
+        "class": "leaver",
+        "value": 33,
+        "step": [
+         "microsoft-365-e5",
+         "leaver"
+        ]
+       },
+       {
+        "id": "unassigned",
+        "name": "Unassigned",
+        "level": "class",
+        "class": "unassigned",
+        "value": 45,
+        "step": [
+         "microsoft-365-e5",
+         "unassigned"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "power-bi-pro",
+      "name": "Power BI Pro",
+      "level": "product",
+      "value": 800,
+      "step": [
+       "power-bi-pro"
+      ],
+      "children": [
+       {
+        "id": "active",
+        "name": "Active",
+        "level": "class",
+        "class": "active",
+        "value": 406,
+        "step": [
+         "power-bi-pro",
+         "active"
+        ]
+       },
+       {
+        "id": "underused",
+        "name": "Underused",
+        "level": "class",
+        "class": "underused",
+        "value": 155,
+        "step": [
+         "power-bi-pro",
+         "underused"
+        ]
+       },
+       {
+        "id": "unused",
+        "name": "Unused",
+        "level": "class",
+        "class": "unused",
+        "value": 159,
+        "step": [
+         "power-bi-pro",
+         "unused"
+        ]
+       },
+       {
+        "id": "leaver",
+        "name": "Leaver",
+        "level": "class",
+        "class": "leaver",
+        "value": 32,
+        "step": [
+         "power-bi-pro",
+         "leaver"
+        ]
+       },
+       {
+        "id": "unassigned",
+        "name": "Unassigned",
+        "level": "class",
+        "class": "unassigned",
+        "value": 48,
+        "step": [
+         "power-bi-pro",
+         "unassigned"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "visio-plan-2",
+      "name": "Visio Plan 2",
+      "level": "product",
+      "value": 420,
+      "step": [
+       "visio-plan-2"
+      ],
+      "children": [
+       {
+        "id": "active",
+        "name": "Active",
+        "level": "class",
+        "class": "active",
+        "value": 149,
+        "step": [
+         "visio-plan-2",
+         "active"
+        ]
+       },
+       {
+        "id": "underused",
+        "name": "Underused",
+        "level": "class",
+        "class": "underused",
+        "value": 90,
+        "step": [
+         "visio-plan-2",
+         "underused"
+        ]
+       },
+       {
+        "id": "unused",
+        "name": "Unused",
+        "level": "class",
+        "class": "unused",
+        "value": 127,
+        "step": [
+         "visio-plan-2",
+         "unused"
+        ]
+       },
+       {
+        "id": "leaver",
+        "name": "Leaver",
+        "level": "class",
+        "class": "leaver",
+        "value": 16,
+        "step": [
+         "visio-plan-2",
+         "leaver"
+        ]
+       },
+       {
+        "id": "unassigned",
+        "name": "Unassigned",
+        "level": "class",
+        "class": "unassigned",
+        "value": 38,
+        "step": [
+         "visio-plan-2",
+         "unassigned"
+        ]
+       }
+      ]
+     },
+     {
+      "id": "project-plan-3",
+      "name": "Project Plan 3",
+      "level": "product",
+      "value": 360,
+      "step": [
+       "project-plan-3"
+      ],
+      "children": [
+       {
+        "id": "active",
+        "name": "Active",
+        "level": "class",
+        "class": "active",
+        "value": 157,
+        "step": [
+         "project-plan-3",
+         "active"
+        ]
+       },
+       {
+        "id": "underused",
+        "name": "Underused",
+        "level": "class",
+        "class": "underused",
+        "value": 59,
+        "step": [
+         "project-plan-3",
+         "underused"
+        ]
+       },
+       {
+        "id": "unused",
+        "name": "Unused",
+        "level": "class",
+        "class": "unused",
+        "value": 92,
+        "step": [
+         "project-plan-3",
+         "unused"
+        ]
+       },
+       {
+        "id": "leaver",
+        "name": "Leaver",
+        "level": "class",
+        "class": "leaver",
+        "value": 12,
+        "step": [
+         "project-plan-3",
+         "leaver"
+        ]
+       },
+       {
+        "id": "unassigned",
+        "name": "Unassigned",
+        "level": "class",
+        "class": "unassigned",
+        "value": 40,
+        "step": [
+         "project-plan-3",
+         "unassigned"
+        ]
+       }
+      ]
+     }
+    ],
+    "legend": [
+     {
+      "class": "active",
+      "label": "Active",
+      "count": 4761,
+      "share": 79.9
+     },
+     {
+      "class": "underused",
+      "label": "Underused",
+      "count": 655,
+      "share": 11.0
+     },
+     {
+      "class": "unused",
+      "label": "Unused",
+      "count": 722,
+      "share": 12.1
+     },
+     {
+      "class": "leaver",
+      "label": "Leaver",
+      "count": 245,
+      "share": 4.1
+     },
+     {
+      "class": "unassigned",
+      "label": "Unassigned",
+      "count": 297,
+      "share": 4.9
+     }
+    ],
+    "total": 6680,
+    "targets": [
+     {
+      "label": "Microsoft 365 E3",
+      "value": 4200,
+      "step": [
+       "microsoft-365-e3"
+      ]
+     },
+     {
+      "label": "Microsoft 365 E5",
+      "value": 900,
+      "step": [
+       "microsoft-365-e5"
+      ]
+     },
+     {
+      "label": "Power BI Pro",
+      "value": 800,
+      "step": [
+       "power-bi-pro"
+      ]
+     },
+     {
+      "label": "Visio Plan 2",
+      "value": 420,
+      "step": [
+       "visio-plan-2"
+      ]
+     },
+     {
+      "label": "Project Plan 3",
+      "value": 360,
+      "step": [
+       "project-plan-3"
+      ]
+     }
+    ]
+   },
+   "entitlement": {
+    "categories": [
+     {
+      "id": "microsoft-365-e3",
+      "name": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft-365-e3"
+      ]
+     },
+     {
+      "id": "microsoft-365-e5",
+      "name": "Microsoft 365 E5",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft-365-e5"
+      ]
+     },
+     {
+      "id": "power-bi-pro",
+      "name": "Power BI Pro",
+      "vendor": "Microsoft",
+      "step": [
+       "power-bi-pro"
+      ]
+     },
+     {
+      "id": "visio-plan-2",
+      "name": "Visio Plan 2",
+      "vendor": "Microsoft",
+      "step": [
+       "visio-plan-2"
+      ]
+     },
+     {
+      "id": "project-plan-3",
+      "name": "Project Plan 3",
+      "vendor": "Microsoft",
+      "step": [
+       "project-plan-3"
+      ]
+     }
+    ],
+    "series": {
+     "entitled": [
+      5040,
+      1080,
+      960,
+      504,
+      432
+     ],
+     "assigned": [
+      4074,
+      855,
+      752,
+      382,
+      320
+     ],
+     "active": [
+      3422,
+      627,
+      406,
+      149,
+      157
+     ]
+    },
+    "targets": [
+     {
+      "label": "Microsoft 365 E3",
+      "value": 5040,
+      "step": [
+       "microsoft-365-e3"
+      ]
+     },
+     {
+      "label": "Microsoft 365 E5",
+      "value": 1080,
+      "step": [
+       "microsoft-365-e5"
+      ]
+     },
+     {
+      "label": "Power BI Pro",
+      "value": 960,
+      "step": [
+       "power-bi-pro"
+      ]
+     },
+     {
+      "label": "Visio Plan 2",
+      "value": 504,
+      "step": [
+       "visio-plan-2"
+      ]
+     },
+     {
+      "label": "Project Plan 3",
+      "value": 432,
+      "step": [
+       "project-plan-3"
+      ]
+     }
+    ]
+   },
+   "trend": {
+    "months": [
+     "2025-10",
+     "2025-11",
+     "2025-12",
+     "2026-01",
+     "2026-02",
+     "2026-03",
+     "2026-04",
+     "2026-05",
+     "2026-06",
+     "2026-07",
+     "2026-08",
+     "2026-09"
+    ],
+    "series": {
+     "assigned": [
+      5799,
+      5849,
+      5893,
+      5950,
+      5988,
+      6061,
+      6119,
+      6179,
+      6229,
+      6277,
+      6333,
+      6383
+     ],
+     "in_use": [
+      5170,
+      5220,
+      5163,
+      5178,
+      5126,
+      5120,
+      5084,
+      5088,
+      5046,
+      5059,
+      5119,
+      5093
+     ]
+    }
+   },
+   "recoverable": {
+    "categories": [
+     {
+      "id": "microsoft-365-e3",
+      "name": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft-365-e3"
+      ]
+     },
+     {
+      "id": "microsoft-365-e5",
+      "name": "Microsoft 365 E5",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft-365-e5"
+      ]
+     },
+     {
+      "id": "project-plan-3",
+      "name": "Project Plan 3",
+      "vendor": "Microsoft",
+      "step": [
+       "project-plan-3"
+      ]
+     },
+     {
+      "id": "power-bi-pro",
+      "name": "Power BI Pro",
+      "vendor": "Microsoft",
+      "step": [
+       "power-bi-pro"
+      ]
+     },
+     {
+      "id": "visio-plan-2",
+      "name": "Visio Plan 2",
+      "vendor": "Microsoft",
+      "step": [
+       "visio-plan-2"
+      ]
+     }
+    ],
+    "values": [
+     232416,
+     110808,
+     51840,
+     40152,
+     null
+    ],
+    "seats": [
+     538,
+     162,
+     144,
+     239,
+     181
+    ],
+    "withheld": [
+     false,
+     false,
+     false,
+     false,
+     true
+    ],
+    "targets": [
+     {
+      "label": "Microsoft 365 E3",
+      "value": 232416,
+      "step": [
+       "microsoft-365-e3"
+      ]
+     },
+     {
+      "label": "Microsoft 365 E5",
+      "value": 110808,
+      "step": [
+       "microsoft-365-e5"
+      ]
+     },
+     {
+      "label": "Project Plan 3",
+      "value": 51840,
+      "step": [
+       "project-plan-3"
+      ]
+     },
+     {
+      "label": "Power BI Pro",
+      "value": 40152,
+      "step": [
+       "power-bi-pro"
+      ]
+     },
+     {
+      "label": "Visio Plan 2",
+      "value": null,
+      "step": [
+       "visio-plan-2"
+      ]
+     }
+    ]
+   },
+   "candidates": {
+    "rows": [
+     {
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft-365-e3"
+      ],
+      "entitled": 4200,
+      "active": 3422,
+      "underused": 240,
+      "unused": 260,
+      "leaver": 152,
+      "unassigned": 126,
+      "recoverable_year": 232416,
+      "recoverable_seats": 538
+     },
+     {
+      "product_id": "microsoft-365-e5",
+      "product": "Microsoft 365 E5",
+      "vendor": "Microsoft",
+      "step": [
+       "microsoft-365-e5"
+      ],
+      "entitled": 900,
+      "active": 627,
+      "underused": 111,
+      "unused": 84,
+      "leaver": 33,
+      "unassigned": 45,
+      "recoverable_year": 110808,
+      "recoverable_seats": 162
+     },
+     {
+      "product_id": "project-plan-3",
+      "product": "Project Plan 3",
+      "vendor": "Microsoft",
+      "step": [
+       "project-plan-3"
+      ],
+      "entitled": 360,
+      "active": 157,
+      "underused": 59,
+      "unused": 92,
+      "leaver": 12,
+      "unassigned": 40,
+      "recoverable_year": 51840,
+      "recoverable_seats": 144
+     },
+     {
+      "product_id": "power-bi-pro",
+      "product": "Power BI Pro",
+      "vendor": "Microsoft",
+      "step": [
+       "power-bi-pro"
+      ],
+      "entitled": 800,
+      "active": 406,
+      "underused": 155,
+      "unused": 159,
+      "leaver": 32,
+      "unassigned": 48,
+      "recoverable_year": 40152,
+      "recoverable_seats": 239
+     },
+     {
+      "product_id": "visio-plan-2",
+      "product": "Visio Plan 2",
+      "vendor": "Microsoft",
+      "step": [
+       "visio-plan-2"
+      ],
+      "entitled": 420,
+      "active": 149,
+      "underused": 90,
+      "unused": 127,
+      "leaver": 16,
+      "unassigned": 38,
+      "recoverable_year": null,
+      "recoverable_seats": 181
+     }
+    ],
+    "total": {
+     "product": "Total",
+     "vendor": "",
+     "entitled": 10880,
+     "active": 8183,
+     "underused": 895,
+     "unused": 982,
+     "leaver": 397,
+     "unassigned": 423,
+     "recoverable_year": 667632,
+     "recoverable_seats": 1802,
+     "withheld_seats": 181
+    }
+   },
+   "seats": {
+    "rows": [
+     {
+      "seat_id": "LIC-000001",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Omar Pereira",
+      "last_used": "2026-09-27",
+      "days_idle": 3,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000002",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Marketing",
+      "assignee": "Rahul Larsen",
+      "last_used": "2026-03-24",
+      "days_idle": 190,
+      "utilisation_class": "leaver",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000003",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Andrei Ali",
+      "last_used": "2026-01-24",
+      "days_idle": 249,
+      "utilisation_class": "unused",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000004",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Naomi Eriksson",
+      "last_used": "2026-09-17",
+      "days_idle": 13,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000005",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Operations",
+      "assignee": "Victor Kumar",
+      "last_used": "2026-09-15",
+      "days_idle": 15,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000006",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Legal",
+      "assignee": "Mateo Ivanova",
+      "last_used": "2026-09-18",
+      "days_idle": 12,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000007",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Mei Banerjee",
+      "last_used": "2026-09-30",
+      "days_idle": 0,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000008",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "People",
+      "assignee": "Jonas Olsen",
+      "last_used": "2026-09-27",
+      "days_idle": 3,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000009",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Julia Zhang",
+      "last_used": "2026-09-12",
+      "days_idle": 18,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000010",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Mei Wilson",
+      "last_used": "2026-09-27",
+      "days_idle": 3,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000011",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Tomas Garcia",
+      "last_used": "2026-09-17",
+      "days_idle": 13,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000012",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Finance",
+      "assignee": "Wei Jansen",
+      "last_used": "2026-09-24",
+      "days_idle": 6,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000013",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Thandiwe Williams",
+      "last_used": "2026-09-23",
+      "days_idle": 7,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000014",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Samir Chen",
+      "last_used": "2026-09-11",
+      "days_idle": 19,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000015",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Samir Jones",
+      "last_used": "2026-09-27",
+      "days_idle": 3,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000016",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Finance",
+      "assignee": "Valentina Van Dijk",
+      "last_used": "2026-09-21",
+      "days_idle": 9,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000017",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Kai Singh",
+      "last_used": "2026-09-29",
+      "days_idle": 1,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000018",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Operations",
+      "assignee": "Oscar Hughes",
+      "last_used": "2026-09-15",
+      "days_idle": 15,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000019",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Marketing",
+      "assignee": "Thomas Edwards",
+      "last_used": "2026-09-24",
+      "days_idle": 6,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000020",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Engineering",
+      "assignee": "Laila Williams",
+      "last_used": "2026-09-28",
+      "days_idle": 2,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000021",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Finance",
+      "assignee": "Elena Olsen",
+      "last_used": "2026-09-28",
+      "days_idle": 2,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000022",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Omar Das",
+      "last_used": "2026-09-20",
+      "days_idle": 10,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000023",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Sales",
+      "assignee": "Nadia Okafor",
+      "last_used": "2026-09-26",
+      "days_idle": 4,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000024",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Andrei Garcia",
+      "last_used": "2026-09-19",
+      "days_idle": 11,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-000025",
+      "product_id": "microsoft-365-e3",
+      "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Arjun Fernandes",
+      "last_used": "2026-09-13",
+      "days_idle": 17,
+      "utilisation_class": "active",
+      "unit_cost": 36
+     }
+    ],
+    "page": 1,
+    "pages": 268,
+    "page_size": 25,
+    "total": 6680,
+    "first": 1,
+    "last": 25,
+    "sort": "seat_id",
+    "direction": "asc",
+    "footer": {
+     "active": 4761,
+     "underused": 655,
+     "unused": 722,
+     "leaver": 245,
+     "unassigned": 297,
+     "total": 6383
+    }
+   }
+  }
+ }
+}

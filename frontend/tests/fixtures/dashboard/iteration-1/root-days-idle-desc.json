@@ -1,11 +1,11 @@
 {
  "id": "license-optimization",
  "iteration": 1,
- "variant": "polished",
+ "variant": "rough",
  "descriptor": {
   "id": "license-optimization",
   "title": "License Optimization",
-  "variant": "polished",
+  "variant": "rough",
   "methodology": "License Optimization",
   "sources": [
    "License Management System",
@@ -108,7 +108,7 @@
     "mark": "kpi",
     "field": "entitled",
     "measure": "seats",
-    "format": "count",
+    "format": "plain",
     "span": 2,
     "emphasis": "primary",
     "rule_role": "anomaly"
@@ -130,7 +130,7 @@
     "mark": "kpi",
     "field": "active",
     "measure": "seats",
-    "format": "count",
+    "format": "compact",
     "span": 2
    },
    {
@@ -182,7 +182,12 @@
      "of": "entitled seats"
     },
     "drill": true,
-    "latency_ms": 0
+    "latency_ms": 4500,
+    "class_colours": {
+     "unused": {
+      "colour": "#5470c6"
+     }
+    }
    },
    {
     "id": "entitlement",
@@ -197,7 +202,7 @@
     "category": {
      "field": "product",
      "axis": {
-      "name": "Product",
+      "name": "",
       "unit": null
      }
     },
@@ -205,8 +210,8 @@
      "measure": "seats",
      "format": "count",
      "axis": {
-      "name": "Seats",
-      "unit": "seats"
+      "name": "",
+      "unit": null
      }
     },
     "series": [
@@ -223,7 +228,7 @@
      {
       "id": "active",
       "label": "Active",
-      "role": "positive"
+      "role": "series-3"
      }
     ],
     "drill": true,
@@ -240,7 +245,7 @@
      "field": "month",
      "format": "month",
      "axis": {
-      "name": "Month",
+      "name": "",
       "unit": null
      }
     },
@@ -248,8 +253,8 @@
      "measure": "seats",
      "format": "count",
      "axis": {
-      "name": "Seats",
-      "unit": "seats"
+      "name": "",
+      "unit": null
      }
     },
     "series": [
@@ -261,7 +266,7 @@
      {
       "id": "in_use",
       "label": "In use",
-      "role": "positive"
+      "role": "negative"
      }
     ],
     "drill": false,
@@ -272,7 +277,7 @@
     "band": "charts",
     "title": "Recoverable cost by product",
     "subtitle": "A year, priced products; unpriced products are withheld",
-    "mark": "bar",
+    "mark": "pie",
     "orientation": "horizontal",
     "grouped": false,
     "span": 4,
@@ -304,7 +309,17 @@
      "role": "text-muted"
     },
     "drill": true,
-    "latency_ms": 0
+    "latency_ms": 0,
+    "slice_roles": [
+     "series-1",
+     "series-2",
+     "series-3",
+     "series-4",
+     "series-5",
+     "series-6",
+     "series-7",
+     "series-8"
+    ]
    },
    {
     "id": "candidates",
@@ -379,7 +394,7 @@
      {
       "id": "recoverable_year",
       "label": "Recoverable a year",
-      "format": "usd",
+      "format": "number",
       "measure": "recoverable_year",
       "align": "end",
       "null": "Withheld"
@@ -451,7 +466,11 @@
      }
     ]
    }
-  ]
+  ],
+  "styles": {
+   "root_class": "defects-overlay",
+   "sheet": "defects.css"
+  }
  },
  "payload": {
   "dashboard": "license-optimization",
@@ -497,7 +516,7 @@
     "value": 3642
    },
    "k-recoverable": {
-    "value": 1035384,
+    "value": 1191396,
     "withheld_seats": 657,
     "recoverable_seats": 2942
    },
@@ -1843,31 +1862,31 @@
       "class": "active",
       "label": "Active",
       "count": 8286,
-      "share": 63.5
+      "share": 71.1
      },
      {
       "class": "underused",
       "label": "Underused",
       "count": 1822,
-      "share": 14.0
+      "share": 15.7
      },
      {
       "class": "unused",
       "label": "Unused",
       "count": 1820,
-      "share": 13.9
+      "share": 15.6
      },
      {
       "class": "leaver",
       "label": "Leaver",
       "count": 473,
-      "share": 3.6
+      "share": 4.0
      },
      {
       "class": "unassigned",
       "label": "Unassigned",
       "count": 649,
-      "share": 5.0
+      "share": 5.6
      }
     ],
     "total": 13050,
@@ -2102,23 +2121,23 @@
     ],
     "series": {
      "entitled": [
-      4200,
-      1200,
-      900,
-      900,
-      900,
-      800,
-      800,
-      620,
-      520,
-      420,
+      5040,
+      1440,
+      1080,
+      1080,
+      1080,
+      960,
+      960,
+      744,
+      624,
+      504,
+      432,
+      372,
       360,
-      310,
-      300,
-      260,
-      240,
-      180,
-      140
+      312,
+      288,
+      216,
+      168
      ],
      "assigned": [
       4074,
@@ -2162,7 +2181,7 @@
     "targets": [
      {
       "label": "Microsoft 365 E3",
-      "value": 4200,
+      "value": 5040,
       "step": [
        "microsoft",
        "microsoft-365-e3"
@@ -2170,7 +2189,7 @@
      },
      {
       "label": "Acrobat Pro",
-      "value": 1200,
+      "value": 1440,
       "step": [
        "adobe",
        "acrobat-pro"
@@ -2178,7 +2197,7 @@
      },
      {
       "label": "Confluence",
-      "value": 900,
+      "value": 1080,
       "step": [
        "atlassian",
        "confluence"
@@ -2186,7 +2205,7 @@
      },
      {
       "label": "Microsoft 365 E5",
-      "value": 900,
+      "value": 1080,
       "step": [
        "microsoft",
        "microsoft-365-e5"
@@ -2194,7 +2213,7 @@
      },
      {
       "label": "Zoom Workplace Business",
-      "value": 900,
+      "value": 1080,
       "step": [
        "zoom",
        "zoom-workplace-business"
@@ -2202,7 +2221,7 @@
      },
      {
       "label": "Jira Software",
-      "value": 800,
+      "value": 960,
       "step": [
        "atlassian",
        "jira-software"
@@ -2210,7 +2229,7 @@
      },
      {
       "label": "Power BI Pro",
-      "value": 800,
+      "value": 960,
       "step": [
        "microsoft",
        "power-bi-pro"
@@ -2218,7 +2237,7 @@
      },
      {
       "label": "Sales Cloud Enterprise",
-      "value": 620,
+      "value": 744,
       "step": [
        "salesforce",
        "sales-cloud-enterprise"
@@ -2226,7 +2245,7 @@
      },
      {
       "label": "Miro Business",
-      "value": 520,
+      "value": 624,
       "step": [
        "miro",
        "miro-business"
@@ -2234,7 +2253,7 @@
      },
      {
       "label": "Visio Plan 2",
-      "value": 420,
+      "value": 504,
       "step": [
        "microsoft",
        "visio-plan-2"
@@ -2242,7 +2261,7 @@
      },
      {
       "label": "Project Plan 3",
-      "value": 360,
+      "value": 432,
       "step": [
        "microsoft",
        "project-plan-3"
@@ -2250,7 +2269,7 @@
      },
      {
       "label": "DocuSign eSignature",
-      "value": 310,
+      "value": 372,
       "step": [
        "docusign",
        "docusign-esignature"
@@ -2258,7 +2277,7 @@
      },
      {
       "label": "Smartsheet Business",
-      "value": 300,
+      "value": 360,
       "step": [
        "smartsheet",
        "smartsheet-business"
@@ -2266,7 +2285,7 @@
      },
      {
       "label": "Westlaw Edge",
-      "value": 260,
+      "value": 312,
       "step": [
        "thomson-reuters",
        "westlaw-edge"
@@ -2274,7 +2293,7 @@
      },
      {
       "label": "Creative Cloud All Apps",
-      "value": 240,
+      "value": 288,
       "step": [
        "adobe",
        "creative-cloud-all-apps"
@@ -2282,7 +2301,7 @@
      },
      {
       "label": "Tableau Creator",
-      "value": 180,
+      "value": 216,
       "step": [
        "salesforce",
        "tableau-creator"
@@ -2290,7 +2309,7 @@
      },
      {
       "label": "AutoCAD LT",
-      "value": 140,
+      "value": 168,
       "step": [
        "autodesk",
        "autocad-lt"
@@ -2991,335 +3010,335 @@
     "total": {
      "product": "Total",
      "vendor": "",
-     "entitled": 13050,
-     "active": 8286,
-     "underused": 1822,
-     "unused": 1820,
-     "leaver": 473,
-     "unassigned": 649,
-     "recoverable_year": 1035384,
-     "recoverable_seats": 2942,
+     "entitled": 17250,
+     "active": 11708,
+     "underused": 2062,
+     "unused": 2080,
+     "leaver": 625,
+     "unassigned": 775,
+     "recoverable_year": 1267800,
+     "recoverable_seats": 3480,
      "withheld_seats": 657
     }
    },
    "seats": {
     "rows": [
      {
-      "seat_id": "LIC-000026",
+      "seat_id": "LIC-005709",
+      "product_id": "power-bi-pro",
+      "product": "Power BI Pro",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Laila Reyes",
+      "last_used": "2024-12-05",
+      "days_idle": 664,
+      "utilisation_class": "leaver",
+      "unit_cost": 14
+     },
+     {
+      "seat_id": "LIC-005988",
+      "product_id": "visio-plan-2",
+      "product": "Visio Plan 2",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Fatima Suzuki",
+      "last_used": "2024-12-06",
+      "days_idle": 663,
+      "utilisation_class": "unused",
+      "unit_cost": null
+     },
+     {
+      "seat_id": "LIC-012342",
+      "product_id": "miro-business",
+      "product": "Miro Business",
+      "vendor": "Miro",
+      "department": "Consulting",
+      "assignee": "Rafael Murphy",
+      "last_used": "2024-12-08",
+      "days_idle": 661,
+      "utilisation_class": "unused",
+      "unit_cost": null
+     },
+     {
+      "seat_id": "LIC-008221",
+      "product_id": "sales-cloud-enterprise",
+      "product": "Sales Cloud Enterprise",
+      "vendor": "Salesforce",
+      "department": "Sales",
+      "assignee": "Grace Varga",
+      "last_used": "2024-12-10",
+      "days_idle": 659,
+      "utilisation_class": "unused",
+      "unit_cost": 165
+     },
+     {
+      "seat_id": "LIC-003269",
       "product_id": "microsoft-365-e3",
       "product": "Microsoft 365 E3",
       "vendor": "Microsoft",
-      "department": "People",
-      "assignee": "Rania Schmidt",
-      "last_used": "2026-09-11",
-      "days_idle": 19,
-      "utilisation_class": "active",
+      "department": "Operations",
+      "assignee": "Beatriz Wong",
+      "last_used": "2024-12-12",
+      "days_idle": 657,
+      "utilisation_class": "unused",
       "unit_cost": 36
      },
      {
-      "seat_id": "LIC-000027",
+      "seat_id": "LIC-004686",
+      "product_id": "microsoft-365-e5",
+      "product": "Microsoft 365 E5",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Thandiwe Das",
+      "last_used": "2024-12-13",
+      "days_idle": 656,
+      "utilisation_class": "unused",
+      "unit_cost": 57
+     },
+     {
+      "seat_id": "LIC-008223",
+      "product_id": "sales-cloud-enterprise",
+      "product": "Sales Cloud Enterprise",
+      "vendor": "Salesforce",
+      "department": "Sales",
+      "assignee": "Maria Taylor",
+      "last_used": "2024-12-13",
+      "days_idle": 656,
+      "utilisation_class": "unused",
+      "unit_cost": 165
+     },
+     {
+      "seat_id": "LIC-006610",
+      "product_id": "project-plan-3",
+      "product": "Project Plan 3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Zara Lopez",
+      "last_used": "2024-12-14",
+      "days_idle": 655,
+      "utilisation_class": "unused",
+      "unit_cost": 30
+     },
+     {
+      "seat_id": "LIC-012365",
+      "product_id": "miro-business",
+      "product": "Miro Business",
+      "vendor": "Miro",
+      "department": "Consulting",
+      "assignee": "Rahul Fernandes",
+      "last_used": "2024-12-15",
+      "days_idle": 654,
+      "utilisation_class": "unused",
+      "unit_cost": null
+     },
+     {
+      "seat_id": "LIC-008551",
+      "product_id": "sales-cloud-enterprise",
+      "product": "Sales Cloud Enterprise",
+      "vendor": "Salesforce",
+      "department": "Marketing",
+      "assignee": "Mai Moreau",
+      "last_used": "2024-12-16",
+      "days_idle": 653,
+      "utilisation_class": "unused",
+      "unit_cost": 165
+     },
+     {
+      "seat_id": "LIC-008899",
+      "product_id": "tableau-creator",
+      "product": "Tableau Creator",
+      "vendor": "Salesforce",
+      "department": "Consulting",
+      "assignee": "Mohammed Okoro",
+      "last_used": "2024-12-16",
+      "days_idle": 653,
+      "utilisation_class": "unused",
+      "unit_cost": 75
+     },
+     {
+      "seat_id": "LIC-008931",
+      "product_id": "jira-software",
+      "product": "Jira Software",
+      "vendor": "Atlassian",
+      "department": "Consulting",
+      "assignee": "Rafael Kowalski",
+      "last_used": "2024-12-17",
+      "days_idle": 652,
+      "utilisation_class": "unused",
+      "unit_cost": null
+     },
+     {
+      "seat_id": "LIC-011382",
+      "product_id": "zoom-workplace-business",
+      "product": "Zoom Workplace Business",
+      "vendor": "Zoom",
+      "department": "Sales",
+      "assignee": "Sean Santos",
+      "last_used": "2024-12-17",
+      "days_idle": 652,
+      "utilisation_class": "unused",
+      "unit_cost": 18
+     },
+     {
+      "seat_id": "LIC-005143",
+      "product_id": "power-bi-pro",
+      "product": "Power BI Pro",
+      "vendor": "Microsoft",
+      "department": "Operations",
+      "assignee": "Freya Fischer",
+      "last_used": "2024-12-18",
+      "days_idle": 651,
+      "utilisation_class": "unused",
+      "unit_cost": 14
+     },
+     {
+      "seat_id": "LIC-007386",
+      "product_id": "acrobat-pro",
+      "product": "Acrobat Pro",
+      "vendor": "Adobe",
+      "department": "Engineering",
+      "assignee": "Kai Silva",
+      "last_used": "2024-12-18",
+      "days_idle": 651,
+      "utilisation_class": "unused",
+      "unit_cost": 20
+     },
+     {
+      "seat_id": "LIC-009269",
+      "product_id": "jira-software",
+      "product": "Jira Software",
+      "vendor": "Atlassian",
+      "department": "Operations",
+      "assignee": "Isaac Kaur",
+      "last_used": "2024-12-18",
+      "days_idle": 651,
+      "utilisation_class": "unused",
+      "unit_cost": null
+     },
+     {
+      "seat_id": "LIC-009933",
+      "product_id": "confluence",
+      "product": "Confluence",
+      "vendor": "Atlassian",
+      "department": "Consulting",
+      "assignee": "Jonas Garcia",
+      "last_used": "2024-12-19",
+      "days_idle": 650,
+      "utilisation_class": "unused",
+      "unit_cost": 6
+     },
+     {
+      "seat_id": "LIC-012100",
+      "product_id": "miro-business",
+      "product": "Miro Business",
+      "vendor": "Miro",
+      "department": "Consulting",
+      "assignee": "Rafael Okafor",
+      "last_used": "2024-12-19",
+      "days_idle": 650,
+      "utilisation_class": "unused",
+      "unit_cost": null
+     },
+     {
+      "seat_id": "LIC-000496",
       "product_id": "microsoft-365-e3",
       "product": "Microsoft 365 E3",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Freya Lopez",
+      "last_used": "2024-12-20",
+      "days_idle": 649,
+      "utilisation_class": "unused",
+      "unit_cost": 36
+     },
+     {
+      "seat_id": "LIC-005692",
+      "product_id": "power-bi-pro",
+      "product": "Power BI Pro",
+      "vendor": "Microsoft",
+      "department": "Consulting",
+      "assignee": "Mai Eriksson",
+      "last_used": "2024-12-20",
+      "days_idle": 649,
+      "utilisation_class": "unused",
+      "unit_cost": 14
+     },
+     {
+      "seat_id": "LIC-006053",
+      "product_id": "visio-plan-2",
+      "product": "Visio Plan 2",
       "vendor": "Microsoft",
       "department": "Sales",
-      "assignee": "Anna Kumar",
-      "last_used": "2026-09-29",
-      "days_idle": 1,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000028",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "People",
-      "assignee": "Zara Garcia",
-      "last_used": "2026-09-27",
-      "days_idle": 3,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000029",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Finance",
-      "assignee": "Tomas Yamamoto",
-      "last_used": "2026-09-29",
-      "days_idle": 1,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000030",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Wei Van Dijk",
-      "last_used": "2026-09-14",
-      "days_idle": 16,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000031",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Operations",
-      "assignee": "Felix Costa",
-      "last_used": "2026-09-21",
-      "days_idle": 9,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000032",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Engineering",
-      "assignee": "Zoe Campbell",
-      "last_used": "2026-09-20",
-      "days_idle": 10,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000033",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Maria Torres",
-      "last_used": "2026-09-22",
-      "days_idle": 8,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000034",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Andrei Varga",
-      "last_used": "2026-09-22",
-      "days_idle": 8,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000035",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Sofia Sousa",
-      "last_used": "2026-09-15",
-      "days_idle": 15,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000036",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Marketing",
-      "assignee": "Ruth Nguyen",
-      "last_used": "2026-09-29",
-      "days_idle": 1,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000037",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Engineering",
-      "assignee": "Laila Wilson",
-      "last_used": "2026-09-24",
-      "days_idle": 6,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000038",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Ahmed Wilson",
-      "last_used": "2026-09-29",
-      "days_idle": 1,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000039",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Marco Wong",
-      "last_used": "2026-09-04",
-      "days_idle": 26,
-      "utilisation_class": "underused",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000040",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Valentina Brown",
-      "last_used": "2026-09-19",
-      "days_idle": 11,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000041",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Mateo Suzuki",
-      "last_used": null,
-      "days_idle": null,
+      "assignee": "Maria Walker",
+      "last_used": "2024-12-21",
+      "days_idle": 648,
       "utilisation_class": "unused",
-      "unit_cost": 36
+      "unit_cost": null
      },
      {
-      "seat_id": "LIC-000042",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
+      "seat_id": "LIC-012915",
+      "product_id": "smartsheet-business",
+      "product": "Smartsheet Business",
+      "vendor": "Smartsheet",
       "department": "Consulting",
-      "assignee": "Wei Adeyemi",
-      "last_used": "2026-02-25",
-      "days_idle": 217,
-      "utilisation_class": "leaver",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000043",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Victor Zhang",
-      "last_used": "2026-09-19",
-      "days_idle": 11,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000044",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Elena Okafor",
-      "last_used": "2026-09-25",
-      "days_idle": 5,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000045",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Sunita Varga",
-      "last_used": "2026-09-20",
-      "days_idle": 10,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000046",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Consulting",
-      "assignee": "Zara Walker",
-      "last_used": "2026-09-24",
-      "days_idle": 6,
-      "utilisation_class": "active",
-      "unit_cost": 36
-     },
-     {
-      "seat_id": "LIC-000047",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Finance",
-      "assignee": "Erik Young",
-      "last_used": "2025-10-28",
-      "days_idle": 337,
+      "assignee": "Emily Kowalski",
+      "last_used": "2024-12-21",
+      "days_idle": 648,
       "utilisation_class": "unused",
-      "unit_cost": 36
+      "unit_cost": 25
      },
      {
-      "seat_id": "LIC-000048",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Operations",
-      "assignee": "Nikhil Walker",
-      "last_used": "2026-09-16",
-      "days_idle": 14,
-      "utilisation_class": "active",
-      "unit_cost": 36
+      "seat_id": "LIC-013001",
+      "product_id": "smartsheet-business",
+      "product": "Smartsheet Business",
+      "vendor": "Smartsheet",
+      "department": "Consulting",
+      "assignee": "Javier Torres",
+      "last_used": "2024-12-22",
+      "days_idle": 647,
+      "utilisation_class": "unused",
+      "unit_cost": 25
      },
      {
-      "seat_id": "LIC-000049",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
-      "vendor": "Microsoft",
-      "department": "Legal",
-      "assignee": "Alejandro Wilson",
-      "last_used": "2026-09-21",
-      "days_idle": 9,
-      "utilisation_class": "active",
-      "unit_cost": 36
+      "seat_id": "LIC-011379",
+      "product_id": "zoom-workplace-business",
+      "product": "Zoom Workplace Business",
+      "vendor": "Zoom",
+      "department": "Consulting",
+      "assignee": "Olga Quinn",
+      "last_used": "2024-12-23",
+      "days_idle": 646,
+      "utilisation_class": "unused",
+      "unit_cost": 18
      },
      {
-      "seat_id": "LIC-000050",
-      "product_id": "microsoft-365-e3",
-      "product": "Microsoft 365 E3",
+      "seat_id": "LIC-005793",
+      "product_id": "power-bi-pro",
+      "product": "Power BI Pro",
       "vendor": "Microsoft",
-      "department": "Operations",
-      "assignee": "Ruth Murphy",
-      "last_used": "2026-09-23",
-      "days_idle": 7,
-      "utilisation_class": "active",
-      "unit_cost": 36
+      "department": "Consulting",
+      "assignee": "Mei Patel",
+      "last_used": "2024-12-24",
+      "days_idle": 645,
+      "utilisation_class": "unused",
+      "unit_cost": 14
      }
     ],
-    "page": 2,
+    "page": 1,
     "pages": 522,
     "page_size": 25,
     "total": 13050,
-    "first": 26,
-    "last": 50,
-    "sort": "seat_id",
-    "direction": "asc",
+    "first": 1,
+    "last": 25,
+    "sort": "days_idle",
+    "direction": "desc",
     "footer": {
      "active": 8286,
      "underused": 1822,
      "unused": 1820,
      "leaver": 473,
      "unassigned": 649,
-     "total": 13050
+     "total": 12401
     }
    }
   }

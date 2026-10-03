@@ -6,7 +6,8 @@ hex (D-5, D-37). Number formats are named per measure. The descriptor holds no d
 is built from the seat rows (payload.py), so M8's overlay can patch this descriptor and M9's
 validators can recompute every figure from the rows.
 
-This is the polished variant. Iteration 1's defect overlay arrives in M8 (D-13).
+This is the polished variant, iteration 2's. Iteration 1's is this plus the defect overlay
+(overlay.py, D-13, D-60).
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ from __future__ import annotations
 import copy
 from typing import Any
 
+from seedfoundry.dashboard import overlay
 from seedfoundry.data.model import CLASS_LABELS, CLASS_ROLES, CLASSES, RECOVERABLE
 
 DASHBOARD_ID = "license-optimization"
@@ -211,8 +213,11 @@ _POLISHED: dict[str, Any] = {
 
 
 def descriptor(iteration: int = 2) -> dict[str, Any]:
-    """The dashboard's descriptor for an iteration. Both iterations are the polished variant
-    until M8 adds iteration 1's overlay (descriptor patches plus defects.css)."""
+    """The dashboard's descriptor for an iteration: the polished variant for iteration 2, and for
+    iteration 1 the polished variant with the defect overlay's descriptor patches, which also
+    names the scoped stylesheet (D-13, D-60)."""
+    if iteration == 1:
+        return overlay.apply_descriptor(_POLISHED)
     return copy.deepcopy(_POLISHED)
 
 

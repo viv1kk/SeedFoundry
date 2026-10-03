@@ -1,11 +1,11 @@
 {
  "id": "license-optimization",
  "iteration": 1,
- "variant": "polished",
+ "variant": "rough",
  "descriptor": {
   "id": "license-optimization",
   "title": "License Optimization",
-  "variant": "polished",
+  "variant": "rough",
   "methodology": "License Optimization",
   "sources": [
    "License Management System",
@@ -108,7 +108,7 @@
     "mark": "kpi",
     "field": "entitled",
     "measure": "seats",
-    "format": "count",
+    "format": "plain",
     "span": 2,
     "emphasis": "primary",
     "rule_role": "anomaly"
@@ -130,7 +130,7 @@
     "mark": "kpi",
     "field": "active",
     "measure": "seats",
-    "format": "count",
+    "format": "compact",
     "span": 2
    },
    {
@@ -182,7 +182,12 @@
      "of": "entitled seats"
     },
     "drill": true,
-    "latency_ms": 0
+    "latency_ms": 4500,
+    "class_colours": {
+     "unused": {
+      "colour": "#5470c6"
+     }
+    }
    },
    {
     "id": "entitlement",
@@ -197,7 +202,7 @@
     "category": {
      "field": "product",
      "axis": {
-      "name": "Product",
+      "name": "",
       "unit": null
      }
     },
@@ -205,8 +210,8 @@
      "measure": "seats",
      "format": "count",
      "axis": {
-      "name": "Seats",
-      "unit": "seats"
+      "name": "",
+      "unit": null
      }
     },
     "series": [
@@ -223,7 +228,7 @@
      {
       "id": "active",
       "label": "Active",
-      "role": "positive"
+      "role": "series-3"
      }
     ],
     "drill": true,
@@ -240,7 +245,7 @@
      "field": "month",
      "format": "month",
      "axis": {
-      "name": "Month",
+      "name": "",
       "unit": null
      }
     },
@@ -248,8 +253,8 @@
      "measure": "seats",
      "format": "count",
      "axis": {
-      "name": "Seats",
-      "unit": "seats"
+      "name": "",
+      "unit": null
      }
     },
     "series": [
@@ -261,7 +266,7 @@
      {
       "id": "in_use",
       "label": "In use",
-      "role": "positive"
+      "role": "negative"
      }
     ],
     "drill": false,
@@ -272,7 +277,7 @@
     "band": "charts",
     "title": "Recoverable cost by product",
     "subtitle": "A year, priced products; unpriced products are withheld",
-    "mark": "bar",
+    "mark": "pie",
     "orientation": "horizontal",
     "grouped": false,
     "span": 4,
@@ -304,7 +309,17 @@
      "role": "text-muted"
     },
     "drill": true,
-    "latency_ms": 0
+    "latency_ms": 0,
+    "slice_roles": [
+     "series-1",
+     "series-2",
+     "series-3",
+     "series-4",
+     "series-5",
+     "series-6",
+     "series-7",
+     "series-8"
+    ]
    },
    {
     "id": "candidates",
@@ -379,7 +394,7 @@
      {
       "id": "recoverable_year",
       "label": "Recoverable a year",
-      "format": "usd",
+      "format": "number",
       "measure": "recoverable_year",
       "align": "end",
       "null": "Withheld"
@@ -451,7 +466,11 @@
      }
     ]
    }
-  ]
+  ],
+  "styles": {
+   "root_class": "defects-overlay",
+   "sheet": "defects.css"
+  }
  },
  "payload": {
   "dashboard": "license-optimization",
@@ -562,7 +581,7 @@
       "class": "unused",
       "label": "Unused",
       "count": 260,
-      "share": 100.0
+      "share": 112.0
      },
      {
       "class": "leaver",
@@ -591,7 +610,7 @@
     ],
     "series": {
      "entitled": [
-      260
+      312
      ],
      "assigned": [
       260
@@ -688,14 +707,14 @@
     "total": {
      "product": "Total",
      "vendor": "",
-     "entitled": 260,
+     "entitled": 520,
      "active": 0,
      "underused": 0,
-     "unused": 260,
+     "unused": 520,
      "leaver": 0,
      "unassigned": 0,
-     "recoverable_year": 112320,
-     "recoverable_seats": 260,
+     "recoverable_year": 224640,
+     "recoverable_seats": 520,
      "withheld_seats": 0
     }
    },

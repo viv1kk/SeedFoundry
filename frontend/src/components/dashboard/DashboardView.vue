@@ -4,11 +4,15 @@
 // sort changes (D-56) and renders the drill bar over the bands. It never changes the URL itself:
 // a drill, a crumb or Back is emitted as the path to show, so the host decides where the path
 // lives. An answer to an older request is dropped, so a fast click never shows a stale level.
+// A descriptor that names a scoped stylesheet (iteration 1's defect overlay, D-60) has it loaded
+// before its answer renders, and its root class goes on this element, so the overlay's styles
+// reach this dashboard and nothing around it (R-1).
 import { computed, ref, shallowRef, watch } from 'vue'
 import { ApiError, messageOf } from '../../api'
 import { dashboardApi } from '../../dashboard/api'
 import { deeper, parent } from '../../dashboard/drill'
 import { count, month } from '../../dashboard/format'
+import { loadStylesheet } from '../../dashboard/stylesheets'
 import type { DashboardResponse, SortDirection, Step } from '../../dashboard/types'
 import BaseButton from '../base/BaseButton.vue'
 import DashboardRenderer from './DashboardRenderer.vue'
@@ -39,6 +43,8 @@ async function load(): Promise<void> {
       sort: sort.value?.column,
       direction: sort.value?.direction,
     })
+    if (mine !== latest) return
+    if (answer.descriptor.styles) await loadStylesheet(answer.descriptor.styles.sheet)
     if (mine !== latest) return
     response.value = answer
     error.value = ''
@@ -90,7 +96,13 @@ const source = computed(() => {
 </script>
 
 <template>
-  <div class="dashboard" :aria-busy="loading ? 'true' : 'false'" :data-variant="response?.variant" data-test="dashboard">
+  <div
+    class="dashboard"
+    :class="response?.descriptor.styles?.root_class"
+    :aria-busy="loading ? 'true' : 'false'"
+    :data-variant="response?.variant"
+    data-test="dashboard"
+  >
     <header class="dashboard__head">
       <component :is="`h${headingLevel}`" class="dashboard__title">{{ response?.descriptor.title ?? 'License Optimization' }}</component>
       <p v-if="source" class="dashboard__source" data-test="dashboard-source">{{ source }}</p>

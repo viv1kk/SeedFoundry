@@ -50,7 +50,7 @@ def test_numeric_reconciliation_passes_on_any_page_and_sort():
         assert numeric.reconcile(build(DESC, PRIMARY, "microsoft", page, sort, direction), PRIMARY) == []
 
 
-@pytest.mark.parametrize("iteration", [1, 2])
+@pytest.mark.parametrize("iteration", [2])
 def test_visual_qa_passes_on_the_polished_descriptor(iteration, root):
     assert visual.check(descriptor(iteration), root) == []
 

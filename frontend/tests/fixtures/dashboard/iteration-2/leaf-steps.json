@@ -1,6 +1,6 @@
 {
  "id": "license-optimization",
- "iteration": 1,
+ "iteration": 2,
  "variant": "polished",
  "descriptor": {
   "id": "license-optimization",
@@ -466,7 +466,7 @@
    "seats": 13050
   },
   "drill": {
-   "path": "microsoft.microsoft-365-e3.unused",
+   "path": "microsoft/microsoft-365-e3/unused",
    "level": "class",
    "depth": 3,
    "deepest": true,
@@ -482,19 +482,31 @@
      "levels": []
     },
     {
-     "label": "Microsoft › Microsoft 365 E3 › Unused",
-     "path": "microsoft.microsoft-365-e3.unused",
+     "label": "Microsoft",
+     "path": "microsoft",
      "levels": [
       {
        "kind": "vendor",
        "id": "microsoft",
        "label": "Microsoft"
-      },
+      }
+     ]
+    },
+    {
+     "label": "Microsoft 365 E3",
+     "path": "microsoft/microsoft-365-e3",
+     "levels": [
       {
        "kind": "product",
        "id": "microsoft-365-e3",
        "label": "Microsoft 365 E3"
-      },
+      }
+     ]
+    },
+    {
+     "label": "Unused",
+     "path": "microsoft/microsoft-365-e3/unused",
+     "levels": [
       {
        "kind": "class",
        "id": "unused",

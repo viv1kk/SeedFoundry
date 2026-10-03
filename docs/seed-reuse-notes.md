@@ -152,6 +152,7 @@ SeedFoundry ports the same rules (NFR-6) and adds the console surface pairs (see
 - Mark vocabulary is deliberately small: `kpi`, `line`, `bar` (vertical or horizontal, optionally stacked), `treemap`, `table` (Seed OQ-1 "What OQ-1 and OQ-2 mean").
 - Every figure is aggregated from rows at request time; the frontend holds no analytical logic (Seed FR-AN5).
 - SeedFoundry fit: the defect overlay (D-13) is a set of descriptor patches plus `defects.css`. Visual QA (T-17 to T-20) runs over the descriptor and resolved token values; the off-palette defect (V-3) is the one place a hex value appears, inside the overlay only.
+- *As built (M8, D-60):* the overlay also has payload rules for the numeric defects (N-1 to N-5), which rewrite the query engine's figures by fixed rules. V-3's hex (`#5470c6`) lives only in the overlay's descriptor patch, and the renderer draws it as given; `defects.css` holds no colour value (V-8's grey is `var(--border-default)` used as text), and visual QA reads its rules too (`validators/styles.py`).
 
 ### 2.6 Policy evaluation
 
@@ -410,6 +411,27 @@ The underlying data does not need to match Seed v0.1 (stakeholder, 2026-10-03). 
 | L-1 | Panel waits 4.5 s | `seats-treemap` (the build log then names "Seats by vendor and product", not "Spend by vendor") | declared latency 4.5 s, spinner shown | declared value against the 1.0 s budget | T-15 |
 
 Total 14, as `build-simulation.md` §5 requires. The figures in the N-1 log line are whatever SeedFoundry's data gives; at Seed's scale it would read "KPI shows 13,620, product chart sums to 16,344".
+
+*As built (M8, D-60):* the overlay is `backend/seedfoundry/dashboard/overlay.py`, a named list of fourteen patches in the order above, each tagged with its id and served at `GET /api/dashboards/license-optimization/overlay`. Iteration 2 is M7's dashboard unchanged. Per defect, on the primary estate at All products:
+
+| Id | Layer | As built | At All products | Deep drill |
+|---|---|---|---|---|
+| N-1 | payload | each Entitled bar = true x 1.2, rounded half up | KPI 13,050, bars sum to 15,660 | holds; one product's bar is 1.2 x the KPI |
+| N-2 | payload | each legend share x 1.12, rounded half up to one decimal | shares sum to 112.0% (111.9% where rounding falls so) | holds; a class drill reads 112.0% |
+| N-3 | payload | KPI = unit cost x 12 over priced Unused and Underused seats | $1.2M (1,191,396) against $1,035,384 by product | falls away where both sums are equal: an unpriced product, or a drill to Active or Unused |
+| N-4 | payload | footer Total = the assigned count | 12,401 where the classes sum to 13,050 | falls away at a class drill other than Unassigned |
+| N-5 | payload | total row adds the row with the most entitled seats again | Entitled total 17,250 (Microsoft 365 E3's 4,200 twice) | holds; one product's total reads twice its row |
+| V-1 | descriptor | mark `pie`, slices in series-1 to series-8; withheld products have no slice | 12 slices | the pie stays; more than six slices only at All products |
+| V-2 | descriptor | In use bound to `negative` | | holds |
+| V-3 | descriptor | treemap Unused in `#5470c6` (cells and its legend swatch); Active `series-3` on the bars | | the treemap colour needs an Unused cell; the teal holds |
+| V-4 | descriptor | formats: Entitled `plain`, Active `compact`, candidates' recoverable column `number` | 13050, 12,401, 8.3k; 1,035,384 without "$" | holds |
+| V-5 | descriptor | both axes of the entitlement and trend charts without names or units | | holds |
+| V-6 | styles | margins on Assigned and Active (uneven gutters), Unused or underused moved 11 px down and 9 px right, treemap canvas 100% + 40 px, last two Seats columns 34 px and clipped | | holds |
+| V-7 | styles | trend title in Georgia, Times New Roman, serif | | holds |
+| V-8 | styles | candidates caption and Withheld cells in `var(--border-default)`: 1.55:1 light, 1.44:1 dark | | the caption holds; Withheld cells need an unpriced product |
+| L-1 | descriptor | `latency_ms` 4500; the browser waits that long before drawing the treemap, behind a spinner | | waits on first draw, reload and each drill (OQ-25) |
+
+Every one is found by the minimal validators (numeric, visual over the descriptor and `defects.css`, latency) at All products, and none on iteration 2 (`backend/tests/test_overlay.py`).
 
 ---
 

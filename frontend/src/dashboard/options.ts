@@ -1,9 +1,10 @@
-// ECharts options for the chart marks (treemap, bar, line), from a panel's descriptor, its data and
-// the token values read at paint time. Pure, so a theme change or the fonts arriving is a rebuild
-// (seed-reuse-notes.md section 1.2 and 1.4). Every colour is a token's value; none is written here.
+// ECharts options for the chart marks (treemap, bar, line, pie), from a panel's descriptor, its data
+// and the token values read at paint time. Pure, so a theme change or the fonts arriving is a
+// rebuild (seed-reuse-notes.md section 1.2 and 1.4). Every colour is a token's value, or a value the
+// descriptor itself gives (iteration 1's V-3, D-60); none is written here.
 
 import { axisTitle, count, format } from './format'
-import { labelOn, role, type TokenReader } from './tokens'
+import { classColour, labelOn, role, type TokenReader } from './tokens'
 import type { ClassInfo, Panel, PanelData, TreeNode } from './types'
 
 export interface Paint {
@@ -109,7 +110,7 @@ export function treemapOption(panel: Panel, data: PanelData, paint: Paint) {
       value: n.value,
       step: n.step,
       level: n.level,
-      itemStyle: cls ? { color: role(read, cls.role) } : { color: read('--surface-sunken'), borderColor: read('--border-default') },
+      itemStyle: cls ? { color: classColour(read, panel, cls) } : { color: read('--surface-sunken'), borderColor: read('--border-default') },
       // A leaf too small for its name shows none rather than a stub; its tooltip still names it.
       label: cls ? { color: labelOn(read, cls.role), show: total > 0 && n.value / total >= MIN_LABELLED_SHARE } : undefined,
       children: n.children?.map(node),
@@ -263,8 +264,46 @@ export function lineOption(panel: Panel, data: PanelData, paint: Paint) {
   }
 }
 
+/** A pie over a bar's data: one slice per category with a value (a withheld one has none), in the
+ * descriptor's slice roles, cycled. The polished descriptor draws no pie; iteration 1's V-1 does. */
+export function pieOption(panel: Panel, data: PanelData, paint: Paint) {
+  const { read } = paint
+  const categories = data.categories ?? []
+  const values = data.values ?? []
+  const roles = panel.slice_roles?.length ? panel.slice_roles : (panel.series ?? []).map((s) => s.role)
+  const valueFormat = panel.value!.format
+  const slices = categories.flatMap((category, i) => (values[i] === null || values[i] === undefined ? [] : [{ category, value: values[i] as number }]))
+  return {
+    aria: { enabled: true, label: { description: `${panel.title}, one slice per product` } },
+    textStyle: textStyle(read),
+    tooltip: {
+      ...tooltip(read, 'item'),
+      formatter: (info: { name: string; value: number }) => line(`${info.name}:`, format(info.value, valueFormat)),
+    },
+    series: [
+      {
+        type: 'pie',
+        name: panel.title,
+        radius: '58%',
+        center: ['50%', '52%'],
+        label: { ...textStyle(read), formatter: '{b}' },
+        labelLine: { lineStyle: { color: read('--border-strong') } },
+        itemStyle: { borderColor: read('--surface-raised'), borderWidth: 1 },
+        emphasis: { scale: false },
+        data: slices.map((slice, n) => ({
+          name: slice.category.name,
+          value: slice.value,
+          step: slice.category.step,
+          itemStyle: { color: role(read, roles[n % roles.length]) },
+        })),
+      },
+    ],
+  }
+}
+
 export function chartOption(panel: Panel, data: PanelData, paint: Paint): object {
   if (panel.mark === 'treemap') return treemapOption(panel, data, paint)
   if (panel.mark === 'line') return lineOption(panel, data, paint)
+  if (panel.mark === 'pie') return pieOption(panel, data, paint)
   return barOption(panel, data, paint)
 }

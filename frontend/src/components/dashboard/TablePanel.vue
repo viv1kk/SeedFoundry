@@ -59,7 +59,7 @@ function drillStep(row: Row): Step | null {
         {{ panel.caption }}
       </p>
     </header>
-    <div class="table-panel__scroll">
+    <div class="table-panel__scroll" data-test="table-scroll">
       <table class="table-panel__table">
         <thead>
           <tr>

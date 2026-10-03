@@ -2,6 +2,8 @@
 // the chart reads `--chart-<role>` from the document when it draws, so a theme change is a redraw
 // with freshly read values, and no colour is written anywhere but tokens.css.
 
+import type { ClassInfo, Panel } from './types'
+
 export type TokenReader = (name: string) => string
 
 export function readTokens(element: Element = document.documentElement): TokenReader {
@@ -19,6 +21,13 @@ export function readTokens(element: Element = document.documentElement): TokenRe
 /** A chart role's colour ("positive" reads --chart-positive). */
 export function role(read: TokenReader, name: string): string {
   return read(`--chart-${name}`)
+}
+
+/** A class's colour on a panel: its role's token, unless the panel's descriptor gives the class a
+ * colour value of its own (iteration 1's V-3, D-60), which is drawn as given. SeedFoundry's code
+ * writes no colour; such a value only ever comes from the descriptor. */
+export function classColour(read: TokenReader, panel: Panel, cls: ClassInfo): string {
+  return panel.class_colours?.[cls.id]?.colour ?? role(read, cls.role)
 }
 
 /** The label colour on a role's fill (D-37): dark-on-light roles are baseline and muted. */

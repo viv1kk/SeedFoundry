@@ -1,35 +1,46 @@
 <script setup lang="ts">
-// A chart card (treemap, bar or line), drawn by ECharts from the panel's descriptor and data.
+// A chart card (treemap, bar, line or pie), drawn by ECharts from the panel's descriptor and data.
 // Colours are read from the tokens when it paints, so a theme change repaints it with the other
 // theme's values (seed-reuse-notes.md section 1.2); it paints again once the bundled fonts have
 // loaded, because ECharts draws text to the canvas once (section 1.4). Clicking a cell or a bar
 // drills. Keyboard path (NFR-6): the chart takes focus; the arrow keys, Home and End choose a
 // drill target, the choice is read out under the chart, and Enter or Space drills into it.
+// A panel that declares a latency (iteration 1's treemap, L-1, D-60) shows a spinner and waits
+// that long before it draws, on first draw and at each new drill level (`level`), while every
+// other panel draws at once; paging, sorting, a theme switch or the fonts arriving do not wait.
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { initChart, type Chart } from '../../dashboard/echarts'
 import { format } from '../../dashboard/format'
+import { wait } from '../../dashboard/latency'
 import { chartOption } from '../../dashboard/options'
 import { readTokens } from '../../dashboard/tokens'
 import type { ClassInfo, Panel, PanelData, Step } from '../../dashboard/types'
 import { theme } from '../../theme'
 
-const props = defineProps<{ panel: Panel; data: PanelData; classes: ClassInfo[] }>()
+const props = defineProps<{ panel: Panel; data: PanelData; classes: ClassInfo[]; level?: string }>()
 const emit = defineEmits<{ drill: [step: Step] }>()
 
 const host = ref<HTMLElement | null>(null)
 const chart = shallowRef<Chart | null>(null)
 const chosen = ref(-1)
 const focused = ref(false)
+const waiting = ref(false)
+let waits = 0
 
-const targets = computed(() => props.data.targets ?? [])
+const targets = computed(() => (waiting.value ? [] : (props.data.targets ?? [])))
 const readoutId = computed(() => `${props.panel.id}-readout`)
 const legend = computed(() => {
   if (!props.panel.legend) return []
   const roles = new Map(props.classes.map((c) => [c.id, c.role]))
-  return (props.data.legend ?? []).map((item) => ({ ...item, role: roles.get(item.class) ?? 'muted' }))
+  return (props.data.legend ?? []).map((item) => {
+    const role = roles.get(item.class) ?? 'muted'
+    // The swatch shows the class as the chart draws it (a descriptor's own colour, V-3, D-60).
+    return { ...item, swatch: props.panel.class_colours?.[item.class]?.colour ?? `var(--chart-${role})` }
+  })
 })
 
 const readout = computed(() => {
+  if (waiting.value) return `Loading ${props.panel.title}.`
   const target = targets.value[chosen.value]
   if (!target) {
     return targets.value.length
@@ -42,8 +53,21 @@ const readout = computed(() => {
 })
 
 function paint(): void {
-  if (!chart.value) return
+  if (!chart.value || waiting.value) return
   chart.value.setOption(chartOption(props.panel, props.data, { read: readTokens(), classes: props.classes }), { notMerge: true })
+}
+
+/** New data at a new level: draw it, after the panel's declared latency if it has one. */
+async function arrive(): Promise<void> {
+  const ms = props.panel.latency_ms ?? 0
+  const mine = ++waits
+  if (ms > 0) {
+    waiting.value = true
+    await wait(ms)
+    if (mine !== waits) return
+    waiting.value = false
+  }
+  paint()
 }
 
 function highlight(): void {
@@ -91,7 +115,7 @@ onMounted(() => {
     const step = (params.data as { step?: Step | null } | undefined)?.step
     if (step?.length) emit('drill', step)
   })
-  paint()
+  void arrive()
   if (typeof ResizeObserver !== 'undefined') {
     resizer = new ResizeObserver(() => chart.value?.resize())
     resizer.observe(host.value)
@@ -105,6 +129,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  waits++
   resizer?.disconnect()
   if (fontsLoaded) document.fonts?.removeEventListener?.('loadingdone', fontsLoaded)
   fontsLoaded = null
@@ -113,10 +138,11 @@ onBeforeUnmount(() => {
 })
 
 watch(
-  () => props.data,
-  () => {
+  () => [props.data, props.level] as const,
+  ([, level], [, before]) => {
     chosen.value = -1
-    paint()
+    if (level !== before) void arrive()
+    else paint()
   },
 )
 watch(theme, () => paint())
@@ -140,14 +166,24 @@ watch(theme, () => paint())
       @focus="focused = true"
       @blur="onBlur"
     >
-      <div ref="host" class="chart-panel__canvas" :style="{ height: `${panel.height ?? 320}px` }" data-test="chart-canvas"></div>
+      <div
+        ref="host"
+        class="chart-panel__canvas"
+        :class="{ 'chart-panel__canvas--waiting': waiting }"
+        :style="{ height: `${panel.height ?? 320}px` }"
+        data-test="chart-canvas"
+      ></div>
+      <div v-if="waiting" class="chart-panel__waiting" role="status" data-test="chart-waiting">
+        <span class="chart-panel__spinner" aria-hidden="true"></span>
+        Loading {{ panel.title }}
+      </div>
     </div>
     <p :id="readoutId" class="chart-panel__readout" :class="{ 'chart-panel__readout--shown': focused }" aria-live="polite" data-test="chart-readout">
       {{ focused ? readout : '' }}
     </p>
-    <ul v-if="legend.length" class="chart-panel__legend" :aria-label="`Share of ${panel.legend?.of}`" data-test="treemap-legend">
+    <ul v-if="legend.length && !waiting" class="chart-panel__legend" :aria-label="`Share of ${panel.legend?.of}`" data-test="treemap-legend">
       <li v-for="item in legend" :key="item.class" class="chart-panel__legend-item" data-test="legend-item">
-        <span class="chart-panel__swatch" :style="{ background: `var(--chart-${item.role})` }" aria-hidden="true"></span>
+        <span class="chart-panel__swatch" :style="{ background: item.swatch }" aria-hidden="true"></span>
         <span class="chart-panel__legend-label">{{ item.label }}</span>
         <span class="chart-panel__legend-figure">{{ format(item.share, panel.legend!.format) }}</span>
         <span class="chart-panel__legend-count">{{ format(item.count, 'count') }}</span>
@@ -180,11 +216,42 @@ watch(theme, () => paint())
 }
 
 .chart-panel__frame {
+  position: relative;
   border-radius: var(--radius-sm);
 }
 
 .chart-panel__canvas {
   width: 100%;
+}
+
+.chart-panel__canvas--waiting {
+  visibility: hidden;
+}
+
+.chart-panel__waiting {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.chart-panel__spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-default);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: chart-panel-spin 0.9s linear infinite;
+}
+
+@keyframes chart-panel-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .chart-panel__readout {

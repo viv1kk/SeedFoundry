@@ -13,16 +13,22 @@ and the resolved token values of tokens.css, in both themes.
 - T-20 contrast: every text colour the descriptor names against the panel surface at 4.5:1, and
   every chart role it draws with at 3:1 (except `muted`), in both themes.
 
-Minimal in M7 (the polished descriptor passes); M9 maps problems to findings (V-1 to V-8) and
-adds what M8's defects.css applies.
+Styles the descriptor applies beyond the design system (iteration 1's scoped defects.css, read by
+styles.py) are checked too: a card moved off the grid or its gutter, an element wider than its
+card, clipped table text (T-19), a font family that is not a font token (T-19), and text colours
+against the panel surface (T-20).
+
+Minimal in M7 (the polished descriptor passes) and extended in M8 to what the overlay applies
+(D-60); M9 maps problems to findings (V-1 to V-8).
 """
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from seedfoundry.data.model import CLASS_ROLES
-from seedfoundry.validators import tokens
+from seedfoundry.validators import styles, tokens
 from seedfoundry.validators.problems import Problem
 
 THEMES = ("light", "dark")
@@ -35,6 +41,9 @@ FAMILIES = {"sans", "mono"}
 MAX_PIE_SLICES = 6
 TEXT_CONTRAST = 4.5
 MARK_CONTRAST = 3.0
+GEOMETRY = {"margin", "margin-left", "margin-right", "margin-top", "margin-bottom", "top", "left", "right", "bottom", "transform", "translate"}
+CLIPPING = {"overflow": {"hidden", "clip"}, "overflow-x": {"hidden", "clip"}, "text-overflow": {"clip", "ellipsis"}}
+_WIDER = re.compile(r"calc\(\s*100%\s*\+|^(?!100(\.0+)?%)(1\d\d|[2-9]\d\d)(\.\d+)?%$|vw$")  # wider than 100%
 
 
 def _colours(panel: dict[str, Any]) -> list[tuple[str, str, str | None]]:
@@ -45,6 +54,10 @@ def _colours(panel: dict[str, Any]) -> list[tuple[str, str, str | None]]:
         found.append(("rule", panel["rule_role"], None))
     for series in panel.get("series", []):
         found.append((f"series {series['id']}", series["role"], series["id"]))
+    for n, slice_role in enumerate(panel.get("slice_roles", []), 1):
+        found.append((f"slice {n}", slice_role, None))
+    for cls, override in panel.get("class_colours", {}).items():
+        found.append((f"class {cls}", override["colour"], cls))
     if "withheld" in panel:
         found.append(("withheld label", panel["withheld"]["role"], None))
     if "caption_role" in panel:
@@ -76,7 +89,8 @@ def check(descriptor: dict[str, Any], payload: dict[str, Any] | None = None) -> 
 
         # T-17: chart fitness.
         if mark == "pie" and payload is not None:
-            slices = len(payload["panels"][pid].get("categories", []))
+            # One slice per value; a withheld (None) value has no slice.
+            slices = sum(1 for v in payload["panels"][pid].get("values", []) if v is not None)
             if slices > MAX_PIE_SLICES:
                 add("T-17", "pie-slices", pid, f"at most {MAX_PIE_SLICES} slices", slices, f"a pie with {slices} slices")
         category = panel.get("category", {}).get("field")
@@ -167,6 +181,8 @@ def check(descriptor: dict[str, Any], payload: dict[str, Any] | None = None) -> 
     if not isinstance(descriptor["grid"].get("gutter"), str):
         add("T-19", "grid", "grid", "one gutter token", descriptor["grid"].get("gutter"), "uneven gutters")
 
+    _check_styles(descriptor, add)
+
     # T-20: contrast on the panel surface, both themes.
     surface = descriptor["surface"]
     for theme in THEMES:
@@ -183,3 +199,42 @@ def check(descriptor: dict[str, Any], payload: dict[str, Any] | None = None) -> 
                     if ratio < MARK_CONTRAST:
                         add("T-20", "contrast", panel["id"], f"{MARK_CONTRAST}:1", round(ratio, 2), f"chart-{token} on {surface} in {theme}")
     return problems
+
+
+def _colour_value(theme: str, value: str) -> str | None:
+    """A CSS colour as #rrggbb in a theme: a token through var(), or a raw hex. None otherwise."""
+    reference = re.fullmatch(r"var\((--[\w-]+)\)", value)
+    if reference:
+        return tokens.colour(theme, reference.group(1))
+    return value.lower() if re.fullmatch(r"#[0-9a-fA-F]{6}", value) else None
+
+
+def _check_styles(descriptor: dict[str, Any], add: Any) -> None:
+    """T-19 and T-20 over the rules the descriptor's stylesheet applies (styles.py); none for the
+    polished descriptor. One problem per rule and check (per theme for contrast)."""
+    marks = {p["id"]: p["mark"] for p in descriptor["panels"]}
+    surface = descriptor["surface"]
+    for rule in styles.applied(descriptor):
+        where = rule.panel or "dashboard"
+        moved = [f"{p}: {v}" for p, v in rule.declarations if not rule.target and p in GEOMETRY]
+        if moved:
+            add("T-19", "grid", where, "on the grid, with the band's one gutter", "; ".join(moved), f"{where} is moved off the grid ({rule.selector})")
+        wide = [f"{p}: {v}" for p, v in rule.declarations if p in ("width", "min-width") and _WIDER.search(v)]
+        if wide:
+            add("T-19", "overflow", where, "at most the width of its card", "; ".join(wide), f"{rule.target or where} is wider than its card")
+        clipped = [f"{p}: {v}" for p, v in rule.declarations if v in CLIPPING.get(p, ())]
+        if clipped and marks.get(where) == "table":
+            add("T-19", "truncation", where, "every column readable", "; ".join(clipped), f"{rule.target or where} is clipped")
+        family = rule.value("font-family")
+        if family and not family.startswith("var(--font-"):
+            add("T-19", "font", where, "a font token (Inter or JetBrains Mono)", family, f"{rule.target or where} in {family}")
+        colour = rule.value("color")
+        if colour:
+            for theme in THEMES:
+                shown = _colour_value(theme, colour)
+                if shown is None:
+                    add("T-19", "palette", where, "a design token", colour, f"{rule.target or where} coloured {colour}")
+                    break
+                ratio = tokens.contrast(shown, tokens.colour(theme, surface))
+                if ratio < TEXT_CONTRAST:
+                    add("T-20", "contrast", where, f"{TEXT_CONTRAST}:1", round(ratio, 2), f"{rule.target or where} ({colour}) on {surface} in {theme}")

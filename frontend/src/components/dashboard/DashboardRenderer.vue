@@ -37,7 +37,14 @@ const bands = computed(() =>
           @page="emit('page', $event)"
           @sort="(column, direction) => emit('sort', column, direction)"
         />
-        <ChartPanel v-else :panel="panel" :data="payload.panels[panel.id]" :classes="descriptor.classes" @drill="emit('drill', $event)" />
+        <ChartPanel
+          v-else
+          :panel="panel"
+          :data="payload.panels[panel.id]"
+          :classes="descriptor.classes"
+          :level="payload.drill.path"
+          @drill="emit('drill', $event)"
+        />
       </div>
     </section>
   </div>

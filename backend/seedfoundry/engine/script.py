@@ -691,7 +691,7 @@ def collect_payload(ctx: BuildContext) -> Step:
     data = dataset(dashboard.DEFAULT_DATASET)
     payload = dashboard.build(desc, data)
     yield log(
-        f"Collected the {desc['title']} payload ({desc['variant']}): {plural(len(payload['panels']), 'panel')} at All products, "
+        f"Collected the {desc['title']} payload: {plural(len(payload['panels']), 'panel')} at All products, "
         f"from {len(data.seats):,} seat rows in the {data.title.lower()}",
         dashboard=desc["id"],
         variant=desc["variant"],

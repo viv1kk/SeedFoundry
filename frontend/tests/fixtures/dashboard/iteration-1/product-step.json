@@ -1,11 +1,11 @@
 {
  "id": "license-optimization",
  "iteration": 1,
- "variant": "polished",
+ "variant": "rough",
  "descriptor": {
   "id": "license-optimization",
   "title": "License Optimization",
-  "variant": "polished",
+  "variant": "rough",
   "methodology": "License Optimization",
   "sources": [
    "License Management System",
@@ -108,7 +108,7 @@
     "mark": "kpi",
     "field": "entitled",
     "measure": "seats",
-    "format": "count",
+    "format": "plain",
     "span": 2,
     "emphasis": "primary",
     "rule_role": "anomaly"
@@ -130,7 +130,7 @@
     "mark": "kpi",
     "field": "active",
     "measure": "seats",
-    "format": "count",
+    "format": "compact",
     "span": 2
    },
    {
@@ -182,7 +182,12 @@
      "of": "entitled seats"
     },
     "drill": true,
-    "latency_ms": 0
+    "latency_ms": 4500,
+    "class_colours": {
+     "unused": {
+      "colour": "#5470c6"
+     }
+    }
    },
    {
     "id": "entitlement",
@@ -197,7 +202,7 @@
     "category": {
      "field": "product",
      "axis": {
-      "name": "Product",
+      "name": "",
       "unit": null
      }
     },
@@ -205,8 +210,8 @@
      "measure": "seats",
      "format": "count",
      "axis": {
-      "name": "Seats",
-      "unit": "seats"
+      "name": "",
+      "unit": null
      }
     },
     "series": [
@@ -223,7 +228,7 @@
      {
       "id": "active",
       "label": "Active",
-      "role": "positive"
+      "role": "series-3"
      }
     ],
     "drill": true,
@@ -240,7 +245,7 @@
      "field": "month",
      "format": "month",
      "axis": {
-      "name": "Month",
+      "name": "",
       "unit": null
      }
     },
@@ -248,8 +253,8 @@
      "measure": "seats",
      "format": "count",
      "axis": {
-      "name": "Seats",
-      "unit": "seats"
+      "name": "",
+      "unit": null
      }
     },
     "series": [
@@ -261,7 +266,7 @@
      {
       "id": "in_use",
       "label": "In use",
-      "role": "positive"
+      "role": "negative"
      }
     ],
     "drill": false,
@@ -272,7 +277,7 @@
     "band": "charts",
     "title": "Recoverable cost by product",
     "subtitle": "A year, priced products; unpriced products are withheld",
-    "mark": "bar",
+    "mark": "pie",
     "orientation": "horizontal",
     "grouped": false,
     "span": 4,
@@ -304,7 +309,17 @@
      "role": "text-muted"
     },
     "drill": true,
-    "latency_ms": 0
+    "latency_ms": 0,
+    "slice_roles": [
+     "series-1",
+     "series-2",
+     "series-3",
+     "series-4",
+     "series-5",
+     "series-6",
+     "series-7",
+     "series-8"
+    ]
    },
    {
     "id": "candidates",
@@ -379,7 +394,7 @@
      {
       "id": "recoverable_year",
       "label": "Recoverable a year",
-      "format": "usd",
+      "format": "number",
       "measure": "recoverable_year",
       "align": "end",
       "null": "Withheld"
@@ -451,7 +466,11 @@
      }
     ]
    }
-  ]
+  ],
+  "styles": {
+   "root_class": "defects-overlay",
+   "sheet": "defects.css"
+  }
  },
  "payload": {
   "dashboard": "license-optimization",
@@ -466,13 +485,13 @@
    "seats": 13050
   },
   "drill": {
-   "path": "microsoft",
-   "level": "vendor",
-   "depth": 1,
+   "path": "microsoft.microsoft-365-e3",
+   "level": "product",
+   "depth": 2,
    "deepest": false,
    "filter": {
     "vendor": "microsoft",
-    "product": null,
+    "product": "microsoft-365-e3",
     "class": null
    },
    "crumbs": [
@@ -482,13 +501,18 @@
      "levels": []
     },
     {
-     "label": "Microsoft",
-     "path": "microsoft",
+     "label": "Microsoft › Microsoft 365 E3",
+     "path": "microsoft.microsoft-365-e3",
      "levels": [
       {
        "kind": "vendor",
        "id": "microsoft",
        "label": "Microsoft"
+      },
+      {
+       "kind": "product",
+       "id": "microsoft-365-e3",
+       "label": "Microsoft 365 E3"
       }
      ]
     }
@@ -496,352 +520,72 @@
   },
   "panels": {
    "k-entitled": {
-    "value": 6680
+    "value": 4200
    },
    "k-assigned": {
-    "value": 6383
+    "value": 4074
    },
    "k-active": {
-    "value": 4761
+    "value": 3422
    },
    "k-idle": {
-    "value": 1377
+    "value": 500
    },
    "k-recoverable": {
-    "value": 435216,
-    "withheld_seats": 181,
-    "recoverable_seats": 1264
+    "value": 216000,
+    "withheld_seats": 0,
+    "recoverable_seats": 538
    },
    "seats-treemap": {
     "nodes": [
      {
-      "id": "microsoft-365-e3",
-      "name": "Microsoft 365 E3",
-      "level": "product",
-      "value": 4200,
+      "id": "active",
+      "name": "Active",
+      "level": "class",
+      "class": "active",
+      "value": 3422,
       "step": [
-       "microsoft-365-e3"
-      ],
-      "children": [
-       {
-        "id": "active",
-        "name": "Active",
-        "level": "class",
-        "class": "active",
-        "value": 3422,
-        "step": [
-         "microsoft-365-e3",
-         "active"
-        ]
-       },
-       {
-        "id": "underused",
-        "name": "Underused",
-        "level": "class",
-        "class": "underused",
-        "value": 240,
-        "step": [
-         "microsoft-365-e3",
-         "underused"
-        ]
-       },
-       {
-        "id": "unused",
-        "name": "Unused",
-        "level": "class",
-        "class": "unused",
-        "value": 260,
-        "step": [
-         "microsoft-365-e3",
-         "unused"
-        ]
-       },
-       {
-        "id": "leaver",
-        "name": "Leaver",
-        "level": "class",
-        "class": "leaver",
-        "value": 152,
-        "step": [
-         "microsoft-365-e3",
-         "leaver"
-        ]
-       },
-       {
-        "id": "unassigned",
-        "name": "Unassigned",
-        "level": "class",
-        "class": "unassigned",
-        "value": 126,
-        "step": [
-         "microsoft-365-e3",
-         "unassigned"
-        ]
-       }
+       "active"
       ]
      },
      {
-      "id": "microsoft-365-e5",
-      "name": "Microsoft 365 E5",
-      "level": "product",
-      "value": 900,
+      "id": "underused",
+      "name": "Underused",
+      "level": "class",
+      "class": "underused",
+      "value": 240,
       "step": [
-       "microsoft-365-e5"
-      ],
-      "children": [
-       {
-        "id": "active",
-        "name": "Active",
-        "level": "class",
-        "class": "active",
-        "value": 627,
-        "step": [
-         "microsoft-365-e5",
-         "active"
-        ]
-       },
-       {
-        "id": "underused",
-        "name": "Underused",
-        "level": "class",
-        "class": "underused",
-        "value": 111,
-        "step": [
-         "microsoft-365-e5",
-         "underused"
-        ]
-       },
-       {
-        "id": "unused",
-        "name": "Unused",
-        "level": "class",
-        "class": "unused",
-        "value": 84,
-        "step": [
-         "microsoft-365-e5",
-         "unused"
-        ]
-       },
-       {
-        "id": "leaver",
-        "name": "Leaver",
-        "level": "class",
-        "class": "leaver",
-        "value": 33,
-        "step": [
-         "microsoft-365-e5",
-         "leaver"
-        ]
-       },
-       {
-        "id": "unassigned",
-        "name": "Unassigned",
-        "level": "class",
-        "class": "unassigned",
-        "value": 45,
-        "step": [
-         "microsoft-365-e5",
-         "unassigned"
-        ]
-       }
+       "underused"
       ]
      },
      {
-      "id": "power-bi-pro",
-      "name": "Power BI Pro",
-      "level": "product",
-      "value": 800,
+      "id": "unused",
+      "name": "Unused",
+      "level": "class",
+      "class": "unused",
+      "value": 260,
       "step": [
-       "power-bi-pro"
-      ],
-      "children": [
-       {
-        "id": "active",
-        "name": "Active",
-        "level": "class",
-        "class": "active",
-        "value": 406,
-        "step": [
-         "power-bi-pro",
-         "active"
-        ]
-       },
-       {
-        "id": "underused",
-        "name": "Underused",
-        "level": "class",
-        "class": "underused",
-        "value": 155,
-        "step": [
-         "power-bi-pro",
-         "underused"
-        ]
-       },
-       {
-        "id": "unused",
-        "name": "Unused",
-        "level": "class",
-        "class": "unused",
-        "value": 159,
-        "step": [
-         "power-bi-pro",
-         "unused"
-        ]
-       },
-       {
-        "id": "leaver",
-        "name": "Leaver",
-        "level": "class",
-        "class": "leaver",
-        "value": 32,
-        "step": [
-         "power-bi-pro",
-         "leaver"
-        ]
-       },
-       {
-        "id": "unassigned",
-        "name": "Unassigned",
-        "level": "class",
-        "class": "unassigned",
-        "value": 48,
-        "step": [
-         "power-bi-pro",
-         "unassigned"
-        ]
-       }
+       "unused"
       ]
      },
      {
-      "id": "visio-plan-2",
-      "name": "Visio Plan 2",
-      "level": "product",
-      "value": 420,
+      "id": "leaver",
+      "name": "Leaver",
+      "level": "class",
+      "class": "leaver",
+      "value": 152,
       "step": [
-       "visio-plan-2"
-      ],
-      "children": [
-       {
-        "id": "active",
-        "name": "Active",
-        "level": "class",
-        "class": "active",
-        "value": 149,
-        "step": [
-         "visio-plan-2",
-         "active"
-        ]
-       },
-       {
-        "id": "underused",
-        "name": "Underused",
-        "level": "class",
-        "class": "underused",
-        "value": 90,
-        "step": [
-         "visio-plan-2",
-         "underused"
-        ]
-       },
-       {
-        "id": "unused",
-        "name": "Unused",
-        "level": "class",
-        "class": "unused",
-        "value": 127,
-        "step": [
-         "visio-plan-2",
-         "unused"
-        ]
-       },
-       {
-        "id": "leaver",
-        "name": "Leaver",
-        "level": "class",
-        "class": "leaver",
-        "value": 16,
-        "step": [
-         "visio-plan-2",
-         "leaver"
-        ]
-       },
-       {
-        "id": "unassigned",
-        "name": "Unassigned",
-        "level": "class",
-        "class": "unassigned",
-        "value": 38,
-        "step": [
-         "visio-plan-2",
-         "unassigned"
-        ]
-       }
+       "leaver"
       ]
      },
      {
-      "id": "project-plan-3",
-      "name": "Project Plan 3",
-      "level": "product",
-      "value": 360,
+      "id": "unassigned",
+      "name": "Unassigned",
+      "level": "class",
+      "class": "unassigned",
+      "value": 126,
       "step": [
-       "project-plan-3"
-      ],
-      "children": [
-       {
-        "id": "active",
-        "name": "Active",
-        "level": "class",
-        "class": "active",
-        "value": 157,
-        "step": [
-         "project-plan-3",
-         "active"
-        ]
-       },
-       {
-        "id": "underused",
-        "name": "Underused",
-        "level": "class",
-        "class": "underused",
-        "value": 59,
-        "step": [
-         "project-plan-3",
-         "underused"
-        ]
-       },
-       {
-        "id": "unused",
-        "name": "Unused",
-        "level": "class",
-        "class": "unused",
-        "value": 92,
-        "step": [
-         "project-plan-3",
-         "unused"
-        ]
-       },
-       {
-        "id": "leaver",
-        "name": "Leaver",
-        "level": "class",
-        "class": "leaver",
-        "value": 12,
-        "step": [
-         "project-plan-3",
-         "leaver"
-        ]
-       },
-       {
-        "id": "unassigned",
-        "name": "Unassigned",
-        "level": "class",
-        "class": "unassigned",
-        "value": 40,
-        "step": [
-         "project-plan-3",
-         "unassigned"
-        ]
-       }
+       "unassigned"
       ]
      }
     ],
@@ -849,69 +593,69 @@
      {
       "class": "active",
       "label": "Active",
-      "count": 4761,
-      "share": 71.3
+      "count": 3422,
+      "share": 91.3
      },
      {
       "class": "underused",
       "label": "Underused",
-      "count": 655,
-      "share": 9.8
+      "count": 240,
+      "share": 6.4
      },
      {
       "class": "unused",
       "label": "Unused",
-      "count": 722,
-      "share": 10.8
+      "count": 260,
+      "share": 6.9
      },
      {
       "class": "leaver",
       "label": "Leaver",
-      "count": 245,
-      "share": 3.7
+      "count": 152,
+      "share": 4.0
      },
      {
       "class": "unassigned",
       "label": "Unassigned",
-      "count": 297,
-      "share": 4.4
+      "count": 126,
+      "share": 3.4
      }
     ],
-    "total": 6680,
+    "total": 4200,
     "targets": [
      {
-      "label": "Microsoft 365 E3",
-      "value": 4200,
+      "label": "Active",
+      "value": 3422,
       "step": [
-       "microsoft-365-e3"
+       "active"
       ]
      },
      {
-      "label": "Microsoft 365 E5",
-      "value": 900,
+      "label": "Underused",
+      "value": 240,
       "step": [
-       "microsoft-365-e5"
+       "underused"
       ]
      },
      {
-      "label": "Power BI Pro",
-      "value": 800,
+      "label": "Unused",
+      "value": 260,
       "step": [
-       "power-bi-pro"
+       "unused"
       ]
      },
      {
-      "label": "Visio Plan 2",
-      "value": 420,
+      "label": "Leaver",
+      "value": 152,
       "step": [
-       "visio-plan-2"
+       "leaver"
       ]
      },
      {
-      "label": "Project Plan 3",
-      "value": 360,
+      "label": "Unassigned",
+      "value": 126,
       "step": [
-       "project-plan-3"
+       "unassigned"
       ]
      }
     ]
@@ -922,103 +666,21 @@
       "id": "microsoft-365-e3",
       "name": "Microsoft 365 E3",
       "vendor": "Microsoft",
-      "step": [
-       "microsoft-365-e3"
-      ]
-     },
-     {
-      "id": "microsoft-365-e5",
-      "name": "Microsoft 365 E5",
-      "vendor": "Microsoft",
-      "step": [
-       "microsoft-365-e5"
-      ]
-     },
-     {
-      "id": "power-bi-pro",
-      "name": "Power BI Pro",
-      "vendor": "Microsoft",
-      "step": [
-       "power-bi-pro"
-      ]
-     },
-     {
-      "id": "visio-plan-2",
-      "name": "Visio Plan 2",
-      "vendor": "Microsoft",
-      "step": [
-       "visio-plan-2"
-      ]
-     },
-     {
-      "id": "project-plan-3",
-      "name": "Project Plan 3",
-      "vendor": "Microsoft",
-      "step": [
-       "project-plan-3"
-      ]
+      "step": null
      }
     ],
     "series": {
      "entitled": [
-      4200,
-      900,
-      800,
-      420,
-      360
+      5040
      ],
      "assigned": [
-      4074,
-      855,
-      752,
-      382,
-      320
+      4074
      ],
      "active": [
-      3422,
-      627,
-      406,
-      149,
-      157
+      3422
      ]
     },
-    "targets": [
-     {
-      "label": "Microsoft 365 E3",
-      "value": 4200,
-      "step": [
-       "microsoft-365-e3"
-      ]
-     },
-     {
-      "label": "Microsoft 365 E5",
-      "value": 900,
-      "step": [
-       "microsoft-365-e5"
-      ]
-     },
-     {
-      "label": "Power BI Pro",
-      "value": 800,
-      "step": [
-       "power-bi-pro"
-      ]
-     },
-     {
-      "label": "Visio Plan 2",
-      "value": 420,
-      "step": [
-       "visio-plan-2"
-      ]
-     },
-     {
-      "label": "Project Plan 3",
-      "value": 360,
-      "step": [
-       "project-plan-3"
-      ]
-     }
-    ]
+    "targets": []
    },
    "trend": {
     "months": [
@@ -1037,32 +699,32 @@
     ],
     "series": {
      "assigned": [
-      5799,
-      5849,
-      5893,
-      5950,
-      5988,
-      6061,
-      6119,
-      6179,
-      6229,
-      6277,
-      6333,
-      6383
+      3712,
+      3743,
+      3768,
+      3804,
+      3832,
+      3876,
+      3915,
+      3951,
+      3984,
+      4015,
+      4047,
+      4074
      ],
      "in_use": [
-      5170,
-      5220,
-      5163,
-      5178,
-      5126,
-      5120,
-      5084,
-      5088,
-      5046,
-      5059,
-      5119,
-      5093
+      3479,
+      3523,
+      3502,
+      3523,
+      3503,
+      3522,
+      3517,
+      3526,
+      3512,
+      3519,
+      3549,
+      3542
      ]
     }
    },
@@ -1072,101 +734,19 @@
       "id": "microsoft-365-e3",
       "name": "Microsoft 365 E3",
       "vendor": "Microsoft",
-      "step": [
-       "microsoft-365-e3"
-      ]
-     },
-     {
-      "id": "microsoft-365-e5",
-      "name": "Microsoft 365 E5",
-      "vendor": "Microsoft",
-      "step": [
-       "microsoft-365-e5"
-      ]
-     },
-     {
-      "id": "project-plan-3",
-      "name": "Project Plan 3",
-      "vendor": "Microsoft",
-      "step": [
-       "project-plan-3"
-      ]
-     },
-     {
-      "id": "power-bi-pro",
-      "name": "Power BI Pro",
-      "vendor": "Microsoft",
-      "step": [
-       "power-bi-pro"
-      ]
-     },
-     {
-      "id": "visio-plan-2",
-      "name": "Visio Plan 2",
-      "vendor": "Microsoft",
-      "step": [
-       "visio-plan-2"
-      ]
+      "step": null
      }
     ],
     "values": [
-     232416,
-     110808,
-     51840,
-     40152,
-     null
+     232416
     ],
     "seats": [
-     538,
-     162,
-     144,
-     239,
-     181
+     538
     ],
     "withheld": [
-     false,
-     false,
-     false,
-     false,
-     true
+     false
     ],
-    "targets": [
-     {
-      "label": "Microsoft 365 E3",
-      "value": 232416,
-      "step": [
-       "microsoft-365-e3"
-      ]
-     },
-     {
-      "label": "Microsoft 365 E5",
-      "value": 110808,
-      "step": [
-       "microsoft-365-e5"
-      ]
-     },
-     {
-      "label": "Project Plan 3",
-      "value": 51840,
-      "step": [
-       "project-plan-3"
-      ]
-     },
-     {
-      "label": "Power BI Pro",
-      "value": 40152,
-      "step": [
-       "power-bi-pro"
-      ]
-     },
-     {
-      "label": "Visio Plan 2",
-      "value": null,
-      "step": [
-       "visio-plan-2"
-      ]
-     }
-    ]
+    "targets": []
    },
    "candidates": {
     "rows": [
@@ -1174,9 +754,7 @@
       "product_id": "microsoft-365-e3",
       "product": "Microsoft 365 E3",
       "vendor": "Microsoft",
-      "step": [
-       "microsoft-365-e3"
-      ],
+      "step": null,
       "entitled": 4200,
       "active": 3422,
       "underused": 240,
@@ -1185,84 +763,20 @@
       "unassigned": 126,
       "recoverable_year": 232416,
       "recoverable_seats": 538
-     },
-     {
-      "product_id": "microsoft-365-e5",
-      "product": "Microsoft 365 E5",
-      "vendor": "Microsoft",
-      "step": [
-       "microsoft-365-e5"
-      ],
-      "entitled": 900,
-      "active": 627,
-      "underused": 111,
-      "unused": 84,
-      "leaver": 33,
-      "unassigned": 45,
-      "recoverable_year": 110808,
-      "recoverable_seats": 162
-     },
-     {
-      "product_id": "project-plan-3",
-      "product": "Project Plan 3",
-      "vendor": "Microsoft",
-      "step": [
-       "project-plan-3"
-      ],
-      "entitled": 360,
-      "active": 157,
-      "underused": 59,
-      "unused": 92,
-      "leaver": 12,
-      "unassigned": 40,
-      "recoverable_year": 51840,
-      "recoverable_seats": 144
-     },
-     {
-      "product_id": "power-bi-pro",
-      "product": "Power BI Pro",
-      "vendor": "Microsoft",
-      "step": [
-       "power-bi-pro"
-      ],
-      "entitled": 800,
-      "active": 406,
-      "underused": 155,
-      "unused": 159,
-      "leaver": 32,
-      "unassigned": 48,
-      "recoverable_year": 40152,
-      "recoverable_seats": 239
-     },
-     {
-      "product_id": "visio-plan-2",
-      "product": "Visio Plan 2",
-      "vendor": "Microsoft",
-      "step": [
-       "visio-plan-2"
-      ],
-      "entitled": 420,
-      "active": 149,
-      "underused": 90,
-      "unused": 127,
-      "leaver": 16,
-      "unassigned": 38,
-      "recoverable_year": null,
-      "recoverable_seats": 181
      }
     ],
     "total": {
      "product": "Total",
      "vendor": "",
-     "entitled": 6680,
-     "active": 4761,
-     "underused": 655,
-     "unused": 722,
-     "leaver": 245,
-     "unassigned": 297,
-     "recoverable_year": 435216,
-     "recoverable_seats": 1264,
-     "withheld_seats": 181
+     "entitled": 8400,
+     "active": 6844,
+     "underused": 480,
+     "unused": 520,
+     "leaver": 304,
+     "unassigned": 252,
+     "recoverable_year": 464832,
+     "recoverable_seats": 1076,
+     "withheld_seats": 0
     }
    },
    "seats": {
@@ -1569,20 +1083,20 @@
      }
     ],
     "page": 1,
-    "pages": 268,
+    "pages": 168,
     "page_size": 25,
-    "total": 6680,
+    "total": 4200,
     "first": 1,
     "last": 25,
     "sort": "seat_id",
     "direction": "asc",
     "footer": {
-     "active": 4761,
-     "underused": 655,
-     "unused": 722,
-     "leaver": 245,
-     "unassigned": 297,
-     "total": 6680
+     "active": 3422,
+     "underused": 240,
+     "unused": 260,
+     "leaver": 152,
+     "unassigned": 126,
+     "total": 4074
     }
    }
   }

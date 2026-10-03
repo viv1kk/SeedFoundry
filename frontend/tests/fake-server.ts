@@ -7,7 +7,8 @@
 // with `refuseNext`, as the real checks live in the backend's tests. Load sample serves the
 // real sample files from backend/seedfoundry/sample. A build's events, for the Build page
 // (D-54), are whatever a test puts in `buildEvents`. The dashboard (D-56) replays real responses
-// the backend wrote to tests/fixtures/dashboard/ (backend/tests/dashboard_fixtures.py, checked
+// the backend wrote to tests/fixtures/dashboard/iteration-<n>/, one set per iteration (iteration 1
+// is the rough dashboard, iteration 2 the polished one; backend/tests/dashboard_fixtures.py, checked
 // against the backend by test_dashboard.py); a drill path with no fixture is refused as the
 // server refuses a path the data does not have.
 
@@ -69,8 +70,9 @@ const DASHBOARD_FIXTURES: Record<string, string> = {
   'microsoft/microsoft-365-e3/unused': 'leaf-steps.json',
 }
 
-export function dashboardFixture(name: string): Record<string, unknown> {
-  return JSON.parse(readFileSync(resolve(DASHBOARD_DIR, name), 'utf8'))
+/** A dashboard response the backend wrote, for an iteration (1 rough, 2 polished, D-60). */
+export function dashboardFixture(iteration: number, name: string): Record<string, unknown> {
+  return JSON.parse(readFileSync(resolve(DASHBOARD_DIR, `iteration-${iteration}`, name), 'utf8'))
 }
 
 const LABELS: Record<string, string> = Object.fromEntries(CATEGORIES.categories.map((c) => [c.id, c.label]))
@@ -191,8 +193,7 @@ export class FakeServer {
       if (drill && !(drill in DASHBOARD_FIXTURES)) return refusal(404, 'drill_not_found', `No vendor '${drill.split(/[./]/)[0]}' in the data (drill path '${drill}').`)
       return refusal(500, 'no_fixture', `The fake server has no dashboard fixture for ${key}.`)
     }
-    const body = dashboardFixture(name)
-    return { status: 200, body: { ...body, iteration: Number(query.iteration) } }
+    return { status: 200, body: dashboardFixture(Number(query.iteration), name) }
   }
 
   private handle(call: Call): Reply {

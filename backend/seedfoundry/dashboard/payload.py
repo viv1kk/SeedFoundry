@@ -1,7 +1,9 @@
 """The dashboard payload: every panel's data at one drill level, built from the seat rows by the
 query engine (FR-D-4, FR-D-6, D-56). A pure function of the dataset, the descriptor, the drill
 path and the Seats table's page and sort, so the same request always gives the same payload
-(NFR-1). Values are raw numbers; the descriptor names their format.
+(NFR-1). Values are raw numbers; the descriptor names their format. For the rough descriptor
+(iteration 1) the defect overlay's payload rules then rewrite the figures they distort, from the
+true figures and the same rows (overlay.py, D-60), so they hold at any drill level.
 
 A drill target is a step: the level ids that one click on that element appends to the path.
 """
@@ -10,6 +12,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from seedfoundry.dashboard import overlay
 from seedfoundry.dashboard.query import Drill, QueryError, group, measures, monthly, parse, select
 from seedfoundry.data.model import CLASS_LABELS, CLASSES, Dataset, Seat
 
@@ -261,6 +264,8 @@ def build(desc: dict[str, Any], data: Dataset, drill_path: str | None = None, pa
         "candidates": candidates(products, totals),
         "seats": seat_rows(seats_panel, seats, totals, page, sort, direction),
     }
+    if desc["variant"] == "rough":
+        overlay.apply_payload(panels, seats, totals)
     return {
         "dashboard": desc["id"],
         "dataset": {
