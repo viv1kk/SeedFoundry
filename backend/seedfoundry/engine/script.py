@@ -103,6 +103,7 @@ class BuildContext:
             seed_name=self.seed_name,
             fingerprint=self.fingerprint,
             plan=plan(self.iteration),
+            sim_seconds=BUDGET_SECONDS,
         )
 
 

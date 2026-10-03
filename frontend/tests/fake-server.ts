@@ -5,11 +5,13 @@
 // no build running, skip only while one runs) and records every request. A started build stays
 // running until a test ends it; no engine runs here. Canned refusals (413, 415) are queued
 // with `refuseNext`, as the real checks live in the backend's tests. Load sample serves the
-// real sample files from backend/seedfoundry/sample.
+// real sample files from backend/seedfoundry/sample. A build's events, for the Build page
+// (D-54), are whatever a test puts in `buildEvents`.
 
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { vi } from 'vitest'
+import type { LabEvent } from '../src/events'
 import type { IntakeFile } from '../src/intake'
 import type { Build, Snapshot } from '../src/stores/lab'
 
@@ -73,6 +75,7 @@ function refusal(status: number, code: string, message: string, extra: Record<st
 export class FakeServer {
   files: IntakeFile[] = []
   builds: Build[] = []
+  buildEvents = new Map<string, LabEvent[]>()
   iteration = 1
   speed = 1
   seq = 0
@@ -168,6 +171,12 @@ export class FakeServer {
     if (method === 'GET' && fileMatch) {
       const file = this.find(fileMatch[1])
       return file ? { status: 200, body: file } : refusal(404, 'file_not_found', `No file with id ${fileMatch[1]}.`)
+    }
+    const eventsMatch = path.match(/^\/api\/builds\/([^/]+)\/events$/)
+    if (method === 'GET' && eventsMatch) {
+      const build = this.builds.find((b) => b.id === eventsMatch[1])
+      if (!build) return refusal(404, 'build_not_found', `No build with id ${eventsMatch[1]}.`)
+      return { status: 200, body: { build_id: build.id, status: build.status, seq: this.seq, events: this.buildEvents.get(build.id) ?? [] } }
     }
     if (method === 'GET' && path === '/api/demo/speed') return { status: 200, body: { speed: this.speed } }
     if (method === 'POST' && path === '/api/demo/speed') {

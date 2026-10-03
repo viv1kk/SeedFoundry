@@ -53,6 +53,8 @@ Types: `build.started`, `phase.started`, `step.started`, `log`, `llm.call`, `api
 
 *As built (M5):* no new types. In a build every event has `build_id`, `iteration` and `sim_t`; every event inside a phase has `phase` (its code id), and every event inside a sub-step has `step`. `code` is the test id (`test.result`), the gate id (`gate.auto_resolved`) or the finding id (`finding.raised`). `build.started` carries the build record (D-49) and `replaces`, the ids of the iteration's earlier build it replaces; `phase.started` and `phase.completed` carry `index`, `name`, and on completion `result` (`passed`, `findings`, `incomplete`, `failed`) and each test's status; `test.result` carries `id`, `name`, `status` (`pass`, `warn`, `fail`, `not_run`), `detail`, `simulated` and, when not run, `arrives_in`; `llm.call` carries `task`, `model`, `tokens_in`, `tokens_out`, `latency_ms`, `simulated`; `api.call` carries `method`, `path`, `status`, `latency_ms`, `simulated`, `response`; `build.completed` carries the test counts, finding and advisory ids, gates and `sim_seconds`. `report.ready` is not emitted until M9 (D-51). A sample iteration 1 build is 220 events. Speed and skip emit no event (D-48).
 
+*As built (M6, D-54):* the build record (and so `build.started`'s `data.build`) also carries `sim_seconds`, the build's simulated length (75.0), so the Build page reads progress as `sim_t / sim_seconds`. No event changed.
+
 ## 4. Console log format
 
 ```
@@ -99,6 +101,8 @@ Illustrative lines (wording can be refined, tone must stay matter-of-fact, no em
 ```
 
 Gate lines use Seed v0.1's ids (`seed-reuse-notes.md` §4.2), never "H-02". A test not yet run is level TEST, so it reads as neutral, not as a warning (D-51).
+
+*As built (M6, D-54):* the console is `frontend/src/components/build/BuildConsole.vue`. Every build event is a line except `step.started` and `step.completed`, which the stepper shows, so the sample's iteration 1 is 132 lines of 220 events. Tenths are floored (`74.182` is `01:14.1`), and an event without `sim_t` (`build.interrupted`) is stamped `--:--.-`. The level filter's TEST button also shows PASS lines, and INFO lines show only under All.
 
 ## 5. Planted defect catalogue (iteration 1)
 

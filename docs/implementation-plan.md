@@ -12,7 +12,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | B. Knowledge | M3 | Intake page | Done (2026-10-03) |
 | | M4 | Demo controller and sample Seed | Done (2026-10-03) |
 | C. Build | M5 | Beat engine, phase catalogue, simulated clients | Done (2026-10-03) |
-| | M6 | Build page: stepper and console | Not started |
+| | M6 | Build page: stepper and console | Done (2026-10-03) |
 | D. Output | M7 | Polished License Optimization dashboard | Not started |
 | | M8 | Defect overlay (iteration 1 dashboard) | Not started |
 | | M9 | Validators and build report | Not started |
@@ -72,6 +72,8 @@ seedfoundry/
 *As built (M4):* `backend/seedfoundry/demo.py` holds the demo controller's server actions (Load sample Seed, Clear intake, Reset to start, D-46), under `/api/demo/`. `backend/seedfoundry/sample/` holds the five sample files and `sample_files()`. `frontend/src/demo/` holds `DemoController.vue` (the panel, mounted in `App.vue`), `shortcuts.ts` (the map and the ignore rules, D-47) and `api.ts`; its store is `frontend/src/stores/demo.ts`, beside the others. Start Build's M3 action moved from `KnowledgeView.vue` into `stores/intake.ts` (`startBuild`, `buildNote`) so Shift+Enter shares it.
 
 *As built (M5):* `backend/seedfoundry/engine/` holds `catalogue.py`, `script.py`, `runner.py` and `clock.py` (D-48). `clients/` holds `llm.py` and `seed.py` (D-22). `intake/` gained `assay.py` (inventory, coverage, statements, Seed name, fingerprint), `boundary.py` (D-50) and `feedback.py` (the feedback file and its segments). `generate/outline.py` drafts the layer outlines and the manifest until M11 (D-51). `validators/` is still empty: the stubbed tests are in `engine/script.py` until M9. Builds are `POST /api/builds` and `GET /api/builds/{id}/events`; speed and skip are `GET`/`POST /api/demo/speed` and `POST /api/demo/skip` (D-49). Frontend: `src/builds.ts` (build API); `events.ts` exports `BUILD_EVENT_TYPES`; the lab store reduces build events (D-53). New tests: `backend/tests/test_assay.py`, `test_boundary.py`, `test_engine.py`, `test_build_api.py`; `frontend/tests/build-view.spec.ts`.
+
+*As built (M6):* the Build page is `frontend/src/views/BuildView.vue` with `components/build/` (`PhaseStepper.vue`, `BuildConsole.vue`, `BuildSummary.vue`), so the plan's Stepper and Console components live there. `src/stepper.ts` derives phases, sub-steps, times and console lines from events (pure functions). `src/stores/buildLog.ts` holds the shown build's events (D-54). The lab store gained `onEvent` and `refreshes`. `builds.ts` gained `buildsApi.events`. The build record gained `sim_seconds` (`state.py`, set in `engine/script.py`). New tests: `frontend/tests/stepper.spec.ts`, and `build-view.spec.ts` rewritten for the page, with `tests/build-script.ts` generating a build's events.
 
 ## 3. Milestones
 

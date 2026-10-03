@@ -305,7 +305,9 @@ describe('Shift+Enter: Start Build (FR-B-1)', () => {
     expect(server.writes().filter((c) => c.path === '/api/builds')).toHaveLength(1)
     expect(router.currentRoute.value.fullPath).toBe('/build/1')
     expect(status()).toBe('Build started: iteration 1.')
-    expect($('main [data-test="placeholder"] p')?.textContent).toContain('Build running')
+    // D-54 (h): the Build page replaced the placeholder's "Build running" line.
+    expect($('main [data-test="build-iteration"]')?.textContent?.trim()).toBe('Iteration 1 of 2')
+    expect($('main [data-test="build-status"]')?.textContent?.trim()).toBe('Starting')
   })
 
   it('on a focused button, Shift+Enter belongs to that button', async () => {

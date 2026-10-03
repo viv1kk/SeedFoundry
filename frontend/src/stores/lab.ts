@@ -3,9 +3,12 @@
 // content changed is fetched with GET /api/intake/files/{id}, unless the change is this
 // client's own save, whose content it already has. Build events are applied in place too
 // (M5): build.started adds the build, phase.started moves it on, build.completed and
-// build.interrupted end it, and the rest (log lines, several a second) only move the seq,
-// as the console that shows them is M6's. Any other newer event, a gap in the seqs, an
-// event that cannot be applied, and stream.resync re-fetch the snapshot, one request at a time.
+// build.interrupted end it, and the rest (log lines, several a second) only move the seq.
+// Any other newer event, a gap in the seqs, an event that cannot be applied, and
+// stream.resync re-fetch the snapshot, one request at a time.
+// The Build page's log (stores/buildLog.ts) hears every event through `onEvent` and re-loads
+// its build's events whenever a new snapshot lands (`refreshes`), so a gap or a resync
+// re-loads it too (D-54).
 
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -40,6 +43,8 @@ export interface Build {
   /** The phase that started last. */
   phase?: string | null
   plan?: PhasePlan[]
+  /** Simulated length of the whole build (D-54); 0 or missing on a record saved before M6. */
+  sim_seconds?: number
 }
 
 const BUILD_TYPES = new Set<string>(BUILD_EVENT_TYPES)
@@ -75,6 +80,8 @@ function isSummary(value: unknown): value is FileSummary {
 export const useLabStore = defineStore('lab', () => {
   const snapshot = ref<Snapshot | null>(null)
   const status = ref<'idle' | 'connecting' | 'live' | 'offline'>('idle')
+  /** Snapshots fetched so far: each one may follow events this client never saw. */
+  const refreshes = ref(0)
 
   /** The iteration of the latest build, or null before the first build. */
   const currentIteration = computed(() => {
@@ -118,6 +125,7 @@ export const useLabStore = defineStore('lab', () => {
         snapshot.value = (await response.json()) as Snapshot
         generation++
       } while (stale)
+      refreshes.value++
     } finally {
       fetching = false
     }
@@ -248,7 +256,16 @@ export const useLabStore = defineStore('lab', () => {
     return true
   }
 
+  const listeners = new Set<(event: LabEvent) => void>()
+
+  /** Hear every event as it arrives, before the snapshot filters it. Returns the way to stop. */
+  function onEvent(listener: (event: LabEvent) => void): () => void {
+    listeners.add(listener)
+    return () => listeners.delete(listener)
+  }
+
   function receive(event: LabEvent): void {
+    if (event.type !== 'stream.resync') for (const listener of listeners) listener(event)
     if (event.type === 'stream.resync' || !snapshot.value) {
       refreshLater()
       return
@@ -306,6 +323,7 @@ export const useLabStore = defineStore('lab', () => {
   return {
     snapshot,
     status,
+    refreshes,
     currentIteration,
     runningBuild,
     files,
@@ -314,6 +332,7 @@ export const useLabStore = defineStore('lab', () => {
     connect,
     disconnect,
     receive,
+    onEvent,
     refresh,
     upsertFile,
     upsertBuild,

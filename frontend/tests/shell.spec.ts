@@ -9,9 +9,8 @@ afterEach(() => {
 
 describe('routes', () => {
   // D-43: /knowledge renders the Knowledge page from M3, so it left this placeholder table.
+  // D-54 (h): /build/1 and /build/2 render the Build page from M6, so they left it too.
   it.each([
-    ['/build/1', 'build', 'Build, iteration 1'],
-    ['/build/2', 'build', 'Build, iteration 2'],
     ['/review/1', 'review', 'Review, iteration 1'],
     ['/review/2', 'review', 'Review, iteration 2'],
     ['/seed', 'seed', 'Seed'],
@@ -30,6 +29,19 @@ describe('routes', () => {
     expect(wrapper.find('main [data-test="knowledge"]').exists()).toBe(true)
     expect(wrapper.find('main [data-test="file-panel"]').exists()).toBe(true)
     expect(wrapper.find('main [data-test="placeholder"]').exists()).toBe(false)
+  })
+
+  it.each([
+    ['/build/1', 'Build, iteration 1'],
+    ['/build/2', 'Build, iteration 2'],
+  ])('%s renders the Build page inside the shell (D-54)', async (path, title) => {
+    const { wrapper, router } = await mountApp(path, emptySnapshot())
+    expect(router.currentRoute.value.name).toBe('build')
+    expect(wrapper.find('header [data-test="wordmark"]').exists()).toBe(true)
+    expect(wrapper.find('nav[aria-label="Journey"]').exists()).toBe(true)
+    expect(wrapper.find('main [data-test="build"]').exists()).toBe(true)
+    expect(wrapper.find('main [data-test="placeholder"]').exists()).toBe(false)
+    expect(wrapper.find('main h1').text()).toBe(title)
   })
 
   it('redirects / to /knowledge', async () => {

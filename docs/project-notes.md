@@ -405,3 +405,58 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
 - M9: the validators replace `pending(...)` in `engine/script.py` STEPS for T-13 to T-20; findings go out as `finding.raised` with the FR-T-7 fields, as the boundary advisories do. `build.completed` has no verdict yet, and `report.ready` is not emitted.
 - M10: iteration 2 starts with `POST /api/builds {"iteration": 2}`; Start Rebuild should save the feedback file, then call it. Replace `feedback_route` and `feedback_update` in `engine/script.py` with D-36's routing, using the boundary rules' patterns in `intake/boundary.py`; a beat that edits a file will need a state change carried with its events (the runner applies only events today).
 - M11: `generate/outline.py` drafts the headings; fill the sections there, and the manifest, checksums and Planting's summary follow.
+
+### M6: Build page, stepper and console (2026-10-03)
+
+**What changed**
+- `/build/1` and `/build/2` show that iteration's latest build. On the left: a header (iteration chip, Seed name, Elapsed, progress bar, current phase), then the stepper of all 11 phases, pending ones shown from the start. On the right: the console. Everything on the page comes from the build record and its events, and every time from `sim_t`, so the page reads the same at any speed (D-54).
+- Stepper: the active phase is open on its sub-steps (pending, active, done with its summary). A finished phase is one line with its simulated duration and a result chip: Passed, Findings: n, Failed: T-nn, or Incomplete: n of m not run. Incomplete is neutral grey, so it reads as neither a pass nor a fault. Finished phases open and close on click, Enter or Space. Iteration 2 shows its five feedback sub-steps first, under "Apply observer feedback".
+- Console: `mm:ss.s  LEVEL  message` on the dark console surface, coloured by level, red only for FAIL. One line per build event except `step.started` and `step.completed`, which the stepper shows (132 lines for the sample's iteration 1). It has a level filter (TEST includes PASS; INFO only under All), and Pause/Resume; scrolling up also pauses.
+- Refresh and reconnect: the page loads the build's events and follows the stream, keeping both by seq, so no line is missing or doubled. A gap, a `stream.resync`, a Reset or a restart loads the events again and fills the gap. A page that is watching when the server restarts keeps its lines and adds the interruption. Nothing fetches the snapshot per event.
+- On completion, until M9: a "Build completed" summary sits above the collapsed stepper, with no verdict. View Dashboard, Rebuild (iteration 1 only) and Approve are present; each says which milestone brings it. The console can be hidden and shown again (OQ-21).
+- A route with no build says so and points to Knowledge, or for iteration 2 to iteration 1 (closes OQ-18). An interrupted build says it stopped, gives the server's reason and offers Go to Knowledge.
+- Backend: the build record carries `sim_seconds` (75.0), so progress is `sim_t / sim_seconds`. That is the only backend change; no event changed.
+
+**Files**
+- NEW frontend/src/stepper.ts, stores/buildLog.ts, components/build/PhaseStepper.vue, BuildConsole.vue, BuildSummary.vue
+- CHANGE frontend/src/views/BuildView.vue (the page), stores/lab.ts (`onEvent`, `refreshes`, `sim_seconds` on `Build`), builds.ts (`buildsApi.events`)
+- NEW frontend/tests/stepper.spec.ts, build-script.ts; CHANGE frontend/tests/build-view.spec.ts (rewritten for the page), shell.spec.ts, demo.spec.ts, fake-server.ts (serves a build's events)
+- CHANGE backend/seedfoundry/state.py (`Build.sim_seconds`), engine/script.py (sets it); backend/tests/test_build_api.py (new test)
+- CHANGE docs/decisions.md (D-54; OQ-18 closed; OQ-20, OQ-21 raised), docs/ui-spec.md (§3 as built), docs/build-simulation.md (§3, §4 as built), docs/implementation-plan.md (M6 status, as-built note), docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 182 passed, frontend: 317 passed (through `python run.py test`)
+- `npm run build`: typecheck, build and `postbuild` network check pass
+- Exit criteria, each tested in `build-view.spec.ts` and `stepper.spec.ts`:
+  - Refresh mid-build: the events load is held while the stream runs ahead, then answers with events that overlap it. The console equals the expected lines with no double, and the stepper equals one derived from the events. A refreshed page also equals a page that watched from the start (lines, phase states, elapsed, progress).
+  - A full build streamed to the page fetches `/api/state` once and the build's events once.
+  - A gap and a `stream.resync` re-load and fill the lines.
+  - A completed build after a restart, an interrupted build, and a page watching across a restart.
+  - Phase and sub-step states and every result chip, iteration 2's feedback group, the console format, the level colours (read from the component against D-37), the filter, pause and auto-scroll, the completion hand-off and its stubbed actions, no Rebuild on iteration 2, and keyboard reachability.
+- Checked that the tests can fail. Each change below was made, the matching tests failed, and it was reverted:
+  - Dropping the seq dedupe failed the refresh, gap and resync tests.
+  - Not re-loading on a new snapshot failed the gap, resync and restart tests.
+  - Making step events into lines failed 8 tests.
+  - A positive chip for incomplete failed the chip test.
+  - Following while paused failed the pause test.
+- determinism: pass | no-em-dash: pass | network: pass | contrast: pass (no new colour; the console uses only D-37's tokens)
+- Assertions edited: three, recorded first in D-54 (h). `build-view.spec.ts`'s placeholder tests were replaced. The `/build/1` and `/build/2` rows of `shell.spec.ts`'s placeholder table moved to their own Build page test. `demo.spec.ts`'s Start Build test now reads the Build page instead of the placeholder line.
+
+**Hand checks** (terminal, through the Vite proxy at `http://127.0.0.1:5273`; `var/state.json` backed up first and restored after, same SHA-256)
+- `/build/1` serves the app.
+- 1x end to end, with a "refresh" 20 s in: snapshot, then the build's events, then the stream from the snapshot's seq. The union by seq equalled the kept log: 220 events, contiguous, 132 console lines. Last `sim_t` 75.0; 75.00 s wall. The record carries `sim_seconds` 75.0.
+- 4x with Skip phase, and 2x with Skip phase then Skip to end, each "refreshed" mid-build. The load overlapped the stream by 6 and 170 events, all dropped; the union equalled the kept log both times; event content was identical across both runs.
+- Restart mid-build (killed in Distillation): the build read interrupted, and its events were the single `build.interrupted` line, with `sim_t` null. Restart after a completed build: its 220 kept events were served.
+- Reset mid-build: the build and files were removed, and its events answered 404, so the page falls back to "No build for iteration 1 yet".
+- Nothing was checked in a browser. Waiting on the stakeholder, listed in the report.
+
+**Decisions and questions**
+- New: D-54 (Build page: data and merge by seq, `sim_seconds`, stepper states and chips, header, console lines and filter, completion until M9, route states, three changed assertions)
+- Opened: OQ-20 (Elapsed as simulated time), OQ-21 (what a completed build shows until M9)
+- Closed: OQ-18
+
+**Notes for next milestone**
+- M7: View Dashboard is stubbed in `components/build/BuildSummary.vue` (`WHY.dashboard`). Wire it to `/review/<n>?dashboard=license-optimization` when the dashboard lands.
+- M9: `BuildSummary.vue` is the stand-in for the report panel. Replace it, and settle OQ-21: whether completion moves to `/review/<n>` or the report stays on the build page. Phase chips already show `findings` and `failed` with counts and test ids. `finding.raised` events are counted per phase (advisories excluded).
+- M10: Rebuild is stubbed in the same file and hidden on iteration 2. The feedback group shows each update step's `step.completed` summary, so a summary such as "+4 lines in Styling" will appear there without a page change.
+- M11: Approve is stubbed in the same file.

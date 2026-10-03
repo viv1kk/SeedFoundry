@@ -193,6 +193,18 @@ def test_reset_cancels_the_running_build_before_removing_it(api, clock):
     assert [e for e in events(api, after["seq"]) if e.build_id == "b-1"] == []
 
 
+def test_the_record_carries_the_builds_simulated_length(api, clock):
+    """The Build page reads progress as sim_t over this, at any speed (D-54)."""
+    load(api)
+    build = start(api).json()
+    assert build["sim_seconds"] == 75.0
+    finish(api, clock)
+    record = state(api)["builds"][0]
+    assert record["sim_seconds"] == 75.0
+    last = api.get("/api/builds/b-1/events").json()["events"][-1]
+    assert last["sim_t"] == record["sim_seconds"] == last["data"]["sim_seconds"]
+
+
 # A build's events (D-49)
 
 

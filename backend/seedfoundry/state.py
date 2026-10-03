@@ -105,6 +105,9 @@ class Build(BaseModel):
     fingerprint: str = ""
     phase: str | None = None
     plan: list[PhasePlan] = []
+    # The simulated length of the whole build, so the Build page reads progress from sim_t (D-54).
+    # 0 on a record saved before M6.
+    sim_seconds: float = 0.0
     log: list[Event] = []
 
     def summary(self) -> dict[str, Any]:
