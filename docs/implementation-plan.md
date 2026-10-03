@@ -13,7 +13,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | | M4 | Demo controller and sample Seed | Done (2026-10-03) |
 | C. Build | M5 | Beat engine, phase catalogue, simulated clients | Done (2026-10-03) |
 | | M6 | Build page: stepper and console | Done (2026-10-03) |
-| D. Output | M7 | Polished License Optimization dashboard | Not started |
+| D. Output | M7 | Polished License Optimization dashboard | Done (2026-10-03) |
 | | M8 | Defect overlay (iteration 1 dashboard) | Not started |
 | | M9 | Validators and build report | Not started |
 | E. Loop | M10 | Rebuild modal and iteration 2 | Not started |
@@ -74,6 +74,8 @@ seedfoundry/
 *As built (M5):* `backend/seedfoundry/engine/` holds `catalogue.py`, `script.py`, `runner.py` and `clock.py` (D-48). `clients/` holds `llm.py` and `seed.py` (D-22). `intake/` gained `assay.py` (inventory, coverage, statements, Seed name, fingerprint), `boundary.py` (D-50) and `feedback.py` (the feedback file and its segments). `generate/outline.py` drafts the layer outlines and the manifest until M11 (D-51). `validators/` is still empty: the stubbed tests are in `engine/script.py` until M9. Builds are `POST /api/builds` and `GET /api/builds/{id}/events`; speed and skip are `GET`/`POST /api/demo/speed` and `POST /api/demo/skip` (D-49). Frontend: `src/builds.ts` (build API); `events.ts` exports `BUILD_EVENT_TYPES`; the lab store reduces build events (D-53). New tests: `backend/tests/test_assay.py`, `test_boundary.py`, `test_engine.py`, `test_build_api.py`; `frontend/tests/build-view.spec.ts`.
 
 *As built (M6):* the Build page is `frontend/src/views/BuildView.vue` with `components/build/` (`PhaseStepper.vue`, `BuildConsole.vue`, `BuildSummary.vue`), so the plan's Stepper and Console components live there. `src/stepper.ts` derives phases, sub-steps, times and console lines from events (pure functions). `src/stores/buildLog.ts` holds the shown build's events (D-54). The lab store gained `onEvent` and `refreshes`. `builds.ts` gained `buildsApi.events`. The build record gained `sim_seconds` (`state.py`, set in `engine/script.py`). New tests: `frontend/tests/stepper.spec.ts`, and `build-view.spec.ts` rewritten for the page, with `tests/build-script.ts` generating a build's events.
+
+*As built (M7):* `backend/seedfoundry/data/` holds `model.py` (the seat record and methodology), `estates.py` (the primary and alternate estate specs) and `generate.py` (the seeded generator, D-55). `dashboard/` holds `descriptor.py`, `query.py` (the drill path and aggregations) and `payload.py` (D-56); there is no separate defect overlay file until M8. `validators/` holds `numeric.py`, `visual.py`, `structure.py`, `tokens.py` and `problems.py` (D-57, D-58). Routes: `GET /api/dashboards/license-optimization` (and `/descriptor`), `GET /api/datasets`, `GET /api/datasets/{name}`. Frontend: `src/dashboard/` (types, API, drill path, formats, tokens, ECharts setup and options) and `components/dashboard/` (`DashboardFrame`, `DashboardView`, `DashboardRenderer`, `DrillBar`, `KpiPanel`, `ChartPanel`, `TablePanel`), so the dashboard is a component, not a view: `views/ReviewView.vue` shows the frame over the review route (D-59). New tests: `backend/tests/test_data.py`, `test_dashboard.py`, `test_validators.py`, with `dashboard_fixtures.py` writing `frontend/tests/fixtures/dashboard/`; `frontend/tests/dashboard.spec.ts`, `dashboard-units.spec.ts`, `fake-echarts.ts`.
 
 ## 3. Milestones
 

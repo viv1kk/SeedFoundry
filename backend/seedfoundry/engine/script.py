@@ -11,7 +11,7 @@ which the runner applies, cannot change a word of it (FR-DC-4, NFR-1).
 Real work happens here where it is cheap (Assay statistics, the boundary check, the
 manifest and its checksums, the gates' citations). LLM and Seed API calls go through
 the simulated clients (D-22). The validators of phases 9 and 10 report "not run" until
-M9, and T-08 until the datasets of M7 (D-51).
+M9 (D-51). T-08 runs the dashboard's logic on both datasets of M7 (D-58).
 """
 
 from __future__ import annotations
@@ -24,12 +24,15 @@ from collections.abc import Callable, Generator
 from dataclasses import dataclass, field
 from typing import Any
 
+from seedfoundry import dashboard
 from seedfoundry.clients import ApiCall, LLMCall, LLMClient, SeedClient, SimulatedLLMClient, SimulatedSeedClient
+from seedfoundry.data import DATASETS, dataset
 from seedfoundry.engine.catalogue import BUDGET_SECONDS, PHASES, TEST_NAMES, TOTAL_WEIGHT, Phase, plan
 from seedfoundry.generate import outline as layers
 from seedfoundry.intake import assay, boundary
 from seedfoundry.intake.feedback import FEEDBACK_NAME, feedback_file, segments
 from seedfoundry.state import Build, Category, IntakeFile
+from seedfoundry.validators import structure
 
 GATES = ("servicenow-incident-api", "solution-approval", "close-seeding")
 
@@ -408,9 +411,46 @@ def dry_run(ctx: BuildContext) -> Step:
     return "completed"
 
 
+def descriptor_digest(desc: dict[str, Any]) -> str:
+    return hashlib.sha256(json.dumps(desc, sort_keys=True).encode("utf-8")).hexdigest()[:6]
+
+
 def data_swap(ctx: BuildContext) -> Step:
-    yield not_run(ctx, "T-08", "the alternate dataset", "M7")
-    return "not run"
+    """T-08 (FR-T-2, D-58): the dashboard's descriptor and query engine on the primary and the
+    alternate estate. Passes when both payloads are structurally valid and share one structure."""
+    desc = dashboard.descriptor(ctx.iteration)
+    shapes = []
+    invalid: list[str] = []
+    for name in DATASETS:
+        data = dataset(name)
+        payload = dashboard.build(desc, data)
+        problems = structure.problems(desc, payload, data)
+        shapes.append(structure.shape(payload))
+        invalid += [f"{name}: {p}" for p in problems]
+        summary = data.summary()
+        yield log(
+            f"{data.title}: {summary['seats']:,} seats, {plural(summary['products'], 'product')}, {plural(summary['vendors'], 'vendor')}; "
+            f"payload for {plural(len(payload['panels']), 'panel')}, {plural(len(problems), 'structural problem')}",
+            dataset=name,
+            seats=summary["seats"],
+            products=summary["products"],
+            vendors=summary["vendors"],
+            problems=problems,
+        )
+    same = all(shape == shapes[0] for shape in shapes)
+    digest = descriptor_digest(desc)
+    yield log(
+        f"Same descriptor ({digest}) and query engine on {plural(len(DATASETS), 'estate')}; payload structure "
+        + ("identical" if same else "differs"),
+        descriptor=digest,
+        same_structure=same,
+    )
+    if invalid or not same:
+        detail = "; ".join(invalid) if invalid else "payload structure differs between the estates"
+        yield test(ctx, "T-08", "fail", detail)
+        return "failed"
+    yield test(ctx, "T-08", "pass", "same descriptor and query engine on both estates, both payloads structurally valid")
+    return "logic unchanged"
 
 
 def output_shape(ctx: BuildContext) -> Step:
@@ -647,8 +687,19 @@ def pending(tests: tuple[str, ...], milestone: str = "M9") -> Callable[[BuildCon
 
 
 def collect_payload(ctx: BuildContext) -> Step:
-    yield log("No dashboard payload to collect: the dashboard arrives in M7")
-    return "nothing collected"
+    desc = dashboard.descriptor(ctx.iteration)
+    data = dataset(dashboard.DEFAULT_DATASET)
+    payload = dashboard.build(desc, data)
+    yield log(
+        f"Collected the {desc['title']} payload ({desc['variant']}): {plural(len(payload['panels']), 'panel')} at All products, "
+        f"from {len(data.seats):,} seat rows in the {data.title.lower()}",
+        dashboard=desc["id"],
+        variant=desc["variant"],
+        panels=len(payload["panels"]),
+        seats=len(data.seats),
+        descriptor=descriptor_digest(desc),
+    )
+    return f"{plural(len(payload['panels']), 'panel')}"
 
 
 # Phase 11: Teardown & Report

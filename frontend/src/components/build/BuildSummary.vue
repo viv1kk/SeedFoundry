@@ -1,10 +1,13 @@
 <script setup lang="ts">
 // The hand-off when a build completes (FR-B-9, ui-spec.md sections 3 and 4, D-54): until M9
 // assembles the report, a summary of `build.completed` data, with no verdict (D-51), above
-// the stepper, and the report's three actions in a footer. Each action is present and
-// focusable but not yet available: pressing it says which milestone brings it, as the demo
-// controller's stubs did (D-47).
+// the stepper, and the report's three actions in a footer. View Dashboard opens the iteration's
+// dashboard from M7 (D-59). Rebuild and Approve are present and focusable but not yet
+// available: pressing one says which milestone brings it, as the demo controller's stubs did
+// (D-47).
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { DASHBOARD_ID } from '../../dashboard/api'
 import type { LabEvent } from '../../events'
 import { clock } from '../../stepper'
 import BaseButton from '../base/BaseButton.vue'
@@ -44,15 +47,20 @@ const facts = computed(() => [
   { label: 'Gates auto-resolved', value: String(list('gates')) },
 ])
 
-type Action = 'dashboard' | 'rebuild' | 'approve'
+type Action = 'rebuild' | 'approve'
 
 const WHY: Record<Action, string> = {
-  dashboard: 'View Dashboard opens the License Optimization dashboard, which arrives in M7.',
   rebuild: 'Rebuild opens the observer feedback editor, which arrives in M10.',
   approve: 'Approve arrives with the Seed page in M11.',
 }
 
 const said = ref('')
+
+const router = useRouter()
+
+function viewDashboard(): void {
+  void router.push({ name: 'review', params: { iteration: String(props.iteration) }, query: { dashboard: DASHBOARD_ID } })
+}
 </script>
 
 <template>
@@ -66,12 +74,11 @@ const said = ref('')
     </dl>
     <p class="summary__note">The build report, with its verdict, findings and tests, arrives in M9.</p>
     <footer class="summary__actions" data-test="summary-actions">
-      <BaseButton aria-disabled="true" aria-describedby="why-dashboard" data-action="dashboard" @click="said = WHY.dashboard">View Dashboard</BaseButton>
+      <BaseButton data-action="dashboard" @click="viewDashboard">View Dashboard</BaseButton>
       <BaseButton v-if="iteration === 1" aria-disabled="true" aria-describedby="why-rebuild" data-action="rebuild" @click="said = WHY.rebuild">
         Rebuild
       </BaseButton>
       <BaseButton variant="primary" aria-disabled="true" aria-describedby="why-approve" data-action="approve" @click="said = WHY.approve">Approve</BaseButton>
-      <span id="why-dashboard" class="visually-hidden">{{ WHY.dashboard }}</span>
       <span id="why-rebuild" class="visually-hidden">{{ WHY.rebuild }}</span>
       <span id="why-approve" class="visually-hidden">{{ WHY.approve }}</span>
       <p class="summary__said" role="status" data-test="summary-status">{{ said }}</p>

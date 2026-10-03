@@ -275,19 +275,57 @@ def test_a_gate_without_its_section_resolves_on_default():
 def test_stubbed_tests_say_not_run_and_raise_no_finding(first):
     events = build_events(first[0])
     results = {e.code: e.data for e in events if e.type == "test.result"}
-    stubbed = ["T-08", *[f"T-{n}" for n in range(13, 21)]]
+    # D-58: T-08 runs from M7, so it left the stubbed list and Germination Trial passes.
+    stubbed = [f"T-{n}" for n in range(13, 21)]
     assert sorted(t for t, d in results.items() if d["status"] == "not_run") == stubbed
     for test_id in stubbed:
-        assert results[test_id]["arrives_in"] == ("M7" if test_id == "T-08" else "M9")
+        assert results[test_id]["arrives_in"] == "M9"
         assert "not run" in results[test_id]["detail"]
     assert all(d["status"] == "pass" for t, d in results.items() if t not in stubbed)
     assert [e for e in events if e.type == "finding.raised"] == []
     phases = {e.phase: e.data["result"] for e in events if e.type == "phase.completed"}
-    assert phases["probe"] == phases["harvest"] == phases["germ"] == "incomplete"
-    assert [p for p, r in phases.items() if r != "incomplete"] == ["assay", "distill", "synth", "xexam", "contain", "plant", "seeding", "report"]
+    assert phases["probe"] == phases["harvest"] == "incomplete"
+    assert [p for p, r in phases.items() if r != "incomplete"] == ["assay", "distill", "synth", "xexam", "germ", "contain", "plant", "seeding", "report"]
     done = events[-1]
-    assert done.data["counts"] == {"pass": 12, "warn": 0, "fail": 0, "not_run": 9}
-    assert done.message == "Build completed: 12 tests passed, 9 not run; 0 findings, 0 boundary advisories"
+    assert done.data["counts"] == {"pass": 13, "warn": 0, "fail": 0, "not_run": 8}
+    assert done.message == "Build completed: 13 tests passed, 8 not run; 0 findings, 0 boundary advisories"
+
+
+def test_the_data_swap_test_runs_the_same_logic_on_both_estates(first):
+    """T-08 (FR-T-2, D-58): real from M7, on the primary and the alternate estate."""
+    events = build_events(first[0])
+    swap = [e for e in events if e.step == "germ.data-swap" and e.type in ("log", "test.result")]
+    assert [e.message for e in swap] == [
+        "Primary estate: 13,050 seats, 17 products, 10 vendors; payload for 11 panels, 0 structural problems",
+        "Alternate estate: 5,620 seats, 11 products, 8 vendors; payload for 11 panels, 0 structural problems",
+        f"Same descriptor ({swap[2].data['descriptor']}) and query engine on 2 estates; payload structure identical",
+        "T-08 Data-swap logic unchanged: same descriptor and query engine on both estates, both payloads structurally valid",
+    ]
+    assert swap[-1].level == "PASS" and swap[-1].data["status"] == "pass" and not swap[-1].data["simulated"]
+    assert "arrives_in" not in swap[-1].data
+    germ = next(e for e in events if e.type == "phase.completed" and e.phase == "germ")
+    assert germ.data["result"] == "passed" and germ.data["tests"] == {"T-07": "pass", "T-08": "pass"}
+    collected = next(e for e in events if e.step == "harvest.collect" and e.type == "log")
+    assert collected.message == "Collected the License Optimization payload (polished): 11 panels at All products, from 13,050 seat rows in the primary estate"
+
+
+def test_the_data_swap_test_fails_when_the_logic_gives_another_structure(monkeypatch):
+    from seedfoundry import dashboard
+
+    real = dashboard.build
+
+    def drifting(desc, data, *args, **kwargs):
+        payload = real(desc, data, *args, **kwargs)
+        if data.name == "alternate":
+            payload["panels"]["trend"]["series"]["seats_left"] = payload["panels"]["trend"]["series"]["assigned"]
+        return payload
+
+    monkeypatch.setattr(dashboard, "build", drifting)
+    beats = script(BuildContext("b-1", 1, sample()))
+    t08 = next(e for b in beats for e in b.events if e["code"] == "T-08")
+    assert t08["data"]["status"] == "fail" and t08["data"]["detail"] == "payload structure differs between the estates"
+    germ = next(e for b in beats for e in b.events if e["type"] == "phase.completed" and e["phase"] == "germ")
+    assert germ["data"]["result"] == "failed"
 
 
 def test_boundary_advisories_are_raised_with_file_line_and_home():

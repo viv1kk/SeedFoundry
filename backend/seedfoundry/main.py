@@ -15,8 +15,9 @@ from fastapi import FastAPI, Header, Query, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from seedfoundry import demo, events
+from seedfoundry import dashboard, demo, events
 from seedfoundry.config import var_dir
+from seedfoundry.data import DATASETS, dataset
 from seedfoundry.engine.clock import Clock
 from seedfoundry.engine.runner import BuildEngine
 from seedfoundry.intake import files
@@ -67,6 +68,8 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         app.state.lab = StateManager.open(data_dir or var_dir())
         app.state.engine = BuildEngine(app.state.lab, clock)
+        for name in DATASETS:
+            dataset(name)  # generated once, at start, so the first dashboard is quick (NFR-3)
         yield
         # A build cannot outlive the server: it stays "running" on disk and is marked
         # interrupted at the next start (D-33).
@@ -80,6 +83,10 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
             status_code=error.status,
             content={"detail": {"code": error.code, "message": error.message, **error.extra}},
         )
+
+    @app.exception_handler(dashboard.QueryError)
+    async def query_error(request: Request, error: dashboard.QueryError) -> JSONResponse:
+        return JSONResponse(status_code=error.status, content={"detail": {"code": error.code, "message": error.message}})
 
     def lab(request: Request) -> StateManager:
         return request.app.state.lab
@@ -185,6 +192,48 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
             raise files.IntakeError(404, "build_not_found", f"No build with id {build_id}.")
         events = build.log or [e for e in manager.log.after(0) if e.build_id == build_id]
         return {"build_id": build_id, "status": build.status, "seq": manager.state.seq, "events": events}
+
+    # Dashboard and datasets (FR-D-1 to FR-D-6, D-56). The query engine runs here: every figure
+    # is aggregated from the seat rows at request time, and the frontend only renders.
+
+    def known_dashboard(dashboard_id: str) -> None:
+        if dashboard_id != dashboard.DASHBOARD_ID:
+            raise dashboard.QueryError(404, "dashboard_not_found", f"No dashboard {dashboard_id!r}.")
+
+    def known_dataset(name: str) -> None:
+        if name not in DATASETS:
+            raise dashboard.QueryError(404, "dataset_not_found", f"No dataset {name!r}. Datasets: {', '.join(DATASETS)}.")
+
+    @app.get("/api/dashboards/{dashboard_id}")
+    async def get_dashboard(
+        dashboard_id: str,
+        iteration: int = Query(..., ge=1, le=2),
+        dataset_name: str = Query(dashboard.DEFAULT_DATASET, alias="dataset"),
+        drill: str = Query(""),
+        page: int = Query(1, ge=1),
+        sort: str | None = Query(None),
+        direction: str | None = Query(None),
+    ) -> dict[str, Any]:
+        """The descriptor and the payload at one drill level (`drill`: steps joined by "/", a
+        step's levels by "."). 404 drill_not_found for a path the data does not have."""
+        known_dashboard(dashboard_id)
+        known_dataset(dataset_name)
+        return dashboard.dashboard(iteration, dataset_name, drill or None, page, sort, direction)
+
+    @app.get("/api/dashboards/{dashboard_id}/descriptor")
+    async def get_descriptor(dashboard_id: str, iteration: int = Query(..., ge=1, le=2)) -> dict[str, Any]:
+        known_dashboard(dashboard_id)
+        return dashboard.descriptor(iteration)
+
+    @app.get("/api/datasets")
+    async def list_datasets() -> list[dict[str, Any]]:
+        return [dataset(name).summary() for name in DATASETS]
+
+    @app.get("/api/datasets/{name}")
+    async def get_dataset(name: str) -> dict[str, Any]:
+        """Every product and seat row, usage included, for inspection."""
+        known_dataset(name)
+        return dataset(name).rows()
 
     # Demo controller (D-46). The client asks before replacing or clearing; the server
     # applies the same intake rules as for the user's own changes.

@@ -460,3 +460,98 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
 - M9: `BuildSummary.vue` is the stand-in for the report panel. Replace it, and settle OQ-21: whether completion moves to `/review/<n>` or the report stays on the build page. Phase chips already show `findings` and `failed` with counts and test ids. `finding.raised` events are counted per phase (advisories excluded).
 - M10: Rebuild is stubbed in the same file and hidden on iteration 2. The feedback group shows each update step's `step.completed` summary, so a summary such as "+4 lines in Styling" will appear there without a page change.
 - M11: Approve is stubbed in the same file.
+
+### M7: Polished License Optimization dashboard (2026-10-03)
+
+**What changed**
+- The License Optimization dashboard exists. View Dashboard on a completed build opens it at `/review/<n>?dashboard=license-optimization`, in a thin frame with "Back to report" and the iteration badge. It has five KPIs, the full-width treemap with its class legend, the three charts, Optimisation candidates and the paginated Seats table, titled License Optimization, in Seed v0.1's design system (D-59).
+- Data: SeedFoundry's own estate from a seeded generator (D-55). The primary estate is the sample's professional services firm: 13,050 seats, 17 products from 10 vendors, 5 of them unpriced, so the grade is PARTIAL. The alternate is a software company: 5,620 seats, 11 products, 8 vendors, no names in common. Every class is derived from twelve months of generated usage by music.md's rules; the seed is a fixed string per estate, never the clock.
+- Query engine on the server (D-56): every figure is aggregated from the seat rows for the current drill path, which every panel follows. Drill from a treemap cell (a leaf drills vendor, product and class in one step, with one crumb naming all three), a bar, or a product in the candidates table, down to a product's class, where the Seats table lists those seats. The path is in the URL, so reload keeps it and the browser's Back pops one step. The drill bar has Back and the breadcrumb.
+- Keyboard: Back, crumbs, product cells, sort headers and First/Previous/Next/Last are buttons. Each chart takes focus; the arrow keys choose a drill target, a line under the chart reads it out, and Enter drills.
+- Charts are ECharts 6 from npm, in their own chunk. Every colour is read from the tokens when a chart paints, so a theme switch repaints them, and they repaint once the fonts load.
+- T-08 runs for real (D-58): the same descriptor and query engine on both estates give structurally valid payloads of one structure. Germination Trial passes, so the sample build reads "13 tests passed, 8 not run" (was 12 and 9): 223 events, 135 console lines.
+- Minimal validators, code M9 extends (D-57): numeric reconciliation recounts from the rows; visual QA checks palette, class colours, red for faults, formats, axis names and units, the grid, fonts and contrast against tokens.css. Both pass on the polished dashboard. They stay out of the build until M9.
+- Until M9, `/review/<n>` is a stand-in that says the report arrives in M9 and offers View Dashboard and the build summary (OQ-22). Iteration 1 shows the polished dashboard with a line saying the overlay arrives in M8 (OQ-23).
+
+**Files**
+- NEW backend/seedfoundry/data/model.py, estates.py, generate.py; CHANGE data/__init__.py
+- NEW backend/seedfoundry/dashboard/descriptor.py, query.py, payload.py; CHANGE dashboard/__init__.py
+- NEW backend/seedfoundry/validators/numeric.py, visual.py, structure.py, tokens.py, problems.py; CHANGE validators/__init__.py
+- CHANGE backend/seedfoundry/engine/script.py (T-08 and Collect dashboard payload), main.py (dashboard and dataset routes, datasets warmed at start)
+- NEW backend/tests/test_data.py, test_dashboard.py, test_validators.py, dashboard_fixtures.py; CHANGE backend/tests/test_engine.py
+- NEW frontend/src/dashboard/ (types.ts, api.ts, drill.ts, format.ts, tokens.ts, echarts.ts, options.ts), frontend/src/components/dashboard/ (DashboardFrame.vue, DashboardView.vue, DashboardRenderer.vue, DrillBar.vue, KpiPanel.vue, ChartPanel.vue, TablePanel.vue)
+- CHANGE frontend/src/views/ReviewView.vue (stand-in and frame), components/build/BuildSummary.vue (View Dashboard), package.json and package-lock.json (echarts), vite.config.ts (ECharts chunk)
+- NEW frontend/tests/dashboard.spec.ts, dashboard-units.spec.ts, fake-echarts.ts, fixtures/dashboard/ (nine responses written by the backend); CHANGE frontend/tests/fake-server.ts (serves them), build-script.ts, build-view.spec.ts, shell.spec.ts
+- CHANGE docs/decisions.md (D-55 to D-59; OQ-22 to OQ-24; notes on D-51, D-54), docs/seed-reuse-notes.md (§1.2, §1.4, §5.4 to §5.7, §8, §10 as built), docs/ui-spec.md (§1, §3, §4, §5 as built), docs/build-simulation.md (§2, §3, §4, §6.2, §6.3 as built), docs/implementation-plan.md (M7 status, as-built note), docs/CLAUDE.md (fixture command), docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 386 passed, frontend: 357 passed (through `python run.py test`)
+- `npm run build`: typecheck, build and `postbuild` network check pass with ECharts in the bundle (no external URL in `dist/`)
+- Exit criteria:
+  - Numeric reconciliation passes on the polished payload: primary and alternate at All products, the primary at all 113 drill levels, and on other pages and sorts. Visual QA passes on both iterations' descriptors (`test_validators.py`).
+  - The query engine matches row-level ground truth at every hierarchy level: all products, 10 vendors, 17 products, 85 product classes. A brute-force recount is compared with the KPIs, legend, treemap, footer, bars and candidate rows (`test_the_query_engine_matches_row_level_ground_truth`).
+  - Reload keeps the drill path and its crumbs; the browser's Back pops one step at a time; the drill bar Back and a crumb each go one step (`dashboard.spec.ts`).
+  - The data meets every constraint in seed-reuse-notes §5.7, and two generations are identical, in this process and in others under three PYTHONHASHSEED values (`test_data.py`).
+  - T-08 runs and passes on the sample with the same logic on both estates; it fails when the logic gives the alternate another structure (`test_engine.py`).
+- Checked that the tests can fail. Each change below was made, the matching tests failed, and it was reverted:
+  - no guard against stale answers;
+  - no repaint on a theme change;
+  - no repaint when the fonts load;
+  - a treemap leaf drilled as three steps;
+  - a hard-coded colour in the bar options;
+  - the query engine ignoring the class (88 tests);
+  - a leaver no longer a Leaver whatever the usage;
+  - the Recoverable KPI over Unused and Underused, which is N-3's defect (82 tests);
+  - the generator reading the clock.
+- determinism: pass | no-em-dash: pass | network: pass | contrast: pass (no new colour; the dashboard source has no colour literal, a test)
+- Assertions edited, recorded first in D-58 and D-59:
+  - `test_engine.py`: the stubbed-tests test drops T-08 and counts 13 and 8.
+  - `build-script.ts` and `build-view.spec.ts`: the sample counts are 13 and 8.
+  - `build-view.spec.ts`: View Dashboard is available instead of saying M7.
+  - `shell.spec.ts`: `/review/1` and `/review/2` moved from the placeholder table to their own test.
+
+**Hand checks** (terminal, through the Vite proxy at `http://127.0.0.1:5273`; `var/state.json` backed up first and restored after, same SHA-256)
+- 4x: Load sample, Start Build: 223 events in 19.0 s, last `sim_t` 75.0, 135 console lines. T-08 PASS with the two estate lines and "payload structure identical"; Germination Trial passed; "Build completed: 13 tests passed, 8 not run; 0 findings, 0 boundary advisories".
+- Dashboard endpoint through the proxy:
+
+  | Level | Time | Size |
+  |---|---|---|
+  | All products | 86 ms | 39 KB |
+  | Microsoft | 62 ms | 20 KB |
+  | Microsoft 365 E3 | 47 ms | 15 KB |
+  | Microsoft › Microsoft 365 E3 › Unused | 57 ms | 14 KB |
+
+  A path the data does not have gave 404 `drill_not_found`.
+- Recount by hand from `GET /api/datasets/primary` (13,050 rows), all equal to the payload:
+  - Entitled 13,050, Assigned 12,401, Active 8,286, Unused or underused 3,642.
+  - Recoverable a year $1,035,384 with 657 seats withheld.
+  - The entitlement bars sum to 13,050; the legend shares sum to 100.0; the priced recoverable bars and the candidates' total are both $1,035,384; the footer's classes sum to 13,050.
+  - Microsoft › Microsoft 365 E3 › Unused: 260 seats, $112,320.
+- Determinism: two requests gave identical payloads. The rows the server serves equal a fresh generation in another process (PYTHONHASHSEED 7).
+- The review route with a drill path serves the app.
+- Nothing was checked in a browser. Waiting on the stakeholder, in a browser:
+  - Open the dashboard from a completed build.
+  - Read it beside Seed v0.1's description in seed-reuse-notes §5: does it read as the same dashboard?
+  - Drill from the treemap to one product's Unused seats and back.
+  - Reload mid-drill, then use the browser's Back step by step.
+  - Use the drill bar, the charts and pagination by keyboard only.
+  - Check both themes, including a switch with the dashboard open.
+  - Time the first render (under 1 s).
+
+**Decisions and questions**
+- New: D-55 (data generator and seed rule), D-56 (descriptor, payload, query engine on the server, drill path in the URL, API), D-57 (minimal validators, kept out of the build until M9), D-58 (T-08 real; changed assertions), D-59 (the dashboard on screen; changed assertions)
+- Opened: OQ-22 (the review route and Back to report until M9), OQ-23 (View Dashboard in M7; iteration 1 polished with a note until M8), OQ-24 (figures in JetBrains Mono, as Seed v0.1, while the sample environment.md says Inter)
+- Closed: none
+
+**Notes for next milestone**
+- M8: patch the descriptor in `dashboard/descriptor.py` `descriptor(iteration)`, which returns the polished one for both iterations today. Derive the defect figures in `dashboard/payload.py` by fixed rules over the payload built from the rows, so they hold at every drill level (R-9).
+  - `DashboardView.vue` tags its root with `data-variant`; scope `defects.css` under a class set only when the variant is rough.
+  - `visual.check` reads colours and fonts from the descriptor. If V-3, V-7 and V-8 are applied through `defects.css`, extend `validators/tokens.py` to read that file too.
+  - Remove the frame's iteration 1 overlay line (OQ-23).
+  - T-08 checks structure only. The V-1 pie keeps the recoverable panel's data shape, so it stays a pass; keep it so.
+- M9:
+  - Map `validators` problems to findings (N-1 to N-5, V-1 to V-8) and run them in place of `pending(...)` for T-13 to T-20 in `engine/script.py`.
+  - `harvest.collect` already builds the payload.
+  - Finding-to-panel highlight can target `[data-panel="<id>"]`.
+  - Settle OQ-21 and OQ-22 together: the review stand-in is `views/ReviewView.vue`.
+- M10: embed `components/dashboard/DashboardView.vue` in the split view; it takes `drill` as a prop and emits `navigate` and `back`, so the modal can keep its own drill path off the URL.

@@ -6,7 +6,10 @@
 // running until a test ends it; no engine runs here. Canned refusals (413, 415) are queued
 // with `refuseNext`, as the real checks live in the backend's tests. Load sample serves the
 // real sample files from backend/seedfoundry/sample. A build's events, for the Build page
-// (D-54), are whatever a test puts in `buildEvents`.
+// (D-54), are whatever a test puts in `buildEvents`. The dashboard (D-56) replays real responses
+// the backend wrote to tests/fixtures/dashboard/ (backend/tests/dashboard_fixtures.py, checked
+// against the backend by test_dashboard.py); a drill path with no fixture is refused as the
+// server refuses a path the data does not have.
 
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -50,6 +53,25 @@ export const SAMPLE = (
   category,
   content: readFileSync(resolve(SAMPLE_DIR, name), 'utf8').replace(/\r\n?/g, '\n'),
 }))
+
+const DASHBOARD_DIR = resolve(__dirname, 'fixtures/dashboard')
+
+/** Fixture file for a dashboard request: drill path, then page and sort. */
+const DASHBOARD_FIXTURES: Record<string, string> = {
+  '': 'root.json',
+  '|2': 'root-page-2.json',
+  '|1|days_idle|asc': 'root-days-idle-asc.json',
+  '|1|days_idle|desc': 'root-days-idle-desc.json',
+  microsoft: 'vendor.json',
+  'microsoft/microsoft-365-e3': 'vendor-product.json',
+  'microsoft.microsoft-365-e3': 'product-step.json',
+  'microsoft.microsoft-365-e3.unused': 'leaf.json',
+  'microsoft/microsoft-365-e3/unused': 'leaf-steps.json',
+}
+
+export function dashboardFixture(name: string): Record<string, unknown> {
+  return JSON.parse(readFileSync(resolve(DASHBOARD_DIR, name), 'utf8'))
+}
 
 const LABELS: Record<string, string> = Object.fromEntries(CATEGORIES.categories.map((c) => [c.id, c.label]))
 const CORE = new Set(CATEGORIES.categories.filter((c) => c.core).map((c) => c.id))
@@ -160,6 +182,19 @@ export class FakeServer {
     return null
   }
 
+  private dashboard(query: Record<string, string>): Reply {
+    const drill = query.drill ?? ''
+    const page = query.page ?? '1'
+    const key = page === '1' && !query.sort ? drill : [drill, page, query.sort, query.direction].filter((part) => part !== undefined).join('|')
+    const name = DASHBOARD_FIXTURES[key]
+    if (!name) {
+      if (drill && !(drill in DASHBOARD_FIXTURES)) return refusal(404, 'drill_not_found', `No vendor '${drill.split(/[./]/)[0]}' in the data (drill path '${drill}').`)
+      return refusal(500, 'no_fixture', `The fake server has no dashboard fixture for ${key}.`)
+    }
+    const body = dashboardFixture(name)
+    return { status: 200, body: { ...body, iteration: Number(query.iteration) } }
+  }
+
   private handle(call: Call): Reply {
     const index = this.refusals.findIndex((r) => r.match(call))
     if (index >= 0) return this.refusals.splice(index, 1)[0].reply
@@ -172,6 +207,7 @@ export class FakeServer {
       const file = this.find(fileMatch[1])
       return file ? { status: 200, body: file } : refusal(404, 'file_not_found', `No file with id ${fileMatch[1]}.`)
     }
+    if (method === 'GET' && path === '/api/dashboards/license-optimization') return this.dashboard(call.query)
     const eventsMatch = path.match(/^\/api\/builds\/([^/]+)\/events$/)
     if (method === 'GET' && eventsMatch) {
       const build = this.builds.find((b) => b.id === eventsMatch[1])

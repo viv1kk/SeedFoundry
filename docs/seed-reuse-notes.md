@@ -29,6 +29,7 @@ Citations use the form `seed:file §section`, all under `docs/seed_docs/`.
 - Light values on `:root`; dark overrides the same names under `[data-theme='dark']` set on `<html>`. No component knows the theme.
 - First visit follows `prefers-color-scheme`. A toggle (Shift+D) is remembered in `localStorage`. Seed's key was `systems-v1.theme`; SeedFoundry uses `seedfoundry.theme`.
 - Charts re-resolve their colours on theme change (D-5).
+- *As built (M7, D-59):* the dashboard's ECharts options are built at paint time from `getComputedStyle` (`--chart-<role>` and the label, surface and text tokens), so switching the theme repaints every open chart with the other theme's values.
 
 ### 1.3 Colour tokens (copy these values)
 
@@ -82,7 +83,7 @@ Not needed by SeedFoundry: the Potential grade tokens (`--grade-*`) and the grow
 
 ### 1.4 Type, space, shape, motion
 
-- **Faces:** Inter (`--font-sans`) for prose, headings, labels; JetBrains Mono (`--font-mono`) for figures, identifiers, ids, timestamps, log lines. Both variable fonts bundled from npm (`@fontsource-variable/inter`, `@fontsource-variable/jetbrains-mono`), never fetched. Fallbacks Segoe UI and Consolas. Charts painted before the faces load must be redrawn once they arrive (ECharts draws text to canvas once).
+- **Faces:** Inter (`--font-sans`) for prose, headings, labels; JetBrains Mono (`--font-mono`) for figures, identifiers, ids, timestamps, log lines. Both variable fonts bundled from npm (`@fontsource-variable/inter`, `@fontsource-variable/jetbrains-mono`), never fetched. Fallbacks Segoe UI and Consolas. Charts painted before the faces load must be redrawn once they arrive (ECharts draws text to canvas once). *As built (M7):* each chart repaints when `document.fonts.ready` resolves and on `loadingdone` (D-59).
 - **Sizes:** `--text-xs` 11 px (small-caps labels, chips), `--text-sm` 13 px (tables, supporting), `--text-md` 15 px (body default), `--text-lg` 18 px (panel headings), `--text-xl` 24 px (KPI figures), `--text-2xl` 32 px (screen titles). Capitals labels at 0.06 to 0.08 em letter-spacing. Body line height 1.5.
 - **Space:** 4 px steps, `--space-1` (4 px) to `--space-12` (48 px).
 - **Radius:** 3 px chips, buttons, small controls; 6 px cards, KPI tiles, chart cards; 10 px reserved (Seed used it only for the seed screen's layer cards).
@@ -310,6 +311,8 @@ Panel ids are SeedFoundry's (Seed's descriptor ids for this dashboard are not re
 
 Seed's ruling and its as-built notes give four charts and both tables, "within FR-AN7's roughly 3 to 4". The treemap's legend lists the five classes with each class's share of entitled seats; the shares sum to 100%.
 
+*As built (M7, D-56, D-59):* the eleven panels as above, titled as above, in the descriptor `backend/seedfoundry/dashboard/descriptor.py`. Spans on the twelve-column grid: the KPIs 2, 2, 2, 3, 3; the treemap 12; Entitled, assigned and active by product, Assigned and in use by month, and Recoverable cost by product 4 each on one row; both tables 12. The entitlement chart is subtitled "The gap is the finding"; the recoverable chart "A year, priced products; unpriced products are withheld", and an unpriced product shows the word Withheld in place of a bar. The candidates table is in music.md's priority order (largest recoverable cost first, withheld products after by recoverable seats) and its product names drill. The Seats table shows 25 rows a page with First, Previous, Next and Last, sorts on any column, and has the class counts and the total in its footer; its last column is "Unit cost a month". The treemap legend is drawn under the chart with each class's share and count. Formats: counts `13,050`; money `$1.0M` and `$45k` on charts and KPIs, whole dollars in tables; shares to one decimal; months `Oct 2025`.
+
 ### 5.5 Seed v0.1's headline figures (reference only, D-30)
 
 SeedFoundry's dashboard shows its own data's figures (5.7). These are Seed v0.1's, recorded live in `seed:project-notes.md` §84.5 "M20" with the full dataset (Life caught up), kept as a reference for scale and proportion:
@@ -336,9 +339,26 @@ Derived from the above (arithmetic, to be confirmed when the generator is writte
 
 Two readings were ambiguous in Seed's record and no longer need settling, because the data is SeedFoundry's own: whether "975 seats withheld" counts recoverable seats on unpriced products (our reading) or every seat on an unpriced product; and the Underused versus Unused split inside 3,171.
 
+*As built (M7), SeedFoundry's own figures (primary estate, D-55), for comparison only:*
+
+| Figure | SeedFoundry | Seed v0.1 |
+|---|---|---|
+| Entitled | 13,050 | 13,620 |
+| Assigned | 12,401 | 13,002 |
+| Active | 8,286 (63.5%) | 9,496 (69.7%) |
+| Unused or underused | 3,642 (Underused 1,822, Unused 1,820) | 3,171 |
+| Leaver, Unassigned | 473, 649 | 335, 618 (derived) |
+| Recoverable a year | $1,035,384 ($1.0M), priced products only, 657 seats withheld | $390k, 975 withheld |
+| Drill example | Microsoft › Microsoft 365 E3 › Unused: 260 seats, $112,320 | Microsoft 365 E3, Unused: 104 seats, $45k |
+| Products, vendors | 17 (12 priced), 10 | 20, 10 |
+
+"975 seats withheld" is read as recoverable seats on unpriced products, as above.
+
 ### 5.6 Hierarchy and drill (as built, and in scope for SeedFoundry: D-29, FR-D-6)
 
 All products → vendor → product → utilisation → seat. A treemap leaf click drills vendor, product and class in one step, and its breadcrumb crumb names all three levels ("Microsoft › Microsoft 365 E3 › Unused", per the M21 fix).
+
+*As built (M7, D-56, D-59):* the drill path is in the URL as steps joined by `/`, a step's level ids joined by `.` (`?dashboard=license-optimization&drill=microsoft.microsoft-365-e3.unused` for one leaf click, `drill=microsoft/microsoft-365-e3/unused` for three clicks), so reload keeps each crumb as it was drilled and the browser's Back pops one step. Clicking a treemap vendor, product or class cell, a bar of either per-product chart, or a product in the candidates table drills; the deepest level is a product's class, where the Seats table lists those seats. The query engine runs on the server (D-56). Each chart also has a keyboard path: it takes focus, the arrow keys choose among the next level's targets, and Enter drills one level.
 
 ### 5.7 SeedFoundry's data (D-30)
 
@@ -365,6 +385,8 @@ The underlying data does not need to match Seed v0.1 (stakeholder, 2026-10-03). 
 - At least nine priced products, so V-1's pie has more than eight slices, and at least one unpriced product, so withholding shows.
 - At least two vendors with more than one product each, so every treemap level has children.
 - The alternate dataset for the data-swap test (T-08) has the same schema and methodology with a different estate: other vendors, products and sizes.
+
+*As built (M7, D-55):* the generator is `backend/seedfoundry/data/`, seeded from a fixed string per estate (never the clock), and every class is derived from generated usage by music.md's rules. Each constraint above is a test in `backend/tests/test_data.py`: every class in the estate and in every product of both estates; 12 of the primary's 17 products priced and 5 unpriced; Microsoft (5 products), Adobe, Salesforce and Atlassian (2 each) with more than one product; the alternate (a software company: 8 vendors, 11 products, 5,620 seats, other departments) shares no vendor or product name with the primary; priced seats 83.6% (primary) and 89.1% (alternate), so both grade PARTIAL; twelve months, October 2025 to September 2026, snapshot 2026-09-30. Two generations are identical, in this process and in others whatever PYTHONHASHSEED (tests). The record adds three fields to §5.2's: `assignee_status` (environment.md), `assigned_from` (the month the seat was first held, for the trend's assigned line) and `usage` (twelve monthly counts of days active); `vendor` comes from the product.
 
 ### 5.8 Defect mapping (iteration 1)
 
@@ -463,13 +485,13 @@ Further practices worth keeping:
 | Node | 20 or newer | 24 on the target machine |
 | Backend | FastAPI under uvicorn, every route under `/api` | same |
 | Frontend | Vue 3 + TypeScript + Pinia + Vite; Vite proxies `/api` | same |
-| Charts | Apache ECharts, colours from tokens at runtime (D-5) | same, bundled from npm, added in M7 |
+| Charts | Apache ECharts, colours from tokens at runtime (D-5) | same, bundled from npm: ECharts 6, tree-shaken, in its own chunk (M7, D-59) |
 | Transport | SSE | same |
 | Frontend tests | none (typecheck and build only) | vitest (D-2) |
 | Python env | uv (`uv.lock`), with `run.ps1` for machines where uv is blocked; requirements files exported from the lock | same (D-25) |
 | Launcher | `run.py` (waits for both servers, prints a ready line) and `run.ps1` | same (D-23) |
 | Ports | 8000 and 5173 | 8100 and 5273 (OQ-8 assumption) |
-| Data | pandas | not needed at 13,620 rows; decided in M7 |
+| Data | pandas | not needed: plain Python over 13,050 rows (M7, D-55) |
 
 Seed's Vite bound to `localhost` only, so `127.0.0.1:5173` did not answer and the guide had to warn about it. SeedFoundry binds Vite to `127.0.0.1` and prints that address (D-23).
 
@@ -502,4 +524,4 @@ Confirmed against the Seed docs (requirements §9, right column):
 | 9 | Dashboard scope (FR-D) is silent on interaction | Seed's dashboard is fully interactive: cross-filter, drill to seat, evidence panel, collection step | Resolved: drill-down in (D-29, A-2); evidence panel open (OQ-15) |
 | 10 | `requirements.md` §9 "contrast test" | Seed's test is Python over `tokens.css` | Resolved: rules ported to vitest (D-38) |
 | 11 | `implementation-plan.md` M2 "port tokens.css" | `tokens.css` is not in the Seed docs; only its values in tables, some missing | Resolved: rebuilt from §1.3 in M2, gaps filled (D-37) |
-| 12 | `implementation-plan.md` M7 "License Optimization data" | No data or generator in the docs; only headline figures | Resolved: data is SeedFoundry's own; methodology and layout match (D-30, §5.7). M7 authors the generator and an alternate dataset |
+| 12 | `implementation-plan.md` M7 "License Optimization data" | No data or generator in the docs; only headline figures | Resolved: data is SeedFoundry's own; methodology and layout match (D-30, §5.7). M7 authors the generator and an alternate dataset. *Done in M7 (D-55)* |

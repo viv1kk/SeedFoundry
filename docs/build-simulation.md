@@ -34,6 +34,8 @@ Sub-step names may be refined in M5, but phase count, order, weights and test id
 
 *As built (M5):* sub-step names are as in the table, with Planting's refined to Plant the three layers; Heading summary per layer; List the declared stack. In code a sub-step's id is `<phase>.<step>` (`assay.inventory`, `seeding.discovery`, `assay.feedback-route`), in `backend/seedfoundry/engine/catalogue.py`, which a test checks against this table. Each test result is emitted inside the sub-step that computes it, so test ids appear in order T-01 to T-21. What is real, simulated or not yet run in M5 is D-51: real T-01 to T-05, T-09, T-11; simulated T-06, T-07, T-10, T-12, T-21; not run T-08 (until M7) and T-13 to T-20 (until M9), so phases 5, 9 and 10 complete as "incomplete" until then. Synthesis drafts the three layers as outlines (header block and §7's section headings) until M11 fills them; the manifest, upload checksums and Planting's heading summary are computed from those bytes. Planting's declared stack is the bold list items of environment.md's Data Layer (the sample: License Management System (LMS), SAP).
 
+*As built (M7, D-58):* T-08 is real. "Data-swap test on alternate dataset" builds the dashboard payload with the iteration's descriptor and the same query engine on the primary and the alternate estate (D-55), logs a line per estate and one naming the descriptor's digest and whether the two payloads share one structure, and passes when both are structurally valid and their structures match. Germination Trial therefore passes; only Stress & Probe and Harvest Validation are incomplete until M9. "Collect dashboard payload" builds the real payload and logs its panels and seat rows; T-13 to T-20 stay not run (D-57).
+
 ### Phase results by iteration (sample Seed)
 
 | Phase | Iteration 1 | Iteration 2 |
@@ -54,6 +56,8 @@ Types: `build.started`, `phase.started`, `step.started`, `log`, `llm.call`, `api
 *As built (M5):* no new types. In a build every event has `build_id`, `iteration` and `sim_t`; every event inside a phase has `phase` (its code id), and every event inside a sub-step has `step`. `code` is the test id (`test.result`), the gate id (`gate.auto_resolved`) or the finding id (`finding.raised`). `build.started` carries the build record (D-49) and `replaces`, the ids of the iteration's earlier build it replaces; `phase.started` and `phase.completed` carry `index`, `name`, and on completion `result` (`passed`, `findings`, `incomplete`, `failed`) and each test's status; `test.result` carries `id`, `name`, `status` (`pass`, `warn`, `fail`, `not_run`), `detail`, `simulated` and, when not run, `arrives_in`; `llm.call` carries `task`, `model`, `tokens_in`, `tokens_out`, `latency_ms`, `simulated`; `api.call` carries `method`, `path`, `status`, `latency_ms`, `simulated`, `response`; `build.completed` carries the test counts, finding and advisory ids, gates and `sim_seconds`. `report.ready` is not emitted until M9 (D-51). A sample iteration 1 build is 220 events. Speed and skip emit no event (D-48).
 
 *As built (M6, D-54):* the build record (and so `build.started`'s `data.build`) also carries `sim_seconds`, the build's simulated length (75.0), so the Build page reads progress as `sim_t / sim_seconds`. No event changed.
+
+*As built (M7, D-58):* no new types. T-08's sub-step emits three log lines before its result, so a sample iteration 1 build is 223 events (was 220).
 
 ## 4. Console log format
 
@@ -100,9 +104,20 @@ Illustrative lines (wording can be refined, tone must stay matter-of-fact, no em
 01:15.0  INFO   Build completed: 12 tests passed, 9 not run; 0 findings, 0 boundary advisories
 ```
 
+*As built (M7, D-58):* the data-swap lines and the end of the sample's iteration 1 build now read:
+
+```
+00:28.7  INFO   Primary estate: 13,050 seats, 17 products, 10 vendors; payload for 11 panels, 0 structural problems
+00:29.5  INFO   Alternate estate: 5,620 seats, 11 products, 8 vendors; payload for 11 panels, 0 structural problems
+00:30.4  INFO   Same descriptor (abcc42) and query engine on 2 estates; payload structure identical
+00:31.2  PASS   T-08 Data-swap logic unchanged: same descriptor and query engine on both estates, both payloads structurally valid
+01:03.0  INFO   Collected the License Optimization payload (polished): 11 panels at All products, from 13,050 seat rows in the primary estate
+01:15.0  INFO   Build completed: 13 tests passed, 8 not run; 0 findings, 0 boundary advisories
+```
+
 Gate lines use Seed v0.1's ids (`seed-reuse-notes.md` §4.2), never "H-02". A test not yet run is level TEST, so it reads as neutral, not as a warning (D-51).
 
-*As built (M6, D-54):* the console is `frontend/src/components/build/BuildConsole.vue`. Every build event is a line except `step.started` and `step.completed`, which the stepper shows, so the sample's iteration 1 is 132 lines of 220 events. Tenths are floored (`74.182` is `01:14.1`), and an event without `sim_t` (`build.interrupted`) is stamped `--:--.-`. The level filter's TEST button also shows PASS lines, and INFO lines show only under All.
+*As built (M6, D-54):* the console is `frontend/src/components/build/BuildConsole.vue`. Every build event is a line except `step.started` and `step.completed`, which the stepper shows, so the sample's iteration 1 is 132 lines of 220 events. *M7 (D-58):* 135 lines of 223 events. Tenths are floored (`74.182` is `01:14.1`), and an event without `sim_t` (`build.interrupted`) is stamped `--:--.-`. The level filter's TEST button also shows PASS lines, and INFO lines show only under All.
 
 ## 5. Planted defect catalogue (iteration 1)
 
@@ -161,9 +176,13 @@ Keep rules simple (keyword and pattern sets with a small allowlist) and determin
 
 Recompute every figure on the dashboard from the source dataset and compare to the dashboard payload. Checks include: part sums equal totals, percentage sets sum to 100 (tolerance 0.1), derived KPIs equal their formula, table totals equal row sums, the same measure agrees across panels.
 
+*As built (M7, D-57):* `backend/seedfoundry/validators/numeric.py` `reconcile(payload, dataset)`, minimal but real: it recounts from the seat rows with its own loops (not the query engine) and checks each KPI against its formula, the per-product bars against the KPIs, treemap cells and parents, the legend's shares (sum within 0.1 of 100, each within 0.1), the trend per month, recoverable cost per product and the KPI against their sum, the candidates' rows and total row, the Seats footer and the rows on the page. It passes on the polished payload at every drill level of the primary estate and at the root of the alternate (tests), and catches each kind of break M8 plants. Not yet run in the build: T-16 is not run until M9.
+
 ### 6.3 Visual QA (T-17 to T-20, real over the descriptor)
 
 Run over the dashboard descriptor plus resolved style values: chart type fitness (pie max 6 slices, categorical comparisons as bars), palette membership (colours must come from chart-role tokens), red reserved for faults, consistent number format per measure, axis labels and units present, card geometry on the grid with equal gutters and no overflow, single font family per role, contrast computed per text/background pair.
+
+*As built (M7, D-57):* `backend/seedfoundry/validators/visual.py` `check(descriptor, payload)` over the descriptor and the token values of `frontend/src/styles/tokens.css` in both themes: T-17 (pie slices, categorical comparisons as bars), T-18 (one format per measure per context, currency, axis names, value-axis units), T-19 (token palette, one role per class, red for the Leaver class only, spans packing the twelve-column grid with one gutter and one height per chart row, the first chart full width, one family per font role) and T-20 (text at 4.5:1 and chart roles at 3:1 on the panel surface). The polished descriptor passes; each rule catches a planted break (tests). The CSS side of V-6 to V-8 (geometry, fonts and contrast as `defects.css` applies them) is M8's and M9's. Not yet run in the build: T-17 to T-20 are not run until M9.
 
 ### 6.4 Latency (T-15)
 

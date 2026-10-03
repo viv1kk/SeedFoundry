@@ -147,11 +147,12 @@ export function script(options: ScriptOptions = {}): LabEvent[] {
     const tests = Object.fromEntries(phase.tests.map((test) => [test.id, result === 'incomplete' ? 'not_run' : result === 'failed' ? 'fail' : 'pass']))
     emit('phase.completed', `${phase.name}: ${result}`, { ...at, level: LEVEL[result], sim_t: Math.round(start * 1000) / 1000, data: { index: index + 1, name: phase.name, result, tests } })
   })
-  emit('build.completed', 'Build completed: 12 tests passed, 9 not run; 0 findings, 0 boundary advisories', {
+  // D-58: T-08 runs from M7, so a sample build passes 13 tests and leaves 8 not run.
+  emit('build.completed', 'Build completed: 13 tests passed, 8 not run; 0 findings, 0 boundary advisories', {
     sim_t: 75,
     data: {
       status: 'completed',
-      counts: { pass: 12, warn: 0, fail: 0, not_run: 9 },
+      counts: { pass: 13, warn: 0, fail: 0, not_run: 8 },
       findings: [],
       advisories: [],
       gates: ['servicenow-incident-api', 'solution-approval', 'close-seeding'],

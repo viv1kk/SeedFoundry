@@ -476,23 +476,23 @@ describe('completion hand-off (FR-B-9, D-54 (f))', () => {
 
   it('shows a summary from build.completed above the collapsed stepper, with no verdict', async () => {
     await openCompleted()
-    expect($$('[data-test="summary-fact"]').map((d) => d.textContent)).toEqual(['01:15 simulated', '11', '21: 12 passed, 9 not run', '0', '0', '3'])
+    // D-58: T-08 runs from M7 (was "21: 12 passed, 9 not run").
+    expect($$('[data-test="summary-fact"]').map((d) => d.textContent)).toEqual(['01:15 simulated', '11', '21: 13 passed, 8 not run', '0', '0', '3'])
     expect(text('[data-test="build-summary"]')).toContain('The build report, with its verdict, findings and tests, arrives in M9.')
     expect($$('[data-test="phase"] [data-test="step"]')).toHaveLength(0)
     expect(text('[data-test="build-status"]')).toBe('Completed')
   })
 
-  it('offers View Dashboard, Rebuild and Approve, each saying which milestone brings it', async () => {
+  // D-59: View Dashboard opens the dashboard from M7; Rebuild and Approve still say which milestone brings them.
+  it('offers View Dashboard, which opens the dashboard, and Rebuild and Approve, each saying which milestone brings it', async () => {
     await openCompleted()
     const actions = $$('[data-test="summary-actions"] button')
     expect(actions.map((b) => [b.textContent?.trim(), b.getAttribute('aria-disabled')])).toEqual([
-      ['View Dashboard', 'true'],
+      ['View Dashboard', null],
       ['Rebuild', 'true'],
       ['Approve', 'true'],
     ])
-    expect(actions.every((b) => !b.hasAttribute('disabled') && b.getAttribute('aria-describedby'))).toBe(true)
-    await click(actions[0])
-    expect(text('[data-test="summary-status"]')).toBe('View Dashboard opens the License Optimization dashboard, which arrives in M7.')
+    expect(actions.slice(1).every((b) => !b.hasAttribute('disabled') && b.getAttribute('aria-describedby'))).toBe(true)
     await click(actions[1])
     expect(text('[data-test="summary-status"]')).toBe('Rebuild opens the observer feedback editor, which arrives in M10.')
     await click(actions[2])
