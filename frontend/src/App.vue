@@ -1,17 +1,23 @@
 <script setup lang="ts">
-// M0 placeholder. The app shell, tokens and routes arrive in M2.
+// The app shell (ui-spec.md section 1): the top bar over the current screen.
+import TopBar from './components/shell/TopBar.vue'
 </script>
 
 <template>
-  <main class="placeholder">
-    <h1>SeedFoundry</h1>
-    <p>Scaffold only. Nothing to see yet.</p>
-  </main>
+  <div class="shell">
+    <TopBar />
+    <main class="screen">
+      <RouterView />
+    </main>
+  </div>
 </template>
 
 <style scoped>
-.placeholder {
-  font-family: system-ui, sans-serif;
-  padding: 48px;
+.shell {
+  --top-bar-height: 52px;
+}
+
+.screen {
+  min-height: calc(100vh - var(--top-bar-height));
 }
 </style>

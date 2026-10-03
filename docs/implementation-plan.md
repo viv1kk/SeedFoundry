@@ -8,7 +8,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 |---|---|---|---|
 | A. Foundations | M0 | Read, reuse notes, scaffold | Done (2026-10-03) |
 | | M1 | Backend core: state, persistence, events, SSE | Done (2026-10-03) |
-| | M2 | Frontend shell and design system | Not started |
+| | M2 | Frontend shell and design system | Done (2026-10-03) |
 | B. Knowledge | M3 | Intake page | Not started |
 | | M4 | Demo controller and sample Seed | Not started |
 | C. Build | M5 | Beat engine, phase catalogue, simulated clients | Not started |
@@ -64,6 +64,8 @@ seedfoundry/
 *As built (M0):* the repository root is the `seedfoundry/` folder above, so there is no extra wrapper directory. There is no Makefile or justfile: `run.py` launches both processes and `run.py test` runs both suites (D-23). Also at the root: `.gitignore`. In `backend/`: `uv.lock`, `requirements.txt` and `requirements-dev.txt` (D-25), and `seedfoundry/config.py` holding the two ports. In `frontend/`: `index.html`, `vite.config.ts`, `tsconfig.json`, `src/main.ts`, `src/App.vue` (placeholder), `src/env.d.ts`.
 
 *As built (M1):* intake rules live in `backend/seedfoundry/intake/files.py`. `config.py` also gives `var_dir()`, which `SEEDFOUNDRY_VAR_DIR` overrides (tests use it). `main.py` builds the app with `create_app()`, which loads the state when the app starts. `backend/tests/conftest.py` can start a real uvicorn process over a temporary `var/` for restart and SSE tests.
+
+*As built (M2):* `frontend/src/` also holds `router.ts`, `theme.ts`, `events.ts` (event types the client listens for), `stores/lab.ts` (live state), `styles/base.css`, `components/base/` (button, chip, card, modal, tooltip), `components/shell/` (top bar, journey indicator, iteration badge, theme toggle) and `components/ScreenPlaceholder.vue`. Views are `KnowledgeView`, `BuildView`, `ReviewView`, `SeedView`; the dashboard is an overlay on the review route, so it will be a component, not a view (OQ-4). `frontend/scripts/check-network.ts` runs as `postbuild` (D-38).
 
 ## 3. Milestones
 

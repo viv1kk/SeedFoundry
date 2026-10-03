@@ -194,3 +194,50 @@ One entry per milestone, newest last. Format in `docs/methodology.md` §4.
 **Notes for next milestone**
 - Built in M10. M5 only needs the iteration 2 script to have room for these sub-steps; the routing itself, and its tests, land in M10 with the boundary rule sets from M5.
 - Assay's weight (6, about 4.5 s at 1x) now holds the routing steps in iteration 2. M10's 1x hand check judges whether that is readable; if not, a weight change is an amendment.
+
+### M2: Frontend shell and design system (2026-10-03)
+
+**What changed**
+- SeedFoundry now looks like Seed v0.1: its colour, type, radius and motion tokens are in `tokens.css`, unchanged, with light on `:root` and dark under `[data-theme='dark']`. Inter and JetBrains Mono are bundled from npm and served with the app.
+- The values the Seed docs leave out (shadows, easing, chart grid and brush, scrollbar, font stacks, space steps) are filled from the existing palette, and the build console has its own dark tokens in both themes, including `--console-api` for API lines (D-37).
+- The app shell: the SeedFoundry wordmark on the left, the journey indicator (Knowledge, Build, Review, Seed) held at the centre by a three-column grid, and on the right the "Iteration 1 of 2" badge once a build exists, then the theme toggle. Knowledge is a link; Build, Review and Seed show the current step but are not links yet.
+- Routes `/knowledge` (`/` goes there), `/build/1|2`, `/review/1|2`, `/seed`, each with a placeholder inside the shell. Any other path goes to `/knowledge`. The dashboard stays a query string on the review route (OQ-4).
+- Theme: a first visit follows the OS; the toggle switches and remembers under `seedfoundry.theme`; it still works where storage is blocked. A small inline script in `index.html` sets the theme before the first paint.
+- Base components: button (primary, secondary), chip (five tones), card, modal (focus moves in and is trapped, Escape closes, focus goes back to the opener, a backdrop click does not close it), tooltip (hover and keyboard focus, linked by `aria-describedby`).
+- The shell reads `GET /api/state` and follows `GET /api/events`; any newer event or a `stream.resync` re-fetches the snapshot (D-38).
+- Tests: the contrast test (Seed v0.1's rules over both themes, plus the console pairs, plus a check that the Seed values in `seed-reuse-notes.md` §1.3 are still the values in `tokens.css`); routes and journey; iteration badge from a snapshot with a build; theme; base components; the live store; the event type contract against the backend's `EVENT_TYPES`; and the network check over `src/`, which also runs as `postbuild` over `dist/`.
+
+**Files**
+- CHANGE frontend/src/styles/tokens.css (tokens, D-37)
+- NEW frontend/src/styles/base.css, src/theme.ts, src/router.ts, src/events.ts, src/stores/lab.ts
+- NEW frontend/src/components/base/ (BaseButton, BaseChip, BaseCard, BaseModal, BaseTooltip), src/components/shell/ (TopBar, JourneyIndicator, IterationBadge, ThemeToggle), src/components/ScreenPlaceholder.vue
+- NEW frontend/src/views/ (KnowledgeView, BuildView, ReviewView, SeedView)
+- CHANGE frontend/src/App.vue (shell), src/main.ts (fonts, styles, theme, router, store), index.html (theme before paint)
+- NEW frontend/scripts/check-network.ts
+- CHANGE frontend/package.json (vue-router, both font packages, `postbuild`), package-lock.json, tsconfig.json (`scripts/`)
+- NEW frontend/tests/contrast.spec.ts, shell.spec.ts, theme.spec.ts, components.spec.ts, lab-store.spec.ts, events-contract.spec.ts, network.spec.ts, helpers.ts
+- CHANGE frontend/tests/smoke.spec.ts (assertion changed by D-39)
+- DELETE frontend/src/components/.gitkeep, src/stores/.gitkeep, src/views/.gitkeep
+- CHANGE docs/decisions.md (D-37 to D-39), docs/seed-reuse-notes.md (§1.6 as built; §10 rows 8, 10, 11), docs/build-simulation.md (§4 as built), docs/implementation-plan.md (M2 status; as-built note), docs/CLAUDE.md (build command comment), docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 86 passed, frontend: 128 passed (through `python run.py test`)
+- `npm run build`: typecheck, build and `postbuild` network check pass. The bundle's only URL-like strings are three XML namespaces and Vue's error-reference link, all allowed by name
+- Checked that the tests can fail: a darker dark `--text-muted`, a light-theme `--console-api` and a one-digit change to `--chart-anomaly` each failed the contrast test; a Google Fonts `@import` added to the built CSS failed the dist check; a `fetch()` to another host added to `main.ts` made `npm run build` exit 1. All reverted.
+- contrast: every pair passes in both themes with Seed v0.1's values unchanged. The tightest is light `anomaly` under its light label at 4.50:1
+- determinism: not yet applicable (from M5) | no-em-dash: no test yet (from M3); every file written in M2 was searched and has none | network: tested over `src/` and enforced over `dist/`
+- assertions edited: one, the M0 smoke test, by D-39 (the placeholder `h1` it checked no longer exists; it now checks the shell's wordmark)
+
+**Hand checks**
+- `python run.py` started both processes and printed the ready line. Through `http://127.0.0.1:5273`: `/`, `/knowledge`, `/build/1`, `/review/2` and `/seed` answered 200; the page carries the theme script; `/api/state` returned the empty snapshot; `/api/events` opened the stream; the Inter font file was served from `node_modules` as `font/woff2`. Ports were free after stopping. Checked over HTTP from the terminal, not in a browser window.
+- Waiting on the stakeholder, in a browser: the theme toggle in both directions, a reload keeping the theme, a first visit following the OS theme with storage cleared, the journey indicator on each route, visible keyboard focus on every control, and the tokens matching Seed v0.1.
+
+**Decisions and questions**
+- New: D-37 (token gaps, chart labels, console tokens), D-38 (router, routes, theme boot, live store, event types, network check, contrast test source), D-39 (M0 smoke assertion)
+- Opened: none. Closed: none.
+
+**Notes for next milestone**
+- The base components are not on any screen yet; M3 is the first to use them (editor toolbar, import dialog in `BaseModal`, the mic tooltip).
+- `stores/lab.ts` has no reducers: every newer event re-fetches the snapshot. M3 should add intake reducers (events carry no content, so re-fetch a file after an `intake.file_updated` whose `changed` includes `content`), and M5/M6 must add build reducers before log events arrive several times a second.
+- Build, Review and Seed in the journey indicator become links in M6, M9 and M11 (`LINKED` in `JourneyIndicator.vue`).
+- Charts (M7) read `--chart-<role>` and the three `--chart-label-on-*` tokens at paint time and repaint on theme change; `theme` in `src/theme.ts` is a ref they can watch.

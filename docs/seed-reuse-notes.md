@@ -105,6 +105,7 @@ SeedFoundry ports the same rules (NFR-6) and adds the console surface pairs (see
 
 - **Missing values.** The docs give no values for `--shadow-sm`, `--shadow-md`, `--ease-out`, `--chart-grid`, `--chart-brush`, `--scrollbar-thumb`, `--scrollbar-thumb-hover`, the font stacks beyond the face names, or the intermediate space steps. M2 picks values consistent with the tokens above and records them (R-4).
 - **No `info` token.** `build-simulation.md` §4 and `ui-spec.md` §3 colour API console lines "info". Seed v0.1 has no info token. Proposal for M2/M6: add `--console-api` (a teal from the `series-3` hue) and test its contrast on the console surface.
+- *As built (M2):* the missing values, the chart label tokens and the console tokens (including `--console-api`) are chosen in D-37 and live in `frontend/src/styles/tokens.css`. The contrast test (`frontend/tests/contrast.spec.ts`, vitest) ports §1.5's rules, adds the console pairs and the accent and status colours used as text, and reads the Seed values from the §1.3 tables to check `tokens.css` still holds them.
 - **Console as a terminal.** `ui-spec.md` §3 asks for a monospace console on a dark surface in both themes. Seed's activity stream was deliberately "an auditable activity stream, not a developer terminal" (`seed:requirements.md` FR-E8). Not a conflict for SeedFoundry (our build page is a lab console by design), but the light theme then needs a dark console surface. Proposal: console tokens that reuse the dark theme's `--surface-sunken`, `--text-*` and status values in both themes, covered by the contrast test.
 
 ---
@@ -493,8 +494,8 @@ Confirmed against the Seed docs (requirements §9, right column):
 | 5 | "License Optimization dashboard" (FR-D-1, `ui-spec.md` §5) | Dashboard is titled "Licence Utilisation" | Resolved: title is License Optimization (D-27) |
 | 6 | `build-simulation.md` §5 panels: by department, utilisation distribution, status table, vendor table | No such panels; nearest real panels in §5.8 | Resolved: map, add none (D-28) |
 | 7 | N-3 "current spend minus optimised spend" | Seed shows recoverable cost directly, not current and optimised spend | Recast as KPI against the cost panel (§5.8) |
-| 8 | Console "API (info)" colour | No info token | Proposal in §1.6 |
+| 8 | Console "API (info)" colour | No info token | Resolved: `--console-api` (D-37) |
 | 9 | Dashboard scope (FR-D) is silent on interaction | Seed's dashboard is fully interactive: cross-filter, drill to seat, evidence panel, collection step | Resolved: drill-down in (D-29, A-2); evidence panel open (OQ-15) |
-| 10 | `requirements.md` §9 "contrast test" | Seed's test is Python over `tokens.css` | Port the rules; runner chosen in M2 |
-| 11 | `implementation-plan.md` M2 "port tokens.css" | `tokens.css` is not in the Seed docs; only its values in tables, some missing | M2 rebuilds it from §1.3, fills gaps (R-4) |
+| 10 | `requirements.md` §9 "contrast test" | Seed's test is Python over `tokens.css` | Resolved: rules ported to vitest (D-38) |
+| 11 | `implementation-plan.md` M2 "port tokens.css" | `tokens.css` is not in the Seed docs; only its values in tables, some missing | Resolved: rebuilt from §1.3 in M2, gaps filled (D-37) |
 | 12 | `implementation-plan.md` M7 "License Optimization data" | No data or generator in the docs; only headline figures | Resolved: data is SeedFoundry's own; methodology and layout match (D-30, §5.7). M7 authors the generator and an alternate dataset |

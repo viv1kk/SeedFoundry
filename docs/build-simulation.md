@@ -55,6 +55,8 @@ mm:ss.s  LEVEL  message
 
 Levels and token colours: `INFO` (text secondary), `LLM` (accent), `API` (info), `TEST` (text primary), `PASS` (success), `WARN` (warning), `FAIL` (danger, the only red).
 
+*As built (M2):* the console has its own tokens, the same in both themes (D-37): `INFO` `--console-text-secondary`, `LLM` `--console-llm`, `API` `--console-api` (the "info" colour; Seed v0.1 has no info token), `TEST` `--console-text`, `PASS` `--console-pass`, `WARN` `--console-warn`, `FAIL` `--console-fail`, timestamps `--console-text-muted`, on `--console-surface`.
+
 Illustrative lines (wording can be refined, tone must stay matter-of-fact, no em dashes):
 
 ```

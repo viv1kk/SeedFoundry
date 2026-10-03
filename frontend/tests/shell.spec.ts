@@ -1,0 +1,132 @@
+// App shell and routes (ui-spec.md section 1, D-38).
+
+import { afterEach, describe, expect, it } from 'vitest'
+import { emptySnapshot, mountApp } from './helpers'
+
+afterEach(() => {
+  document.body.innerHTML = ''
+})
+
+describe('routes', () => {
+  it.each([
+    ['/knowledge', 'knowledge', 'Knowledge'],
+    ['/build/1', 'build', 'Build, iteration 1'],
+    ['/build/2', 'build', 'Build, iteration 2'],
+    ['/review/1', 'review', 'Review, iteration 1'],
+    ['/review/2', 'review', 'Review, iteration 2'],
+    ['/seed', 'seed', 'Seed'],
+  ])('%s renders its placeholder inside the shell', async (path, name, title) => {
+    const { wrapper, router } = await mountApp(path)
+    expect(router.currentRoute.value.name).toBe(name)
+    expect(wrapper.find('header [data-test="wordmark"]').exists()).toBe(true)
+    expect(wrapper.find('nav[aria-label="Journey"]').exists()).toBe(true)
+    expect(wrapper.find('main [data-test="placeholder"] h1').text()).toBe(title)
+  })
+
+  it('redirects / to /knowledge', async () => {
+    const { router } = await mountApp('/')
+    expect(router.currentRoute.value.fullPath).toBe('/knowledge')
+  })
+
+  it.each(['/nowhere', '/build/3', '/review/0', '/build', '/review/1/dashboard'])('redirects %s to /knowledge', async (path) => {
+    const { router } = await mountApp(path)
+    expect(router.currentRoute.value.fullPath).toBe('/knowledge')
+  })
+
+  it('keeps the dashboard as a query string on the review route (OQ-4)', async () => {
+    const { wrapper, router } = await mountApp('/review/1?dashboard=license-optimization&drill=vendor')
+    expect(router.currentRoute.value.name).toBe('review')
+    expect(router.currentRoute.value.query).toEqual({ dashboard: 'license-optimization', drill: 'vendor' })
+    expect(wrapper.find('main h1').text()).toBe('Review, iteration 1')
+  })
+})
+
+describe('journey indicator', () => {
+  it('lists Knowledge, Build, Review, Seed in order', async () => {
+    const { wrapper } = await mountApp('/knowledge')
+    expect(wrapper.findAll('nav[aria-label="Journey"] li').map((li) => li.text())).toEqual([
+      'Knowledge',
+      'Build',
+      'Review',
+      'Seed',
+    ])
+  })
+
+  it.each([
+    ['/knowledge', 'Knowledge'],
+    ['/build/1', 'Build'],
+    ['/review/2', 'Review'],
+    ['/seed', 'Seed'],
+  ])('marks the current step on %s', async (path, label) => {
+    const { wrapper } = await mountApp(path)
+    const current = wrapper.findAll('nav[aria-label="Journey"] [aria-current="step"]')
+    expect(current.map((el) => el.text())).toEqual([label])
+  })
+
+  it('links Knowledge only; Build, Review and Seed are not links yet', async () => {
+    const { wrapper } = await mountApp('/seed')
+    const links = wrapper.findAll('nav[aria-label="Journey"] a')
+    expect(links.map((a) => a.text())).toEqual(['Knowledge'])
+    expect(links[0].attributes('href')).toBe('/knowledge')
+  })
+
+  it('goes to Knowledge when Knowledge is clicked', async () => {
+    const { wrapper, router } = await mountApp('/review/1')
+    await wrapper.find('nav[aria-label="Journey"] a').trigger('click')
+    await router.isReady()
+    await new Promise((r) => setTimeout(r))
+    expect(router.currentRoute.value.name).toBe('knowledge')
+  })
+})
+
+describe('iteration badge', () => {
+  it('is hidden before the first build', async () => {
+    const { wrapper } = await mountApp('/knowledge', emptySnapshot())
+    expect(wrapper.find('[data-test="iteration-badge"]').exists()).toBe(false)
+  })
+
+  it('is hidden before the snapshot arrives', async () => {
+    const { wrapper } = await mountApp('/knowledge', null)
+    expect(wrapper.find('[data-test="iteration-badge"]').exists()).toBe(false)
+  })
+
+  it('reads "Iteration 1 of 2" once a build exists', async () => {
+    const snapshot = emptySnapshot({ seq: 4, builds: [{ id: 'b-1', iteration: 1, status: 'running' }] })
+    const { wrapper } = await mountApp('/build/1', snapshot)
+    const badge = wrapper.find('header [data-test="iteration-badge"]')
+    expect(badge.exists()).toBe(true)
+    expect(badge.text()).toBe('Iteration 1 of 2')
+  })
+
+  it("shows the latest build's iteration", async () => {
+    const snapshot = emptySnapshot({
+      iteration: 2,
+      builds: [
+        { id: 'b-1', iteration: 1, status: 'completed' },
+        { id: 'b-2', iteration: 2, status: 'running' },
+      ],
+    })
+    const { wrapper } = await mountApp('/build/2', snapshot)
+    expect(wrapper.find('[data-test="iteration-badge"]').text()).toBe('Iteration 2 of 2')
+  })
+})
+
+describe('top bar', () => {
+  it('holds the wordmark left, the journey centre, and the badge and theme toggle right', async () => {
+    const snapshot = emptySnapshot({ builds: [{ id: 'b-1', iteration: 1, status: 'completed' }] })
+    const { wrapper } = await mountApp('/knowledge', snapshot)
+    const columns = wrapper.find('header.top-bar').element.children
+    expect(columns).toHaveLength(3)
+    expect(columns[0].textContent?.trim()).toBe('SeedFoundry')
+    expect(columns[1].matches('nav[aria-label="Journey"]')).toBe(true)
+    expect(columns[2].querySelector('[data-test="iteration-badge"]')).not.toBeNull()
+    expect(columns[2].querySelector('[data-test="theme-toggle"]')).not.toBeNull()
+  })
+
+  it('every control is a native button or link, so it is keyboard reachable', async () => {
+    const { wrapper } = await mountApp('/knowledge')
+    const controls = wrapper.findAll('header a, header button')
+    expect(controls.length).toBeGreaterThanOrEqual(2)
+    for (const control of controls) expect(control.attributes('tabindex')).not.toBe('-1')
+  })
+})

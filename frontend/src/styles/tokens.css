@@ -1,1 +1,174 @@
-/* Design tokens, ported from Seed v0.1 in M2 (D-21). Values are recorded in docs/seed-reuse-notes.md section 1. */
+/*
+ * Design tokens (D-21, D-37). Colour, type, radius and motion values are Seed v0.1's,
+ * copied from docs/seed-reuse-notes.md section 1.3 and 1.4. Values the Seed docs leave
+ * out (shadows, easing, chart grid and brush, scrollbar, font stacks, space steps) and
+ * the console tokens are SeedFoundry's choices, recorded in D-37.
+ *
+ * Light on :root, dark under [data-theme='dark'] on <html>. No component knows the theme.
+ * tests/contrast.spec.ts reads this file: every colour pair it checks must pass.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces, lines and text (Seed v0.1) */
+  --surface-base: #f7f8fa;
+  --surface-raised: #ffffff;
+  --surface-sunken: #eef0f4;
+  --surface-overlay: #ffffff;
+  --border-subtle: #e2e5eb;
+  --border-default: #cbd0d9;
+  --border-strong: #9aa2b1;
+  --text-primary: #12151b;
+  --text-secondary: #4a5261;
+  --text-muted: #666e7a;
+  --text-inverse: #f7f8fa;
+
+  /* Accent and status (Seed v0.1) */
+  --accent: #1e61f5;
+  --accent-subtle: #ebf1fe;
+  --status-positive: #1b7d4a;
+  --status-warning: #9a6100;
+  --status-negative: #c0392f;
+  --status-neutral: #5a6172;
+
+  /* Chart roles (Seed v0.1). Descriptors name a role, never a hex value. */
+  --chart-series-1: #1e61f5;
+  --chart-series-2: #6b4fd8;
+  --chart-series-3: #0c7f7f;
+  --chart-series-4: #a16500;
+  --chart-series-5: #b8437c;
+  --chart-series-6: #5d7c19;
+  --chart-series-7: #8a5a2b;
+  --chart-series-8: #3d6f8f;
+  --chart-positive: #1b7f4b;
+  --chart-warning: #9c671a;
+  --chart-negative: #c0392f;
+  --chart-anomaly: #cc431e;
+  --chart-baseline: #8c95a6;
+  --chart-muted: #cbd0d9;
+
+  /*
+   * Chart labels on a fill (D-37). Light theme: light text on filled roles, dark on baseline
+   * and muted. Dark theme: the same tokens resolve the other way round (dark text on the
+   * light fills, light text on baseline and muted), so they are not redeclared below.
+   */
+  --chart-label-on-fill: var(--text-inverse);
+  --chart-label-on-baseline: var(--text-primary);
+  --chart-label-on-muted: var(--text-primary);
+
+  /* Chart furniture (D-37) */
+  --chart-grid: #e2e5eb;
+  --chart-brush: rgba(30, 97, 245, 0.12);
+
+  /* Scrollbar (D-37) */
+  --scrollbar-thumb: #cbd0d9;
+  --scrollbar-thumb-hover: #9aa2b1;
+
+  /* Depth (D-37). Used sparingly: borders separate surfaces more often. */
+  --shadow-sm: 0 1px 2px rgba(18, 21, 27, 0.06);
+  --shadow-md: 0 4px 12px rgba(18, 21, 27, 0.1);
+  --backdrop: rgba(18, 21, 27, 0.4);
+
+  /*
+   * Console (D-37): a dark surface in both themes, so these do not change with the theme.
+   * Values are the dark theme's surface, text and status colours; --console-api is the
+   * dark series-3 teal, for API lines (Seed v0.1 has no info token).
+   */
+  --console-surface: #090c10;
+  --console-surface-raised: #161b22;
+  --console-border: #2f3742;
+  --console-text: #e8ebf0;
+  --console-text-secondary: #a8b1bd;
+  --console-text-muted: #808995;
+  --console-llm: #5b8cff;
+  --console-api: #35b8b8;
+  --console-pass: #3fb27a;
+  --console-warn: #d79a3a;
+  --console-fail: #e5705f;
+
+  /* Type (Seed v0.1 faces and sizes; stacks D-37) */
+  --font-sans: 'Inter Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', Consolas, ui-monospace, monospace;
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-md: 15px;
+  --text-lg: 18px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+  --line-height-body: 1.5;
+  --tracking-caps: 0.07em;
+
+  /* Space: 4 px steps (Seed v0.1; every step named, D-37) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 36px;
+  --space-10: 40px;
+  --space-11: 44px;
+  --space-12: 48px;
+
+  /* Radius (Seed v0.1) */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  /* Motion (Seed v0.1 durations; easing D-37) */
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --duration-slow: 400ms;
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --surface-base: #0e1116;
+  --surface-raised: #161b22;
+  --surface-sunken: #090c10;
+  --surface-overlay: #1c222b;
+  --border-subtle: #21272f;
+  --border-default: #2f3742;
+  --border-strong: #4a5461;
+  --text-primary: #e8ebf0;
+  --text-secondary: #a8b1bd;
+  --text-muted: #808995;
+  --text-inverse: #0e1116;
+
+  --accent: #5b8cff;
+  --accent-subtle: #15203a;
+  --status-positive: #3fb27a;
+  --status-warning: #d79a3a;
+  --status-negative: #e5705f;
+  --status-neutral: #808995;
+
+  --chart-series-1: #5b8cff;
+  --chart-series-2: #9a82f0;
+  --chart-series-3: #35b8b8;
+  --chart-series-4: #d79a3a;
+  --chart-series-5: #e06fa8;
+  --chart-series-6: #9cc95a;
+  --chart-series-7: #c49a6c;
+  --chart-series-8: #7fb0d0;
+  --chart-positive: #3fb27a;
+  --chart-warning: #e0a84a;
+  --chart-negative: #e5705f;
+  --chart-anomaly: #ff7a4d;
+  --chart-baseline: #5b6777;
+  --chart-muted: #2f3742;
+
+  --chart-grid: #21272f;
+  --chart-brush: rgba(91, 140, 255, 0.18);
+
+  --scrollbar-thumb: #2f3742;
+  --scrollbar-thumb-hover: #4a5461;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --backdrop: rgba(0, 0, 0, 0.6);
+}

@@ -4,6 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SeedFoundry</title>
+    <script>
+      // Set the theme before the first paint: the same rule as src/theme.ts initialTheme().
+      ;(function () {
+        var theme = null
+        try {
+          theme = window.localStorage.getItem('seedfoundry.theme')
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          try {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+          } catch (e) {
+            theme = 'light'
+          }
+        }
+        document.documentElement.setAttribute('data-theme', theme)
+      })()
+    </script>
   </head>
   <body>
     <div id="app"></div>

@@ -53,7 +53,7 @@ uv run pytest                    # backend tests
 npm install
 npm test                         # vitest
 npm run typecheck                # vue-tsc
-npm run build                    # typecheck, then vite build
+npm run build                    # typecheck, vite build, then postbuild: no external URL in dist/ (D-38)
 
 # all tests (from the repo root)
 python run.py test
