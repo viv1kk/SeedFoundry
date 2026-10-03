@@ -21,6 +21,8 @@ from seedfoundry.data import DATASETS, dataset
 from seedfoundry.engine.clock import Clock
 from seedfoundry.engine.runner import BuildEngine
 from seedfoundry.intake import files
+from seedfoundry.intake.feedback import FEEDBACK_NAME
+from seedfoundry.sample import demo_feedback
 from seedfoundry.state import (
     CATEGORY_DESCRIPTIONS,
     CATEGORY_LABELS,
@@ -43,9 +45,10 @@ class LoadSample(BaseModel):
 
 
 class StartBuild(BaseModel):
-    # Omitted: the current iteration (FR-B-1). 2 starts iteration 2 after a completed
-    # iteration 1, until M10's rebuild does it with the feedback (D-49).
+    # Omitted: the current iteration (FR-B-1). 2 with `feedback` is the rebuild: it saves the
+    # feedback as observer-feedback-iteration-1.md and starts iteration 2 in one change (D-67).
     iteration: Literal[1, 2] | None = None
+    feedback: str | None = None
 
 
 class SetSpeed(BaseModel):
@@ -180,7 +183,7 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
     @app.post("/api/builds", status_code=201)
     async def start_build(request: Request, body: StartBuild | None = None) -> dict[str, Any]:
         """Start a build of the current iteration. 409 while a build runs or a core file is missing."""
-        return engine(request).start(body.iteration if body else None).summary()
+        return engine(request).start(body.iteration if body else None, body.feedback if body else None).summary()
 
     @app.get("/api/builds/{build_id}/events")
     async def build_events(request: Request, build_id: str) -> dict[str, Any]:
@@ -193,6 +196,15 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
         events = build.log or [e for e in manager.log.after(0) if e.build_id == build_id]
         return {"build_id": build_id, "status": build.status, "seq": manager.state.seq, "events": events}
 
+    @app.get("/api/builds/{build_id}/files")
+    async def build_files(request: Request, build_id: str) -> dict[str, Any]:
+        """The intake a build read, as it read it (D-36, D-67): iteration 1's versions of the files
+        stay with build 1, so iteration 2's changes can be shown against them."""
+        build = lab(request).state.build(build_id)
+        if build is None:
+            raise files.IntakeError(404, "build_not_found", f"No build with id {build_id}.")
+        return {"build_id": build_id, "iteration": build.iteration, "files": build.files}
+
     @app.get("/api/builds/{build_id}/report")
     async def build_report(request: Request, build_id: str) -> dict[str, Any]:
         """The build report (FR-R-1), assembled from the completed build's kept log, so it is the
@@ -202,7 +214,10 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
             raise files.IntakeError(404, "build_not_found", f"No build with id {build_id}.")
         if build.status != "completed" or not build.log:
             raise files.IntakeError(409, "report_not_ready", f"Build {build_id} has not completed, so it has no report.")
-        return report.assemble(build)
+        prior = None
+        if build.iteration == 2:
+            prior = next((b for b in lab(request).state.builds if b.iteration == 1 and b.status == "completed"), None)
+        return report.assemble(build, prior)
 
     # Dashboard and datasets (FR-D-1 to FR-D-6, D-56). The query engine runs here: every figure
     # is aggregated from the seat rows at request time, and the frontend only renders.
@@ -259,6 +274,11 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
     async def load_sample(request: Request, body: LoadSample) -> list[IntakeFile]:
         """Load sample Seed. 409 intake_not_empty unless intake is empty or `replace` is set."""
         return lab(request).apply(demo.load_sample(body.replace))
+
+    @app.get("/api/demo/feedback")
+    async def get_demo_feedback() -> dict[str, str]:
+        """The demo's observer feedback, which Prefill puts in the rebuild modal (FR-DC-2)."""
+        return {"name": FEEDBACK_NAME, "content": demo_feedback()}
 
     @app.post("/api/demo/clear")
     async def clear_intake(request: Request) -> dict[str, int]:

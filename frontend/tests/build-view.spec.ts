@@ -361,10 +361,11 @@ describe('stepper (FR-B-3)', () => {
     expect(assay.querySelector('[data-test="step-group"]')?.textContent).toBe('Apply observer feedback')
     const grouped = Array.from(assay.querySelectorAll<HTMLElement>('.steps--grouped [data-test="step"]'))
     expect(grouped.map((s) => [s.querySelector('.step__name')?.textContent, s.querySelector('[data-test="step-state"]')?.textContent])).toEqual([
-      ['Route feedback to Ensemble files', 'route feedback to ensemble files done'],
-      ['Update person.md', 'no change'],
-      ['Update instrument-awareness.md', 'no change'],
-      ['Update environment.md', 'no change'],
+      // D-71: the real routing's summaries (D-68), where D-52's stub said "no change".
+      ['Route feedback to Ensemble files', '9 of 10 segments to 4 files'],
+      ['Update person.md', '+4 lines in Reasoning methods'],
+      ['Update instrument-awareness.md', '+4 lines in Model Behaviour'],
+      ['Update environment.md', '+10 lines in Styling; +4 lines in User Experience; +4 lines in Data Layer'],
       ['Update music.md', 'active'],
     ])
     expect(assay.querySelectorAll('[data-test="step"]')).toHaveLength(9)
@@ -497,19 +498,22 @@ describe('completion hand-off (FR-B-9, D-54 (f), D-65)', () => {
     expect(text('[data-test="build-status"]')).toBe('Completed')
   })
 
-  // D-59: View Dashboard opens the dashboard from M7; Rebuild and Approve still say which milestone brings them.
-  it('offers View Dashboard, which opens the dashboard, and Rebuild and Approve, each saying which milestone brings it', async () => {
+  // D-59: View Dashboard opens the dashboard from M7. D-71: Rebuild opens the rebuild modal from M10;
+  // Approve still says which milestone brings it.
+  it('offers View Dashboard, which opens the dashboard, Rebuild, which opens the rebuild modal, and Approve, which says M11 brings it', async () => {
     await openCompleted()
     const actions = $$('[data-test="report-actions"] button')
     expect(actions.map((b) => [b.textContent?.trim(), b.getAttribute('aria-disabled')])).toEqual([
       ['View Dashboard', null],
-      ['Rebuild', 'true'],
+      ['Rebuild', null],
       ['Approve', 'true'],
     ])
-    expect(actions.slice(1).every((b) => !b.hasAttribute('disabled') && b.getAttribute('aria-describedby'))).toBe(true)
+    expect(actions[2].hasAttribute('disabled')).toBe(false)
+    expect(actions[2].getAttribute('aria-describedby')).toBeTruthy()
     await click(actions[1])
-    expect(text('[data-test="report-status"]')).toBe('Rebuild opens the observer feedback editor, which arrives in M10.')
-    await click(actions[2])
+    expect(document.querySelector('[role="dialog"][data-modal="rebuild"]')?.textContent).toContain('Rebuild Seed: observer feedback')
+    await click(document.querySelector('[data-action="cancel"]'))
+    await click($$('[data-test="report-actions"] button')[2])
     expect(text('[data-test="report-status"]')).toBe('Approve arrives with the Seed page in M11.')
   })
 

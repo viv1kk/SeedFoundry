@@ -762,3 +762,79 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
   - `DashboardView` takes `highlight` (panel ids), so the split view can outline a finding too.
   - After a change to the build, the validators or the report, rewrite the fixtures with `uv run python tests/report_fixtures.py`.
 - M11: known issues on iteration 1 approval are the report's findings (`groups`, advisories apart).
+
+### M10: Rebuild modal and iteration 2 (2026-10-04)
+
+**What changed**
+- Rebuild is real (D-67, D-70). On iteration 1's report it opens "Rebuild Seed: observer feedback": a large modal over the page with the Knowledge editor (Edit / Preview, mic) for `observer-feedback-iteration-1.md`, a view tablist (Feedback, Feedback + Report, Feedback + Dashboard), Cancel and Start Rebuild. Split views put the editor left and iteration 1's report (no actions) or dashboard right, each scrolling on its own; the embedded dashboard keeps its own drill path, so the page URL never moves, and a finding id in the embedded report shows that finding on the embedded dashboard, outlined.
+- Start Rebuild is disabled, with its reason, while the feedback is empty or whitespace. Pressed, one request (`POST /api/builds` with `iteration: 2` and the feedback) saves the Misc Context file and starts iteration 2 in one state change, then `/build/2` opens. A refusal or a failed save leaves neither the file nor the build. An existing feedback file is rewritten in place. Once iteration 2 has started, iteration 1's report says it was rebuilt instead of offering Rebuild.
+- Feedback routing is real (D-68, replacing D-52's stub). Segments are scored against the boundary lint's own rule sets (plus a few words for homes the lint never checks), ties go to D-36's fixed order, and each routed segment is appended verbatim under `### Observer feedback (iteration 1)` at the end of its section. The files really change as each Update sub-step plays (`intake.file_updated`), and every later sub-step reads the routed files. A segment already there is not added twice.
+- Every build keeps the intake it read (`files`), so iteration 1's versions stay with build 1 (`GET /api/builds/{id}/files`).
+- Iteration 2's report has "Changes since iteration 1" (D-69), assembled on the server from both builds' kept logs and the feedback build 2 kept: every iteration 1 finding resolved or open, the feedback quoted in a sanitised blockquote, and the edits the routing made.
+- Prefill (Shift+F) fills the open modal with the demo feedback, served by `GET /api/demo/feedback` from `backend/seedfoundry/sample/rebuild/`. It routes 9 of 10 segments to all four files and raises no advisory.
+- The Knowledge editor's toolbar and text are now `MarkdownEditor.vue`, shared by FileEditor and the modal; Knowledge looks the same.
+- Events: the sample's iteration 2 with the demo feedback is 278 events and 178 console lines (was 264 and 164); iteration 1 is unchanged (256 and 168).
+
+**Files**
+- NEW backend/seedfoundry/intake/routing.py, backend/seedfoundry/sample/rebuild/observer-feedback-iteration-1.md
+- CHANGE backend/seedfoundry/engine/script.py (real Route and Update sub-steps, routed files), engine/runner.py (the rebuild's single save, routed files written as beats play), state.py (`Build.files`), report/assemble.py (`changes`), main.py (`feedback` on start, `/files`, `/api/demo/feedback`), intake/boundary.py (`clean` public), sample/__init__.py (`demo_feedback`)
+- NEW backend/tests/test_routing.py, test_rebuild.py; CHANGE backend/tests/test_engine.py, test_build_api.py, report_fixtures.py
+- NEW frontend/src/components/rebuild/RebuildModal.vue, components/intake/MarkdownEditor.vue, stores/rebuild.ts
+- CHANGE frontend/src/App.vue, builds.ts, report.ts, demo/api.ts, demo/DemoController.vue, stores/demo.ts, components/base/BaseModal.vue, components/intake/FileEditor.vue, MarkdownPreview.vue, components/report/BuildReport.vue, components/dashboard/DashboardView.vue
+- NEW frontend/tests/rebuild-modal.spec.ts; CHANGE frontend/tests/fake-server.ts, build-script.ts, build-view.spec.ts, demo.spec.ts, report.spec.ts, stepper.spec.ts, fixtures/reports/ (rewritten: iteration 2 rebuilt with the demo feedback)
+- CHANGE docs/decisions.md (D-67 to D-71; OQ-28 to OQ-30; notes on D-36, D-47, D-49, D-52, D-64, D-65), docs/build-simulation.md (§2, §3, §4, §9 as built), docs/ui-spec.md (§2, §3, §4, §6, §8 as built), docs/implementation-plan.md (M10 status, as-built note), docs/seed-reuse-notes.md (§6.2), docs/CLAUDE.md (report fixture command), docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 528 passed, frontend: 417 passed (through `python run.py test`)
+- `npm run build`: typecheck, build and `postbuild` network check pass
+- Exit criteria:
+  - Two-iteration flow at API level: iteration 1, the rebuild with the demo feedback, iteration 2 with zero findings and verdict Passed; its report lists all 14 iteration 1 findings as resolved and quotes the feedback; the feedback file is in Knowledge (`test_rebuild.py`).
+  - Routing: each rule set sends a segment to its file and section; ties break in the fixed order (eight real ties); more matches beat the order; an unmatched segment changes no file; the same feedback gives the same edits, and routing it again adds nothing (`test_routing.py`).
+  - The demo feedback updates all four files and raises no advisory; each Update line's file, section, segments and lines added match a diff of build 1's kept files against Knowledge (`test_routing.py`, `test_rebuild.py`).
+  - Iteration 1's file versions are kept with build 1 and left out of the snapshot (`test_rebuild.py`).
+  - Modal: Start Rebuild disabled while empty or whitespace, with its reason; the three views (tablist, keyboard, report without actions, dashboard drill with no URL change, finding to outlined panel); Cancel saves nothing and discards nothing saved; Escape returns focus; backdrop click ignored; focus trapped; Shift+F prefills only inside the modal and types in the editor; Rebuild not on iteration 2 and no shortcut reaches the modal (`rebuild-modal.spec.ts`).
+  - Knowledge after a rebuild starts: the feedback file in Misc Context, read-only, a core file showing its added section (`rebuild-modal.spec.ts`).
+- Checked that the tests can fail. Each change below was made, the matching tests failed, and it was reverted:
+  - ties going to the last target;
+  - a segment already present added again;
+  - lines added off by one;
+  - routed files never written to Knowledge;
+  - the feedback saved in its own change before the build (the failed-save test);
+  - every finding reading resolved;
+  - whitespace counted as feedback;
+  - a finding in the embedded report linking the page;
+  - Prefill firing without the modal;
+  - the embedded dashboard's drill moving the URL.
+- determinism: pass (and the full two-iteration flow twice in-process: identical) | no-em-dash: pass (the demo feedback, the routed lines, the changes section) | network: pass | contrast: pass (no new token)
+- Assertions edited, recorded first in D-71:
+  - `test_build_api.py`: iteration 2 needs feedback (`feedback_empty` without it).
+  - `test_engine.py`: the helper rebuilds with the feedback; D-52's no-routing test becomes the routing test; the no-feedback case is built as a script.
+  - `demo.spec.ts`: Prefill's button says the modal must be open.
+  - `build-view.spec.ts`: Rebuild opens the modal; iteration 2's feedback sub-steps show the routing's summaries.
+  - `stepper.spec.ts`: the same summaries.
+  - `report.spec.ts`: iteration 2 also has the changes section.
+
+**Hand checks** (terminal, through the Vite proxy at `http://127.0.0.1:5273`; `var/state.json` backed up first and restored after, same SHA-256 `140f3633...`)
+- 4x: Reset, Load sample, Start Build, then the rebuild by the modal's request with `GET /api/demo/feedback`'s text. Iteration 1 in 18.8 s; iteration 2 in 18.9 s, 278 events, 178 console lines.
+- Every Apply observer feedback line read against a diff of `GET /api/builds/b-5/files` (iteration 1's kept versions) and `GET /api/intake/files`: only inserts; person.md +4 in Reasoning methods (segment 8), instrument-awareness.md +4 in Model Behaviour (segment 7), environment.md +4 in Data Layer (segment 1), +4 in User Experience (segment 6), +10 in Styling (segments 2 to 5), music.md +4 in Value Logic (segment 9); segment 10 in the feedback file only. "Intake updated: 4 files changed, fingerprint 49616b (was 6bb2d9)".
+- Iteration 2: verdict Passed, 0 findings, 0 advisories, "Changes since iteration 1" with 14 resolved and 0 open, the feedback quoted. Iteration 1's report has no changes section.
+- The same flow twice: events of both builds, both reports, both builds' kept files and Knowledge identical with `wall_ts`, seqs, build ids and file ids masked.
+- Server restart (both processes stopped and started): both reports, build 1's files and Knowledge byte for byte as before; `/review/1` is served through the proxy.
+- Nothing was checked in a browser. Waiting on the stakeholder, in a browser:
+  - Open Rebuild from the iteration 1 report. Write feedback in each view: Feedback only, beside the report, beside the dashboard (drill there; the page URL should not change). Click a finding id in the report view.
+  - Press Shift+F in the modal (with focus on the tabs, not the text), then Start Rebuild. Watch phase 1 route the feedback and update the four files at 1x.
+  - Open Knowledge and read the added "Observer feedback (iteration 1)" sections and the feedback file.
+  - Read iteration 2's report, including "Changes since iteration 1". Open its dashboard and confirm it is clean.
+  - Check both themes, and the whole modal by keyboard only.
+
+**Decisions and questions**
+- New: D-67 (the rebuild's one request, kept files), D-68 (routing), D-69 ("Changes since iteration 1"), D-70 (the modal on screen, Prefill), D-71 (assertions changed)
+- Opened: OQ-28 (what closing the modal keeps), OQ-29 (Prefill replaces the text), OQ-30 (the routing list in the changes section)
+- Closed: none. OQ-19 to OQ-27 are unanswered, so their assumptions stand.
+
+**Notes for next milestone**
+- M11:
+  - Known issues on iteration 1 approval are iteration 1's report findings (`groups`, advisories apart); iteration 2's learned rules come from `changes.findings` categories, as Synthesis already logs.
+  - The Seed page's iteration history can read `changes` (findings, feedback, updates) from iteration 2's report; the feedback text is `changes.feedback.content`.
+  - Generated files read the routed core files, which build 2 keeps in `files`; the observer feedback sections are part of them.
+  - Approve is still the stub in `BuildReport.vue` (`APPROVE_WHY`).

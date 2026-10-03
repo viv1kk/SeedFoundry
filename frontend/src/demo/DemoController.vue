@@ -50,7 +50,7 @@ const GROUPS: Group[] = [
   {
     title: 'Rebuild',
     rows: [{ action: 'prefill', label: 'Prefill feedback' }],
-    note: 'Works inside the rebuild modal, from M10.',
+    note: 'Fills the rebuild modal while it is open.',
   },
   {
     title: 'Lab',
@@ -162,6 +162,9 @@ async function run(action: DemoAction): Promise<void> {
       return
     case 'skipEnd':
       await demo.skip('build')
+      return
+    case 'prefill':
+      await demo.prefill()
       return
     case 'theme':
       demo.theme()

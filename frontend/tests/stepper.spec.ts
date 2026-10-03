@@ -48,9 +48,10 @@ describe('phases and sub-steps from events (FR-B-3)', () => {
     const events = upTo(script({ build }), (e) => e.type === 'step.started' && e.step === 'assay.feedback-environment')
     const assay = derivePhases(build, events)[0]
     expect(assay.steps.filter((s) => s.feedback).map((s) => [s.name, s.state, s.summary])).toEqual([
-      ['Route feedback to Ensemble files', 'done', 'route feedback to ensemble files done'],
-      ['Update person.md', 'done', 'no change'],
-      ['Update instrument-awareness.md', 'done', 'no change'],
+      // D-71: the real routing's summaries (D-68), where D-52's stub said "no change".
+      ['Route feedback to Ensemble files', 'done', '9 of 10 segments to 4 files'],
+      ['Update person.md', 'done', '+4 lines in Reasoning methods'],
+      ['Update instrument-awareness.md', 'done', '+4 lines in Model Behaviour'],
       ['Update environment.md', 'active', null],
       ['Update music.md', 'pending', null],
     ])

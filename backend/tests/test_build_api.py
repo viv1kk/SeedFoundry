@@ -234,16 +234,17 @@ def test_a_new_build_replaces_the_iterations_earlier_one(api, clock):
     assert [e.data["replaces"] for e in started] == [[], ["b-1"]]
 
 
-# Iteration 2 before M10 (D-49, D-52)
+# Iteration 2 starts with the rebuild (D-49, D-67; D-71: it started by API alone before M10)
 
 
 def test_iteration_2_starts_by_api_after_a_completed_iteration_1(api, clock):
     load(api)
-    assert start(api, iteration=2).json()["detail"]["code"] == "iteration_1_not_built"
+    assert start(api, iteration=2, feedback="Use bars.").json()["detail"]["code"] == "iteration_1_not_built"
     start(api)
-    assert start(api, iteration=2).json()["detail"]["code"] == "build_running"
+    assert start(api, iteration=2, feedback="Use bars.").json()["detail"]["code"] == "build_running"
     finish(api, clock)
-    second = start(api, iteration=2)
+    assert start(api, iteration=2).json()["detail"]["code"] == "feedback_empty"
+    second = start(api, iteration=2, feedback="Use bars.")
     assert second.status_code == 201 and second.json()["iteration"] == 2
     plan = second.json()["plan"][0]["steps"]
     assert [s["name"] for s in plan[:5]] == [

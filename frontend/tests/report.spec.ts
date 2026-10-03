@@ -195,6 +195,48 @@ describe('the report (FR-R-1, ui-spec.md section 4)', () => {
     expect($$('[data-test="test-row"] [data-test="test-result"]').every((c) => text(c) === 'Passed')).toBe(true)
     expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Dashboard', 'Approve'])
     expect(TWO.counts.findings).toBe(0)
+    // D-71: from M10 it also has "Changes since iteration 1" (FR-R-3, AC-3, D-69).
+    expect($('[data-test="report-changes"]')).not.toBeNull()
+  })
+
+  it('iteration 2 lists every iteration 1 finding as resolved and quotes the observer feedback (FR-R-3, AC-3)', async () => {
+    await open('/review/2')
+    const changes = $('[data-test="report-changes"]')!
+    expect(text($('h3', changes))).toBe('Changes since iteration 1')
+    // It comes before the findings, as the story of iteration 2.
+    expect(changes.compareDocumentPosition($('[data-test="report-findings"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(text('[data-test="changes-summary"]')).toBe('14 of 14 iteration 1 findings resolved.')
+    expect($$('[data-test="change"]').map((r) => r.dataset.finding)).toEqual(CATALOGUE)
+    expect($$('[data-test="change-status"]').map((c) => [text(c), c.className.match(/chip--(\w+)/)?.[1]])).toEqual(CATALOGUE.map(() => ['Resolved', 'positive']))
+    expect(TWO.changes!.findings.map((f) => f.message)).toEqual(ONE.groups.flatMap((g) => g.findings).map((f) => f.message))
+    const quote = $('[data-test="changes-feedback"]')!
+    expect(quote.tagName).toBe('BLOCKQUOTE')
+    expect($$('li', quote)).toHaveLength(9)
+    expect(text(quote)).toContain('N-1 to N-5: the totals do not add up.')
+    expect(text(quote)).toContain('Otherwise the build was easy to follow.')
+    expect($$('[data-test="changes-updates"] li').map((li) => text(li))).toEqual([
+      'person.md, Reasoning methods: +4 lines (segment 8)',
+      'instrument-awareness.md, Model Behaviour: +4 lines (segment 7)',
+      'environment.md, Styling: +10 lines (segments 2, 3, 4, 5)',
+      'environment.md, User Experience: +4 lines (segment 6)',
+      'environment.md, Data Layer: +4 lines (segment 1)',
+      'music.md, Value Logic: +4 lines (segment 9)',
+      'Segment 10 stayed in observer-feedback-iteration-1.md only: it fits no Ensemble file.',
+    ])
+  })
+
+  it('quotes the feedback safely: raw HTML is text, nothing loads (D-40)', async () => {
+    const changes = { ...TWO.changes!, feedback: { name: 'observer-feedback-iteration-1.md', content: '<img src=x onerror=alert(1)> <script>alert(1)</script> [link](https://example.com)', segments: 1 } }
+    server.reportPatches.set(2, { changes })
+    await open('/review/2')
+    const quote = $('[data-test="changes-feedback"]')!
+    expect($$('img, script, a', quote)).toEqual([])
+    expect(text(quote)).toContain('<img src=x onerror=alert(1)>')
+  })
+
+  it('iteration 1 has no changes section', async () => {
+    await open('/review/1')
+    expect($('[data-test="report-changes"]')).toBeNull()
   })
 
   it('is the same on the Build page, loaded once per build', async () => {

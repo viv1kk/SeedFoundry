@@ -96,7 +96,10 @@ class PhasePlan(BaseModel):
 class Build(BaseModel):
     """One run of the phase catalogue for one iteration (D-49). The engine creates it with
     build.started, sets `phase` at each phase.started, and on build.completed sets the status
-    and keeps the build's events in `log`, which the snapshot leaves out."""
+    and keeps the build's events in `log`, which the snapshot leaves out. `files` keeps the
+    intake the build read, as it read it (D-36, D-67): iteration 1's versions of the files stay
+    with build 1, and build 2 keeps the routed files and the feedback it built from. The snapshot
+    leaves them out too; GET /api/builds/{id}/files serves them."""
 
     id: str
     iteration: int
@@ -108,11 +111,12 @@ class Build(BaseModel):
     # The simulated length of the whole build, so the Build page reads progress from sim_t (D-54).
     # 0 on a record saved before M6.
     sim_seconds: float = 0.0
+    files: list[IntakeFile] = []
     log: list[Event] = []
 
     def summary(self) -> dict[str, Any]:
-        """The record without its log, as build.started carries it and the snapshot shows it."""
-        return self.model_dump(mode="json", exclude={"log"})
+        """The record without its log and files, as build.started carries it and the snapshot shows it."""
+        return self.model_dump(mode="json", exclude={"log", "files"})
 
 
 class Approval(BaseModel):
@@ -169,8 +173,9 @@ class StateManager:
         return manager
 
     def snapshot(self) -> dict[str, Any]:
-        """The state without build logs, which GET /api/builds/{id}/events serves (D-49)."""
-        return self.state.model_dump(mode="json", exclude={"builds": {"__all__": {"log"}}})
+        """The state without build logs and kept files, which GET /api/builds/{id}/events and
+        /files serve (D-49, D-67)."""
+        return self.state.model_dump(mode="json", exclude={"builds": {"__all__": {"log", "files"}}})
 
     def apply(self, change: Callable[[State, Emit], T], then: Callable[[State, list[Event]], None] | None = None) -> T:
         """Run a change on a copy of the state. The change calls emit(type=...,

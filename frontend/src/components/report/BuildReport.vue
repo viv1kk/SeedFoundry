@@ -3,23 +3,35 @@
 // findings grouped Numeric, Visual, Latency and Boundary, every test, the auto-resolved gates and
 // the simulated usage, with View Dashboard, Rebuild and Approve. Everything comes from the report
 // the server assembles from the build's kept events. Embeddable: the Build page, the Review page
-// and M10's "Feedback + Report" view each place it, with their own heading level, and may leave the
-// actions out. A dashboard finding's id links to the dashboard at All products with that finding's
-// panels highlighted (`finding=<id>` in the URL). Rebuild and Approve stay stubs that say which
-// milestone brings them (D-47).
+// and the rebuild modal's "Feedback + Report" view each place it, with their own heading level, and
+// may leave the actions out. A dashboard finding's id links to the dashboard at All products with
+// that finding's panels highlighted (`finding=<id>` in the URL); with `finding-links="event"` (the
+// rebuild modal) it is a button that emits the id instead, so the page URL never changes (D-70).
+// Rebuild (iteration 1 only, D-6) opens the rebuild modal; once iteration 2 has started, iteration 1's
+// report says so and links to it instead (D-67). Approve stays a stub that says M11 brings it.
+// Iteration 2's report adds "Changes since iteration 1" (FR-R-3, D-69), the feedback quoted through
+// the Preview's sanitising renderer (D-40).
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { DASHBOARD_ID } from '../../dashboard/api'
 import type { Finding, Report, Severity, TestStatus } from '../../report'
 import { clock } from '../../stepper'
 import { useReportsStore } from '../../stores/reports'
+import { useRebuildStore } from '../../stores/rebuild'
 import { ITERATIONS, type Build } from '../../stores/lab'
 import BaseButton from '../base/BaseButton.vue'
 import BaseChip, { type ChipTone } from '../base/BaseChip.vue'
+import MarkdownPreview from '../intake/MarkdownPreview.vue'
 
-const props = withDefaults(defineProps<{ build: Build; headingLevel?: 1 | 2 | 3; actions?: boolean }>(), { headingLevel: 2, actions: true })
+const props = withDefaults(defineProps<{ build: Build; headingLevel?: 1 | 2 | 3; actions?: boolean; findingLinks?: 'route' | 'event' }>(), {
+  headingLevel: 2,
+  actions: true,
+  findingLinks: 'route',
+})
+const emit = defineEmits<{ finding: [id: string] }>()
 
 const reports = useReportsStore()
+const rebuild = useRebuildStore()
 const router = useRouter()
 
 watch(
@@ -91,14 +103,44 @@ const usage = computed(() => {
   ]
 })
 
-type Action = 'rebuild' | 'approve'
-
-const WHY: Record<Action, string> = {
-  rebuild: 'Rebuild opens the observer feedback editor, which arrives in M10.',
-  approve: 'Approve arrives with the Seed page in M11.',
-}
+const APPROVE_WHY = 'Approve arrives with the Seed page in M11.'
+const REBUILT = 'Iteration 2 was rebuilt from this report.'
 
 const said = ref('')
+
+/** Why Rebuild cannot open now, or null; only asked on iteration 1. */
+const rebuildWhy = computed(() => (props.build.iteration === 1 ? rebuild.unavailable(props.build) : null))
+const rebuilt = computed(() => props.build.iteration === 1 && rebuildWhy.value === REBUILT)
+
+function openRebuild(): void {
+  if (rebuildWhy.value) said.value = rebuildWhy.value
+  else rebuild.show(props.build)
+}
+
+const changes = computed(() => report.value?.changes ?? null)
+const STATUS: Record<'resolved' | 'open', [string, ChipTone]> = { resolved: ['Resolved', 'positive'], open: ['Open', 'warning'] }
+const segmentList = (numbers: number[]) => `${numbers.length === 1 ? 'segment' : 'segments'} ${numbers.join(', ')}`
+
+const changesSummary = computed(() => {
+  const c = changes.value
+  if (!c) return ''
+  const open = c.open ? `, ${c.open} still open` : ''
+  return `${c.resolved} of ${c.findings.length} iteration 1 findings resolved${open}.`
+})
+
+function updateLine(update: NonNullable<Report['changes']>['updates'][number]): string {
+  const lines = `${update.lines_added} ${update.lines_added === 1 ? 'line' : 'lines'}`
+  const created = update.created ? ' (a new section)' : ''
+  return `${update.file}, ${update.section}${created}: +${lines} (${segmentList(update.segments)})`
+}
+
+const keptLine = computed(() => {
+  const c = changes.value
+  if (!c || !c.kept.length) return ''
+  const fits = c.kept.length === 1 ? 'it fits' : 'they fit'
+  const list = segmentList(c.kept)
+  return `${list[0].toUpperCase()}${list.slice(1)} stayed in ${c.feedback?.name ?? 'the feedback file'} only: ${fits} no Ensemble file.`
+})
 
 function viewDashboard(): void {
   void router.push({ name: 'review', params: { iteration: String(props.build.iteration) }, query: { dashboard: DASHBOARD_ID } })
@@ -127,6 +169,53 @@ const ids = computed(() => `report-${props.build.id}`)
           <dd data-test="report-fact">{{ fact.value }}</dd>
         </div>
       </dl>
+
+      <section v-if="changes" class="report__section" :aria-labelledby="`${ids}-changes`" data-test="report-changes">
+        <component :is="h(1)" :id="`${ids}-changes`" class="report__heading">Changes since iteration 1</component>
+        <p class="report__lead" data-test="changes-summary">{{ changesSummary }}</p>
+        <div v-if="changes.findings.length" class="report__scroll">
+          <table class="report__table">
+            <caption class="visually-hidden">Iteration 1 findings and whether iteration 2 resolved them</caption>
+            <thead>
+              <tr>
+                <th scope="col">Finding</th>
+                <th scope="col">Panel</th>
+                <th scope="col">Category</th>
+                <th scope="col">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="change in changes.findings" :key="change.id" :data-finding="change.id" data-test="change">
+                <th scope="row">
+                  <div class="report__finding">
+                    <span class="report__id">{{ change.id }}</span>
+                    <span v-if="change.message" class="report__message">{{ change.message }}</span>
+                  </div>
+                </th>
+                <td>{{ change.panel_titles.join(', ') }}</td>
+                <td>{{ change.category }}</td>
+                <td>
+                  <BaseChip :tone="STATUS[change.status][1]" data-test="change-status">{{ STATUS[change.status][0] }}</BaseChip>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <template v-if="changes.feedback">
+          <component :is="h(2)" class="report__group-title">Observer feedback</component>
+          <blockquote class="report__quote" data-test="changes-feedback">
+            <MarkdownPreview compact :text="changes.feedback.content" :label="`Observer feedback, ${changes.feedback.name}`" />
+          </blockquote>
+          <p class="report__aside">From {{ changes.feedback.name }}, saved to Knowledge as Misc Context.</p>
+        </template>
+        <template v-if="changes.updates.length || changes.kept.length">
+          <component :is="h(2)" class="report__group-title">Knowledge files updated from the feedback</component>
+          <ul class="report__updates" data-test="changes-updates">
+            <li v-for="update in changes.updates" :key="`${update.file}-${update.section}`">{{ updateLine(update) }}</li>
+            <li v-if="changes.kept.length">{{ keptLine }}</li>
+          </ul>
+        </template>
+      </section>
 
       <section class="report__section" :aria-labelledby="`${ids}-findings`" data-test="report-findings">
         <component :is="h(1)" :id="`${ids}-findings`" class="report__heading">Findings</component>
@@ -160,7 +249,16 @@ const ids = computed(() => `report-${props.build.id}`)
                 <tr v-for="finding in group.findings" :key="finding.id" :data-finding="finding.id" data-test="finding">
                   <th scope="row">
                     <div class="report__finding">
-                      <RouterLink v-if="!finding.advisory" :to="findingLink(finding)" class="report__id" data-test="finding-link">
+                      <button
+                        v-if="!finding.advisory && findingLinks === 'event'"
+                        type="button"
+                        class="report__id report__link"
+                        data-test="finding-link"
+                        @click="emit('finding', finding.id)"
+                      >
+                        {{ finding.id }}<span class="visually-hidden">: show on the dashboard beside the feedback</span>
+                      </button>
+                      <RouterLink v-else-if="!finding.advisory" :to="findingLink(finding)" class="report__id" data-test="finding-link">
                         {{ finding.id }}<span class="visually-hidden">: show on the dashboard</span>
                       </RouterLink>
                       <span v-else class="report__id">{{ finding.id }}</span>
@@ -240,19 +338,22 @@ const ids = computed(() => `report-${props.build.id}`)
     <footer v-if="actions" class="report__actions" data-test="report-actions">
       <BaseButton data-action="dashboard" @click="viewDashboard">View Dashboard</BaseButton>
       <BaseButton
-        v-if="build.iteration === 1"
-        aria-disabled="true"
-        :aria-describedby="`${ids}-why-rebuild`"
+        v-if="build.iteration === 1 && !rebuilt"
+        :aria-disabled="rebuildWhy ? 'true' : undefined"
+        :aria-describedby="rebuildWhy ? `${ids}-why-rebuild` : undefined"
         data-action="rebuild"
-        @click="said = WHY.rebuild"
+        @click="openRebuild"
       >
         Rebuild
       </BaseButton>
-      <BaseButton variant="primary" aria-disabled="true" :aria-describedby="`${ids}-why-approve`" data-action="approve" @click="said = WHY.approve">
+      <BaseButton variant="primary" aria-disabled="true" :aria-describedby="`${ids}-why-approve`" data-action="approve" @click="said = APPROVE_WHY">
         Approve
       </BaseButton>
-      <span :id="`${ids}-why-rebuild`" class="visually-hidden">{{ WHY.rebuild }}</span>
-      <span :id="`${ids}-why-approve`" class="visually-hidden">{{ WHY.approve }}</span>
+      <span v-if="rebuildWhy && !rebuilt" :id="`${ids}-why-rebuild`" class="visually-hidden">{{ rebuildWhy }}</span>
+      <span :id="`${ids}-why-approve`" class="visually-hidden">{{ APPROVE_WHY }}</span>
+      <p v-if="rebuilt" class="report__rebuilt" data-test="report-rebuilt">
+        {{ REBUILT }} <RouterLink to="/build/2">Go to iteration 2</RouterLink>
+      </p>
       <p class="report__said" role="status" data-test="report-status">{{ said }}</p>
     </footer>
   </section>
@@ -437,6 +538,41 @@ const ids = computed(() => `report-${props.build.id}`)
   background: var(--surface-raised);
   border-top: 1px solid var(--border-default);
   border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+
+.report__lead {
+  font-size: var(--text-sm);
+}
+
+.report__link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: inherit;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.report__quote {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-left: 3px solid var(--border-strong);
+  background: var(--surface-sunken);
+}
+
+.report__updates {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding-left: var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.report__rebuilt {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
 }
 
 .report__said {

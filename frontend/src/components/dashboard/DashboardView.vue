@@ -19,7 +19,7 @@ import BaseButton from '../base/BaseButton.vue'
 import DashboardRenderer from './DashboardRenderer.vue'
 import DrillBar from './DrillBar.vue'
 
-const props = withDefaults(defineProps<{ dashboardId: string; iteration: number; drill: string; headingLevel?: 1 | 2; highlight?: string[] }>(), {
+const props = withDefaults(defineProps<{ dashboardId: string; iteration: number; drill: string; headingLevel?: 1 | 2 | 3; highlight?: string[] }>(), {
   headingLevel: 1,
   highlight: () => [],
 })

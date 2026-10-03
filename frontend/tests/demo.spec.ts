@@ -393,16 +393,18 @@ describe('Shift+S and Shift+E: skip (D-48)', () => {
   })
 })
 
-describe('stubbed until later milestones: they say so and do nothing', () => {
-
-  it('Shift+F does nothing without the rebuild modal; its button says it arrives in M10', async () => {
+describe('Shift+F: Prefill (FR-DC-2, D-70)', () => {
+  // D-71: until M10 the button said Prefill arrives in M10. It still does nothing without the modal,
+  // and now says the modal must be open; inside the modal, rebuild-modal.spec.ts shows it filling it.
+  it('Shift+F does nothing without the rebuild modal; its button says to open Rebuild first', async () => {
     await open()
     await letter('O')
     await letter('F')
     expect(status()).toBe('')
     await click('[data-action="prefill"]')
-    expect(status()).toBe('Prefill fills the rebuild modal, which arrives in M10.')
+    expect(status()).toBe("Prefill fills the rebuild modal. Open Rebuild from iteration 1's report first.")
     expect(server.writes()).toEqual([])
+    expect(server.calls.filter((c) => c.path === '/api/demo/feedback')).toEqual([])
   })
 })
 

@@ -10,8 +10,11 @@ simulated, from `sim_t`.
 - Tests: every test with its phase, name, result and detail.
 - Gates: each auto-resolved Seed v0.1 gate, how it was resolved and from which section.
 - Simulated usage: LLM calls and tokens, API calls, sandbox time.
-
-"Changes since iteration 1" (FR-R-3) is M10's.
+- Iteration 2 only, "Changes since iteration 1" (FR-R-3, D-68): every iteration 1 finding, resolved
+  when this build raised none with its id; the observer feedback as build 2 kept it; and how the
+  routing updated the four files, from this build's Apply observer feedback lines. It reads iteration
+  1's kept log too, which never changes once iteration 2 has started, so it is still the same report
+  for the same build and after a restart.
 """
 
 from __future__ import annotations
@@ -20,6 +23,7 @@ from typing import Any
 
 from seedfoundry.engine.catalogue import PHASES, TEST_NAMES
 from seedfoundry.events import Event
+from seedfoundry.intake.feedback import feedback_file, segments
 from seedfoundry.state import Build
 from seedfoundry.validators.findings import order
 
@@ -55,8 +59,49 @@ def _of(events: list[Event], type_: str) -> list[Event]:
     return [e for e in events if e.type == type_]
 
 
-def assemble(build: Build) -> dict[str, Any]:
-    """The report of a completed build, from its kept log."""
+def _raised(build: Build) -> list[dict[str, Any]]:
+    """The build's findings, advisories aside, in catalogue order."""
+    found = [e.data for e in _of(build.log, "finding.raised") if not e.data.get("advisory")]
+    return sorted(found, key=lambda f: order(f["id"]))
+
+
+def changes(build: Build, prior: Build | None) -> dict[str, Any]:
+    """Changes since iteration 1 (FR-R-3): iteration 1's findings, each resolved when this build has
+    none of that id, the feedback that started this build, and the edits its routing made."""
+    now = {f["id"] for f in _raised(build)}
+    findings = [
+        {
+            "id": f["id"],
+            "category": f.get("category"),
+            "panel_titles": f.get("panel_titles", []),
+            "message": f.get("message", ""),
+            "severity": f.get("severity"),
+            "status": "open" if f["id"] in now else "resolved",
+        }
+        for f in (_raised(prior) if prior is not None else [])
+    ]
+    feedback = feedback_file(build.files)
+    steps = [e for e in build.log if e.type == "log" and (e.step or "").startswith("assay.feedback-")]
+    updates = [
+        {k: e.data.get(k) for k in ("file", "section", "segments", "lines_added", "created")}
+        for e in steps
+        if e.data.get("segments") and e.data.get("lines_added")
+    ]
+    kept = next((e.data.get("kept", []) for e in steps if "routed" in e.data and "kept" in e.data), [])
+    return {
+        "prior_build_id": prior.id if prior is not None else None,
+        "findings": findings,
+        "resolved": sum(1 for f in findings if f["status"] == "resolved"),
+        "open": sum(1 for f in findings if f["status"] == "open"),
+        "feedback": {"name": feedback.name, "content": feedback.content, "segments": len(segments(feedback.content))} if feedback else None,
+        "updates": updates,
+        "kept": kept,
+    }
+
+
+def assemble(build: Build, prior: Build | None = None) -> dict[str, Any]:
+    """The report of a completed build, from its kept log. For iteration 2, `prior` is iteration 1's
+    completed build, which "Changes since iteration 1" reads."""
     events = build.log
     completed = next(e for e in reversed(events) if e.type == "build.completed")
     names = {p.id: p.name for p in PHASES}
@@ -151,6 +196,7 @@ def assemble(build: Build) -> dict[str, Any]:
         "tests": tests,
         "gates": gates,
         "usage": usage,
+        "changes": changes(build, prior) if build.iteration == 2 else None,
     }
 
 

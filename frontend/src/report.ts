@@ -62,6 +62,17 @@ export interface Gate {
   message: string
 }
 
+/** "Changes since iteration 1" (FR-R-3, D-69): iteration 2's report only. */
+export interface Changes {
+  prior_build_id: string | null
+  findings: { id: string; category: Category; panel_titles: string[]; message: string; severity: Severity; status: 'resolved' | 'open' }[]
+  resolved: number
+  open: number
+  feedback: { name: string; content: string; segments: number } | null
+  updates: { file: string; section: string; segments: number[]; lines_added: number; created: boolean }[]
+  kept: number[]
+}
+
 export interface Report {
   build_id: string
   iteration: number
@@ -86,6 +97,8 @@ export interface Report {
   tests: ReportTest[]
   gates: Gate[]
   usage: { llm_calls: number; tokens_in: number; tokens_out: number; api_calls: number; sandbox_seconds: number; simulated: boolean }
+  /** Null on iteration 1. Missing on a report served before M10. */
+  changes?: Changes | null
 }
 
 export const reportsApi = {

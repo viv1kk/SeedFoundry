@@ -44,6 +44,15 @@ const CATALOGUE: Row[] = [
   ['report', 'Teardown & Report', 6, [['teardown', 'Tear down sandbox'], ['compile', 'Compile report'], ['package', 'Package seed files']], [['T-21', 'Sandbox torn down cleanly']]],
 ]
 
+/** D-71: iteration 2's Apply observer feedback summaries, as the real routing of the demo's feedback writes them (D-68). */
+const FEEDBACK_SUMMARIES: Record<string, string> = {
+  'assay.feedback-route': '9 of 10 segments to 4 files',
+  'assay.feedback-person': '+4 lines in Reasoning methods',
+  'assay.feedback-instrument': '+4 lines in Model Behaviour',
+  'assay.feedback-environment': '+10 lines in Styling; +4 lines in User Experience; +4 lines in Data Layer',
+  'assay.feedback-music': '+4 lines in Value Logic',
+}
+
 export function plan(iteration = 1): PhasePlan[] {
   return CATALOGUE.map(([id, name, weight, steps, tests]) => ({
     id,
@@ -182,7 +191,7 @@ export function script(options: ScriptOptions = {}): LabEvent[] {
           beat++
         }
       }
-      const summary = step.id.startsWith('assay.feedback-') && step.id !== 'assay.feedback-route' ? 'no change' : `${step.name.toLowerCase()} done`
+      const summary = FEEDBACK_SUMMARIES[step.id] ?? `${step.name.toLowerCase()} done`
       beat++
       emit('step.completed', `${step.name}: ${summary}`, { ...inStep, sim_t: t(), data: { name: step.name, summary } })
     })

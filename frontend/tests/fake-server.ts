@@ -12,7 +12,10 @@
 // against the backend by test_dashboard.py); a drill path with no fixture is refused as the
 // server refuses a path the data does not have. A completed build's report (D-64) is the report the
 // backend assembled for the sample's build of that iteration (tests/fixtures/reports/, written by
-// backend/tests/report_fixtures.py and checked by test_report.py), with the build's own id.
+// backend/tests/report_fixtures.py and checked by test_report.py), with the build's own id. The
+// rebuild (D-67) is POST /api/builds with iteration 2 and the feedback: it keeps the server's rules
+// (feedback that is not blank, a completed iteration 1, still on iteration 1) and saves the feedback
+// file with the build, in one step; Prefill's text is the real demo feedback file.
 
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -56,6 +59,11 @@ export const SAMPLE = (
   category,
   content: readFileSync(resolve(SAMPLE_DIR, name), 'utf8').replace(/\r\n?/g, '\n'),
 }))
+
+/** The demo's observer feedback (Prefill, D-68), as the server serves it. */
+export const DEMO_FEEDBACK = readFileSync(resolve(SAMPLE_DIR, 'rebuild/observer-feedback-iteration-1.md'), 'utf8').replace(/\r\n?/g, '\n')
+
+export const FEEDBACK_NAME = 'observer-feedback-iteration-1.md'
 
 const DASHBOARD_DIR = resolve(__dirname, 'fixtures/dashboard')
 
@@ -114,6 +122,8 @@ export class FakeServer {
   files: IntakeFile[] = []
   builds: Build[] = []
   buildEvents = new Map<string, LabEvent[]>()
+  /** Fields to put over the fixture report of an iteration, for a test that needs another report. */
+  reportPatches = new Map<number, Record<string, unknown>>()
   iteration = 1
   speed = 1
   seq = 0
@@ -234,9 +244,10 @@ export class FakeServer {
       const build = this.builds.find((b) => b.id === reportMatch[1])
       if (!build) return refusal(404, 'build_not_found', `No build with id ${reportMatch[1]}.`)
       if (build.status !== 'completed') return refusal(409, 'report_not_ready', `Build ${build.id} has not completed, so it has no report.`)
-      return { status: 200, body: { ...reportFixture(build.iteration), build_id: build.id } }
+      return { status: 200, body: { ...reportFixture(build.iteration), ...this.reportPatches.get(build.iteration), build_id: build.id } }
     }
     if (method === 'GET' && path === '/api/demo/speed') return { status: 200, body: { speed: this.speed } }
+    if (method === 'GET' && path === '/api/demo/feedback') return { status: 200, body: { name: FEEDBACK_NAME, content: DEMO_FEEDBACK } }
     if (method === 'POST' && path === '/api/demo/speed') {
       const speed = (call.body as { speed?: number }).speed
       if (speed !== 1 && speed !== 2 && speed !== 4) return { status: 422, body: { detail: [] } }
@@ -255,6 +266,20 @@ export class FakeServer {
       if (missing.length) {
         const labels = missing.map((c) => LABELS[c]).join(', ')
         return refusal(409, 'core_files_missing', `Start Build needs every core file. Missing: ${labels}.`, { missing })
+      }
+      const body = (call.body ?? {}) as { iteration?: number; feedback?: string }
+      const rebuilding = body.iteration === 2 && this.iteration === 1
+      if (body.feedback !== undefined && !rebuilding) return refusal(409, 'wrong_iteration', "Observer feedback starts iteration 2 from iteration 1's report; this Seed is past that.")
+      if (rebuilding) {
+        if (!this.builds.some((b) => b.iteration === 1 && b.status === 'completed')) return refusal(409, 'iteration_1_not_built', 'Iteration 2 needs a completed iteration 1 build.')
+        if (!body.feedback?.trim()) return refusal(422, 'feedback_empty', 'Start Rebuild needs observer feedback. Write what iteration 2 should change first.')
+        const existing = this.files.find((f) => f.category === 'misc_context' && f.name === FEEDBACK_NAME)
+        if (existing) {
+          existing.content = body.feedback
+          existing.size = encoder.encode(body.feedback).length
+        } else this.add(FEEDBACK_NAME, 'misc_context', body.feedback)
+        this.iteration = 2
+        this.seq++
       }
       const build: Build = { id: `b-${this.nextBuild++}`, iteration: this.iteration, status: 'running', seed_name: 'License Optimization', phase: null, plan: [] }
       this.builds = [...this.builds.filter((b) => b.iteration !== build.iteration), build]

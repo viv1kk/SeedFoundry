@@ -1,6 +1,8 @@
 <script setup lang="ts">
-// The app shell (ui-spec.md section 1): the top bar over the current screen, and the hidden
-// demo controller (ui-spec.md section 8), whose shortcuts work on every screen.
+// The app shell (ui-spec.md section 1): the top bar over the current screen, the rebuild modal
+// (ui-spec.md section 6), which iteration 1's report opens over any page, and the hidden demo
+// controller (ui-spec.md section 8), whose shortcuts work on every screen.
+import RebuildModal from './components/rebuild/RebuildModal.vue'
 import TopBar from './components/shell/TopBar.vue'
 import DemoController from './demo/DemoController.vue'
 </script>
@@ -11,6 +13,7 @@ import DemoController from './demo/DemoController.vue'
     <main class="screen">
       <RouterView />
     </main>
+    <RebuildModal />
     <DemoController />
   </div>
 </template>

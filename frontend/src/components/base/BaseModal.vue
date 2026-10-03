@@ -1,10 +1,17 @@
 <script setup lang="ts">
 // A modal dialog (NFR-6): focus moves into it on open and is trapped there, Escape closes it,
 // and focus returns to the control that opened it. A click on the backdrop does not close it,
-// so text being written in a modal is not lost by a stray click.
+// so text being written in a modal is not lost by a stray click. `name` marks the dialog
+// (`data-modal`) so the demo shortcuts that belong to it still work inside it (D-47); the
+// `controls` slot sits in the header beside the title; `flush` leaves the body's padding and
+// scrolling to the content, for panes that scroll on their own (the rebuild modal, D-70).
 import { nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
 
-const props = withDefaults(defineProps<{ open: boolean; title: string; size?: 'md' | 'lg' }>(), { size: 'md' })
+const props = withDefaults(defineProps<{ open: boolean; title: string; size?: 'md' | 'lg'; name?: string; flush?: boolean }>(), {
+  size: 'md',
+  name: undefined,
+  flush: false,
+})
 const emit = defineEmits<{ close: [] }>()
 
 const FOCUSABLE = [
@@ -22,7 +29,8 @@ const dialog = ref<HTMLElement | null>(null)
 let opener: HTMLElement | null = null
 
 function focusables(): HTMLElement[] {
-  return dialog.value ? Array.from(dialog.value.querySelectorAll<HTMLElement>(FOCUSABLE)) : []
+  // A control taken out of the tab order (a tablist's other tabs) is not a stop for Tab.
+  return dialog.value ? Array.from(dialog.value.querySelectorAll<HTMLElement>(FOCUSABLE)).filter((el) => el.getAttribute('tabindex') !== '-1') : []
 }
 
 function restoreFocus(): void {
@@ -84,18 +92,20 @@ function onKeydown(event: KeyboardEvent): void {
         role="dialog"
         aria-modal="true"
         :aria-labelledby="titleId"
+        :data-modal="name"
         tabindex="-1"
         @keydown="onKeydown"
       >
         <header class="modal__header">
           <h2 :id="titleId" class="modal__title">{{ title }}</h2>
+          <div v-if="$slots.controls" class="modal__controls"><slot name="controls" /></div>
           <button type="button" class="modal__close" aria-label="Close" @click="emit('close')">
             <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
               <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
           </button>
         </header>
-        <div class="modal__body"><slot /></div>
+        <div class="modal__body" :class="{ 'modal__body--flush': flush }"><slot /></div>
         <footer v-if="$slots.footer" class="modal__footer"><slot name="footer" /></footer>
       </div>
     </div>
@@ -143,6 +153,10 @@ function onKeydown(event: KeyboardEvent): void {
   font-weight: 600;
 }
 
+.modal__controls {
+  margin-left: auto;
+}
+
 .modal__close {
   display: inline-grid;
   place-items: center;
@@ -165,6 +179,13 @@ function onKeydown(event: KeyboardEvent): void {
   flex: 1;
   overflow: auto;
   padding: var(--space-4);
+}
+
+.modal__body--flush {
+  display: flex;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
 }
 
 .modal__footer {

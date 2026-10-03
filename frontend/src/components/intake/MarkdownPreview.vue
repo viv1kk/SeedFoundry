@@ -4,14 +4,15 @@
 import { computed } from 'vue'
 import { renderMarkdown } from '../../markdown'
 
-const props = defineProps<{ text: string; label: string }>()
+// `compact` fits the text to its content, for a quote inside a page (the report's observer feedback).
+const props = defineProps<{ text: string; label: string; compact?: boolean }>()
 
 // The only v-html in the app, and it only ever holds renderMarkdown's output.
 const html = computed(() => renderMarkdown(props.text))
 </script>
 
 <template>
-  <div class="markdown" tabindex="0" role="document" :aria-label="label" data-test="preview" v-html="html" />
+  <div class="markdown" :class="{ 'markdown--compact': compact }" tabindex="0" role="document" :aria-label="label" data-test="preview" v-html="html" />
 </template>
 
 <style scoped>
@@ -24,6 +25,13 @@ const html = computed(() => renderMarkdown(props.text))
   font-size: var(--text-md);
   line-height: var(--line-height-body);
   overflow-wrap: anywhere;
+}
+
+.markdown--compact {
+  height: auto;
+  overflow: visible;
+  padding: 0;
+  font-size: var(--text-sm);
 }
 
 .markdown :deep(> :first-child) {

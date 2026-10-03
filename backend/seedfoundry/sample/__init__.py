@@ -25,6 +25,16 @@ SAMPLE_FILES = (
 )
 
 
+# The demo's observer feedback (FR-DC-2 Prefill, build-simulation.md §9): plain words citing the
+# finding ids, written so that routing (D-36) reaches all four core files and raises no boundary
+# advisory. In its own folder, so it is never loaded as part of the sample Seed.
+DEMO_FEEDBACK = SAMPLE_DIR / "rebuild" / "observer-feedback-iteration-1.md"
+
+
+def demo_feedback() -> str:
+    return normalise(DEMO_FEEDBACK.read_text(encoding="utf-8"))
+
+
 def sample_files() -> list[tuple[str, Category, str]]:
     """(name, category, content) for each sample file, in load order."""
     return [(name, category, normalise((SAMPLE_DIR / name).read_text(encoding="utf-8"))) for name, category in SAMPLE_FILES]

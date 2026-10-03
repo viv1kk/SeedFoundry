@@ -17,7 +17,6 @@ from seedfoundry.engine.clock import FakeClock
 from seedfoundry.engine.runner import SLICE, BuildEngine
 from seedfoundry.engine.script import GATES, BuildContext, script
 from seedfoundry.events import EVENT_TYPES, Event
-from seedfoundry.intake import files
 from seedfoundry.intake.feedback import FEEDBACK_NAME
 from seedfoundry.sample import sample_files
 from seedfoundry.state import Category, IntakeFile, StateManager
@@ -58,14 +57,12 @@ def full_build(path: Path, speed: int = 1) -> tuple[StateManager, FakeClock]:
     return asyncio.run(go())
 
 
-def second_iteration(path: Path, feedback: str | None = FEEDBACK) -> StateManager:
+def second_iteration(path: Path, feedback: str = FEEDBACK) -> StateManager:
     async def go():
         manager, engine, _ = lab(path)
         engine.start()
         await engine.wait()
-        if feedback is not None:
-            manager.apply(files.create(FEEDBACK_NAME, Category.MISC_CONTEXT, feedback))
-        engine.start(2)
+        engine.start(2, feedback)  # the rebuild saves the feedback with the start (D-67, D-71)
         await engine.wait()
         return manager
 
@@ -484,24 +481,42 @@ def test_a_finished_build_keeps_its_own_events(first):
     assert not manager.state.build_running
 
 
-# Iteration 2 before M10 routing (D-52)
+# Iteration 2 routes the feedback (D-36, D-68; D-71: before M10 it routed nothing, D-52)
 
 
-def test_iteration_2_reads_the_feedback_and_claims_no_edit(second):
+def test_iteration_2_routes_the_feedback_and_says_what_it_changed(second):
     events = build_events(second, "b-2")
-    lines = [e.message for e in events if e.type == "log" and e.step and e.step.startswith("assay.feedback")]
-    assert lines[:2] == [
-        f"Read {FEEDBACK_NAME}: 3 segments, {len(FEEDBACK)} bytes",
-        "Routing feedback to the Ensemble files arrives in M10, so no segment was routed",
+    route = [e for e in events if e.step == "assay.feedback-route"]
+    lines = [e.message for e in route if e.type in ("log", "llm.call")]
+    assert lines[0] == f"Read {FEEDBACK_NAME}: 3 segments, {len(FEEDBACK)} bytes"
+    assert re.fullmatch(r"route observer feedback: [\d,]+ tokens in, \d+ out \(simulated\)", lines[1])
+    assert lines[2:] == [
+        "Segment 1 to environment.md, Data Layer: totals, add up",
+        "Segment 2 to environment.md, Styling: pie",
+        "Segment 3 to environment.md, Styling: axis",
+        "Routed 3 of 3 segments to 1 file",
     ]
-    for name in ("person.md", "instrument-awareness.md", "environment.md", "music.md"):
-        assert f"{name}: no change, no feedback was routed to it" in lines
-    completed = [e.message for e in events if e.type == "step.completed" and e.step.startswith("assay.feedback-") and e.step != "assay.feedback-route"]
-    assert all(m.endswith(": no change") for m in completed) and len(completed) == 4
-    assert not [e for e in events if e.type == "llm.call" and e.phase == "assay"]  # no routing decision was made
-    # The four core files are exactly the sample's.
+    assert [e for e in route if e.type == "llm.call"][0].data["simulated"] is True
+    updates = [e.message for e in events if e.type == "log" and e.step.startswith("assay.feedback-") and e.step != "assay.feedback-route"]
+    environment = next(f for f in second.state.intake.files if f.name == "environment.md")
+    assert updates[:3] == [
+        "person.md: no change, no feedback was routed to it",
+        "instrument-awareness.md: no change, no feedback was routed to it",
+        "environment.md: +6 lines in Styling (segments 2, 3)",
+    ]
+    assert updates[3] == "environment.md: +4 lines in Data Layer (segment 1)"
+    assert updates[4] == "music.md: no change, no feedback was routed to it"
+    assert re.fullmatch(r"Intake updated: 1 file changed, fingerprint [0-9a-f]{6} \(was [0-9a-f]{6}\)", updates[5])
+    completed = {e.step: e.data["summary"] for e in events if e.type == "step.completed" and e.step.startswith("assay.feedback-")}
+    assert completed["assay.feedback-environment"] == "+6 lines in Styling; +4 lines in Data Layer"
+    assert completed["assay.feedback-person"] == completed["assay.feedback-music"] == "no change"
+    # The files really changed, exactly as the lines say, and only environment.md.
+    sample_text = {name: text for name, c, text in sample_files() if c != Category.MISC_CONTEXT}
     core = {f.name: f.content for f in second.state.intake.files if f.category != Category.MISC_CONTEXT}
-    assert core == {name: text for name, c, text in sample_files() if c != Category.MISC_CONTEXT}
+    assert {n: t for n, t in core.items() if n != "environment.md"} == {n: t for n, t in sample_text.items() if n != "environment.md"}
+    assert len(environment.content.split("\n")) - len(sample_text["environment.md"].split("\n")) == 10
+    assert "### Observer feedback (iteration 1)\n\n- Use bars, not a pie.\n\n- Label every axis.\n" in environment.content
+    assert "### Observer feedback (iteration 1)\n\nThe totals do not add up.\n" in environment.content
     prior = [e.message for e in events if e.step == "distill.feedback" and e.type == "log"]
     # D-66: iteration 1 raises the catalogue's 14 findings from M9, which D-52 counts here.
     assert prior == [
@@ -511,8 +526,8 @@ def test_iteration_2_reads_the_feedback_and_claims_no_edit(second):
     ]
 
 
-def test_iteration_2_without_a_feedback_file_says_so(tmp_path):
-    manager = second_iteration(tmp_path, feedback=None)
-    events = build_events(manager, "b-2")
-    route = [e.message for e in events if e.step == "assay.feedback-route" and e.type == "log"]
+def test_iteration_2_without_a_feedback_file_says_so():
+    # A rerun of iteration 2 after the feedback file was deleted on Knowledge (D-67, D-71).
+    beats = script(BuildContext("b-2", 2, sample()))
+    route = [e["message"] for b in beats for e in b.events if e.get("step") == "assay.feedback-route" and e["type"] == "log"]
     assert route == [f"No {FEEDBACK_NAME} in Knowledge, so there is no observer feedback to route"]

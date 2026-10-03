@@ -2,8 +2,8 @@
 // Load sample Seed, Clear and Reset go to the server, which emits the normal events; the
 // answer is also applied here at once, so the Knowledge page changes without waiting for
 // the stream. Speed lives on the server, which paces builds with it and keeps it across
-// Reset; skip works while a build runs (D-48). Prefill arrives with the rebuild modal (M10):
-// until then it says so in the panel's status line and does nothing else.
+// Reset; skip works while a build runs (D-48). Prefill fills the open rebuild modal with the demo's
+// feedback, which the server keeps (D-70); with no modal open it says why and does nothing.
 
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -13,6 +13,7 @@ import type { DemoAction } from '../demo/shortcuts'
 import { toggleTheme } from '../theme'
 import { useIntakeStore } from './intake'
 import { useLabStore, type Build } from './lab'
+import { useRebuildStore } from './rebuild'
 
 export type Speed = 1 | 2 | 4
 
@@ -20,7 +21,7 @@ export const SPEEDS: readonly Speed[] = [1, 2, 4]
 
 const LOCKED = 'A build is running. Knowledge files are read-only until it finishes.'
 const NO_BUILD = 'No build is running, so there is nothing to skip.'
-const NO_REBUILD = 'Prefill fills the rebuild modal, which arrives in M10.'
+const NO_REBUILD = "Prefill fills the rebuild modal. Open Rebuild from iteration 1's report first."
 
 export function plural(count: number, word: string): string {
   return `${count} ${word}${count === 1 ? '' : 's'}`
@@ -29,6 +30,7 @@ export function plural(count: number, word: string): string {
 export const useDemoStore = defineStore('demo', () => {
   const lab = useLabStore()
   const intake = useIntakeStore()
+  const rebuild = useRebuildStore()
 
   const visible = ref(false)
   /** Build pacing (FR-DC-4: pacing only), as the server holds it. */
@@ -51,7 +53,7 @@ export const useDemoStore = defineStore('demo', () => {
       case 'skipEnd':
         return lab.runningBuild ? null : NO_BUILD
       case 'prefill':
-        return NO_REBUILD
+        return rebuild.open ? null : NO_REBUILD
       default:
         return null
     }
@@ -139,9 +141,14 @@ export const useDemoStore = defineStore('demo', () => {
     })
   }
 
+  /** Prefill (Shift+F): the demo's observer feedback into the open rebuild modal. */
+  function prefill(): Promise<boolean> {
+    return attempt(() => rebuild.prefill())
+  }
+
   function theme(): void {
     status.value = `Theme: ${toggleTheme()}.`
   }
 
-  return { visible, speed, status, busy, unavailable, loadSample, clearIntake, reset, startBuild, loadSpeed, setSpeed, skip, theme }
+  return { visible, speed, status, busy, unavailable, loadSample, clearIntake, reset, startBuild, loadSpeed, setSpeed, skip, prefill, theme }
 })

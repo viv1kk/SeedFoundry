@@ -16,7 +16,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | D. Output | M7 | Polished License Optimization dashboard | Done (2026-10-03) |
 | | M8 | Defect overlay (iteration 1 dashboard) | Done (2026-10-03) |
 | | M9 | Validators and build report | Done (2026-10-04) |
-| E. Loop | M10 | Rebuild modal and iteration 2 | Not started |
+| E. Loop | M10 | Rebuild modal and iteration 2 | Done (2026-10-04) |
 | | M11 | Seed file generation and final page | Not started |
 | F. Ship | M12 | Hardening, operator guide, rehearsal | Not started |
 | | M13 | As-built reconciliation | Not started |
@@ -80,6 +80,8 @@ seedfoundry/
 *As built (M8):* `backend/seedfoundry/dashboard/overlay.py` holds the defect overlay (D-60): fourteen patches in descriptor, payload and styles layers; `descriptor(1)` and `build()` apply it, and `GET /api/dashboards/license-optimization/overlay` serves it. `validators/` gained `styles.py` (reads the stylesheet a descriptor names) and `latency.py` (T-15). Frontend: `src/styles/defects.css` (scoped under `.defects-overlay`), `src/dashboard/stylesheets.ts` (loads a descriptor's named sheet on demand) and `src/dashboard/latency.ts` (a panel's declared wait). The dashboard fixtures are now `frontend/tests/fixtures/dashboard/iteration-1/` and `iteration-2/`. New tests: `backend/tests/test_overlay.py`.
 
 *As built (M9):* `backend/seedfoundry/validators/` gained `findings.py` (problems to findings, D-63), `protection.py` (T-13) and `records.py` (T-14) (D-62); `report/assemble.py` assembles the report from a build's kept log (D-64), served at `GET /api/builds/{id}/report`. The validators run in `engine/script.py`, and `pending(...)` is gone. Frontend: `src/report.ts` (types, API), `src/stores/reports.ts` (one load per build), `components/report/BuildReport.vue` (the report, on the Build and Review pages, D-65); `components/build/BuildSummary.vue` is removed. The dashboard frame has the "N findings" link and the finding highlight (`finding=<id>`), drawn by `DashboardRenderer.vue`. New tests: `backend/tests/test_findings.py`, `test_probes.py`, `test_report.py`, with `report_fixtures.py` writing `frontend/tests/fixtures/reports/`; `frontend/tests/report.spec.ts`.
+
+*As built (M10):* `backend/seedfoundry/intake/routing.py` routes the observer feedback into the four core files (D-68); `engine/script.py`'s Apply observer feedback sub-steps use it and `engine/runner.py` writes each routed file as its beat plays and saves the rebuild's feedback with the build's start (D-67); the build record keeps `files` (`GET /api/builds/{id}/files`); `report/assemble.py` adds `changes` to iteration 2's report (D-69); `GET /api/demo/feedback` serves `sample/rebuild/observer-feedback-iteration-1.md`. Frontend: `components/rebuild/RebuildModal.vue` and `stores/rebuild.ts` (D-70), `components/intake/MarkdownEditor.vue` (the editor FileEditor and the modal share), and `BaseModal` gained `name`, a `controls` slot and a `flush` body. New tests: `backend/tests/test_routing.py`, `test_rebuild.py`; `frontend/tests/rebuild-modal.spec.ts`.
 
 ## 3. Milestones
 

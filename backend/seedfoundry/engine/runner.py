@@ -10,6 +10,11 @@ StateManager.apply, which changes how often the state is written, never what is 
 
 One build at a time. stop() cancels the running build without touching the state;
 Reset to start calls it before it removes the build (D-46).
+
+The rebuild (FR-RB-4, FR-RB-5, D-67): start(2, feedback) saves the feedback as the Misc Context
+file observer-feedback-iteration-1.md and starts iteration 2 in one state change, so a refusal or
+a failed save leaves neither the file nor the build. Iteration 2's Update sub-steps carry the
+routed files (D-36); each is written to intake when its beat plays, with intake.file_updated.
 """
 
 from __future__ import annotations
@@ -21,10 +26,12 @@ from typing import Any
 from seedfoundry.engine.catalogue import PHASES
 from seedfoundry.engine.clock import Clock, RealClock
 from seedfoundry.engine.script import Beat, BuildContext, script
+from seedfoundry.intake import files as intake_files
 from seedfoundry.intake.assay import inventory, missing_labels
+from seedfoundry.intake.feedback import FEEDBACK_NAME, feedback_file
 from seedfoundry.intake.files import IntakeError
 from seedfoundry.events import Event
-from seedfoundry.state import Build, Emit, State, StateManager
+from seedfoundry.state import CATEGORY_LABELS, Build, Category, Emit, IntakeFile, State, StateManager
 
 SLICE = 0.05
 SPEEDS = (1, 2, 4)
@@ -57,12 +64,19 @@ class BuildEngine:
 
     # Requests
 
-    def start(self, iteration: int | None = None) -> Build:
-        """Create a build for the current iteration and start playing it (FR-B-1)."""
+    def start(self, iteration: int | None = None, feedback: str | None = None) -> Build:
+        """Create a build for the current iteration and start playing it (FR-B-1). Moving to
+        iteration 2 is the rebuild: it needs the observer feedback, which is saved with the build's
+        start (FR-RB-3 to FR-RB-5, D-67)."""
         state = self.manager.state
         if state.build_running or self.running:
             raise BuildError(409, "build_running", "A build is running. Wait for it to finish, or use Reset to start.")
         target = self._target(state, iteration)
+        rebuilding = target == 2 and state.iteration == 1
+        if feedback is not None and not rebuilding:
+            raise BuildError(409, "wrong_iteration", "Observer feedback starts iteration 2 from iteration 1's report; this Seed is past that.")
+        if rebuilding and (feedback is None or not feedback.strip()):
+            raise BuildError(422, "feedback_empty", "Start Rebuild needs observer feedback. Write what iteration 2 should change first.")
         missing = inventory(state.intake.files).missing
         if missing:
             raise BuildError(
@@ -71,12 +85,25 @@ class BuildEngine:
                 f"Start Build needs every core file. Missing: {missing_labels(missing)}.",
                 missing=[c.value for c in missing],
             )
+        files = list(state.intake.files)
+        saved: IntakeFile | None = None
+        if rebuilding:
+            text = intake_files.check_text(FEEDBACK_NAME, feedback or "")
+            existing = feedback_file(files)
+            if existing is not None:
+                saved = existing.model_copy(update={"content": text})
+                files = [saved if f.id == existing.id else f for f in files]
+            else:
+                saved = IntakeFile(id=f"f-{state.next_file_id}", name=FEEDBACK_NAME, category=Category.MISC_CONTEXT, content=text)
+                files.append(saved)
         prior = next((b for b in reversed(state.builds) if b.iteration == 1 and b.status == "completed"), None)
-        context = BuildContext(f"b-{state.next_build_id}", target, state.intake.files, prior=prior if target == 2 else None)
+        context = BuildContext(f"b-{state.next_build_id}", target, files, prior=prior if target == 2 else None)
         beats = script(context)
         record = context.record()
 
         def begin(draft: State, emit: Emit) -> None:
+            if saved is not None:
+                _save_feedback(draft, emit, saved)
             replaced = [b.id for b in draft.builds if b.iteration == target]
             draft.builds = [b for b in draft.builds if b.iteration != target] + [record.model_copy(deep=True)]
             draft.iteration = target
@@ -165,6 +192,8 @@ class BuildEngine:
                     iteration=iteration,
                     sim_t=beat.sim_t,
                 )
+            for routed in beat.intake:
+                _write_routed(state, emit, routed)
 
     def _apply(self, beats: list[Beat]) -> None:
         build_id, iteration, since = self._build_id, self._iteration, self._from_seq
@@ -233,3 +262,39 @@ class BuildEngine:
 
         with contextlib.suppress(Exception):
             self.manager.apply(change)
+
+
+def _save_feedback(state: State, emit: Emit, saved: IntakeFile) -> None:
+    """Save the observer feedback as Misc Context (FR-RB-4, D-16): a new file, or the existing
+    feedback file rewritten in place (D-67)."""
+    label = CATEGORY_LABELS[Category.MISC_CONTEXT]
+    existing = state.file(saved.id)
+    if existing is None:
+        state.intake.files.append(saved.model_copy())
+        state.next_file_id += 1
+        emit(
+            type="intake.file_created",
+            message=f"Created {saved.name} ({label}) from the rebuild",
+            data={"file": saved.summary(), "source": "rebuild"},
+        )
+    elif existing.content != saved.content:
+        existing.content = saved.content
+        emit(
+            type="intake.file_updated",
+            message=f"{existing.name}: content saved ({existing.size:,} bytes) from the rebuild",
+            data={"file": existing.summary(), "changed": ["content"], "source": "rebuild"},
+        )
+
+
+def _write_routed(state: State, emit: Emit, routed: IntakeFile) -> None:
+    """Write one core file as the feedback routing left it (D-36). Intake is locked while the
+    build runs, so the file is as the build read it; a file Reset removed is skipped."""
+    file = state.file(routed.id)
+    if file is None or file.content == routed.content:
+        return
+    file.content = routed.content
+    emit(
+        type="intake.file_updated",
+        message=f"{file.name}: observer feedback added ({file.size:,} bytes)",
+        data={"file": file.summary(), "changed": ["content"], "source": "feedback"},
+    )

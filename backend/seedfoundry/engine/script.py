@@ -33,7 +33,7 @@ from seedfoundry.clients import ApiCall, LLMCall, LLMClient, SeedClient, Simulat
 from seedfoundry.data import DATASETS, dataset
 from seedfoundry.engine.catalogue import BUDGET_SECONDS, PHASES, TEST_NAMES, TOTAL_WEIGHT, Phase, plan
 from seedfoundry.generate import outline as layers
-from seedfoundry.intake import assay, boundary
+from seedfoundry.intake import assay, boundary, routing
 from seedfoundry.intake.feedback import FEEDBACK_NAME, feedback_file, segments
 from seedfoundry.report.assemble import verdict
 from seedfoundry.state import Build, Category, IntakeFile
@@ -52,6 +52,9 @@ class Beat:
     events: list[dict[str, Any]]
     phase_index: int = 0
     sim_t: float = 0.0
+    # Intake files this beat writes when it plays (iteration 2's Update sub-steps, D-36): the
+    # runner saves each one's content with the beat and emits intake.file_updated for it.
+    intake: list[IntakeFile] = field(default_factory=list)
 
 
 def event(type: str, message: str, level: str = "INFO", code: str | None = None, **data: Any) -> dict[str, Any]:
@@ -90,6 +93,14 @@ class BuildContext:
 
     def __post_init__(self) -> None:
         self.files = [f.model_copy() for f in self.files]
+        # Iteration 2 first routes the observer feedback into the core files (D-36), and every
+        # step after Apply observer feedback reads the routed files. `given` is the intake as
+        # the build was started with it.
+        self.given = self.files
+        self.given_fingerprint = assay.fingerprint(self.given)
+        self.routing = routing.route(self.files) if self.iteration == 2 else None
+        if self.routing is not None:
+            self.files = self.routing.files
         self.digest = assay.digest(self.files)
         self.fingerprint = self.digest[:6]
         self.rng = rng_for(self.digest, self.iteration)
@@ -114,6 +125,7 @@ class BuildContext:
             fingerprint=self.fingerprint,
             plan=plan(self.iteration),
             sim_seconds=BUDGET_SECONDS,
+            files=[f.model_copy() for f in self.files],
         )
 
 
@@ -171,27 +183,110 @@ def test(ctx: BuildContext, test_id: str, status: str, detail: str, *, simulated
 # Phase 1: Assay
 
 
+def segment_list(numbers: list[int]) -> str:
+    return f"{'segment' if len(numbers) == 1 else 'segments'} {', '.join(str(n) for n in numbers)}"
+
+
 def feedback_route(ctx: BuildContext) -> Step:
-    feedback = feedback_file(ctx.files)
+    """Route the feedback's segments to the Ensemble files (FR-RB-7, D-36): one routing decision,
+    shown as an LLM call (simulated) and made by intake/routing.py's rules."""
+    routed = ctx.routing
+    feedback = routed.feedback if routed else None
     if feedback is None:
         yield log(f"No {FEEDBACK_NAME} in Knowledge, so there is no observer feedback to route")
         return "nothing to route"
-    parts = segments(feedback.content)
+    parts = routed.placements
     yield log(
         f"Read {FEEDBACK_NAME}: {plural(len(parts), 'segment')}, {feedback.size:,} bytes",
         segments=len(parts),
         bytes=feedback.size,
     )
-    yield log("Routing feedback to the Ensemble files arrives in M10, so no segment was routed", routed=0)
-    return "not routed (arrives in M10)"
+    if not parts:
+        yield log("The feedback has no paragraph or list item, so there is nothing to route", routed=0)
+        return "nothing to route"
+    yield llm(ctx.llm.call("route observer feedback", feedback.content, (60, 220)))
+    for p in parts:
+        if p.target is None:
+            yield log(
+                f"Segment {p.number} kept in {FEEDBACK_NAME} only: it fits no Ensemble file",
+                weight=0.5,
+                segment=p.number,
+                kept=True,
+            )
+        else:
+            name = ctx.name(p.target.category)
+            yield log(
+                f"Segment {p.number} to {name}, {p.target.section}: {', '.join(p.matched)}",
+                weight=0.5,
+                segment=p.number,
+                file=name,
+                section=p.target.section,
+                matched=list(p.matched),
+            )
+    files = len({p.target.category for p in routed.routed})
+    kept = f"; {len(routed.kept)} kept in {FEEDBACK_NAME} only" if routed.kept else ""
+    yield log(
+        f"Routed {len(routed.routed)} of {plural(len(parts), 'segment')} to {plural(files, 'file')}{kept}",
+        routed=len(routed.routed),
+        kept=[p.number for p in routed.kept],
+        files=files,
+    )
+    return f"{len(routed.routed)} of {plural(len(parts), 'segment')} to {plural(files, 'file')}"
 
 
 def feedback_update(category: Category, last: bool = False) -> Callable[[BuildContext], Step]:
+    """Append the segments routed to one core file, verbatim, under `### Observer feedback
+    (iteration 1)` in their sections (D-36). The file in Knowledge changes when this step plays."""
+
     def step(ctx: BuildContext) -> Step:
-        yield log(f"{ctx.name(category)}: no change, no feedback was routed to it", lines_added=0)
+        name = ctx.name(category)
+        change = ctx.routing.changes.get(category) if ctx.routing else None
+        added = [s for s in change.sections if s.segments] if change else []
+        if not added and not (change and any(s.present for s in change.sections)):
+            yield log(f"{name}: no change, no feedback was routed to it", lines_added=0)
+        beats: list[Beat] = []
+        for section in change.sections if change else []:
+            if section.segments:
+                lines = plural(section.lines_added, "line")
+                new = ", a new section" if section.created else ""
+                beats.append(
+                    log(
+                        f"{name}: +{lines} in {section.section}{new} ({segment_list(section.segments)})",
+                        file=name,
+                        file_id=change.after.id,
+                        section=section.section,
+                        segments=section.segments,
+                        lines_added=section.lines_added,
+                        created=section.created,
+                    )
+                )
+            if section.present:
+                beats.append(
+                    log(
+                        f"{name}: {segment_list(section.present)} already in {section.section}, so not added again",
+                        file=name,
+                        section=section.section,
+                        present=section.present,
+                        lines_added=0,
+                    )
+                )
+        if beats and change is not None and change.changed:
+            beats[-1].intake = [change.after.model_copy()]
+        yield from beats
         if last:
-            yield log(f"Intake unchanged: 0 files changed, fingerprint {ctx.fingerprint}", files_changed=0, fingerprint=ctx.fingerprint)
-        return "no change"
+            changed = [c for c in ctx.routing.changes.values() if c.changed] if ctx.routing else []
+            if changed:
+                yield log(
+                    f"Intake updated: {plural(len(changed), 'file')} changed, fingerprint {ctx.fingerprint} (was {ctx.given_fingerprint})",
+                    files_changed=len(changed),
+                    fingerprint=ctx.fingerprint,
+                    was=ctx.given_fingerprint,
+                )
+            else:
+                yield log(f"Intake unchanged: 0 files changed, fingerprint {ctx.fingerprint}", files_changed=0, fingerprint=ctx.fingerprint)
+        if not added:
+            return "no change"
+        return "; ".join(f"+{plural(s.lines_added, 'line')} in {s.section}" for s in added)
 
     return step
 

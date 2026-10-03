@@ -1,8 +1,9 @@
 """Real build reports, and the sample build's kept events, for the frontend's tests
 (frontend/tests/fixtures/reports/).
 
-The sample Seed is built for iteration 1, then iteration 2 by API, with the real engine on a fake
-clock in a temporary var/, and each build's report is written as the backend serves it (D-64),
+The sample Seed is built for iteration 1, then rebuilt as iteration 2 with the demo's observer
+feedback (the text Prefill puts in the rebuild modal, D-67), with the real engine on a fake clock
+in a temporary var/, and each build's report is written as the backend serves it (D-64),
 with the iteration 1 build's kept events beside it. The frontend's fake server replays them, so
 its report tests read what the backend assembles. `test_report.py` fails when a fixture no longer
 matches the backend; rewrite them with
@@ -25,6 +26,7 @@ if __name__ == "__main__":  # run as a script, the backend package is beside tes
 from seedfoundry import demo, report  # noqa: E402
 from seedfoundry.engine.clock import FakeClock  # noqa: E402
 from seedfoundry.engine.runner import BuildEngine  # noqa: E402
+from seedfoundry.sample import demo_feedback  # noqa: E402
 from seedfoundry.state import Build, StateManager  # noqa: E402
 
 FIXTURE_DIR = Path(__file__).resolve().parents[2] / "frontend" / "tests" / "fixtures" / "reports"
@@ -42,7 +44,7 @@ def sample_builds() -> tuple[Build, Build]:
             engine = BuildEngine(manager, FakeClock(True))
             engine.start()
             await engine.wait()
-            engine.start(2)
+            engine.start(2, demo_feedback())
             await engine.wait()
             first, second = manager.state.builds
             return first.model_copy(deep=True), second.model_copy(deep=True)
@@ -56,7 +58,7 @@ def render(name: str) -> str:
         # wall_ts is the one value that differs between runs (NFR-1), so the fixture fixes it.
         body = [{**e.model_dump(mode="json"), "wall_ts": "2026-10-03T12:00:00.000+00:00"} for e in first.log]
     else:
-        body = report.assemble(first if name == "iteration-1.json" else second)
+        body = report.assemble(first) if name == "iteration-1.json" else report.assemble(second, first)
     return json.dumps(body, indent=1, ensure_ascii=False) + "\n"
 
 

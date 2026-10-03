@@ -2,7 +2,7 @@
  "build_id": "b-2",
  "iteration": 2,
  "seed_name": "License Optimization",
- "fingerprint": "a127ba",
+ "fingerprint": "49616b",
  "verdict": {
   "id": "passed",
   "label": "Passed",
@@ -373,7 +373,7 @@
     "file": "environment.md",
     "file_id": "f-3",
     "section": "Protection Layer",
-    "line": 118
+    "line": 136
    },
    "message": "Gate servicenow-incident-api (credentials) auto-resolved: sandbox read-only credential issued (simulated), values not stored. Basis: environment.md, Protection Layer"
   },
@@ -386,7 +386,7 @@
     "file": "music.md",
     "file_id": "f-4",
     "section": "Decision Logic",
-    "line": 57
+    "line": 61
    },
    "message": "Gate solution-approval (approval) auto-resolved: approve License Optimization at potential PARTIAL. Basis: music.md, Decision Logic"
   },
@@ -399,17 +399,239 @@
     "file": "environment.md",
     "file_id": "f-3",
     "section": "Protection Layer",
-    "line": 118
+    "line": 136
    },
    "message": "Gate close-seeding (confirmation) auto-resolved: close seeding. Basis: environment.md, Protection Layer"
   }
  ],
  "usage": {
-  "llm_calls": 9,
-  "tokens_in": 12127,
-  "tokens_out": 6447,
+  "llm_calls": 10,
+  "tokens_in": 15280,
+  "tokens_out": 7450,
   "api_calls": 26,
   "sandbox_seconds": 36.2,
   "simulated": true
+ },
+ "changes": {
+  "prior_build_id": "b-1",
+  "findings": [
+   {
+    "id": "N-1",
+    "category": "Numeric",
+    "panel_titles": [
+     "Entitled, assigned and active by product"
+    ],
+    "message": "Entitled seats: KPI shows 13,050, product chart sums to 15,660; 18 problems in all",
+    "severity": "high",
+    "status": "resolved"
+   },
+   {
+    "id": "N-2",
+    "category": "Numeric",
+    "panel_titles": [
+     "Seats by vendor and product"
+    ],
+    "message": "Treemap legend: class shares sum to 112.0%, not 100%; 6 problems in all",
+    "severity": "high",
+    "status": "resolved"
+   },
+   {
+    "id": "N-3",
+    "category": "Numeric",
+    "panel_titles": [
+     "Recoverable a year"
+    ],
+    "message": "Recoverable a year: KPI shows $1,191,396, unit cost x 12 over the recoverable seats of priced products gives $1,035,384; 3 problems in all",
+    "severity": "high",
+    "status": "resolved"
+   },
+   {
+    "id": "N-4",
+    "category": "Numeric",
+    "panel_titles": [
+     "Seats"
+    ],
+    "message": "Seats footer: Total shows 12,401, the class counts sum to 13,050; 2 problems in all",
+    "severity": "high",
+    "status": "resolved"
+   },
+   {
+    "id": "N-5",
+    "category": "Numeric",
+    "panel_titles": [
+     "Optimisation candidates"
+    ],
+    "message": "Optimisation candidates: total row shows 17,250 entitled seats, the rows sum to 13,050; 9 problems in all",
+    "severity": "high",
+    "status": "resolved"
+   },
+   {
+    "id": "V-1",
+    "category": "Visual",
+    "panel_titles": [
+     "Recoverable cost by product"
+    ],
+    "message": "Recoverable cost by product: a pie of 12 slices, where a pie holds at most 6; 2 problems in all",
+    "severity": "medium",
+    "status": "resolved"
+   },
+   {
+    "id": "V-2",
+    "category": "Visual",
+    "panel_titles": [
+     "Assigned and in use, by month"
+    ],
+    "message": "Assigned and in use, by month: In use drawn in red (negative), which is kept for faults",
+    "severity": "medium",
+    "status": "resolved"
+   },
+   {
+    "id": "V-3",
+    "category": "Visual",
+    "panel_titles": [
+     "Seats by vendor and product",
+     "Entitled, assigned and active by product"
+    ],
+    "message": "Seats by vendor and product: Unused drawn in #5470c6, which is not a palette token; 2 problems on 2 panels",
+    "severity": "medium",
+    "status": "resolved"
+   },
+   {
+    "id": "V-4",
+    "category": "Visual",
+    "panel_titles": [
+     "Entitled",
+     "Active",
+     "Optimisation candidates"
+    ],
+    "message": "Entitled: the figure reads 13050 (plain), where seat counts read 13,050 (count) on every other panel; 4 problems on 3 panels",
+    "severity": "medium",
+    "status": "resolved"
+   },
+   {
+    "id": "V-5",
+    "category": "Visual",
+    "panel_titles": [
+     "Entitled, assigned and active by product",
+     "Assigned and in use, by month"
+    ],
+    "message": "Entitled, assigned and active by product: the category axis has no name; 6 problems on 2 panels",
+    "severity": "medium",
+    "status": "resolved"
+   },
+   {
+    "id": "V-6",
+    "category": "Visual",
+    "panel_titles": [
+     "Assigned",
+     "Active",
+     "Unused or underused",
+     "Seats by vendor and product",
+     "Seats"
+    ],
+    "message": "Assigned: the card is moved off the grid (margin-left: 6px); 7 problems on 5 panels",
+    "severity": "medium",
+    "status": "resolved"
+   },
+   {
+    "id": "V-7",
+    "category": "Visual",
+    "panel_titles": [
+     "Assigned and in use, by month"
+    ],
+    "message": "Assigned and in use, by month: the title is set in Georgia, 'Times New Roman', Times, serif, not a font token",
+    "severity": "medium",
+    "status": "resolved"
+   },
+   {
+    "id": "V-8",
+    "category": "Visual",
+    "panel_titles": [
+     "Optimisation candidates"
+    ],
+    "message": "Optimisation candidates: the caption (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1); 4 problems in all",
+    "severity": "medium",
+    "status": "resolved"
+   },
+   {
+    "id": "L-1",
+    "category": "Latency",
+    "panel_titles": [
+     "Seats by vendor and product"
+    ],
+    "message": "Panel \"Seats by vendor and product\" responds in 4.5 s (budget 1.0 s)",
+    "severity": "medium",
+    "status": "resolved"
+   }
+  ],
+  "resolved": 14,
+  "open": 0,
+  "feedback": {
+   "name": "observer-feedback-iteration-1.md",
+   "content": "# Observer feedback on iteration 1\n\n- N-1 to N-5: the totals do not add up. The product bars sum to more than the Entitled KPI, the class shares sum to 112%, the Recoverable KPI is not the sum of recoverable cost by product, the Seats footer total is wrong, and the Optimisation candidates total counts one product twice. Every total must equal the sum of the seat records behind it.\n\n- V-1: Recoverable cost by product is a pie of twelve slices. A bar chart reads better for more than six products.\n\n- V-2, V-3, V-7 and V-8: red is used for a normal series, two colours are off the palette, one title is in a serif font, and some muted text is too faint to read. Keep to the design system's colours and fonts, with AA contrast in both themes.\n\n- V-4 and V-5: number formats are mixed (13050, 13,050 and 13.1k), money is missing its $ sign, and two charts have no axis names. Use thousands separators, the $ sign, and a named axis with its unit.\n\n- V-6: cards are misaligned, the treemap overflows its card, and the last two Seats columns are cut off. Keep every card on the grid.\n\n- L-1: Seats by vendor and product shows a spinner for about 4.5 seconds before it draws, while every other panel appears at once. No panel should keep the reader waiting more than a second.\n\n- Hallucination risks: the saving in N-3 reads like a number the language model made up. Never accept a figure from the model alone.\n\n- When two panels disagree (N-1, N-3), the reasoning should stop there: name each assumption, gather the evidence, and only then draw a conclusion.\n\n- A saving only has value once a budget holder can trace it to its seats, so success is a smaller figure everyone believes over a larger one nobody can check.\n\nOtherwise the build was easy to follow.\n",
+   "segments": 10
+  },
+  "updates": [
+   {
+    "file": "person.md",
+    "section": "Reasoning methods",
+    "segments": [
+     8
+    ],
+    "lines_added": 4,
+    "created": false
+   },
+   {
+    "file": "instrument-awareness.md",
+    "section": "Model Behaviour",
+    "segments": [
+     7
+    ],
+    "lines_added": 4,
+    "created": false
+   },
+   {
+    "file": "environment.md",
+    "section": "Styling",
+    "segments": [
+     2,
+     3,
+     4,
+     5
+    ],
+    "lines_added": 10,
+    "created": false
+   },
+   {
+    "file": "environment.md",
+    "section": "User Experience",
+    "segments": [
+     6
+    ],
+    "lines_added": 4,
+    "created": false
+   },
+   {
+    "file": "environment.md",
+    "section": "Data Layer",
+    "segments": [
+     1
+    ],
+    "lines_added": 4,
+    "created": false
+   },
+   {
+    "file": "music.md",
+    "section": "Value Logic",
+    "segments": [
+     9
+    ],
+    "lines_added": 4,
+    "created": false
+   }
+  ],
+  "kept": [
+   10
+  ]
  }
 }

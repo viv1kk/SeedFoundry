@@ -49,7 +49,7 @@ SeedFoundry is a lab that generates, tests and refines Seeds. A Seed is an Ensem
 uv sync                          # make backend/.venv with dev packages
 uv run pytest                    # backend tests
 uv run python tests/dashboard_fixtures.py   # rewrite the frontend's dashboard fixtures, both iterations, after a dashboard change (D-56, D-60)
-uv run python tests/report_fixtures.py      # rewrite the frontend's report fixtures (both iterations' reports, iteration 1's events) after a build, validator or report change (D-64)
+uv run python tests/report_fixtures.py      # rewrite the frontend's report fixtures (both iterations' reports, iteration 2 rebuilt with the demo feedback; iteration 1's events) after a build, routing, validator or report change (D-64, D-67)
 
 # frontend (from frontend/)
 npm install

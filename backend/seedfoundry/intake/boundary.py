@@ -175,7 +175,8 @@ def _excerpt(line: str, limit: int = 120) -> str:
     return text if len(text) <= limit else text[: limit - 3].rstrip() + "..."
 
 
-def _clean(line: str) -> str:
+def clean(line: str) -> str:
+    """The line with allowlisted phrases blanked out. Feedback routing reads text the same way (D-36)."""
     for phrase in ALLOWLIST:
         line = phrase.sub(" ", line)
     return line
@@ -187,7 +188,7 @@ def lint_file(file: IntakeFile) -> list[Advisory]:
     if not rules:
         return found
     for number, line in enumerate(file.content.split("\n"), start=1):
-        text = _clean(line)
+        text = clean(line)
         for rule in rules:
             for pattern in rule.patterns:
                 match = pattern.regex.search(text)

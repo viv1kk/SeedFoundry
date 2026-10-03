@@ -38,6 +38,8 @@ Sub-step names may be refined in M5, but phase count, order, weights and test id
 
 *As built (M9, D-62, D-63):* every test runs; none is "not run". **Stress & Probe:** Protection rule probes derives rules from environment.md's Protection layer and evaluates ten probes against them as Seed v0.1's policy evaluation does (T-13; `validators/protection.py`); Malformed input probes feeds the seat record contract every row of the primary estate and eleven malformed rows, and the drill parser three well-formed and five malformed paths (T-14; `validators/records.py`); Panel latency measurement reads each panel's declared latency (T-15). **Harvest Validation:** Collect dashboard payload builds the iteration's dashboard at All products; Numeric reconciliation (T-16), Chart and data consistency (T-17), Visual QA (T-18, T-19) and Contrast check (T-20) run the validators over that payload, the descriptor and the stylesheet it names. The validators run once per build; their problems are grouped into findings (`validators/findings.py`), each raised in the sub-step that finds it, before that test's result. A test with a high finding fails, with medium ones only warns, with none passes. A phase is failed only when a test failed with no finding for it, so phases 9 and 10 complete as findings on iteration 1, as the table below says. Compile report emits `report.ready` (D-64).
 
+*As built (M10, D-67, D-68):* iteration 2's Apply observer feedback sub-steps are real. Route reads the feedback file, makes one routing decision (an `llm.call`, simulated: `intake/routing.py`'s rules decide) and logs where each segment went; each Update sub-step appends the segments routed to its file and the file in Knowledge changes when that sub-step plays; every sub-step after them reads the routed files, and the build's fingerprint is theirs. With the demo feedback, Assay passes with 0 advisories and coverage still 19 of 19.
+
 ### Phase results by iteration (sample Seed)
 
 | Phase | Iteration 1 | Iteration 2 |
@@ -62,6 +64,8 @@ Types: `build.started`, `phase.started`, `step.started`, `log`, `llm.call`, `api
 *As built (M7, D-58):* no new types. T-08's sub-step emits three log lines before its result, so a sample iteration 1 build is 223 events (was 220).
 
 *As built (M9, D-62 to D-64):* no new types; `report.ready` is now emitted, once, inside Compile report (phase 11), with the verdict, the counts and the finding ids by category; it is not the last event, because every event of a build sits in a sub-step or is its first or last (`build.started`, `build.completed`). A dashboard `finding.raised` carries `id`, `category`, `test`, `checks`, `panel`, `panels`, `panel_titles`, `expected`, `shown`, `severity`, `phase`, `step`, `message`, `catalogued`, `advisory` (false) and `problems` (each validator problem behind it); `code` is the finding id; level FAIL for a high finding, WARN for medium. `test.result` no longer carries `arrives_in`. `phase.completed` names a findings phase's ids ("Harvest Validation: findings (N-1, ..., V-8)") and a failed phase's unexplained tests. `build.completed` also carries `verdict` (`id`, `label`, `tone`). The report is `GET /api/builds/{id}/report`, assembled from the kept log. A sample iteration 1 build is 256 events (was 223); iteration 2 is 264.
+
+*As built (M10, D-67, D-68):* no new types. The rebuild's single change emits `intake.file_created` (or `intake.file_updated`) for `observer-feedback-iteration-1.md`, `source: "rebuild"`, then `build.started`, after one save. Each Update sub-step that changes a file is followed, in the same save, by one `intake.file_updated` (`source: "feedback"`, `changed: ["content"]`) in the intake shape: no `build_id`, `phase`, `step` or `sim_t`, so it is not in the build's kept log or its console. Route's lines carry `segment`, `file`, `section` and `matched` (or `kept`); each Update line carries `file`, `file_id`, `section`, `segments`, `lines_added` and `created`. The build record keeps `files`, the intake it read (D-67), which the snapshot and `build.started` leave out. With the demo feedback, iteration 2 is 278 events (was 264); iteration 1 is unchanged at 256.
 
 ## 4. Console log format
 
@@ -140,6 +144,33 @@ Illustrative lines (wording can be refined, tone must stay matter-of-fact, no em
 ```
 
 Iteration 2 ends "Report compiled: 0 findings; verdict Passed" and "Build completed: 21 tests passed; 0 findings, 0 boundary advisories; verdict Passed". The console shows 168 lines of 256 events for iteration 1 (was 135 of 223) and 164 of 264 for iteration 2. Iteration 2's Distillation now reads "Prior findings from iteration 1: 14" and "Planning corrections for all 14 prior findings", and Synthesis "Learned rules for protection.md: 3 rules, one per finding class (Latency, Numeric, Visual)" (D-52). A warned test is no longer counted as passed in the completion line (D-63).
+
+*As built (M10, D-68):* the sample's iteration 2, rebuilt with the demo feedback, opens:
+
+```
+00:00.0  INFO   Build started: iteration 2, seed "License Optimization"
+00:00.0  INFO   Read observer-feedback-iteration-1.md: 10 segments, 1,757 bytes
+00:00.1  LLM    route observer feedback: 453 tokens in, 102 out (simulated)
+00:00.6  INFO   Segment 1 to environment.md, Data Layer: totals, add up, shares, twice, records
+00:00.7  INFO   Segment 2 to environment.md, Styling: pie, slices, bar chart
+00:01.0  INFO   Segment 6 to environment.md, User Experience: spinner, seconds, panel, waiting
+00:01.1  INFO   Segment 7 to instrument-awareness.md, Model Behaviour: Hallucination, language model, the model
+00:01.2  INFO   Segment 8 to person.md, Reasoning methods: reasoning, assumption, evidence, conclusion
+00:01.3  INFO   Segment 9 to music.md, Value Logic: saving, value, success
+00:01.4  INFO   Segment 10 kept in observer-feedback-iteration-1.md only: it fits no Ensemble file
+00:01.5  INFO   Routed 9 of 10 segments to 4 files; 1 kept in observer-feedback-iteration-1.md only
+00:01.6  INFO   person.md: +4 lines in Reasoning methods (segment 8)
+00:01.8  INFO   instrument-awareness.md: +4 lines in Model Behaviour (segment 7)
+00:02.0  INFO   environment.md: +10 lines in Styling (segments 2, 3, 4, 5)
+00:02.1  INFO   environment.md: +4 lines in User Experience (segment 6)
+00:02.3  INFO   environment.md: +4 lines in Data Layer (segment 1)
+00:02.5  INFO   music.md: +4 lines in Value Logic (segment 9)
+00:02.6  INFO   Intake updated: 4 files changed, fingerprint 49616b (was 6bb2d9)
+00:02.8  INFO   Inventory: 4 core files, 2 context files, 20.3 KB
+00:04.1  PASS   T-03 Ensemble boundary check: 0 findings
+```
+
+The console shows 178 lines of 278 events for iteration 2 (was 164 of 264); iteration 1 is unchanged (168 of 256). The summary line is INFO, not the illustrative PASS, as no test stands behind it.
 
 Gate lines use Seed v0.1's ids (`seed-reuse-notes.md` §4.2), never "H-02". A test not yet run is level TEST, so it reads as neutral, not as a warning (D-51).
 
@@ -276,3 +307,5 @@ Same phases and sub-steps. Differences:
 - Report includes "Changes since iteration 1" (FR-R-3).
 
 *As built (M5, D-52):* routing is M10's, so until then the Apply observer feedback sub-steps read the feedback file and count its segments, route nothing, and say so: "Routing feedback to the Ensemble files arrives in M10, so no segment was routed", then "<file>: no change, no feedback was routed to it" for each core file and "Intake unchanged: 0 files changed, fingerprint <x>". Distillation counts prior findings from iteration 1's kept log (0 until M9's validators raise them). Iteration 2 is started in M5 by API only (`POST /api/builds` with `{"iteration": 2}`, D-49).
+
+*As built (M10, D-67 to D-69), replacing D-52's note above:* routing is real (`backend/seedfoundry/intake/routing.py`). **Segments** are `feedback.py`'s paragraphs and list items. **Targets**, in D-36's order: environment.md Styling, User Experience, Data Layer, Protection Layer; instrument-awareness.md Model Behaviour; person.md Reasoning methods; music.md Core Principles, Decision Logic, Value Logic; each is the boundary lint's patterns for that home plus a few words for homes the lint never checks. A segment scores a point per matching pattern; the highest wins, a tie goes to the earlier target, no match keeps it in the feedback file only. **Edits:** appended verbatim at the end of the `##` section under `### Observer feedback (iteration 1)` (created if missing; a missing section is added at the end of the file); a segment already there is not added again. **Lines** are the ones in §4's M10 note: Route logs the read, one `llm.call` "route observer feedback" (simulated), a line per segment with the words it matched, and a summary; each Update sub-step logs a line per section it changed with the lines added (or "no change, no feedback was routed to it") and completes with "+n lines in <section>" (or "no change"); the last logs "Intake updated: n files changed, fingerprint <new> (was <old>)". The files really change as each Update plays (`intake.file_updated`), and iteration 1's versions stay with build 1 (`GET /api/builds/{id}/files`). The demo feedback (`backend/seedfoundry/sample/rebuild/observer-feedback-iteration-1.md`, Prefill's text) routes 9 of 10 segments to all four files and raises no advisory. **Iteration 2 starts** only by the rebuild: `POST /api/builds` with `{"iteration": 2, "feedback": "..."}` saves the feedback file and starts the build in one change (D-67). Distillation still reads "Prior findings from iteration 1: 14" and "Planning corrections for all 14 prior findings", and Synthesis "Learned rules for protection.md: 3 rules, one per finding class (Latency, Numeric, Visual)"; neither claims what the feedback said (D-5). The report's "Changes since iteration 1" is D-69's.
