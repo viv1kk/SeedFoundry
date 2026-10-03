@@ -126,7 +126,7 @@ describe('opening the dashboard (OQ-22, OQ-23)', () => {
     server.buildEvents.set(build.id, script({ build }))
     server.builds = [build]
     await open('/build/1')
-    await click($('[data-test="summary-actions"] [data-action="dashboard"]'))
+    await click($('[data-test="report-actions"] [data-action="dashboard"]')) // D-66: was the summary's
     expect(router.currentRoute.value.fullPath).toBe(DASHBOARD_1)
     expect($('[data-test="dashboard-frame"]')).not.toBeNull()
     expect(text('main h1')).toBe('License Optimization')
@@ -149,16 +149,16 @@ describe('opening the dashboard (OQ-22, OQ-23)', () => {
     expect(dashboardCalls()[0].query.iteration).toBe('2')
   })
 
-  it('Back to report closes the dashboard and shows the report stand-in', async () => {
+  // D-66: the review route shows the build report from M9 (was the stand-in of OQ-22).
+  it('Back to report closes the dashboard and shows the report', async () => {
     await open(DASHBOARD_1)
     await click($('[data-test="back-to-report"]'))
     expect(router.currentRoute.value.fullPath).toBe('/review/1')
     expect($('[data-test="dashboard-frame"]')).toBeNull()
     expect(text('main h1')).toBe('Review, iteration 1')
-    expect(text('[data-test="review-state"]')).toBe(
-      "The build report, with its verdict, findings and tests, arrives in M9. Until then the build's summary is on its Build page.",
-    )
-    await click($('[data-test="view-dashboard"]'))
+    expect(text('[data-test="report-verdict"]')).toBe('Completed with findings')
+    expect($('[data-test="review-state"]')).toBeNull()
+    await click($('[data-test="report-actions"] [data-action="dashboard"]'))
     expect(router.currentRoute.value.fullPath).toBe(DASHBOARD_1)
   })
 

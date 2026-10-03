@@ -1,0 +1,1419 @@
+{
+ "build_id": "b-1",
+ "iteration": 1,
+ "seed_name": "License Optimization",
+ "fingerprint": "a127ba",
+ "verdict": {
+  "id": "findings",
+  "label": "Completed with findings",
+  "tone": "warning"
+ },
+ "duration": 75.0,
+ "counts": {
+  "phases": 11,
+  "phases_with_findings": 2,
+  "tests": 21,
+  "pass": 15,
+  "warn": 5,
+  "fail": 1,
+  "not_run": 0,
+  "findings": 14,
+  "advisories": 0,
+  "gates": 3
+ },
+ "phases": [
+  {
+   "id": "assay",
+   "index": 1,
+   "name": "Assay",
+   "result": "passed",
+   "duration": 4.5,
+   "tests": {
+    "T-01": "pass",
+    "T-02": "pass",
+    "T-03": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "distill",
+   "index": 2,
+   "name": "Distillation",
+   "result": "passed",
+   "duration": 9.0,
+   "tests": {
+    "T-04": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "synth",
+   "index": 3,
+   "name": "Synthesis",
+   "result": "passed",
+   "duration": 7.5,
+   "tests": {
+    "T-05": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "xexam",
+   "index": 4,
+   "name": "Cross-Examination",
+   "result": "passed",
+   "duration": 6.0,
+   "tests": {
+    "T-06": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "germ",
+   "index": 5,
+   "name": "Germination Trial",
+   "result": "passed",
+   "duration": 6.0,
+   "tests": {
+    "T-07": "pass",
+    "T-08": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "contain",
+   "index": 6,
+   "name": "Containment",
+   "result": "passed",
+   "duration": 5.25,
+   "tests": {
+    "T-09": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "plant",
+   "index": 7,
+   "name": "Planting",
+   "result": "passed",
+   "duration": 6.0,
+   "tests": {
+    "T-10": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "seeding",
+   "index": 8,
+   "name": "Seeding & Life",
+   "result": "passed",
+   "duration": 12.0,
+   "tests": {
+    "T-11": "pass",
+    "T-12": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "probe",
+   "index": 9,
+   "name": "Stress & Probe",
+   "result": "findings",
+   "duration": 6.75,
+   "tests": {
+    "T-13": "pass",
+    "T-14": "pass",
+    "T-15": "warn"
+   },
+   "findings": [
+    "L-1"
+   ]
+  },
+  {
+   "id": "harvest",
+   "index": 10,
+   "name": "Harvest Validation",
+   "result": "findings",
+   "duration": 7.5,
+   "tests": {
+    "T-16": "fail",
+    "T-17": "warn",
+    "T-18": "warn",
+    "T-19": "warn",
+    "T-20": "warn"
+   },
+   "findings": [
+    "N-1",
+    "N-2",
+    "N-3",
+    "N-4",
+    "N-5",
+    "V-1",
+    "V-2",
+    "V-3",
+    "V-4",
+    "V-5",
+    "V-6",
+    "V-7",
+    "V-8"
+   ]
+  },
+  {
+   "id": "report",
+   "index": 11,
+   "name": "Teardown & Report",
+   "result": "passed",
+   "duration": 4.5,
+   "tests": {
+    "T-21": "pass"
+   },
+   "findings": []
+  }
+ ],
+ "groups": [
+  {
+   "category": "Numeric",
+   "findings": [
+    {
+     "id": "N-1",
+     "category": "Numeric",
+     "test": "T-16",
+     "checks": [
+      "figure",
+      "part-sum"
+     ],
+     "panel": "entitlement",
+     "panels": [
+      "entitlement"
+     ],
+     "panel_titles": [
+      "Entitled, assigned and active by product"
+     ],
+     "expected": "13,050",
+     "shown": "15,660",
+     "severity": "high",
+     "phase": "harvest",
+     "step": "harvest.numeric",
+     "message": "Entitled seats: KPI shows 13,050, product chart sums to 15,660; 18 problems in all",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 4200,
+       "shown": 5040,
+       "message": "Product chart: Microsoft 365 E3 entitled bar: shows 5,040, the recount gives 4,200",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 1200,
+       "shown": 1440,
+       "message": "Product chart: Acrobat Pro entitled bar: shows 1,440, the recount gives 1,200",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 900,
+       "shown": 1080,
+       "message": "Product chart: Confluence entitled bar: shows 1,080, the recount gives 900",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 900,
+       "shown": 1080,
+       "message": "Product chart: Microsoft 365 E5 entitled bar: shows 1,080, the recount gives 900",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 900,
+       "shown": 1080,
+       "message": "Product chart: Zoom Workplace Business entitled bar: shows 1,080, the recount gives 900",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 800,
+       "shown": 960,
+       "message": "Product chart: Jira Software entitled bar: shows 960, the recount gives 800",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 800,
+       "shown": 960,
+       "message": "Product chart: Power BI Pro entitled bar: shows 960, the recount gives 800",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 620,
+       "shown": 744,
+       "message": "Product chart: Sales Cloud Enterprise entitled bar: shows 744, the recount gives 620",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 520,
+       "shown": 624,
+       "message": "Product chart: Miro Business entitled bar: shows 624, the recount gives 520",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 420,
+       "shown": 504,
+       "message": "Product chart: Visio Plan 2 entitled bar: shows 504, the recount gives 420",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 360,
+       "shown": 432,
+       "message": "Product chart: Project Plan 3 entitled bar: shows 432, the recount gives 360",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 310,
+       "shown": 372,
+       "message": "Product chart: DocuSign eSignature entitled bar: shows 372, the recount gives 310",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 300,
+       "shown": 360,
+       "message": "Product chart: Smartsheet Business entitled bar: shows 360, the recount gives 300",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 260,
+       "shown": 312,
+       "message": "Product chart: Westlaw Edge entitled bar: shows 312, the recount gives 260",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 240,
+       "shown": 288,
+       "message": "Product chart: Creative Cloud All Apps entitled bar: shows 288, the recount gives 240",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 180,
+       "shown": 216,
+       "message": "Product chart: Tableau Creator entitled bar: shows 216, the recount gives 180",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "entitlement",
+       "expected": 140,
+       "shown": 168,
+       "message": "Product chart: AutoCAD LT entitled bar: shows 168, the recount gives 140",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "part-sum",
+       "panel": "entitlement",
+       "expected": 13050,
+       "shown": 15660,
+       "message": "Entitled seats: KPI shows 13,050, product chart sums to 15,660",
+       "unit": ""
+      }
+     ],
+     "found_at": 63.909
+    },
+    {
+     "id": "N-2",
+     "category": "Numeric",
+     "test": "T-16",
+     "checks": [
+      "percent-sum",
+      "figure"
+     ],
+     "panel": "seats-treemap",
+     "panels": [
+      "seats-treemap"
+     ],
+     "panel_titles": [
+      "Seats by vendor and product"
+     ],
+     "expected": "100.0%",
+     "shown": "112.0%",
+     "severity": "high",
+     "phase": "harvest",
+     "step": "harvest.numeric",
+     "message": "Treemap legend: class shares sum to 112.0%, not 100%; 6 problems in all",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-16",
+       "check": "percent-sum",
+       "panel": "seats-treemap",
+       "expected": 100.0,
+       "shown": 112.0,
+       "message": "Treemap legend: class shares sum to 112.0%, not 100%",
+       "unit": "%"
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "seats-treemap",
+       "expected": 63.5,
+       "shown": 71.1,
+       "message": "Treemap legend: Active share shows 71.1%, the recount gives 63.5%",
+       "unit": "%"
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "seats-treemap",
+       "expected": 14.0,
+       "shown": 15.7,
+       "message": "Treemap legend: Underused share shows 15.7%, the recount gives 14.0%",
+       "unit": "%"
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "seats-treemap",
+       "expected": 13.9,
+       "shown": 15.6,
+       "message": "Treemap legend: Unused share shows 15.6%, the recount gives 13.9%",
+       "unit": "%"
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "seats-treemap",
+       "expected": 3.6,
+       "shown": 4.0,
+       "message": "Treemap legend: Leaver share shows 4.0%, the recount gives 3.6%",
+       "unit": "%"
+      },
+      {
+       "test": "T-16",
+       "check": "figure",
+       "panel": "seats-treemap",
+       "expected": 5.0,
+       "shown": 5.6,
+       "message": "Treemap legend: Unassigned share shows 5.6%, the recount gives 5.0%",
+       "unit": "%"
+      }
+     ],
+     "found_at": 64.136
+    },
+    {
+     "id": "N-3",
+     "category": "Numeric",
+     "test": "T-16",
+     "checks": [
+      "kpi-formula",
+      "cross-panel"
+     ],
+     "panel": "k-recoverable",
+     "panels": [
+      "k-recoverable"
+     ],
+     "panel_titles": [
+      "Recoverable a year"
+     ],
+     "expected": "$1,035,384",
+     "shown": "$1,191,396",
+     "severity": "high",
+     "phase": "harvest",
+     "step": "harvest.numeric",
+     "message": "Recoverable a year: KPI shows $1,191,396, unit cost x 12 over the recoverable seats of priced products gives $1,035,384; 3 problems in all",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-16",
+       "check": "kpi-formula",
+       "panel": "k-recoverable",
+       "expected": 1035384,
+       "shown": 1191396,
+       "message": "Recoverable a year: KPI shows $1,191,396, unit cost x 12 over the recoverable seats of priced products gives $1,035,384",
+       "unit": "$"
+      },
+      {
+       "test": "T-16",
+       "check": "cross-panel",
+       "panel": "k-recoverable",
+       "expected": 1035384,
+       "shown": 1191396,
+       "message": "Recoverable a year against the sum of recoverable cost by product: the Recoverable a year KPI shows $1,191,396, the recount gives $1,035,384",
+       "unit": "$"
+      },
+      {
+       "test": "T-16",
+       "check": "cross-panel",
+       "panel": "k-recoverable",
+       "expected": 1035384,
+       "shown": 1191396,
+       "message": "Recoverable a year: the Recoverable a year KPI shows $1,191,396, the recount gives $1,035,384",
+       "unit": "$"
+      }
+     ],
+     "found_at": 64.364
+    },
+    {
+     "id": "N-4",
+     "category": "Numeric",
+     "test": "T-16",
+     "checks": [
+      "table-total",
+      "cross-panel"
+     ],
+     "panel": "seats",
+     "panels": [
+      "seats"
+     ],
+     "panel_titles": [
+      "Seats"
+     ],
+     "expected": "13,050",
+     "shown": "12,401",
+     "severity": "high",
+     "phase": "harvest",
+     "step": "harvest.numeric",
+     "message": "Seats footer: Total shows 12,401, the class counts sum to 13,050; 2 problems in all",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-16",
+       "check": "table-total",
+       "panel": "seats",
+       "expected": 13050,
+       "shown": 12401,
+       "message": "Seats footer: Total shows 12,401, the class counts sum to 13,050",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "cross-panel",
+       "panel": "seats",
+       "expected": 13050,
+       "shown": 12401,
+       "message": "Entitled seats: the Seats footer shows 12,401, the recount gives 13,050",
+       "unit": ""
+      }
+     ],
+     "found_at": 64.591
+    },
+    {
+     "id": "N-5",
+     "category": "Numeric",
+     "test": "T-16",
+     "checks": [
+      "table-total",
+      "cross-panel"
+     ],
+     "panel": "candidates",
+     "panels": [
+      "candidates"
+     ],
+     "panel_titles": [
+      "Optimisation candidates"
+     ],
+     "expected": "13,050",
+     "shown": "17,250",
+     "severity": "high",
+     "phase": "harvest",
+     "step": "harvest.numeric",
+     "message": "Optimisation candidates: total row shows 17,250 entitled seats, the rows sum to 13,050; 9 problems in all",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-16",
+       "check": "table-total",
+       "panel": "candidates",
+       "expected": 13050,
+       "shown": 17250,
+       "message": "Optimisation candidates: total row shows 17,250 entitled seats, the rows sum to 13,050",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "table-total",
+       "panel": "candidates",
+       "expected": 8286,
+       "shown": 11708,
+       "message": "Optimisation candidates: total row shows 11,708 Active seats, the rows sum to 8,286",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "table-total",
+       "panel": "candidates",
+       "expected": 1822,
+       "shown": 2062,
+       "message": "Optimisation candidates: total row shows 2,062 Underused seats, the rows sum to 1,822",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "table-total",
+       "panel": "candidates",
+       "expected": 1820,
+       "shown": 2080,
+       "message": "Optimisation candidates: total row shows 2,080 Unused seats, the rows sum to 1,820",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "table-total",
+       "panel": "candidates",
+       "expected": 473,
+       "shown": 625,
+       "message": "Optimisation candidates: total row shows 625 Leaver seats, the rows sum to 473",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "table-total",
+       "panel": "candidates",
+       "expected": 649,
+       "shown": 775,
+       "message": "Optimisation candidates: total row shows 775 Unassigned seats, the rows sum to 649",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "table-total",
+       "panel": "candidates",
+       "expected": 1035384,
+       "shown": 1267800,
+       "message": "Optimisation candidates: total row shows $1,267,800 recoverable a year, the rows sum to $1,035,384",
+       "unit": "$"
+      },
+      {
+       "test": "T-16",
+       "check": "cross-panel",
+       "panel": "candidates",
+       "expected": 13050,
+       "shown": 17250,
+       "message": "Entitled seats: the candidates total row shows 17,250, the recount gives 13,050",
+       "unit": ""
+      },
+      {
+       "test": "T-16",
+       "check": "cross-panel",
+       "panel": "candidates",
+       "expected": 1035384,
+       "shown": 1267800,
+       "message": "Recoverable a year: the candidates total row shows $1,267,800, the recount gives $1,035,384",
+       "unit": "$"
+      }
+     ],
+     "found_at": 64.818
+    }
+   ]
+  },
+  {
+   "category": "Visual",
+   "findings": [
+    {
+     "id": "V-1",
+     "category": "Visual",
+     "test": "T-17",
+     "checks": [
+      "pie-slices",
+      "categorical-bar"
+     ],
+     "panel": "recoverable",
+     "panels": [
+      "recoverable"
+     ],
+     "panel_titles": [
+      "Recoverable cost by product"
+     ],
+     "expected": "at most 6 slices",
+     "shown": "12 slices",
+     "severity": "medium",
+     "phase": "harvest",
+     "step": "harvest.chart",
+     "message": "Recoverable cost by product: a pie of 12 slices, where a pie holds at most 6; 2 problems in all",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-17",
+       "check": "pie-slices",
+       "panel": "recoverable",
+       "expected": "at most 6 slices",
+       "shown": "12 slices",
+       "message": "Recoverable cost by product: a pie of 12 slices, where a pie holds at most 6",
+       "unit": ""
+      },
+      {
+       "test": "T-17",
+       "check": "categorical-bar",
+       "panel": "recoverable",
+       "expected": "bars",
+       "shown": "a pie",
+       "message": "Recoverable cost by product: a comparison between products drawn as a pie, not as bars",
+       "unit": ""
+      }
+     ],
+     "found_at": 65.955
+    },
+    {
+     "id": "V-2",
+     "category": "Visual",
+     "test": "T-19",
+     "checks": [
+      "red-for-faults"
+     ],
+     "panel": "trend",
+     "panels": [
+      "trend"
+     ],
+     "panel_titles": [
+      "Assigned and in use, by month"
+     ],
+     "expected": "a role that is not red",
+     "shown": "negative",
+     "severity": "medium",
+     "phase": "harvest",
+     "step": "harvest.visual",
+     "message": "Assigned and in use, by month: In use drawn in red (negative), which is kept for faults",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-19",
+       "check": "red-for-faults",
+       "panel": "trend",
+       "expected": "a role that is not red",
+       "shown": "negative",
+       "message": "Assigned and in use, by month: In use drawn in red (negative), which is kept for faults",
+       "unit": ""
+      }
+     ],
+     "found_at": 68.0
+    },
+    {
+     "id": "V-3",
+     "category": "Visual",
+     "test": "T-19",
+     "checks": [
+      "palette",
+      "class-colour"
+     ],
+     "panel": "seats-treemap",
+     "panels": [
+      "seats-treemap",
+      "entitlement"
+     ],
+     "panel_titles": [
+      "Seats by vendor and product",
+      "Entitled, assigned and active by product"
+     ],
+     "expected": "a design token",
+     "shown": "#5470c6",
+     "severity": "medium",
+     "phase": "harvest",
+     "step": "harvest.visual",
+     "message": "Seats by vendor and product: Unused drawn in #5470c6, which is not a palette token; 2 problems on 2 panels",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-19",
+       "check": "palette",
+       "panel": "seats-treemap",
+       "expected": "a design token",
+       "shown": "#5470c6",
+       "message": "Seats by vendor and product: Unused drawn in #5470c6, which is not a palette token",
+       "unit": ""
+      },
+      {
+       "test": "T-19",
+       "check": "class-colour",
+       "panel": "entitlement",
+       "expected": "positive",
+       "shown": "series-3",
+       "message": "Entitled, assigned and active by product: Active drawn in series-3, where every other panel draws it in positive",
+       "unit": ""
+      }
+     ],
+     "found_at": 68.227
+    },
+    {
+     "id": "V-4",
+     "category": "Visual",
+     "test": "T-18",
+     "checks": [
+      "format",
+      "currency"
+     ],
+     "panel": "k-entitled",
+     "panels": [
+      "k-entitled",
+      "k-active",
+      "candidates"
+     ],
+     "panel_titles": [
+      "Entitled",
+      "Active",
+      "Optimisation candidates"
+     ],
+     "expected": "13,050 (count)",
+     "shown": "13050 (plain)",
+     "severity": "medium",
+     "phase": "harvest",
+     "step": "harvest.visual",
+     "message": "Entitled: the figure reads 13050 (plain), where seat counts read 13,050 (count) on every other panel; 4 problems on 3 panels",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-18",
+       "check": "format",
+       "panel": "k-entitled",
+       "expected": "13,050 (count)",
+       "shown": "13050 (plain)",
+       "message": "Entitled: the figure reads 13050 (plain), where seat counts read 13,050 (count) on every other panel",
+       "unit": ""
+      },
+      {
+       "test": "T-18",
+       "check": "format",
+       "panel": "k-active",
+       "expected": "8,286 (count)",
+       "shown": "8.3k (compact)",
+       "message": "Active: the figure reads 8.3k (compact), where seat counts read 8,286 (count) on every other panel",
+       "unit": ""
+      },
+      {
+       "test": "T-18",
+       "check": "format",
+       "panel": "candidates",
+       "expected": "$1,267,800 (usd)",
+       "shown": "1,267,800 (number)",
+       "message": "Optimisation candidates: the Recoverable a year column reads 1,267,800 (number), where recoverable cost read $1,267,800 (usd) on every other panel",
+       "unit": ""
+      },
+      {
+       "test": "T-18",
+       "check": "currency",
+       "panel": "candidates",
+       "expected": "US dollars with the $ sign",
+       "shown": "1,267,800 (number)",
+       "message": "Optimisation candidates: the Recoverable a year column shows money without the $ sign",
+       "unit": ""
+      }
+     ],
+     "found_at": 67.091
+    },
+    {
+     "id": "V-5",
+     "category": "Visual",
+     "test": "T-18",
+     "checks": [
+      "axis-label",
+      "axis-unit"
+     ],
+     "panel": "entitlement",
+     "panels": [
+      "entitlement",
+      "trend"
+     ],
+     "panel_titles": [
+      "Entitled, assigned and active by product",
+      "Assigned and in use, by month"
+     ],
+     "expected": "an axis name",
+     "shown": "no name",
+     "severity": "medium",
+     "phase": "harvest",
+     "step": "harvest.visual",
+     "message": "Entitled, assigned and active by product: the category axis has no name; 6 problems on 2 panels",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-18",
+       "check": "axis-label",
+       "panel": "entitlement",
+       "expected": "an axis name",
+       "shown": "no name",
+       "message": "Entitled, assigned and active by product: the category axis has no name",
+       "unit": ""
+      },
+      {
+       "test": "T-18",
+       "check": "axis-label",
+       "panel": "entitlement",
+       "expected": "an axis name",
+       "shown": "no name",
+       "message": "Entitled, assigned and active by product: the value axis has no name",
+       "unit": ""
+      },
+      {
+       "test": "T-18",
+       "check": "axis-unit",
+       "panel": "entitlement",
+       "expected": "a unit",
+       "shown": "no unit",
+       "message": "Entitled, assigned and active by product: the value axis has no unit",
+       "unit": ""
+      },
+      {
+       "test": "T-18",
+       "check": "axis-label",
+       "panel": "trend",
+       "expected": "an axis name",
+       "shown": "no name",
+       "message": "Assigned and in use, by month: the category axis has no name",
+       "unit": ""
+      },
+      {
+       "test": "T-18",
+       "check": "axis-label",
+       "panel": "trend",
+       "expected": "an axis name",
+       "shown": "no name",
+       "message": "Assigned and in use, by month: the value axis has no name",
+       "unit": ""
+      },
+      {
+       "test": "T-18",
+       "check": "axis-unit",
+       "panel": "trend",
+       "expected": "a unit",
+       "shown": "no unit",
+       "message": "Assigned and in use, by month: the value axis has no unit",
+       "unit": ""
+      }
+     ],
+     "found_at": 67.318
+    },
+    {
+     "id": "V-6",
+     "category": "Visual",
+     "test": "T-19",
+     "checks": [
+      "grid",
+      "overflow",
+      "truncation"
+     ],
+     "panel": "k-assigned",
+     "panels": [
+      "k-assigned",
+      "k-active",
+      "k-idle",
+      "seats-treemap",
+      "seats"
+     ],
+     "panel_titles": [
+      "Assigned",
+      "Active",
+      "Unused or underused",
+      "Seats by vendor and product",
+      "Seats"
+     ],
+     "expected": "on the grid, with the band's one gutter",
+     "shown": "margin-left: 6px",
+     "severity": "medium",
+     "phase": "harvest",
+     "step": "harvest.visual",
+     "message": "Assigned: the card is moved off the grid (margin-left: 6px); 7 problems on 5 panels",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-19",
+       "check": "grid",
+       "panel": "k-assigned",
+       "expected": "on the grid, with the band's one gutter",
+       "shown": "margin-left: 6px",
+       "message": "Assigned: the card is moved off the grid (margin-left: 6px)",
+       "unit": ""
+      },
+      {
+       "test": "T-19",
+       "check": "grid",
+       "panel": "k-active",
+       "expected": "on the grid, with the band's one gutter",
+       "shown": "margin-left: 22px",
+       "message": "Active: the card is moved off the grid (margin-left: 22px)",
+       "unit": ""
+      },
+      {
+       "test": "T-19",
+       "check": "grid",
+       "panel": "k-idle",
+       "expected": "on the grid, with the band's one gutter",
+       "shown": "top: 11px; left: 9px",
+       "message": "Unused or underused: the card is moved off the grid (top: 11px; left: 9px)",
+       "unit": ""
+      },
+      {
+       "test": "T-19",
+       "check": "overflow",
+       "panel": "seats-treemap",
+       "expected": "at most the width of its card",
+       "shown": "width: calc(100% + 40px)",
+       "message": "Seats by vendor and product: the chart is wider than its card (width: calc(100% + 40px))",
+       "unit": ""
+      },
+      {
+       "test": "T-19",
+       "check": "truncation",
+       "panel": "seats",
+       "expected": "every column readable",
+       "shown": "overflow: hidden",
+       "message": "Seats: the table is clipped (overflow: hidden)",
+       "unit": ""
+      },
+      {
+       "test": "T-19",
+       "check": "truncation",
+       "panel": "seats",
+       "expected": "every column readable",
+       "shown": "overflow: hidden; text-overflow: clip",
+       "message": "Seats: the last two column headers are clipped (overflow: hidden; text-overflow: clip)",
+       "unit": ""
+      },
+      {
+       "test": "T-19",
+       "check": "truncation",
+       "panel": "seats",
+       "expected": "every column readable",
+       "shown": "overflow: hidden; text-overflow: clip",
+       "message": "Seats: the last two columns are clipped (overflow: hidden; text-overflow: clip)",
+       "unit": ""
+      }
+     ],
+     "found_at": 68.455
+    },
+    {
+     "id": "V-7",
+     "category": "Visual",
+     "test": "T-19",
+     "checks": [
+      "font"
+     ],
+     "panel": "trend",
+     "panels": [
+      "trend"
+     ],
+     "panel_titles": [
+      "Assigned and in use, by month"
+     ],
+     "expected": "a font token (Inter or JetBrains Mono)",
+     "shown": "Georgia, 'Times New Roman', Times, serif",
+     "severity": "medium",
+     "phase": "harvest",
+     "step": "harvest.visual",
+     "message": "Assigned and in use, by month: the title is set in Georgia, 'Times New Roman', Times, serif, not a font token",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-19",
+       "check": "font",
+       "panel": "trend",
+       "expected": "a font token (Inter or JetBrains Mono)",
+       "shown": "Georgia, 'Times New Roman', Times, serif",
+       "message": "Assigned and in use, by month: the title is set in Georgia, 'Times New Roman', Times, serif, not a font token",
+       "unit": ""
+      }
+     ],
+     "found_at": 68.682
+    },
+    {
+     "id": "V-8",
+     "category": "Visual",
+     "test": "T-20",
+     "checks": [
+      "contrast"
+     ],
+     "panel": "candidates",
+     "panels": [
+      "candidates"
+     ],
+     "panel_titles": [
+      "Optimisation candidates"
+     ],
+     "expected": "4.50:1",
+     "shown": "1.55:1",
+     "severity": "medium",
+     "phase": "harvest",
+     "step": "harvest.contrast",
+     "message": "Optimisation candidates: the caption (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1); 4 problems in all",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-20",
+       "check": "contrast",
+       "panel": "candidates",
+       "expected": 4.5,
+       "shown": 1.55,
+       "message": "Optimisation candidates: the caption (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1)",
+       "unit": ":1"
+      },
+      {
+       "test": "T-20",
+       "check": "contrast",
+       "panel": "candidates",
+       "expected": 4.5,
+       "shown": 1.44,
+       "message": "Optimisation candidates: the caption (var(--border-default)) at 1.44:1 on the card in the dark theme (needs 4.5:1)",
+       "unit": ":1"
+      },
+      {
+       "test": "T-20",
+       "check": "contrast",
+       "panel": "candidates",
+       "expected": 4.5,
+       "shown": 1.55,
+       "message": "Optimisation candidates: the Withheld cells (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1)",
+       "unit": ":1"
+      },
+      {
+       "test": "T-20",
+       "check": "contrast",
+       "panel": "candidates",
+       "expected": 4.5,
+       "shown": 1.44,
+       "message": "Optimisation candidates: the Withheld cells (var(--border-default)) at 1.44:1 on the card in the dark theme (needs 4.5:1)",
+       "unit": ":1"
+      }
+     ],
+     "found_at": 69.818
+    }
+   ]
+  },
+  {
+   "category": "Latency",
+   "findings": [
+    {
+     "id": "L-1",
+     "category": "Latency",
+     "test": "T-15",
+     "checks": [
+      "latency"
+     ],
+     "panel": "seats-treemap",
+     "panels": [
+      "seats-treemap"
+     ],
+     "panel_titles": [
+      "Seats by vendor and product"
+     ],
+     "expected": "at most 1.0 s",
+     "shown": "4.5 s",
+     "severity": "medium",
+     "phase": "probe",
+     "step": "probe.latency",
+     "message": "Panel \"Seats by vendor and product\" responds in 4.5 s (budget 1.0 s)",
+     "catalogued": true,
+     "advisory": false,
+     "problems": [
+      {
+       "test": "T-15",
+       "check": "latency",
+       "panel": "seats-treemap",
+       "expected": "at most 1.0 s",
+       "shown": "4.5 s",
+       "message": "Panel \"Seats by vendor and product\" responds in 4.5 s (budget 1.0 s)",
+       "unit": ""
+      }
+     ],
+     "found_at": 62.25
+    }
+   ]
+  },
+  {
+   "category": "Boundary",
+   "findings": []
+  }
+ ],
+ "tests": [
+  {
+   "id": "T-01",
+   "name": "Core files present",
+   "phase": "assay",
+   "phase_name": "Assay",
+   "status": "pass",
+   "detail": "4 of 4 present, each with content",
+   "simulated": false
+  },
+  {
+   "id": "T-02",
+   "name": "Ensemble coverage",
+   "phase": "assay",
+   "phase_name": "Assay",
+   "status": "pass",
+   "detail": "19 of 19 sections across 4 files (100%)",
+   "simulated": false
+  },
+  {
+   "id": "T-03",
+   "name": "Ensemble boundary check",
+   "phase": "assay",
+   "phase_name": "Assay",
+   "status": "pass",
+   "detail": "0 findings",
+   "simulated": false
+  },
+  {
+   "id": "T-04",
+   "name": "All Music sections extracted",
+   "phase": "distill",
+   "phase_name": "Distillation",
+   "status": "pass",
+   "detail": "Purpose, Core Principles, Value Logic and Decision Logic",
+   "simulated": false
+  },
+  {
+   "id": "T-05",
+   "name": "Manifest schema valid",
+   "phase": "synth",
+   "phase_name": "Synthesis",
+   "status": "pass",
+   "detail": "seed, iteration, fingerprint and 3 layers with sizes and digests",
+   "simulated": false
+  },
+  {
+   "id": "T-06",
+   "name": "No contradictions between files",
+   "phase": "xexam",
+   "phase_name": "Cross-Examination",
+   "status": "pass",
+   "detail": "0 contradictions (simulated reviewer)",
+   "simulated": true
+  },
+  {
+   "id": "T-07",
+   "name": "Dry run completes",
+   "phase": "germ",
+   "phase_name": "Germination Trial",
+   "status": "pass",
+   "detail": "completed (simulated)",
+   "simulated": true
+  },
+  {
+   "id": "T-08",
+   "name": "Data-swap logic unchanged",
+   "phase": "germ",
+   "phase_name": "Germination Trial",
+   "status": "pass",
+   "detail": "same descriptor and query engine on both estates, both payloads structurally valid",
+   "simulated": false
+  },
+  {
+   "id": "T-09",
+   "name": "Upload checksums match",
+   "phase": "contain",
+   "phase_name": "Containment",
+   "status": "pass",
+   "detail": "4 of 4 match",
+   "simulated": false
+  },
+  {
+   "id": "T-10",
+   "name": "Seed reports ready",
+   "phase": "plant",
+   "phase_name": "Planting",
+   "status": "pass",
+   "detail": "Seed reports INITIALIZED (simulated)",
+   "simulated": true
+  },
+  {
+   "id": "T-11",
+   "name": "All gates resolved",
+   "phase": "seeding",
+   "phase_name": "Seeding & Life",
+   "status": "pass",
+   "detail": "3 of 3 auto-resolved",
+   "simulated": false
+  },
+  {
+   "id": "T-12",
+   "name": "Outputs produced",
+   "phase": "seeding",
+   "phase_name": "Seeding & Life",
+   "status": "pass",
+   "detail": "component validated, 12 weeks collected (simulated)",
+   "simulated": true
+  },
+  {
+   "id": "T-13",
+   "name": "Protection probes",
+   "phase": "probe",
+   "phase_name": "Stress & Probe",
+   "status": "pass",
+   "detail": "10 of 10 probes as expected: 6 denied by Protection rules, 3 allowed, 1 denied by the default rule for a missing fact",
+   "simulated": false
+  },
+  {
+   "id": "T-14",
+   "name": "Malformed input rejected",
+   "phase": "probe",
+   "phase_name": "Stress & Probe",
+   "status": "pass",
+   "detail": "16 of 16 malformed inputs refused; 13,050 seat rows and 3 drill paths accepted",
+   "simulated": false
+  },
+  {
+   "id": "T-15",
+   "name": "Latency within budget",
+   "phase": "probe",
+   "phase_name": "Stress & Probe",
+   "status": "warn",
+   "detail": "1 finding (L-1) from 1 problem",
+   "simulated": false
+  },
+  {
+   "id": "T-16",
+   "name": "Numeric reconciliation",
+   "phase": "harvest",
+   "phase_name": "Harvest Validation",
+   "status": "fail",
+   "detail": "5 findings (N-1, N-2, N-3, N-4, N-5) from 38 problems",
+   "simulated": false
+  },
+  {
+   "id": "T-17",
+   "name": "Chart fitness",
+   "phase": "harvest",
+   "phase_name": "Harvest Validation",
+   "status": "warn",
+   "detail": "1 finding (V-1) from 2 problems",
+   "simulated": false
+  },
+  {
+   "id": "T-18",
+   "name": "Format and label consistency",
+   "phase": "harvest",
+   "phase_name": "Harvest Validation",
+   "status": "warn",
+   "detail": "2 findings (V-4, V-5) from 10 problems",
+   "simulated": false
+  },
+  {
+   "id": "T-19",
+   "name": "Palette and layout",
+   "phase": "harvest",
+   "phase_name": "Harvest Validation",
+   "status": "warn",
+   "detail": "4 findings (V-2, V-3, V-6, V-7) from 11 problems",
+   "simulated": false
+  },
+  {
+   "id": "T-20",
+   "name": "Contrast",
+   "phase": "harvest",
+   "phase_name": "Harvest Validation",
+   "status": "warn",
+   "detail": "1 finding (V-8) from 4 problems",
+   "simulated": false
+  },
+  {
+   "id": "T-21",
+   "name": "Sandbox torn down cleanly",
+   "phase": "report",
+   "phase_name": "Teardown & Report",
+   "status": "pass",
+   "detail": "no residue (simulated)",
+   "simulated": true
+  }
+ ],
+ "gates": [
+  {
+   "id": "servicenow-incident-api",
+   "kind": "credentials",
+   "stage": "discovery",
+   "resolution": "sandbox read-only credential issued (simulated), values not stored",
+   "basis": {
+    "file": "environment.md",
+    "file_id": "f-3",
+    "section": "Protection Layer",
+    "line": 118
+   },
+   "message": "Gate servicenow-incident-api (credentials) auto-resolved: sandbox read-only credential issued (simulated), values not stored. Basis: environment.md, Protection Layer"
+  },
+  {
+   "id": "solution-approval",
+   "kind": "approval",
+   "stage": "assessment",
+   "resolution": "approve License Optimization at potential PARTIAL",
+   "basis": {
+    "file": "music.md",
+    "file_id": "f-4",
+    "section": "Decision Logic",
+    "line": 57
+   },
+   "message": "Gate solution-approval (approval) auto-resolved: approve License Optimization at potential PARTIAL. Basis: music.md, Decision Logic"
+  },
+  {
+   "id": "close-seeding",
+   "kind": "confirmation",
+   "stage": "cleanup",
+   "resolution": "close seeding",
+   "basis": {
+    "file": "environment.md",
+    "file_id": "f-3",
+    "section": "Protection Layer",
+    "line": 118
+   },
+   "message": "Gate close-seeding (confirmation) auto-resolved: close seeding. Basis: environment.md, Protection Layer"
+  }
+ ],
+ "usage": {
+  "llm_calls": 9,
+  "tokens_in": 12103,
+  "tokens_out": 5230,
+  "api_calls": 26,
+  "sandbox_seconds": 36.2,
+  "simulated": true
+ }
+}

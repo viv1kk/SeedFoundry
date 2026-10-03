@@ -6,8 +6,9 @@
 // lives. An answer to an older request is dropped, so a fast click never shows a stale level.
 // A descriptor that names a scoped stylesheet (iteration 1's defect overlay, D-60) has it loaded
 // before its answer renders, and its root class goes on this element, so the overlay's styles
-// reach this dashboard and nothing around it (R-1).
-import { computed, ref, shallowRef, watch } from 'vue'
+// reach this dashboard and nothing around it (R-1). `highlight` names panels to outline (a finding
+// opened from the report, D-65); the first is scrolled into view once drawn.
+import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import { ApiError, messageOf } from '../../api'
 import { dashboardApi } from '../../dashboard/api'
 import { deeper, parent } from '../../dashboard/drill'
@@ -18,7 +19,10 @@ import BaseButton from '../base/BaseButton.vue'
 import DashboardRenderer from './DashboardRenderer.vue'
 import DrillBar from './DrillBar.vue'
 
-const props = withDefaults(defineProps<{ dashboardId: string; iteration: number; drill: string; headingLevel?: 1 | 2 }>(), { headingLevel: 1 })
+const props = withDefaults(defineProps<{ dashboardId: string; iteration: number; drill: string; headingLevel?: 1 | 2; highlight?: string[] }>(), {
+  headingLevel: 1,
+  highlight: () => [],
+})
 const emit = defineEmits<{
   navigate: [path: string]
   back: [path: string]
@@ -68,6 +72,16 @@ watch(
 
 const shownPath = computed(() => response.value?.payload.drill.path ?? props.drill)
 
+const root = ref<HTMLElement | null>(null)
+watch(
+  () => [props.highlight[0], response.value] as const,
+  async ([first, answer]) => {
+    if (!first || !answer) return
+    await nextTick()
+    root.value?.querySelector(`[data-panel="${first}"]`)?.scrollIntoView?.({ block: 'center' })
+  },
+)
+
 function drillInto(step: Step): void {
   emit('navigate', deeper(shownPath.value, step))
 }
@@ -97,6 +111,7 @@ const source = computed(() => {
 
 <template>
   <div
+    ref="root"
     class="dashboard"
     :class="response?.descriptor.styles?.root_class"
     :aria-busy="loading ? 'true' : 'false'"
@@ -118,6 +133,7 @@ const source = computed(() => {
         :descriptor="response.descriptor"
         :payload="response.payload"
         :busy="loading"
+        :highlight="highlight"
         @drill="drillInto"
         @page="toPage"
         @sort="sortBy"

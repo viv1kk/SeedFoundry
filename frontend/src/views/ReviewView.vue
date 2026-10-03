@@ -1,20 +1,19 @@
 <script setup lang="ts">
 // Review (ui-spec.md sections 4 and 5). `/review/<n>` is the report; the dashboard opens over it
 // at `/review/<n>?dashboard=license-optimization&drill=...` (OQ-4) and Back to report closes it.
-// The report is M9's: until then the route shows a short stand-in for the iteration's completed
-// build, with View Dashboard and a way to the build's summary (OQ-22). The dashboard is the
-// build's output, so it opens once the iteration has a completed build.
+// A completed build's report is the same component the Build page shows (D-65, OQ-22); a finding
+// opens the dashboard with `&finding=<id>`. The dashboard is the build's output, so it opens once
+// the iteration has a completed build.
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import BaseButton from '../components/base/BaseButton.vue'
+import { useRoute } from 'vue-router'
 import DashboardFrame from '../components/dashboard/DashboardFrame.vue'
+import BuildReport from '../components/report/BuildReport.vue'
 import { DASHBOARD_ID } from '../dashboard/api'
 import { useLabStore } from '../stores/lab'
 
 const props = defineProps<{ iteration: string }>()
 const lab = useLabStore()
 const route = useRoute()
-const router = useRouter()
 
 const iteration = computed(() => Number(props.iteration))
 const build = computed(() => {
@@ -23,15 +22,11 @@ const build = computed(() => {
 })
 const completed = computed(() => build.value?.status === 'completed')
 const dashboardOpen = computed(() => route.query.dashboard === DASHBOARD_ID && completed.value)
-
-function viewDashboard(): void {
-  void router.push({ name: 'review', params: { iteration: props.iteration }, query: { dashboard: DASHBOARD_ID } })
-}
 </script>
 
 <template>
   <div class="review" data-test="review">
-    <DashboardFrame v-if="dashboardOpen" :iteration="iteration" />
+    <DashboardFrame v-if="dashboardOpen && build" :iteration="iteration" :build="build" />
     <section v-else class="review__report" data-test="review-report">
       <h1>Review, iteration {{ iteration }}</h1>
       <p v-if="!lab.snapshot" class="review__note">Loading the review</p>
@@ -49,13 +44,8 @@ function viewDashboard(): void {
         <RouterLink to="/knowledge" class="review__link">Go to Knowledge</RouterLink>
       </template>
       <template v-else>
-        <p class="review__note" data-test="review-state">
-          The build report, with its verdict, findings and tests, arrives in M9. Until then the build's summary is on its Build page.
-        </p>
-        <div class="review__actions">
-          <BaseButton data-test="view-dashboard" @click="viewDashboard">View Dashboard</BaseButton>
-          <RouterLink :to="`/build/${iteration}`" class="review__link">Go to the build summary</RouterLink>
-        </div>
+        <RouterLink :to="`/build/${iteration}`" class="review__link" data-test="go-to-build">Go to the build</RouterLink>
+        <BuildReport class="review__body" :build="build" />
       </template>
     </section>
   </div>
@@ -80,10 +70,9 @@ h1 {
   color: var(--text-secondary);
 }
 
-.review__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
+.review__body {
+  justify-self: stretch;
+  max-width: 1200px;
 }
 
 .review__link {

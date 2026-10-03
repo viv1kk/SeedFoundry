@@ -213,7 +213,8 @@ describe('refresh and reconnect (FR-B-7, AC-7)', () => {
     expect(calls(/^\/api\/builds\/[^/]+\/events$/)).toBe(1)
     expect(messages()).toEqual(linesFor(events))
     expect(phaseStates()).toEqual(Array(11).fill('done'))
-    expect($('[data-test="build-summary"]')).not.toBeNull()
+    // D-66: the completion hand-off is the build report from M9 (was M6's summary).
+    expect($('[data-test="build-report"]')).not.toBeNull()
   })
 
   it('a gap in the seqs re-loads the build and fills the missing lines', async () => {
@@ -341,7 +342,8 @@ describe('stepper (FR-B-3)', () => {
 
   it('shows each result as its own chip; incomplete is neutral, neither a pass nor a fault', async () => {
     const build = buildRecord({ status: 'completed' })
-    const events = script({ build, results: { germ: 'incomplete', probe: 'findings', harvest: 'failed' } })
+    // D-66: the advisory is asked for in Stress & Probe, where it used to be raised by default.
+    const events = script({ build, results: { germ: 'incomplete', probe: 'findings', harvest: 'failed' }, advisoryIn: 'probe' })
     serverAt(events, build)
     await open('/build/1')
     const chips = $$('[data-test="phase-chip"]').map((c) => [c.textContent?.trim(), c.className.match(/chip--(\w+)/)?.[1]])
@@ -467,18 +469,30 @@ describe('console (FR-B-4, build-simulation.md section 4)', () => {
   })
 })
 
-describe('completion hand-off (FR-B-9, D-54 (f))', () => {
+describe('completion hand-off (FR-B-9, D-54 (f), D-65)', () => {
   async function openCompleted(iteration = 1) {
     const build = buildRecord({ id: `b-${iteration}`, iteration, status: 'completed' })
     serverAt(script({ build }), build)
     await open(`/build/${iteration}`)
   }
 
-  it('shows a summary from build.completed above the collapsed stepper, with no verdict', async () => {
+  // D-66: M6's summary (no verdict, "arrives in M9") is replaced by the build report above the collapsed stepper.
+  it('shows the build report, with its verdict, above the collapsed stepper', async () => {
     await openCompleted()
-    // D-58: T-08 runs from M7 (was "21: 12 passed, 9 not run").
-    expect($$('[data-test="summary-fact"]').map((d) => d.textContent)).toEqual(['01:15 simulated', '11', '21: 13 passed, 8 not run', '0', '0', '3'])
-    expect(text('[data-test="build-summary"]')).toContain('The build report, with its verdict, findings and tests, arrives in M9.')
+    expect(text('[data-test="report-verdict"]')).toBe('Completed with findings')
+    expect($('[data-test="report-verdict"]')?.className).toContain('chip--warning')
+    expect($$('[data-test="report-fact"]').map((d) => d.textContent)).toEqual([
+      '1 of 2',
+      '01:15 simulated',
+      '11, 2 with findings',
+      '21: 15 passed, 5 warned, 1 failed',
+      '14',
+      '0',
+      '3',
+    ])
+    expect(text('[data-test="build-report"]')).not.toContain('M9')
+    const report = $('[data-test="build-report"]')!
+    expect(report.compareDocumentPosition($('[data-test="phase"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect($$('[data-test="phase"] [data-test="step"]')).toHaveLength(0)
     expect(text('[data-test="build-status"]')).toBe('Completed')
   })
@@ -486,7 +500,7 @@ describe('completion hand-off (FR-B-9, D-54 (f))', () => {
   // D-59: View Dashboard opens the dashboard from M7; Rebuild and Approve still say which milestone brings them.
   it('offers View Dashboard, which opens the dashboard, and Rebuild and Approve, each saying which milestone brings it', async () => {
     await openCompleted()
-    const actions = $$('[data-test="summary-actions"] button')
+    const actions = $$('[data-test="report-actions"] button')
     expect(actions.map((b) => [b.textContent?.trim(), b.getAttribute('aria-disabled')])).toEqual([
       ['View Dashboard', null],
       ['Rebuild', 'true'],
@@ -494,14 +508,15 @@ describe('completion hand-off (FR-B-9, D-54 (f))', () => {
     ])
     expect(actions.slice(1).every((b) => !b.hasAttribute('disabled') && b.getAttribute('aria-describedby'))).toBe(true)
     await click(actions[1])
-    expect(text('[data-test="summary-status"]')).toBe('Rebuild opens the observer feedback editor, which arrives in M10.')
+    expect(text('[data-test="report-status"]')).toBe('Rebuild opens the observer feedback editor, which arrives in M10.')
     await click(actions[2])
-    expect(text('[data-test="summary-status"]')).toBe('Approve arrives with the Seed page in M11.')
+    expect(text('[data-test="report-status"]')).toBe('Approve arrives with the Seed page in M11.')
   })
 
   it('has no Rebuild on iteration 2 (D-6)', async () => {
     await openCompleted(2)
-    expect($$('[data-test="summary-actions"] button').map((b) => b.textContent?.trim())).toEqual(['View Dashboard', 'Approve'])
+    expect($$('[data-test="report-actions"] button').map((b) => b.textContent?.trim())).toEqual(['View Dashboard', 'Approve'])
+    expect(text('[data-test="report-verdict"]')).toBe('Passed')
   })
 
   it('lets the console be hidden and shown again', async () => {
@@ -517,7 +532,8 @@ describe('completion hand-off (FR-B-9, D-54 (f))', () => {
     serverAt(script({ build }), build, 30)
     await open('/build/1')
     expect($('[data-test="console-hide"]')).toBeNull()
-    expect($('[data-test="build-summary"]')).toBeNull()
+    expect($('[data-test="build-report"]')).toBeNull() // D-66: was the summary
+    expect(calls(/\/report$/)).toBe(0) // no report is asked for before the build completes
   })
 })
 

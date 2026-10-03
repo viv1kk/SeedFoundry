@@ -15,7 +15,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | | M6 | Build page: stepper and console | Done (2026-10-03) |
 | D. Output | M7 | Polished License Optimization dashboard | Done (2026-10-03) |
 | | M8 | Defect overlay (iteration 1 dashboard) | Done (2026-10-03) |
-| | M9 | Validators and build report | Not started |
+| | M9 | Validators and build report | Done (2026-10-04) |
 | E. Loop | M10 | Rebuild modal and iteration 2 | Not started |
 | | M11 | Seed file generation and final page | Not started |
 | F. Ship | M12 | Hardening, operator guide, rehearsal | Not started |
@@ -78,6 +78,8 @@ seedfoundry/
 *As built (M7):* `backend/seedfoundry/data/` holds `model.py` (the seat record and methodology), `estates.py` (the primary and alternate estate specs) and `generate.py` (the seeded generator, D-55). `dashboard/` holds `descriptor.py`, `query.py` (the drill path and aggregations) and `payload.py` (D-56); there is no separate defect overlay file until M8. `validators/` holds `numeric.py`, `visual.py`, `structure.py`, `tokens.py` and `problems.py` (D-57, D-58). Routes: `GET /api/dashboards/license-optimization` (and `/descriptor`), `GET /api/datasets`, `GET /api/datasets/{name}`. Frontend: `src/dashboard/` (types, API, drill path, formats, tokens, ECharts setup and options) and `components/dashboard/` (`DashboardFrame`, `DashboardView`, `DashboardRenderer`, `DrillBar`, `KpiPanel`, `ChartPanel`, `TablePanel`), so the dashboard is a component, not a view: `views/ReviewView.vue` shows the frame over the review route (D-59). New tests: `backend/tests/test_data.py`, `test_dashboard.py`, `test_validators.py`, with `dashboard_fixtures.py` writing `frontend/tests/fixtures/dashboard/`; `frontend/tests/dashboard.spec.ts`, `dashboard-units.spec.ts`, `fake-echarts.ts`.
 
 *As built (M8):* `backend/seedfoundry/dashboard/overlay.py` holds the defect overlay (D-60): fourteen patches in descriptor, payload and styles layers; `descriptor(1)` and `build()` apply it, and `GET /api/dashboards/license-optimization/overlay` serves it. `validators/` gained `styles.py` (reads the stylesheet a descriptor names) and `latency.py` (T-15). Frontend: `src/styles/defects.css` (scoped under `.defects-overlay`), `src/dashboard/stylesheets.ts` (loads a descriptor's named sheet on demand) and `src/dashboard/latency.ts` (a panel's declared wait). The dashboard fixtures are now `frontend/tests/fixtures/dashboard/iteration-1/` and `iteration-2/`. New tests: `backend/tests/test_overlay.py`.
+
+*As built (M9):* `backend/seedfoundry/validators/` gained `findings.py` (problems to findings, D-63), `protection.py` (T-13) and `records.py` (T-14) (D-62); `report/assemble.py` assembles the report from a build's kept log (D-64), served at `GET /api/builds/{id}/report`. The validators run in `engine/script.py`, and `pending(...)` is gone. Frontend: `src/report.ts` (types, API), `src/stores/reports.ts` (one load per build), `components/report/BuildReport.vue` (the report, on the Build and Review pages, D-65); `components/build/BuildSummary.vue` is removed. The dashboard frame has the "N findings" link and the finding highlight (`finding=<id>`), drawn by `DashboardRenderer.vue`. New tests: `backend/tests/test_findings.py`, `test_probes.py`, `test_report.py`, with `report_fixtures.py` writing `frontend/tests/fixtures/reports/`; `frontend/tests/report.spec.ts`.
 
 ## 3. Milestones
 

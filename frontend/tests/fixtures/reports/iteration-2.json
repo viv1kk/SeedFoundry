@@ -1,0 +1,415 @@
+{
+ "build_id": "b-2",
+ "iteration": 2,
+ "seed_name": "License Optimization",
+ "fingerprint": "a127ba",
+ "verdict": {
+  "id": "passed",
+  "label": "Passed",
+  "tone": "positive"
+ },
+ "duration": 75.0,
+ "counts": {
+  "phases": 11,
+  "phases_with_findings": 0,
+  "tests": 21,
+  "pass": 21,
+  "warn": 0,
+  "fail": 0,
+  "not_run": 0,
+  "findings": 0,
+  "advisories": 0,
+  "gates": 3
+ },
+ "phases": [
+  {
+   "id": "assay",
+   "index": 1,
+   "name": "Assay",
+   "result": "passed",
+   "duration": 4.5,
+   "tests": {
+    "T-01": "pass",
+    "T-02": "pass",
+    "T-03": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "distill",
+   "index": 2,
+   "name": "Distillation",
+   "result": "passed",
+   "duration": 9.0,
+   "tests": {
+    "T-04": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "synth",
+   "index": 3,
+   "name": "Synthesis",
+   "result": "passed",
+   "duration": 7.5,
+   "tests": {
+    "T-05": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "xexam",
+   "index": 4,
+   "name": "Cross-Examination",
+   "result": "passed",
+   "duration": 6.0,
+   "tests": {
+    "T-06": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "germ",
+   "index": 5,
+   "name": "Germination Trial",
+   "result": "passed",
+   "duration": 6.0,
+   "tests": {
+    "T-07": "pass",
+    "T-08": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "contain",
+   "index": 6,
+   "name": "Containment",
+   "result": "passed",
+   "duration": 5.25,
+   "tests": {
+    "T-09": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "plant",
+   "index": 7,
+   "name": "Planting",
+   "result": "passed",
+   "duration": 6.0,
+   "tests": {
+    "T-10": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "seeding",
+   "index": 8,
+   "name": "Seeding & Life",
+   "result": "passed",
+   "duration": 12.0,
+   "tests": {
+    "T-11": "pass",
+    "T-12": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "probe",
+   "index": 9,
+   "name": "Stress & Probe",
+   "result": "passed",
+   "duration": 6.75,
+   "tests": {
+    "T-13": "pass",
+    "T-14": "pass",
+    "T-15": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "harvest",
+   "index": 10,
+   "name": "Harvest Validation",
+   "result": "passed",
+   "duration": 7.5,
+   "tests": {
+    "T-16": "pass",
+    "T-17": "pass",
+    "T-18": "pass",
+    "T-19": "pass",
+    "T-20": "pass"
+   },
+   "findings": []
+  },
+  {
+   "id": "report",
+   "index": 11,
+   "name": "Teardown & Report",
+   "result": "passed",
+   "duration": 4.5,
+   "tests": {
+    "T-21": "pass"
+   },
+   "findings": []
+  }
+ ],
+ "groups": [
+  {
+   "category": "Numeric",
+   "findings": []
+  },
+  {
+   "category": "Visual",
+   "findings": []
+  },
+  {
+   "category": "Latency",
+   "findings": []
+  },
+  {
+   "category": "Boundary",
+   "findings": []
+  }
+ ],
+ "tests": [
+  {
+   "id": "T-01",
+   "name": "Core files present",
+   "phase": "assay",
+   "phase_name": "Assay",
+   "status": "pass",
+   "detail": "4 of 4 present, each with content",
+   "simulated": false
+  },
+  {
+   "id": "T-02",
+   "name": "Ensemble coverage",
+   "phase": "assay",
+   "phase_name": "Assay",
+   "status": "pass",
+   "detail": "19 of 19 sections across 4 files (100%)",
+   "simulated": false
+  },
+  {
+   "id": "T-03",
+   "name": "Ensemble boundary check",
+   "phase": "assay",
+   "phase_name": "Assay",
+   "status": "pass",
+   "detail": "0 findings",
+   "simulated": false
+  },
+  {
+   "id": "T-04",
+   "name": "All Music sections extracted",
+   "phase": "distill",
+   "phase_name": "Distillation",
+   "status": "pass",
+   "detail": "Purpose, Core Principles, Value Logic and Decision Logic",
+   "simulated": false
+  },
+  {
+   "id": "T-05",
+   "name": "Manifest schema valid",
+   "phase": "synth",
+   "phase_name": "Synthesis",
+   "status": "pass",
+   "detail": "seed, iteration, fingerprint and 3 layers with sizes and digests",
+   "simulated": false
+  },
+  {
+   "id": "T-06",
+   "name": "No contradictions between files",
+   "phase": "xexam",
+   "phase_name": "Cross-Examination",
+   "status": "pass",
+   "detail": "0 contradictions (simulated reviewer)",
+   "simulated": true
+  },
+  {
+   "id": "T-07",
+   "name": "Dry run completes",
+   "phase": "germ",
+   "phase_name": "Germination Trial",
+   "status": "pass",
+   "detail": "completed (simulated)",
+   "simulated": true
+  },
+  {
+   "id": "T-08",
+   "name": "Data-swap logic unchanged",
+   "phase": "germ",
+   "phase_name": "Germination Trial",
+   "status": "pass",
+   "detail": "same descriptor and query engine on both estates, both payloads structurally valid",
+   "simulated": false
+  },
+  {
+   "id": "T-09",
+   "name": "Upload checksums match",
+   "phase": "contain",
+   "phase_name": "Containment",
+   "status": "pass",
+   "detail": "4 of 4 match",
+   "simulated": false
+  },
+  {
+   "id": "T-10",
+   "name": "Seed reports ready",
+   "phase": "plant",
+   "phase_name": "Planting",
+   "status": "pass",
+   "detail": "Seed reports INITIALIZED (simulated)",
+   "simulated": true
+  },
+  {
+   "id": "T-11",
+   "name": "All gates resolved",
+   "phase": "seeding",
+   "phase_name": "Seeding & Life",
+   "status": "pass",
+   "detail": "3 of 3 auto-resolved",
+   "simulated": false
+  },
+  {
+   "id": "T-12",
+   "name": "Outputs produced",
+   "phase": "seeding",
+   "phase_name": "Seeding & Life",
+   "status": "pass",
+   "detail": "component validated, 12 weeks collected (simulated)",
+   "simulated": true
+  },
+  {
+   "id": "T-13",
+   "name": "Protection probes",
+   "phase": "probe",
+   "phase_name": "Stress & Probe",
+   "status": "pass",
+   "detail": "10 of 10 probes as expected: 6 denied by Protection rules, 3 allowed, 1 denied by the default rule for a missing fact",
+   "simulated": false
+  },
+  {
+   "id": "T-14",
+   "name": "Malformed input rejected",
+   "phase": "probe",
+   "phase_name": "Stress & Probe",
+   "status": "pass",
+   "detail": "16 of 16 malformed inputs refused; 13,050 seat rows and 3 drill paths accepted",
+   "simulated": false
+  },
+  {
+   "id": "T-15",
+   "name": "Latency within budget",
+   "phase": "probe",
+   "phase_name": "Stress & Probe",
+   "status": "pass",
+   "detail": "11 of 11 panels within the 1.0 s budget (declared latency)",
+   "simulated": false
+  },
+  {
+   "id": "T-16",
+   "name": "Numeric reconciliation",
+   "phase": "harvest",
+   "phase_name": "Harvest Validation",
+   "status": "pass",
+   "detail": "every figure on 11 panels equals its recount from 13,050 seat rows",
+   "simulated": false
+  },
+  {
+   "id": "T-17",
+   "name": "Chart fitness",
+   "phase": "harvest",
+   "phase_name": "Harvest Validation",
+   "status": "pass",
+   "detail": "4 of 4 charts fit their data: no pie over 6 slices, comparisons as bars",
+   "simulated": false
+  },
+  {
+   "id": "T-18",
+   "name": "Format and label consistency",
+   "phase": "harvest",
+   "phase_name": "Harvest Validation",
+   "status": "pass",
+   "detail": "one format per measure, money in dollars, every axis named with its unit",
+   "simulated": false
+  },
+  {
+   "id": "T-19",
+   "name": "Palette and layout",
+   "phase": "harvest",
+   "phase_name": "Harvest Validation",
+   "status": "pass",
+   "detail": "every colour a token, one colour per class, red for faults only, cards on the grid, one family per font role",
+   "simulated": false
+  },
+  {
+   "id": "T-20",
+   "name": "Contrast",
+   "phase": "harvest",
+   "phase_name": "Harvest Validation",
+   "status": "pass",
+   "detail": "every text colour at 4.5:1 and every chart role at 3:1 on the panel surface, both themes",
+   "simulated": false
+  },
+  {
+   "id": "T-21",
+   "name": "Sandbox torn down cleanly",
+   "phase": "report",
+   "phase_name": "Teardown & Report",
+   "status": "pass",
+   "detail": "no residue (simulated)",
+   "simulated": true
+  }
+ ],
+ "gates": [
+  {
+   "id": "servicenow-incident-api",
+   "kind": "credentials",
+   "stage": "discovery",
+   "resolution": "sandbox read-only credential issued (simulated), values not stored",
+   "basis": {
+    "file": "environment.md",
+    "file_id": "f-3",
+    "section": "Protection Layer",
+    "line": 118
+   },
+   "message": "Gate servicenow-incident-api (credentials) auto-resolved: sandbox read-only credential issued (simulated), values not stored. Basis: environment.md, Protection Layer"
+  },
+  {
+   "id": "solution-approval",
+   "kind": "approval",
+   "stage": "assessment",
+   "resolution": "approve License Optimization at potential PARTIAL",
+   "basis": {
+    "file": "music.md",
+    "file_id": "f-4",
+    "section": "Decision Logic",
+    "line": 57
+   },
+   "message": "Gate solution-approval (approval) auto-resolved: approve License Optimization at potential PARTIAL. Basis: music.md, Decision Logic"
+  },
+  {
+   "id": "close-seeding",
+   "kind": "confirmation",
+   "stage": "cleanup",
+   "resolution": "close seeding",
+   "basis": {
+    "file": "environment.md",
+    "file_id": "f-3",
+    "section": "Protection Layer",
+    "line": 118
+   },
+   "message": "Gate close-seeding (confirmation) auto-resolved: close seeding. Basis: environment.md, Protection Layer"
+  }
+ ],
+ "usage": {
+  "llm_calls": 9,
+  "tokens_in": 12127,
+  "tokens_out": 6447,
+  "api_calls": 26,
+  "sandbox_seconds": 36.2,
+  "simulated": true
+ }
+}

@@ -159,6 +159,7 @@ SeedFoundry ports the same rules (NFR-6) and adds the console surface pairs (see
 - `seed:architecture.md` §8: a request states an action, a resource and facts, and never names a rule. Every covering rule whose facts hold matches; the strictest effect wins (DENY over ESCALATE over ALLOW) and the most specific rule of that effect is cited. A request missing a fact some rule depends on is denied under the default rule (PR-000).
 - Reuse for SeedFoundry's Stress & Probe protection probes (T-13): probes are requests against rules derived from the intake's Protection layer, evaluated the same way, so a probe result is computed, not printed.
 - Do not take Seed's rule ids (PR-xxx) as SeedFoundry ids (requirements §9). Seed's ids may appear only inside simulated Seed v0.1 log lines, labelled as the Seed's.
+- *As built (M9, D-62):* `backend/seedfoundry/validators/protection.py`. Rules P-1, P-2, ... are derived line by line from environment.md's Protection layer by fixed patterns, each citing its line; ten probes (PB-1 to PB-10) are evaluated as above (strictest effect, most specific rule, default DENY for a missing fact or no allowing rule). The sample gives nine rules from four lines and passes T-13.
 
 ### 2.7 Determinism testing
 
@@ -432,6 +433,8 @@ Total 14, as `build-simulation.md` §5 requires. The figures in the N-1 log line
 | L-1 | descriptor | `latency_ms` 4500; the browser waits that long before drawing the treemap, behind a spinner | | waits on first draw, reload and each drill (OQ-25) |
 
 Every one is found by the minimal validators (numeric, visual over the descriptor and `defects.css`, latency) at All products, and none on iteration 2 (`backend/tests/test_overlay.py`).
+
+*As built (M9, D-63):* the build finds them: `validators/findings.py` groups the validators' problems into these fourteen findings by test, check and panel (as `test_overlay.py`'s `defect_of` did), without reading the overlay. V-3's finding names two panels (the treemap, the product chart) and V-6's five (the three KPI cards, the treemap, Seats). Each finding's expected and shown values are its headline problem's, from the data: N-1 13,050 against 15,660; N-2 100.0% against 112.0%; N-3 $1,035,384 against $1,191,396; N-4 13,050 against 12,401; N-5 13,050 against 17,250; L-1 at most 1.0 s against 4.5 s.
 
 ---
 

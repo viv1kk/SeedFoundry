@@ -269,26 +269,29 @@ def test_a_gate_without_its_section_resolves_on_default():
     assert gates[2]["data"]["basis"]["file"] == "music.md"  # close-seeding falls back to Decision Logic
 
 
-# Stubbed validators (D-51) and boundary advisories (D-12)
+# Every test runs (D-51, D-62, D-63) and boundary advisories (D-12)
+
+CATALOGUE = ["N-1", "N-2", "N-3", "N-4", "N-5", "V-1", "V-2", "V-3", "V-4", "V-5", "V-6", "V-7", "V-8", "L-1"]
 
 
-def test_stubbed_tests_say_not_run_and_raise_no_finding(first):
+def test_every_test_runs_and_raises_exactly_the_catalogue(first):
+    # D-66: this test said T-13 to T-20 were not run until M9 (D-51, D-58). They run now, so no
+    # test is not run, and each claims only what it found.
     events = build_events(first[0])
     results = {e.code: e.data for e in events if e.type == "test.result"}
-    # D-58: T-08 runs from M7, so it left the stubbed list and Germination Trial passes.
-    stubbed = [f"T-{n}" for n in range(13, 21)]
-    assert sorted(t for t, d in results.items() if d["status"] == "not_run") == stubbed
-    for test_id in stubbed:
-        assert results[test_id]["arrives_in"] == "M9"
-        assert "not run" in results[test_id]["detail"]
-    assert all(d["status"] == "pass" for t, d in results.items() if t not in stubbed)
-    assert [e for e in events if e.type == "finding.raised"] == []
+    assert [t for t, d in results.items() if d["status"] == "not_run" or "arrives_in" in d] == []
+    statuses = {t: d["status"] for t, d in results.items()}
+    assert {t: s for t, s in statuses.items() if s != "pass"} == {"T-15": "warn", "T-16": "fail", "T-17": "warn", "T-18": "warn", "T-19": "warn", "T-20": "warn"}
+    raised = [e.code for e in events if e.type == "finding.raised" and not e.data.get("advisory")]
+    assert sorted(raised, key=CATALOGUE.index) == CATALOGUE and len(raised) == len(set(raised))
     phases = {e.phase: e.data["result"] for e in events if e.type == "phase.completed"}
-    assert phases["probe"] == phases["harvest"] == "incomplete"
-    assert [p for p, r in phases.items() if r != "incomplete"] == ["assay", "distill", "synth", "xexam", "germ", "contain", "plant", "seeding", "report"]
+    assert phases["probe"] == phases["harvest"] == "findings"
+    assert [p for p, r in phases.items() if r != "findings"] == ["assay", "distill", "synth", "xexam", "germ", "contain", "plant", "seeding", "report"]
+    assert all(r == "passed" for p, r in phases.items() if p not in ("probe", "harvest"))
     done = events[-1]
-    assert done.data["counts"] == {"pass": 13, "warn": 0, "fail": 0, "not_run": 8}
-    assert done.message == "Build completed: 13 tests passed, 8 not run; 0 findings, 0 boundary advisories"
+    assert done.data["counts"] == {"pass": 15, "warn": 5, "fail": 1, "not_run": 0}
+    assert done.data["verdict"] == {"id": "findings", "label": "Completed with findings", "tone": "warning"}
+    assert done.message == "Build completed: 15 tests passed, 5 warned, 1 failed; 14 findings, 0 boundary advisories; verdict Completed with findings"
 
 
 def test_the_data_swap_test_runs_the_same_logic_on_both_estates(first):
@@ -335,7 +338,8 @@ def test_boundary_advisories_are_raised_with_file_line_and_home():
     ]
     beats = script(BuildContext("b-1", 1, intake))
     events = [e for b in beats for e in b.events]
-    raised = [e for e in events if e["type"] == "finding.raised"]
+    # D-66: the catalogue's 14 findings are raised too from M9, so only advisories are counted here.
+    raised = [e for e in events if e["type"] == "finding.raised" and e["data"].get("advisory")]
     assert len(raised) == 1
     finding = raised[0]
     assert finding["code"] == "B-UI-1" and finding["level"] == "WARN" and finding["step"] == "assay.boundary"
@@ -354,7 +358,9 @@ def test_boundary_advisories_are_raised_with_file_line_and_home():
     assert t03["data"]["status"] == "warn"
     assay = next(e for e in events if e["type"] == "phase.completed" and e["phase"] == "assay")
     assert assay["data"]["result"] == "passed"  # advisories never change the verdict (D-12)
-    assert events[-1]["data"]["advisories"] == ["B-UI-1"] and events[-1]["data"]["findings"] == []
+    assert events[-1]["data"]["advisories"] == ["B-UI-1"] and sorted(events[-1]["data"]["findings"], key=CATALOGUE.index) == CATALOGUE
+    clean = script(BuildContext("b-1", 1, sample()))[-1].events[0]["data"]
+    assert events[-1]["data"]["verdict"] == clean["verdict"]  # an advisory never changes the verdict
 
 
 # Determinism (NFR-1, AC-8, FR-DC-4)
@@ -497,10 +503,11 @@ def test_iteration_2_reads_the_feedback_and_claims_no_edit(second):
     core = {f.name: f.content for f in second.state.intake.files if f.category != Category.MISC_CONTEXT}
     assert core == {name: text for name, c, text in sample_files() if c != Category.MISC_CONTEXT}
     prior = [e.message for e in events if e.step == "distill.feedback" and e.type == "log"]
+    # D-66: iteration 1 raises the catalogue's 14 findings from M9, which D-52 counts here.
     assert prior == [
         f"Observer feedback: {len(FEEDBACK)} characters, 3 segments",
-        "Prior findings from iteration 1: 0",
-        "No prior findings, so there are no corrections to plan",
+        "Prior findings from iteration 1: 14",
+        "Planning corrections for all 14 prior findings",
     ]
 
 

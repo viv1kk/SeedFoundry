@@ -130,6 +130,10 @@ describe('contrast, both themes (WCAG 2.1)', () => {
     expect(failures(every(['--text-inverse'], ['--accent'], 4.5))).toEqual([])
   })
 
+  it("the finding highlight's accent outline against every surface around a panel, at 3:1 (D-65)", () => {
+    expect(failures(every(['--accent'], SURFACES, 3))).toEqual([])
+  })
+
   it('every chart role except muted against the panel surface, at 3:1', () => {
     expect(failures(every([...FILLED_ROLES, '--chart-baseline'], ['--surface-raised'], 3))).toEqual([])
   })

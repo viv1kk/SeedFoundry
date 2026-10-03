@@ -2,7 +2,8 @@
 latency in the descriptor, and the probe compares the declared value with the 1.0 s budget. The
 value is read, not timed, so the result is the same on any machine (NFR-1).
 
-Minimal in M8 (D-60); M9 maps each problem to a finding (L-1) and runs it in Stress & Probe.
+Minimal in M8 (D-60). From M9 it runs in Stress & Probe, and findings.py maps its problems to a
+finding (L-1).
 """
 
 from __future__ import annotations
@@ -23,7 +24,8 @@ def check(descriptor: dict[str, Any], budget_ms: int = BUDGET_MS) -> list[Proble
             panel["id"],
             f"at most {budget_ms / 1000:.1f} s",
             f"{panel['latency_ms'] / 1000:.1f} s",
-            f"{panel['title']} responds in {panel['latency_ms'] / 1000:.1f} s (budget {budget_ms / 1000:.1f} s)",
+            f'Panel "{panel["title"]}" responds in {panel["latency_ms"] / 1000:.1f} s (budget {budget_ms / 1000:.1f} s)',
+            "",
         )
         for panel in descriptor["panels"]
         if panel.get("latency_ms", 0) > budget_ms

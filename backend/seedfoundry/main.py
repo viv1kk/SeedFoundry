@@ -15,7 +15,7 @@ from fastapi import FastAPI, Header, Query, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from seedfoundry import dashboard, demo, events
+from seedfoundry import dashboard, demo, events, report
 from seedfoundry.config import var_dir
 from seedfoundry.data import DATASETS, dataset
 from seedfoundry.engine.clock import Clock
@@ -192,6 +192,17 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
             raise files.IntakeError(404, "build_not_found", f"No build with id {build_id}.")
         events = build.log or [e for e in manager.log.after(0) if e.build_id == build_id]
         return {"build_id": build_id, "status": build.status, "seq": manager.state.seq, "events": events}
+
+    @app.get("/api/builds/{build_id}/report")
+    async def build_report(request: Request, build_id: str) -> dict[str, Any]:
+        """The build report (FR-R-1), assembled from the completed build's kept log, so it is the
+        same after a restart (D-64). 409 report_not_ready until the build completes."""
+        build = lab(request).state.build(build_id)
+        if build is None:
+            raise files.IntakeError(404, "build_not_found", f"No build with id {build_id}.")
+        if build.status != "completed" or not build.log:
+            raise files.IntakeError(409, "report_not_ready", f"Build {build_id} has not completed, so it has no report.")
+        return report.assemble(build)
 
     # Dashboard and datasets (FR-D-1 to FR-D-6, D-56). The query engine runs here: every figure
     # is aggregated from the seat rows at request time, and the frontend only renders.

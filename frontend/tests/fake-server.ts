@@ -10,7 +10,9 @@
 // the backend wrote to tests/fixtures/dashboard/iteration-<n>/, one set per iteration (iteration 1
 // is the rough dashboard, iteration 2 the polished one; backend/tests/dashboard_fixtures.py, checked
 // against the backend by test_dashboard.py); a drill path with no fixture is refused as the
-// server refuses a path the data does not have.
+// server refuses a path the data does not have. A completed build's report (D-64) is the report the
+// backend assembled for the sample's build of that iteration (tests/fixtures/reports/, written by
+// backend/tests/report_fixtures.py and checked by test_report.py), with the build's own id.
 
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -73,6 +75,18 @@ const DASHBOARD_FIXTURES: Record<string, string> = {
 /** A dashboard response the backend wrote, for an iteration (1 rough, 2 polished, D-60). */
 export function dashboardFixture(iteration: number, name: string): Record<string, unknown> {
   return JSON.parse(readFileSync(resolve(DASHBOARD_DIR, `iteration-${iteration}`, name), 'utf8'))
+}
+
+const REPORT_DIR = resolve(__dirname, 'fixtures/reports')
+
+/** The report the backend assembled for the sample's build of an iteration (D-64). */
+export function reportFixture(iteration: number): Record<string, unknown> {
+  return JSON.parse(readFileSync(resolve(REPORT_DIR, `iteration-${iteration}.json`), 'utf8'))
+}
+
+/** The sample's iteration 1 build, every event as the backend kept it (wall_ts fixed). */
+export function sampleBuildEvents(): LabEvent[] {
+  return JSON.parse(readFileSync(resolve(REPORT_DIR, 'iteration-1-events.json'), 'utf8'))
 }
 
 const LABELS: Record<string, string> = Object.fromEntries(CATEGORIES.categories.map((c) => [c.id, c.label]))
@@ -214,6 +228,13 @@ export class FakeServer {
       const build = this.builds.find((b) => b.id === eventsMatch[1])
       if (!build) return refusal(404, 'build_not_found', `No build with id ${eventsMatch[1]}.`)
       return { status: 200, body: { build_id: build.id, status: build.status, seq: this.seq, events: this.buildEvents.get(build.id) ?? [] } }
+    }
+    const reportMatch = path.match(/^\/api\/builds\/([^/]+)\/report$/)
+    if (method === 'GET' && reportMatch) {
+      const build = this.builds.find((b) => b.id === reportMatch[1])
+      if (!build) return refusal(404, 'build_not_found', `No build with id ${reportMatch[1]}.`)
+      if (build.status !== 'completed') return refusal(409, 'report_not_ready', `Build ${build.id} has not completed, so it has no report.`)
+      return { status: 200, body: { ...reportFixture(build.iteration), build_id: build.id } }
     }
     if (method === 'GET' && path === '/api/demo/speed') return { status: 200, body: { speed: this.speed } }
     if (method === 'POST' && path === '/api/demo/speed') {

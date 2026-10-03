@@ -668,3 +668,97 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
 - M9: the T-15 log line can read the latency problem's message ("Seats by vendor and product responds in 4.5 s (budget 1.0 s)").
 - M9: finding-to-panel highlight can target `[data-panel="<id>"]` inside `.defects-overlay`. The "N findings" link goes in `DashboardFrame.vue`, where the M8 line was.
 - M10: `DashboardView` carries the overlay itself (class and sheet), so the split view's iteration 1 dashboard is rough with no extra work. Its treemap will wait 4.5 s there too (OQ-25).
+
+### M9: Validators and build report (2026-10-04)
+
+**What changed**
+- Every test runs; none is "not run". Stress & Probe and Harvest Validation run real checks:
+  - T-13: rules are derived from environment.md's Protection layer, line by line, and ten probes are evaluated against them as Seed v0.1's policy evaluation does (D-62). The sample gives 9 rules from 4 lines and passes.
+  - T-14: the seat record contract takes every row of the estate and refuses eleven malformed rows; the drill parser refuses five malformed paths (D-62).
+  - T-15 to T-20: the latency, numeric and visual validators run over the iteration's dashboard at All products, its descriptor and its stylesheet.
+- Findings (D-63): the validators' problems are grouped into findings by test, check and panel, never by reading the overlay. The sample's iteration 1 build raises exactly N-1 to N-5, V-1 to V-8 and L-1; iteration 2 raises none. Each is raised in the sub-step that finds it, before its test's result, and reads like build-simulation §4 ("N-1 Entitled seats: KPI shows 13,050, product chart sums to 15,660; 18 problems in all").
+- Each finding carries its id, category, test, panel and panels (V-3 has two, V-6 five), expected and shown values from the data, severity (Numeric high, Visual and Latency medium, OQ-26), phase and sub-step, a message, and every problem behind it. A problem outside the catalogue would get its own id (N-X1); the sample raises none.
+- Test results follow their findings: a high finding fails the test, medium ones warn. A phase fails only when a test failed with no finding for it, so phases 9 and 10 complete as findings on iteration 1 (build-simulation §2). The completion line counts warned tests apart and gives the verdict.
+- Validator messages were rewritten to read on their own, with formatted figures; a format problem shows the panel's own figure in both formats.
+- The report (D-64) is assembled from the build's kept events and served at `GET /api/builds/{id}/report`, so it survives a restart. It has the verdict (Completed with findings in amber, Passed in green, Failed in red), counts, phases, findings grouped Numeric, Visual, Latency and Boundary, every test, the gates and simulated usage. Compile report emits `report.ready`.
+- Report on screen (D-65): `BuildReport.vue` replaces M6's summary on the Build page (which stays on `/build/<n>`, OQ-21) and the stand-in on `/review/<n>` (OQ-22). It is embeddable for M10. Rebuild and Approve still say M10 and M11.
+- Each dashboard finding links to the dashboard at All products with `finding=<id>`: its panels are outlined in the accent, the frame says which finding is shown and takes focus, a reload keeps it and a drill drops it. Iteration 1's frame has "14 findings" back to the report.
+- Events: a sample iteration 1 build is 256 events and 168 console lines (was 223 and 135); iteration 2 is 264 and 164.
+
+**Files**
+- NEW backend/seedfoundry/validators/findings.py, protection.py, records.py; backend/seedfoundry/report/assemble.py
+- CHANGE backend/seedfoundry/engine/script.py (real T-13 to T-20, findings, phase results, completion line, report.ready), validators/numeric.py, visual.py, latency.py, problems.py (messages, unit), report/__init__.py, main.py (report route)
+- NEW backend/tests/test_findings.py, test_probes.py, test_report.py, report_fixtures.py; CHANGE backend/tests/test_engine.py
+- NEW frontend/src/report.ts, stores/reports.ts, components/report/BuildReport.vue; DELETE components/build/BuildSummary.vue
+- CHANGE frontend/src/views/BuildView.vue, ReviewView.vue, components/dashboard/DashboardFrame.vue ("N findings", highlight), DashboardView.vue and DashboardRenderer.vue (highlight)
+- NEW frontend/tests/report.spec.ts, fixtures/reports/ (both reports and iteration 1's events, written by the backend); CHANGE frontend/tests/build-script.ts, build-view.spec.ts, dashboard.spec.ts, fake-server.ts, contrast.spec.ts
+- CHANGE docs/decisions.md (D-62 to D-66; OQ-26, OQ-27; notes on D-51, D-54, D-57, D-60, OQ-21, OQ-22), docs/build-simulation.md (§2 to §6 as built, new §6.5), docs/ui-spec.md (§3 to §5 as built), docs/seed-reuse-notes.md (§2.6, §5.8 as built), docs/implementation-plan.md (M9 status, as-built note), docs/CLAUDE.md (report fixture command), docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 489 passed, frontend: 398 passed (through `python run.py test`)
+- `npm run build`: typecheck, build and `postbuild` network check pass
+- Exit criteria:
+  - The D-14 test passes: the sample's iteration 1 findings equal the catalogue exactly; iteration 2 has none; the polished dashboard gives zero problems at five drill levels (`test_findings.py`).
+  - Removing any one overlay patch removes exactly its finding from the build, for all fourteen, the stylesheet's three included (`test_findings.py`).
+  - Every finding shows expected and shown values from the data; the N figures equal a recount from the rows; no message has an em dash (`test_findings.py`).
+  - The report has header and verdict, grouped findings, tests, gates and simulated usage for both iterations; `report.ready` agrees with it; it is the same for two runs and after a restart (`test_report.py`, `report.spec.ts`).
+  - Clicking a finding opens the dashboard with its panels outlined (N-1, V-3, V-6, V-8, L-1 while waiting); "14 findings" returns to the report (`report.spec.ts`).
+  - Phase results match build-simulation §2 for both iterations (`test_findings.py`); the determinism test passes.
+- Checked that the tests can fail. Each change below was made, the matching tests failed, and it was reverted:
+  - V-3 without the class-colour check;
+  - a phase failed on any failed test;
+  - the least strict policy effect winning;
+  - the record contract not checking the class;
+  - the verdict red for findings;
+  - API calls counted as LLM calls;
+  - a finding keeping only its first problem;
+  - no highlight on the panels (7 tests);
+  - a drill keeping the finding;
+  - "N findings" off by one.
+- determinism: pass | no-em-dash: pass | network: pass | contrast: pass (no new token; a new check that the accent outline is 3:1 on every surface)
+- Assertions edited, recorded first in D-66:
+  - `test_engine.py`: the stubbed-tests test becomes "every test runs and raises exactly the catalogue"; the boundary advisory test counts advisories only; iteration 2 reads 14 prior findings.
+  - `build-script.ts`: the sample's M9 results, findings, `report.ready` and completion data; the advisory is asked for (`advisoryIn`).
+  - `build-view.spec.ts`: the completion tests read the report; two selectors name the report.
+  - `dashboard.spec.ts`: Back to report shows the report; View Dashboard is the report's.
+
+**Hand checks** (terminal, through the Vite proxy at `http://127.0.0.1:5273`; `var/state.json` backed up first and restored after, same SHA-256)
+- 4x: Reset, Load sample, Start Build. Iteration 1: 256 events in 18.9 s, 168 console lines, last `sim_t` 75.0.
+  - T-13 and T-14 PASS. L-1 WARN in Stress & Probe; N-1 to N-5 FAIL and V-1 to V-8 WARN in Harvest Validation.
+  - "Report compiled: 14 findings across 3 categories; verdict Completed with findings"; "Build completed: 15 tests passed, 5 warned, 1 failed; 14 findings, 0 boundary advisories; verdict Completed with findings".
+- Every `finding.raised` line read against seed-reuse-notes §5.8's as-built table: each defect, panel and figure as the table says (V-4 on 3 panels, V-5 on 2, V-3 on 2, V-6 on 5; V-8 at 1.55:1 light and 1.44:1 dark).
+- Each N figure recounted from `GET /api/datasets/primary` (13,050 rows), all equal to the findings:
+
+  | Id | Recount | Finding |
+  |---|---|---|
+  | N-1 | KPI 13,050; bars at 1.2 x each product sum to 15,660 | expected 13,050, shown 15,660 |
+  | N-2 | true shares sum to 100.0%; at 1.12 x each, 112.0% | 100.0%, 112.0% |
+  | N-3 | recoverable classes $1,035,384; Unused and Underused $1,191,396 | $1,035,384, $1,191,396 |
+  | N-4 | classes sum to 13,050; assigned 12,401 | 13,050, 12,401 |
+  | N-5 | rows 13,050 + the largest (4,200) = 17,250 | 13,050, 17,250 |
+
+- Iteration 2 by API (`POST /api/builds {"iteration": 2}`): 264 events, 0 findings, verdict Passed, 21 tests passed.
+- The same build twice (Reset, Load sample, Start Build): the events are identical but for `wall_ts`, seqs, the build id and the file ids (which follow the saved counters after Reset, D-46); the reports are identical with those ids masked.
+- Server restart (both processes stopped and started): `GET /api/builds/b-8/report` is byte for byte what it was before.
+- The review route with `finding=V-3` is served through the proxy.
+- Nothing was checked in a browser. Waiting on the stakeholder, in a browser:
+  - Watch an iteration 1 build at 1x: do the findings appear in phases 9 and 10 as they are found, and does the log read matter-of-fact?
+  - Read the iteration 1 report: verdict, findings with expected and shown, tests, gates, simulated usage.
+  - Click each dashboard finding: is the right panel outlined, including V-3 (two panels), V-6 (five) and L-1 (while the treemap waits)?
+  - Use the "14 findings" link from the dashboard back to the report.
+  - Read the iteration 2 report.
+  - Check both themes, and the whole report and its finding links by keyboard only.
+
+**Decisions and questions**
+- New: D-62 (T-13 and T-14 real), D-63 (findings model, statuses, phase results, messages), D-64 (the report, verdict and tone, `report.ready`), D-65 (the report on screen, finding links, highlight, "N findings"), D-66 (assertions changed)
+- Opened: OQ-26 (severity scale), OQ-27 (whether a failed probe should be a finding)
+- Updated: OQ-21 and OQ-22, asked again: the Build page stays on `/build/<n>` with the report above the stepper, and `/review/<n>` shows the same report
+- Closed: none. OQ-19 to OQ-25 are unanswered, so their assumptions stand.
+
+**Notes for next milestone**
+- M10:
+  - Embed `components/report/BuildReport.vue` in the "Feedback + Report" view with `heading-level` 3 and `:actions="false"`; it loads its own report.
+  - "Changes since iteration 1" (FR-R-3) can list iteration 1's findings from its report (`GET /api/builds/<iteration 1 id>/report`, `groups`), each marked resolved when iteration 2's report has none of that id; the feedback quote comes from `observer-feedback-iteration-1.md`.
+  - `DashboardView` takes `highlight` (panel ids), so the split view can outline a finding too.
+  - After a change to the build, the validators or the report, rewrite the fixtures with `uv run python tests/report_fixtures.py`.
+- M11: known issues on iteration 1 approval are the report's findings (`groups`, advisories apart).

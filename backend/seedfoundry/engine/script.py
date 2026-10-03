@@ -9,9 +9,13 @@ iteration and the earlier build, made in full when the build starts: speed and s
 which the runner applies, cannot change a word of it (FR-DC-4, NFR-1).
 
 Real work happens here where it is cheap (Assay statistics, the boundary check, the
-manifest and its checksums, the gates' citations). LLM and Seed API calls go through
-the simulated clients (D-22). The validators of phases 9 and 10 report "not run" until
-M9 (D-51). T-08 runs the dashboard's logic on both datasets of M7 (D-58).
+manifest and its checksums, the gates' citations, the validators). LLM and Seed API calls go
+through the simulated clients (D-22). T-08 runs the dashboard's logic on both datasets of M7
+(D-58). From M9 phases 9 and 10 run the validators for real: protection probes over rules from
+the Protection layer, malformed inputs fed to the record contract and the drill parser, and the
+latency, numeric and visual checks over the iteration's dashboard. Their problems are grouped into
+findings (validators/findings.py), each raised in the sub-step that finds it, and Compile report
+emits report.ready (D-62 to D-64).
 """
 
 from __future__ import annotations
@@ -31,8 +35,10 @@ from seedfoundry.engine.catalogue import BUDGET_SECONDS, PHASES, TEST_NAMES, TOT
 from seedfoundry.generate import outline as layers
 from seedfoundry.intake import assay, boundary
 from seedfoundry.intake.feedback import FEEDBACK_NAME, feedback_file, segments
+from seedfoundry.report.assemble import verdict
 from seedfoundry.state import Build, Category, IntakeFile
-from seedfoundry.validators import structure
+from seedfoundry.validators import findings as found
+from seedfoundry.validators import latency, numeric, protection, records, structure, visual
 
 GATES = ("servicenow-incident-api", "solution-approval", "close-seeding")
 
@@ -80,6 +86,7 @@ class BuildContext:
     uploads: dict[str, str] = field(default_factory=dict)  # name: sha256 the Seed API returned
     seed_id: str = ""
     sandbox_id: str = ""
+    _validation: Validation | None = None
 
     def __post_init__(self) -> None:
         self.files = [f.model_copy() for f in self.files]
@@ -113,6 +120,28 @@ class BuildContext:
 Step = Generator[Beat, None, str | None]
 
 
+@dataclass
+class Validation:
+    """The iteration's dashboard and what the validators find in it, computed once per build."""
+
+    descriptor: dict[str, Any]
+    payload: dict[str, Any]
+    data: Any
+    problems: list[Any]
+    findings: list[found.Finding]
+
+
+def validation(ctx: BuildContext) -> Validation:
+    if ctx._validation is None:
+        desc = dashboard.descriptor(ctx.iteration)
+        data = dataset(dashboard.DEFAULT_DATASET)
+        payload = dashboard.build(desc, data)
+        problems = latency.check(desc) + numeric.reconcile(payload, data) + visual.check(desc, payload)
+        titles = {p["id"]: p["title"] for p in desc["panels"]}
+        ctx._validation = Validation(desc, payload, data, problems, found.assign(problems, titles))
+    return ctx._validation
+
+
 # Beat helpers
 
 
@@ -137,10 +166,6 @@ def test(ctx: BuildContext, test_id: str, status: str, detail: str, *, simulated
     if arrives_in:
         data["arrives_in"] = arrives_in
     return Beat(TEST, [event("test.result", f"{test_id} {TEST_NAMES[test_id]}: {detail}", TEST_LEVELS[status], test_id, **data)])
-
-
-def not_run(ctx: BuildContext, test_id: str, what: str, milestone: str) -> Beat:
-    return test(ctx, test_id, "not_run", f"not run, {what} arrives in {milestone}", arrives_in=milestone)
 
 
 # Phase 1: Assay
@@ -674,22 +699,164 @@ def life(ctx: BuildContext) -> Step:
     return "caught up"
 
 
-# Phases 9 and 10: validators arrive in M9 (D-51)
+# Phases 9 and 10: the validators (FR-T-3 to FR-T-5, D-62, D-63)
 
 
-def pending(tests: tuple[str, ...], milestone: str = "M9") -> Callable[[BuildContext], Step]:
-    def step(ctx: BuildContext) -> Step:
-        for test_id in tests:
-            yield not_run(ctx, test_id, "this validator", milestone)
-        return "not run"
+PROBE_LEVELS = {"as-expected": "INFO", "default-only": "WARN", "over-restrictive": "WARN", "let-through": "FAIL"}
 
-    return step
+
+def protection_probes(ctx: BuildContext) -> Step:
+    """T-13: each probe evaluated against the rules the Protection layer gives (seed-reuse-notes.md §2.6)."""
+    ruleset, decisions, status = protection.run(ctx.files)
+    environment = ctx.name(Category.ENVIRONMENT)
+    if ruleset:
+        section = ruleset[0].section
+        lines = len({r.line for r in ruleset})
+        yield log(
+            f"Protection rules from {environment}, {section}: {plural(len(ruleset), 'rule')} from {plural(lines, 'line')}",
+            rules=[r.as_data() for r in ruleset],
+        )
+    else:
+        yield log(f"{environment} states no Protection rule the probes can use, so each probe falls to the default rule", rules=[])
+    for d in decisions:
+        yield log(f"{d.probe.id} {d.probe.request}: {d.effect} by {d.basis}", PROBE_LEVELS[d.outcome], 0.5, decision=d.as_data())
+    as_expected = [d for d in decisions if d.outcome == "as-expected"]
+    by_rule = sum(1 for d in as_expected if d.rule is not None and d.effect == "DENY")
+    allowed = sum(1 for d in as_expected if d.effect == "ALLOW")
+    by_default = sum(1 for d in as_expected if d.rule is None)
+    if status == "pass":
+        detail = (
+            f"{len(decisions)} of {len(decisions)} probes as expected: {by_rule} denied by Protection rules, {allowed} allowed, "
+            f"{by_default} denied by the default rule for a missing fact"
+        )
+    else:
+        def ids(outcome: str) -> list[str]:
+            return [d.probe.id for d in decisions if d.outcome == outcome]
+
+        parts = []
+        if ids("let-through"):
+            parts.append(f"let through: {', '.join(ids('let-through'))}")
+        if ids("default-only"):
+            parts.append(f"decided only by the default rule: {', '.join(ids('default-only'))}")
+        if ids("over-restrictive"):
+            parts.append(f"allowed requests denied: {', '.join(ids('over-restrictive'))}")
+        detail = f"{len(as_expected)} of {len(decisions)} probes as expected; " + "; ".join(parts)
+    yield test(ctx, "T-13", status, detail)
+    return f"{len(as_expected)} of {len(decisions)} as expected"
+
+
+def malformed_probes(ctx: BuildContext) -> Step:
+    """T-14: malformed seat records and drill paths fed to the record contract and the drill parser."""
+    data = dataset(dashboard.DEFAULT_DATASET)
+    result = records.run(data)
+    yield log(
+        f"Seat record contract: {result.rows_accepted:,} of {result.rows:,} rows of the {data.title.lower()} accepted",
+        accepted=result.rows_accepted,
+        rows=result.rows,
+        refused=result.refused_good_rows[:10],
+    )
+    bad_rows = len(result.rejected) + len(result.accepted_bad)
+    yield log(
+        f"Malformed seat records: {len(result.rejected)} of {bad_rows} refused",
+        "FAIL" if result.accepted_bad else "INFO",
+        rejected=[{"input": what, "reason": why} for what, why in result.rejected],
+        accepted=result.accepted_bad,
+    )
+    bad_paths = len(result.paths_rejected) + len(result.paths_accepted_bad)
+    good_paths = len(result.paths_accepted) + len(result.paths_refused_good)
+    yield log(
+        f"Drill paths: {len(result.paths_rejected)} of {bad_paths} malformed refused, {len(result.paths_accepted)} of {good_paths} well-formed accepted",
+        "FAIL" if result.paths_accepted_bad else "INFO",
+        rejected=result.paths_rejected,
+        accepted=result.paths_accepted,
+        accepted_malformed=result.paths_accepted_bad,
+    )
+    if result.status == "fail":
+        detail = f"malformed input accepted: {', '.join(result.accepted_bad + result.paths_accepted_bad)}"
+    elif result.status == "warn":
+        detail = f"{result.refused} of {result.malformed} malformed inputs refused, but well-formed input refused too"
+    else:
+        detail = f"{result.refused} of {result.malformed} malformed inputs refused; {result.rows:,} seat rows and {good_paths} drill paths accepted"
+    yield test(ctx, "T-14", result.status, detail)
+    return f"{result.refused} of {result.malformed} refused"
+
+
+FINDING_LEVELS = {"high": "FAIL", "medium": "WARN", "low": "WARN"}
+
+
+def raise_findings(ctx: BuildContext, test_id: str, passed: str) -> Step:
+    """Raise the findings a test owns, then its result: fail when a finding is high, warn when
+    every finding is medium or low, pass with none (D-63)."""
+    owned = [f for f in validation(ctx).findings if f.test == test_id]
+    for finding in owned:
+        data = finding.as_data()
+        ctx.findings.append(data)
+        line = {"type": "finding.raised", "level": FINDING_LEVELS[finding.severity], "message": f"{finding.id} {finding.message}", "code": finding.id, "data": data}
+        yield Beat(0.5, [line])
+    if not owned:
+        yield test(ctx, test_id, "pass", passed)
+        return
+    problems = sum(len(f.problems) for f in owned)
+    status = "fail" if any(f.severity == "high" for f in owned) else "warn"
+    yield test(ctx, test_id, status, f"{plural(len(owned), 'finding')} ({', '.join(f.id for f in owned)}) from {plural(problems, 'problem')}")
+
+
+def latency_probe(ctx: BuildContext) -> Step:
+    v = validation(ctx)
+    panels = v.descriptor["panels"]
+    declared = sum(1 for p in panels if p.get("latency_ms"))
+    budget = latency.BUDGET_MS / 1000
+    yield log(f"Panel latency: {plural(len(panels), 'panel')} read from the descriptor, {declared} declaring a wait; budget {budget:.1f} s", declared=declared)
+    over = [p for p in v.problems if p.test == "T-15"]
+    yield from raise_findings(ctx, "T-15", f"{len(panels)} of {len(panels)} panels within the {budget:.1f} s budget (declared latency)")
+    return f"{len(panels) - len(over)} of {len(panels)} within budget"
+
+
+def numeric_check(ctx: BuildContext) -> Step:
+    v = validation(ctx)
+    count = sum(1 for p in v.problems if p.test == "T-16")
+    yield log(
+        f"Recounted every figure on {plural(len(v.payload['panels']), 'panel')} from {len(v.data.seats):,} seat rows: "
+        f"{plural(count, 'figure')} differ from the recount" if count else
+        f"Recounted every figure on {plural(len(v.payload['panels']), 'panel')} from {len(v.data.seats):,} seat rows: all equal",
+        problems=count,
+    )
+    yield from raise_findings(ctx, "T-16", f"every figure on {plural(len(v.payload['panels']), 'panel')} equals its recount from {len(v.data.seats):,} seat rows")
+    return _summary(ctx, "T-16")
+
+
+def chart_check(ctx: BuildContext) -> Step:
+    v = validation(ctx)
+    charts = [p for p in v.descriptor["panels"] if p["mark"] not in ("kpi", "table")]
+    yield log(f"Chart fitness: {plural(len(charts), 'chart')} checked for mark and data ({', '.join(sorted({p['mark'] for p in charts}))})")
+    yield from raise_findings(ctx, "T-17", f"{len(charts)} of {len(charts)} charts fit their data: no pie over 6 slices, comparisons as bars")
+    return _summary(ctx, "T-17")
+
+
+def visual_check(ctx: BuildContext) -> Step:
+    v = validation(ctx)
+    sheet = (v.descriptor.get("styles") or {}).get("sheet")
+    applied = f"and the rules of {sheet}" if sheet else "with no stylesheet beyond the design system"
+    yield log(f"Visual QA over the descriptor {applied}: formats, labels, palette, class colours, grid and fonts, both themes", stylesheet=sheet)
+    yield from raise_findings(ctx, "T-18", "one format per measure, money in dollars, every axis named with its unit")
+    yield from raise_findings(ctx, "T-19", "every colour a token, one colour per class, red for faults only, cards on the grid, one family per font role")
+    return _summary(ctx, "T-18", "T-19")
+
+
+def contrast_check(ctx: BuildContext) -> Step:
+    yield log("Contrast: text at 4.5:1 and chart roles at 3:1 on the panel surface, light and dark themes")
+    yield from raise_findings(ctx, "T-20", "every text colour at 4.5:1 and every chart role at 3:1 on the panel surface, both themes")
+    return _summary(ctx, "T-20")
+
+
+def _summary(ctx: BuildContext, *tests: str) -> str:
+    ids = [f.id for f in validation(ctx).findings if f.test in tests]
+    return plural(len(ids), "finding") if ids else "passed"
 
 
 def collect_payload(ctx: BuildContext) -> Step:
-    desc = dashboard.descriptor(ctx.iteration)
-    data = dataset(dashboard.DEFAULT_DATASET)
-    payload = dashboard.build(desc, data)
+    v = validation(ctx)
+    desc, data, payload = v.descriptor, v.data, v.payload
     yield log(
         f"Collected the {desc['title']} payload: {plural(len(payload['panels']), 'panel')} at All products, "
         f"from {len(data.seats):,} seat rows in the {data.title.lower()}",
@@ -712,9 +879,39 @@ def teardown(ctx: BuildContext) -> Step:
     return "torn down"
 
 
+def report_summary(ctx: BuildContext) -> dict[str, Any]:
+    """What report.ready carries (report/assemble.py `summary`), from what the build has recorded."""
+    statuses = [ctx.results.get(t, "not_run") for t in TEST_NAMES]
+    raised = sorted((f for f in ctx.findings if not f.get("advisory")), key=lambda f: found.order(f["id"]))
+    advisories = [f for f in ctx.findings if f.get("advisory")]
+    results = [phase_result(ctx, phase)[0] for phase in PHASES]
+    return {
+        "verdict": verdict({t: ctx.results.get(t, "not_run") for t in TEST_NAMES}, ctx.findings),
+        "counts": {
+            "phases": len(PHASES),
+            "phases_with_findings": results.count("findings"),
+            "tests": len(statuses),
+            **{status: statuses.count(status) for status in ("pass", "warn", "fail", "not_run")},
+            "findings": len(raised),
+            "advisories": len(advisories),
+            "gates": len(ctx.gates),
+        },
+        "findings": {
+            category: [f["id"] for f in (advisories if category == "Boundary" else raised) if f.get("category") == category]
+            for category in ("Numeric", "Visual", "Latency", "Boundary")
+        },
+    }
+
+
 def compile_report(ctx: BuildContext) -> Step:
-    yield log("Report assembly arrives in M9; this build's events are kept with its record")
-    return "not yet assembled"
+    """The report is assembled from the build's kept events (report/assemble.py); this step says
+    what it holds and emits report.ready (FR-R-1, D-64)."""
+    summary = report_summary(ctx)
+    count = summary["counts"]["findings"]
+    categories = [c for c, ids in summary["findings"].items() if ids and c != "Boundary"]
+    held = f"{plural(count, 'finding')} across {plural(len(categories), 'category', 'categories')}" if count else "0 findings"
+    yield Beat(LOG, [event("report.ready", f"Report compiled: {held}; verdict {summary['verdict']['label']}", **summary)])
+    return summary["verdict"]["label"]
 
 
 def package(ctx: BuildContext) -> Step:
@@ -763,14 +960,14 @@ STEPS: dict[str, Callable[[BuildContext], Step]] = {
     "seeding.implementation": implementation,
     "seeding.cleanup": cleanup,
     "seeding.life": life,
-    "probe.protection": pending(("T-13",)),
-    "probe.malformed": pending(("T-14",)),
-    "probe.latency": pending(("T-15",)),
+    "probe.protection": protection_probes,
+    "probe.malformed": malformed_probes,
+    "probe.latency": latency_probe,
     "harvest.collect": collect_payload,
-    "harvest.numeric": pending(("T-16",)),
-    "harvest.chart": pending(("T-17",)),
-    "harvest.visual": pending(("T-18", "T-19")),
-    "harvest.contrast": pending(("T-20",)),
+    "harvest.numeric": numeric_check,
+    "harvest.chart": chart_check,
+    "harvest.visual": visual_check,
+    "harvest.contrast": contrast_check,
     "report.teardown": teardown,
     "report.compile": compile_report,
     "report.package": package,
@@ -783,10 +980,18 @@ STEPS: dict[str, Callable[[BuildContext], Step]] = {
 PHASE_LEVELS = {"passed": "PASS", "findings": "WARN", "incomplete": "TEST", "failed": "FAIL"}
 
 
+def unexplained(ctx: BuildContext, phase: Phase) -> list[str]:
+    """The phase's failed tests that raised no finding: a failure with nothing to show for it."""
+    explained = {f.get("test") for f in ctx.findings if f["phase"] == phase.id and not f.get("advisory")}
+    return [t for t, _ in phase.tests if ctx.results.get(t) == "fail" and t not in explained]
+
+
 def phase_result(ctx: BuildContext, phase: Phase) -> tuple[str, dict[str, str]]:
-    """passed, findings (a finding that is not an advisory), incomplete (a test not run) or failed."""
+    """failed (a test failed with no finding for it), findings (a finding that is not an
+    advisory; its failed or warned tests are what found it, D-63), incomplete (a test not run) or
+    passed."""
     tests = {test_id: ctx.results.get(test_id, "not_run") for test_id, _ in phase.tests}
-    if "fail" in tests.values():
+    if unexplained(ctx, phase):
         return "failed", tests
     if any(f["phase"] == phase.id and not f.get("advisory") for f in ctx.findings):
         return "findings", tests
@@ -808,7 +1013,10 @@ def phase_beats(ctx: BuildContext, index: int, phase: Phase) -> Generator[Beat, 
     if result == "incomplete":
         detail = f"incomplete, {counts['not_run']} of {len(tests)} tests not run"
     elif result == "failed":
-        detail = f"failed ({', '.join(t for t, s in tests.items() if s == 'fail')})"
+        detail = f"failed ({', '.join(unexplained(ctx, phase))})"
+    elif result == "findings":
+        ids = [f["id"] for f in ctx.findings if f["phase"] == phase.id and not f.get("advisory")]
+        detail = f"findings ({', '.join(sorted(ids, key=found.order))})"
     yield Beat(0, [event("phase.completed", f"{phase.name}: {detail}", PHASE_LEVELS[result], index=index + 1, name=phase.name, result=result, tests=tests)])
 
 
@@ -828,16 +1036,22 @@ def build_summary(ctx: BuildContext) -> tuple[str, str, dict[str, Any]]:
     counts = {status: statuses.count(status) for status in ("pass", "warn", "fail", "not_run")}
     findings = [f for f in ctx.findings if not f.get("advisory")]
     advisories = [f for f in ctx.findings if f.get("advisory")]
-    passed = counts["pass"] + counts["warn"]
-    parts = [f"{passed} tests passed"]
-    if counts["not_run"]:
-        parts.append(f"{counts['not_run']} not run")
+    parts = [f"{counts['pass']} tests passed"]
+    if counts["warn"]:
+        parts.append(f"{counts['warn']} warned")
     if counts["fail"]:
         parts.append(f"{counts['fail']} failed")
-    message = f"Build completed: {', '.join(parts)}; {plural(len(findings), 'finding')}, {plural(len(advisories), 'boundary advisory', 'boundary advisories')}"
-    level = "FAIL" if counts["fail"] else "WARN" if findings else "INFO" if counts["not_run"] else "PASS"
+    if counts["not_run"]:
+        parts.append(f"{counts['not_run']} not run")
+    outcome = verdict({t: ctx.results.get(t, "not_run") for t in TEST_NAMES}, ctx.findings)
+    message = (
+        f"Build completed: {', '.join(parts)}; {plural(len(findings), 'finding')}, "
+        f"{plural(len(advisories), 'boundary advisory', 'boundary advisories')}; verdict {outcome['label']}"
+    )
+    level = {"failed": "FAIL", "findings": "WARN", "incomplete": "INFO", "passed": "PASS"}[outcome["id"]]
     data = {
         "status": "completed",
+        "verdict": outcome,
         "seed_name": ctx.seed_name,
         "fingerprint": ctx.fingerprint,
         "tests": {t: ctx.results.get(t, "not_run") for t in TEST_NAMES},

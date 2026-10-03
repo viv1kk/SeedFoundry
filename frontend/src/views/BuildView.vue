@@ -3,13 +3,13 @@
 // iteration's latest build: the header and stepper left, the console right. Everything on
 // the page comes from the build record in the snapshot and the build's events
 // (stores/buildLog.ts), and every time from sim_t, so it reads the same at any speed and after
-// a refresh (FR-B-7). On completion a summary with the report's actions sits above the stepper
-// until M9's report panel replaces it, and the console can be hidden.
+// a refresh (FR-B-7). On completion the build report (FR-B-9, D-65) sits above the collapsed
+// stepper, with its actions, and the console can be hidden. The page stays on `/build/<n>` (OQ-21).
 import { computed, ref, watch } from 'vue'
 import BaseChip from '../components/base/BaseChip.vue'
 import BuildConsole from '../components/build/BuildConsole.vue'
-import BuildSummary from '../components/build/BuildSummary.vue'
 import PhaseStepper from '../components/build/PhaseStepper.vue'
+import BuildReport from '../components/report/BuildReport.vue'
 import type { LabEvent } from '../events'
 import { clock, consoleLines, derivePhases, elapsed, progress } from '../stepper'
 import { useBuildLogStore } from '../stores/buildLog'
@@ -120,7 +120,7 @@ const otherBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteration =
           </header>
           <p v-if="!ready" class="build__note">Loading the build log</p>
           <template v-else>
-            <BuildSummary v-if="build.status === 'completed' && completedEvent" :iteration="iteration" :completed="completedEvent" :phases="phases.length" />
+            <BuildReport v-if="build.status === 'completed' && completedEvent" :build="build" />
             <PhaseStepper :phases="phases" />
           </template>
         </div>

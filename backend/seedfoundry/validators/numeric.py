@@ -7,8 +7,9 @@ mistake in it. Checks: derived KPIs equal their formula; part sums equal their t
 treemap legend's shares sum to 100 within 0.1; table totals equal their row sums; the same
 measure agrees on every panel where it appears; every figure equals its recount.
 
-Minimal in M7 (the exit criterion: the polished payload passes); M9 maps each problem to a
-finding (N-1 to N-5).
+Minimal in M7 (the exit criterion: the polished payload passes). From M9 it runs in the build
+(T-16), and findings.py groups its problems into findings (N-1 to N-5) by panel. Each message
+reads on its own, with the figures it compares.
 """
 
 from __future__ import annotations
@@ -16,11 +17,32 @@ from __future__ import annotations
 from typing import Any
 
 from seedfoundry.data.model import Dataset, Seat
-from seedfoundry.validators.problems import Problem
+from seedfoundry.validators.problems import Problem, display
 
 CLASS_IDS = ("active", "underused", "unused", "leaver", "unassigned")
 RECOVERABLE_IDS = ("unused", "leaver", "unassigned")
 SHARE_TOLERANCE = 0.1
+
+# How a message names a panel or a measure. The payload holds no titles, so the check names
+# what it compares in its own words.
+KPI_NAMES = {"k-entitled": "Entitled", "k-assigned": "Assigned", "k-active": "Active", "k-idle": "Unused or underused"}
+PANEL_NAMES = {
+    "k-entitled": "the Entitled KPI",
+    "k-assigned": "the Assigned KPI",
+    "k-recoverable": "the Recoverable a year KPI",
+    "trend": "the trend",
+    "recoverable": "recoverable cost by product",
+    "candidates": "the candidates total row",
+    "seats": "the Seats footer",
+}
+COLUMN_NAMES = {
+    "entitled": "entitled seats",
+    "active": "Active seats",
+    "underused": "Underused seats",
+    "unused": "Unused seats",
+    "leaver": "Leaver seats",
+    "unassigned": "Unassigned seats",
+}
 
 
 def _rows(data: Dataset, filter_: dict[str, str | None]) -> list[Seat]:
@@ -60,11 +82,14 @@ class _Checker:
     def __init__(self) -> None:
         self.problems: list[Problem] = []
 
-    def equal(self, check: str, panel: str, expected: Any, shown: Any, what: str) -> None:
+    def equal(self, check: str, panel: str, expected: Any, shown: Any, what: str, unit: str = "", message: str | None = None) -> None:
+        """A problem when a shown figure is not the expected one. The default message reads
+        "<what>: shows <shown>, the recount gives <expected>"."""
         if expected != shown:
-            self.problems.append(Problem("T-16", check, panel, expected, shown, f"{what}: expected {expected}, shown {shown}"))
+            text = message or f"{what}: shows {display(shown, unit)}, the recount gives {display(expected, unit)}"
+            self.problems.append(Problem("T-16", check, panel, expected, shown, text, unit))
 
-    def agree(self, what: str, truth: Any, *shown: tuple[str, Any]) -> None:
+    def agree(self, what: str, truth: Any, *shown: tuple[str, Any], unit: str = "") -> None:
         """The same measure on two panels. When they disagree, the panel whose figure is off its
         recount is the one reported (both, if both are), so a wrong KPI is not blamed on the
         table beside it (D-60)."""
@@ -72,7 +97,9 @@ class _Checker:
         if all(value == values[0] for value in values):
             return
         for panel, value in [(p, v) for p, v in shown if v != truth] or shown[-1:]:
-            self.problems.append(Problem("T-16", "cross-panel", panel, truth, value, f"{what}: the recount is {truth}, {panel} shows {value}"))
+            name = PANEL_NAMES.get(panel, panel)
+            text = f"{what}: {name} shows {display(value, unit)}, the recount gives {display(truth, unit)}"
+            self.problems.append(Problem("T-16", "cross-panel", panel, truth, value, text, unit))
 
 
 def reconcile(payload: dict[str, Any], data: Dataset) -> list[Problem]:
@@ -87,10 +114,19 @@ def reconcile(payload: dict[str, Any], data: Dataset) -> list[Problem]:
 
     # KPIs: each equals its formula over the rows.
     for panel_id, key in (("k-entitled", "entitled"), ("k-assigned", "assigned"), ("k-active", "active"), ("k-idle", "idle")):
-        check.equal("kpi-formula", panel_id, truth[key], panels[panel_id]["value"], f"{panel_id} value")
+        check.equal("kpi-formula", panel_id, truth[key], panels[panel_id]["value"], f"{KPI_NAMES[panel_id]} KPI")
     recoverable_kpi = panels["k-recoverable"]
-    check.equal("kpi-formula", "k-recoverable", truth["recoverable_year"], recoverable_kpi["value"], "Recoverable a year")
-    check.equal("kpi-formula", "k-recoverable", truth["withheld_seats"], recoverable_kpi["withheld_seats"], "Withheld seats")
+    check.equal(
+        "kpi-formula",
+        "k-recoverable",
+        truth["recoverable_year"],
+        recoverable_kpi["value"],
+        "",
+        "$",
+        f"Recoverable a year: KPI shows {display(recoverable_kpi['value'], '$')}, "
+        f"unit cost x 12 over the recoverable seats of priced products gives {display(truth['recoverable_year'], '$')}",
+    )
+    check.equal("kpi-formula", "k-recoverable", truth["withheld_seats"], recoverable_kpi["withheld_seats"], "Withheld seats beside Recoverable a year")
 
     # Entitled, assigned and active by product: each bar equals its recount; bars sum to the KPIs.
     entitlement = panels["entitlement"]
@@ -98,10 +134,18 @@ def reconcile(payload: dict[str, Any], data: Dataset) -> list[Problem]:
         product_rows = by_product.get(category["id"], [])
         product_truth = _recount(product_rows)
         for key in ("entitled", "assigned", "active"):
-            check.equal("figure", "entitlement", product_truth[key], entitlement["series"][key][i], f"{category['name']} {key}")
-    check.equal("product-coverage", "entitlement", sorted(by_product), sorted(c["id"] for c in entitlement["categories"]), "products shown")
+            check.equal("figure", "entitlement", product_truth[key], entitlement["series"][key][i], f"Product chart: {category['name']} {key} bar")
+    check.equal("product-coverage", "entitlement", sorted(by_product), sorted(c["id"] for c in entitlement["categories"]), "Products on the product chart")
     for key, kpi in (("entitled", "k-entitled"), ("assigned", "k-assigned"), ("active", "k-active")):
-        check.equal("part-sum", "entitlement", panels[kpi]["value"], sum(entitlement["series"][key]), f"{key} bars against the {kpi} KPI")
+        bars = sum(entitlement["series"][key])
+        check.equal(
+            "part-sum",
+            "entitlement",
+            panels[kpi]["value"],
+            bars,
+            "",
+            message=f"{key.capitalize()} seats: KPI shows {display(panels[kpi]['value'])}, product chart sums to {display(bars)}",
+        )
 
     # Treemap: leaves equal their recount, children sum to their parent, the total is the KPI.
     treemap = panels["seats-treemap"]
@@ -123,33 +167,45 @@ def reconcile(payload: dict[str, Any], data: Dataset) -> list[Problem]:
         for node in nodes:
             inner = {**scope, node["level"]: node["id"]}
             if node.get("children"):
-                check.equal("part-sum", "seats-treemap", node["value"], walk(node["children"], inner), f"children of {node['name']}")
-            check.equal("figure", "seats-treemap", count(inner), node["value"], f"{node['name']} seats")
+                inside = walk(node["children"], inner)
+                text = f"Treemap: {node['name']} shows {display(node['value'])} seats, its cells sum to {display(inside)}"
+                check.equal("part-sum", "seats-treemap", node["value"], inside, "", message=text)
+            check.equal("figure", "seats-treemap", count(inner), node["value"], f"Treemap: {node['name']} seats")
             total += node["value"]
         return total
 
-    check.equal("part-sum", "seats-treemap", panels["k-entitled"]["value"], walk(treemap["nodes"], {}), "treemap cells against the Entitled KPI")
+    cells_total = walk(treemap["nodes"], {})
+    check.equal(
+        "part-sum",
+        "seats-treemap",
+        panels["k-entitled"]["value"],
+        cells_total,
+        "",
+        message=f"Treemap: Entitled KPI shows {display(panels['k-entitled']['value'])}, the treemap's cells sum to {display(cells_total)}",
+    )
 
     # Treemap legend: shares of entitled seats, one decimal each, summing to 100.
     legend = treemap["legend"]
     shares = sum(item["share"] for item in legend)
     if truth["entitled"] and round(abs(shares - 100), 6) > SHARE_TOLERANCE:
-        check.problems.append(Problem("T-16", "percent-sum", "seats-treemap", 100.0, round(shares, 1), f"legend shares sum to {shares:.1f}%, not 100%"))
+        text = f"Treemap legend: class shares sum to {shares:.1f}%, not 100%"
+        check.problems.append(Problem("T-16", "percent-sum", "seats-treemap", 100.0, round(shares, 1), text, "%"))
     for item in legend:
         expected_share = round(100 * truth[item["class"]] / truth["entitled"], 1) if truth["entitled"] else 0.0
-        check.equal("figure", "seats-treemap", truth[item["class"]], item["count"], f"legend {item['label']} count")
+        check.equal("figure", "seats-treemap", truth[item["class"]], item["count"], f"Treemap legend: {item['label']} count")
         if round(abs(expected_share - item["share"]), 6) > SHARE_TOLERANCE:
-            check.problems.append(Problem("T-16", "figure", "seats-treemap", expected_share, item["share"], f"legend {item['label']} share"))
+            text = f"Treemap legend: {item['label']} share shows {item['share']:.1f}%, the recount gives {expected_share:.1f}%"
+            check.problems.append(Problem("T-16", "figure", "seats-treemap", expected_share, item["share"], text, "%"))
 
     # Assigned and in use, by month.
     trend = panels["trend"]
     months = len(data.months)
     assigned = [sum(1 for s in rows if s.assigned_from is not None and s.assigned_from <= m) for m in range(months)]
     in_use = [sum(1 for s in rows if s.usage[m] > 0) for m in range(months)]
-    check.equal("figure", "trend", list(data.months), trend["months"], "months")
-    check.equal("figure", "trend", assigned, trend["series"]["assigned"], "assigned by month")
-    check.equal("figure", "trend", in_use, trend["series"]["in_use"], "in use by month")
-    check.agree("assigned in the last month against the Assigned KPI", truth["assigned"], ("k-assigned", panels["k-assigned"]["value"]), ("trend", trend["series"]["assigned"][-1]))
+    check.equal("figure", "trend", list(data.months), trend["months"], "Trend: months")
+    check.equal("figure", "trend", assigned, trend["series"]["assigned"], "Trend: assigned seats by month")
+    check.equal("figure", "trend", in_use, trend["series"]["in_use"], "Trend: seats in use by month")
+    check.agree("Assigned seats in the last month", truth["assigned"], ("k-assigned", panels["k-assigned"]["value"]), ("trend", trend["series"]["assigned"][-1]))
 
     # Recoverable cost by product: each bar equals unit cost x 12 over its recoverable seats, or is
     # withheld when the product has no price; the priced bars sum to the KPI.
@@ -158,10 +214,16 @@ def reconcile(payload: dict[str, Any], data: Dataset) -> list[Problem]:
         product_truth = _recount(by_product.get(category["id"], []))
         priced = data.product(category["id"]).unit_cost is not None  # type: ignore[union-attr]
         expected = product_truth["recoverable_year"] if priced else None
-        check.equal("figure", "recoverable", expected, recoverable["values"][i], f"{category['name']} recoverable a year")
-        check.equal("figure", "recoverable", not priced, recoverable["withheld"][i], f"{category['name']} withheld")
+        check.equal("figure", "recoverable", expected, recoverable["values"][i], f"Recoverable cost by product: {category['name']}", "$")
+        check.equal("figure", "recoverable", not priced, recoverable["withheld"][i], f"Recoverable cost by product: {category['name']} withheld")
     priced_sum = sum(v for v in recoverable["values"] if v is not None)
-    check.agree("Recoverable a year against the sum of recoverable cost by product", truth["recoverable_year"], ("recoverable", priced_sum), ("k-recoverable", recoverable_kpi["value"]))
+    check.agree(
+        "Recoverable a year against the sum of recoverable cost by product",
+        truth["recoverable_year"],
+        ("recoverable", priced_sum),
+        ("k-recoverable", recoverable_kpi["value"]),
+        unit="$",
+    )
 
     # Optimisation candidates: rows equal their recount; the total row equals the row sums.
     candidates = panels["candidates"]
@@ -169,36 +231,46 @@ def reconcile(payload: dict[str, Any], data: Dataset) -> list[Problem]:
     for row in candidates["rows"]:
         product_truth = _recount(by_product.get(row["product_id"], []))
         for key in columns:
-            check.equal("figure", "candidates", product_truth[key], row[key], f"{row['product']} {key}")
+            check.equal("figure", "candidates", product_truth[key], row[key], f"Optimisation candidates: {row['product']} {COLUMN_NAMES[key]}")
     for key in columns:
-        check.equal("table-total", "candidates", sum(row[key] for row in candidates["rows"]), candidates["total"][key], f"total {key}")
+        rows_sum = sum(row[key] for row in candidates["rows"])
+        text = f"Optimisation candidates: total row shows {display(candidates['total'][key])} {COLUMN_NAMES[key]}, the rows sum to {display(rows_sum)}"
+        check.equal("table-total", "candidates", rows_sum, candidates["total"][key], "", message=text)
+    rows_recoverable = sum(row["recoverable_year"] or 0 for row in candidates["rows"])
     check.equal(
         "table-total",
         "candidates",
-        sum(row["recoverable_year"] or 0 for row in candidates["rows"]),
+        rows_recoverable,
         candidates["total"]["recoverable_year"],
-        "total recoverable a year",
+        "",
+        "$",
+        f"Optimisation candidates: total row shows {display(candidates['total']['recoverable_year'], '$')} recoverable a year, "
+        f"the rows sum to {display(rows_recoverable, '$')}",
     )
-    check.agree("total entitled against the Entitled KPI", truth["entitled"], ("k-entitled", panels["k-entitled"]["value"]), ("candidates", candidates["total"]["entitled"]))
-    check.agree("total recoverable against the KPI", truth["recoverable_year"], ("k-recoverable", recoverable_kpi["value"]), ("candidates", candidates["total"]["recoverable_year"]))
+    check.agree("Entitled seats", truth["entitled"], ("k-entitled", panels["k-entitled"]["value"]), ("candidates", candidates["total"]["entitled"]))
+    check.agree(
+        "Recoverable a year", truth["recoverable_year"], ("k-recoverable", recoverable_kpi["value"]), ("candidates", candidates["total"]["recoverable_year"]), unit="$"
+    )
 
     # Seats: the footer's class counts sum to its total, which is the Entitled KPI.
     seats = panels["seats"]
     footer = seats["footer"]
-    check.equal("table-total", "seats", sum(footer[c] for c in CLASS_IDS), footer["total"], "footer class counts against the footer total")
-    check.agree("footer total against the Entitled KPI", truth["entitled"], ("k-entitled", panels["k-entitled"]["value"]), ("seats", footer["total"]))
+    class_sum = sum(footer[c] for c in CLASS_IDS)
+    text = f"Seats footer: Total shows {display(footer['total'])}, the class counts sum to {display(class_sum)}"
+    check.equal("table-total", "seats", class_sum, footer["total"], "", message=text)
+    check.agree("Entitled seats", truth["entitled"], ("k-entitled", panels["k-entitled"]["value"]), ("seats", footer["total"]))
     for c in CLASS_IDS:
-        check.equal("figure", "seats", truth[c], footer[c], f"footer {c}")
-    check.equal("figure", "seats", truth["entitled"], seats["total"], "seat rows in the filter")
+        check.equal("figure", "seats", truth[c], footer[c], f"Seats footer: {COLUMN_NAMES[c]}")
+    check.equal("figure", "seats", truth["entitled"], seats["total"], "Seats: seat rows in the filter")
     on_page = min(seats["page_size"], max(0, seats["total"] - (seats["page"] - 1) * seats["page_size"]))
-    check.equal("figure", "seats", on_page, len(seats["rows"]), "rows on the page")
+    check.equal("figure", "seats", on_page, len(seats["rows"]), "Seats: rows on the page")
     by_id = {s.seat_id: s for s in rows}
     for row in seats["rows"]:
         seat = by_id.get(row["seat_id"])
         if seat is None:
-            check.problems.append(Problem("T-16", "figure", "seats", "a seat in the filter", row["seat_id"], f"{row['seat_id']} is not in the filter"))
+            check.problems.append(Problem("T-16", "figure", "seats", "a seat in the filter", row["seat_id"], f"Seats: {row['seat_id']} is not in the filter"))
             continue
         for key in ("product", "department", "assignee", "last_used", "days_idle", "utilisation_class", "unit_cost"):
-            check.equal("figure", "seats", getattr(seat, key), row[key], f"{row['seat_id']} {key}")
+            check.equal("figure", "seats", getattr(seat, key), row[key], f"Seats: {row['seat_id']} {key}")
 
     return check.problems

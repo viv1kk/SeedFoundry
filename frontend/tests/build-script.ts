@@ -1,7 +1,10 @@
 // A build's events for page tests, shaped as backend/seedfoundry/engine/script.py emits them
 // (build-simulation.md sections 2 and 3): the catalogue's 11 phases, sub-step ids and tests,
 // iteration 2's feedback sub-steps, sim_t spread over each phase's share of 75 s, and a result
-// per phase that a test can choose (the sample gives only passed and incomplete until M9).
+// per phase that a test can choose. By default it is the sample's build from M9 (D-63, D-66):
+// iteration 1's Stress & Probe and Harvest Validation complete with findings (L-1; N-1 to N-5 and
+// V-1 to V-8, each raised before the result of the test that found it), iteration 2 passes, and
+// Compile report emits report.ready.
 
 import type { LabEvent, Level } from '../src/events'
 import type { Build, PhasePlan } from '../src/stores/lab'
@@ -72,14 +75,45 @@ export interface ScriptOptions {
   build?: Build
   /** Seq of build.started. */
   first?: number
-  /** Results other than passed, by phase id. */
+  /** Results other than passed, by phase id, over the sample's (iteration 1: probe and harvest findings). */
   results?: Partial<Record<string, PhaseResult>>
+  /** A phase to raise one boundary advisory in, which never counts as a finding (D-12). */
+  advisoryIn?: string
+}
+
+/** The sample's findings by phase, and the tests that find them (D-63). */
+export const SAMPLE_FINDINGS: Record<string, [id: string, test: string][]> = {
+  probe: [['L-1', 'T-15']],
+  harvest: [
+    ['N-1', 'T-16'],
+    ['N-2', 'T-16'],
+    ['N-3', 'T-16'],
+    ['N-4', 'T-16'],
+    ['N-5', 'T-16'],
+    ['V-1', 'T-17'],
+    ['V-4', 'T-18'],
+    ['V-5', 'T-18'],
+    ['V-2', 'T-19'],
+    ['V-3', 'T-19'],
+    ['V-6', 'T-19'],
+    ['V-7', 'T-19'],
+    ['V-8', 'T-20'],
+  ],
+}
+
+/** A test's status in a phase that completes with findings: fail with a high (numeric) finding, warn with medium ones. */
+function findingStatus(findings: [string, string][], test: string): 'pass' | 'warn' | 'fail' {
+  const own = findings.filter(([, t]) => t === test)
+  if (!own.length) return 'pass'
+  return own.some(([id]) => id.startsWith('N-')) ? 'fail' : 'warn'
 }
 
 /** Every event of a build, in order, as the server streams them. */
 export function script(options: ScriptOptions = {}): LabEvent[] {
   const build = options.build ?? buildRecord()
-  const results = options.results ?? {}
+  const results: Partial<Record<string, PhaseResult>> = { ...(build.iteration === 1 ? { probe: 'findings', harvest: 'findings' } : {}), ...options.results }
+  const statuses: Record<string, string> = {}
+  const raised: string[] = []
   let seq = (options.first ?? 1) - 1
   const events: LabEvent[] = []
   const emit = (type: LabEvent['type'], message: string, extra: Partial<LabEvent> = {}): LabEvent => {
@@ -126,16 +160,26 @@ export function script(options: ScriptOptions = {}): LabEvent[] {
         emit('log', `${step.name}: working`, { ...inStep, sim_t: t() })
       }
       beat++
+      if (step.id === 'report.compile') {
+        const count = raised.length
+        emit('report.ready', `Report compiled: ${count ? `${count} findings across 3 categories; verdict Completed with findings` : '0 findings; verdict Passed'}`, { ...inStep, sim_t: t() })
+      }
       if (i === phase.steps.length - 1) {
-        for (const test of phase.tests) {
-          const status = result === 'incomplete' ? 'not_run' : result === 'failed' ? 'fail' : 'pass'
-          const level: Level = status === 'pass' ? 'PASS' : status === 'fail' ? 'FAIL' : 'TEST'
-          emit('test.result', `${test.id} ${test.name}: ${status === 'not_run' ? 'not run, this validator arrives in M9' : status}`, { ...inStep, level, code: test.id, sim_t: t(), data: { id: test.id, name: test.name, status } })
-          beat++
+        const findings = result === 'findings' ? (SAMPLE_FINDINGS[phase.id] ?? [['N-1', phase.tests[0]?.id ?? '']]) : []
+        if (options.advisoryIn === phase.id) {
+          emit('finding.raised', 'B-UI-1 music.md line 69: "pie chart" belongs in environment.md, Styling (advisory)', { ...inStep, level: 'WARN', code: 'B-UI-1', sim_t: t(), data: { id: 'B-UI-1', advisory: true } })
         }
-        if (result === 'findings') {
-          emit('finding.raised', 'N-1 Entitled seats: KPI shows 12,480, product chart sums to 14,976', { ...inStep, level: 'FAIL', code: 'N-1', sim_t: t(), data: { id: 'N-1' } })
-          emit('finding.raised', 'B-UI-1 advisory', { ...inStep, level: 'WARN', code: 'B-UI-1', sim_t: t(), data: { id: 'B-UI-1', advisory: true } })
+        for (const test of phase.tests) {
+          for (const [id, by] of findings.filter(([, t]) => t === test.id)) {
+            raised.push(id)
+            const level: Level = id.startsWith('N-') ? 'FAIL' : 'WARN'
+            emit('finding.raised', `${id} finding`, { ...inStep, level, code: id, sim_t: t(), data: { id, test: by, phase: phase.id, advisory: false } })
+          }
+          const status = result === 'incomplete' ? 'not_run' : result === 'failed' ? 'fail' : findingStatus(findings, test.id)
+          statuses[test.id] = status
+          const level: Level = status === 'pass' ? 'PASS' : status === 'fail' ? 'FAIL' : status === 'warn' ? 'WARN' : 'TEST'
+          emit('test.result', `${test.id} ${test.name}: ${status === 'not_run' ? 'not run' : status}`, { ...inStep, level, code: test.id, sim_t: t(), data: { id: test.id, name: test.name, status } })
+          beat++
         }
       }
       const summary = step.id.startsWith('assay.feedback-') && step.id !== 'assay.feedback-route' ? 'no change' : `${step.name.toLowerCase()} done`
@@ -144,17 +188,26 @@ export function script(options: ScriptOptions = {}): LabEvent[] {
     })
     done += phase.weight
     start = (75 * done) / total
-    const tests = Object.fromEntries(phase.tests.map((test) => [test.id, result === 'incomplete' ? 'not_run' : result === 'failed' ? 'fail' : 'pass']))
+    const tests = Object.fromEntries(phase.tests.map((test) => [test.id, statuses[test.id]]))
     emit('phase.completed', `${phase.name}: ${result}`, { ...at, level: LEVEL[result], sim_t: Math.round(start * 1000) / 1000, data: { index: index + 1, name: phase.name, result, tests } })
   })
-  // D-58: T-08 runs from M7, so a sample build passes 13 tests and leaves 8 not run.
-  emit('build.completed', 'Build completed: 13 tests passed, 8 not run; 0 findings, 0 boundary advisories', {
+  // D-66: every test runs from M9; the sample's iteration 1 passes 15, warns 5 and fails 1 with its 14 findings.
+  const all = Object.values(statuses)
+  const counts = { pass: 0, warn: 0, fail: 0, not_run: 0 }
+  for (const status of all) counts[status as keyof typeof counts]++
+  const parts = [`${counts.pass} tests passed`]
+  if (counts.warn) parts.push(`${counts.warn} warned`)
+  if (counts.fail) parts.push(`${counts.fail} failed`)
+  if (counts.not_run) parts.push(`${counts.not_run} not run`)
+  const verdict = raised.length ? 'Completed with findings' : 'Passed'
+  emit('build.completed', `Build completed: ${parts.join(', ')}; ${raised.length} findings, 0 boundary advisories; verdict ${verdict}`, {
     sim_t: 75,
     data: {
       status: 'completed',
-      counts: { pass: 13, warn: 0, fail: 0, not_run: 8 },
-      findings: [],
-      advisories: [],
+      verdict: { id: raised.length ? 'findings' : 'passed', label: verdict, tone: raised.length ? 'warning' : 'positive' },
+      counts,
+      findings: raised,
+      advisories: options.advisoryIn ? ['B-UI-1'] : [],
       gates: ['servicenow-incident-api', 'solution-approval', 'close-seeding'],
       sim_seconds: 75,
     },

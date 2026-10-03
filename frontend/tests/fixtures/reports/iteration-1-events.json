@@ -1,0 +1,6454 @@
+[
+ {
+  "seq": 6,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": null,
+  "step": null,
+  "type": "build.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Build started: iteration 1, seed \"License Optimization\"",
+  "data": {
+   "build": {
+    "id": "b-1",
+    "iteration": 1,
+    "status": "running",
+    "seed_name": "License Optimization",
+    "fingerprint": "a127ba",
+    "phase": null,
+    "plan": [
+     {
+      "id": "assay",
+      "name": "Assay",
+      "weight": 6,
+      "steps": [
+       {
+        "id": "assay.inventory",
+        "name": "Inventory files"
+       },
+       {
+        "id": "assay.coverage",
+        "name": "Measure Ensemble coverage per file"
+       },
+       {
+        "id": "assay.boundary",
+        "name": "Ensemble boundary check"
+       },
+       {
+        "id": "assay.fingerprint",
+        "name": "Fingerprint intake"
+       }
+      ],
+      "tests": [
+       {
+        "id": "T-01",
+        "name": "Core files present"
+       },
+       {
+        "id": "T-02",
+        "name": "Ensemble coverage"
+       },
+       {
+        "id": "T-03",
+        "name": "Ensemble boundary check"
+       }
+      ]
+     },
+     {
+      "id": "distill",
+      "name": "Distillation",
+      "weight": 12,
+      "steps": [
+       {
+        "id": "distill.profile",
+        "name": "Load model profile from Instrument Awareness"
+       },
+       {
+        "id": "distill.budget",
+        "name": "Plan context budget"
+       },
+       {
+        "id": "distill.music",
+        "name": "Distil Music"
+       },
+       {
+        "id": "distill.person",
+        "name": "Distil Person"
+       },
+       {
+        "id": "distill.environment",
+        "name": "Distil Environment layers"
+       },
+       {
+        "id": "distill.context",
+        "name": "Merge Misc Context"
+       }
+      ],
+      "tests": [
+       {
+        "id": "T-04",
+        "name": "All Music sections extracted"
+       }
+      ]
+     },
+     {
+      "id": "synth",
+      "name": "Synthesis",
+      "weight": 10,
+      "steps": [
+       {
+        "id": "synth.core",
+        "name": "Draft core.md"
+       },
+       {
+        "id": "synth.adaptation",
+        "name": "Draft adaptation.md"
+       },
+       {
+        "id": "synth.protection",
+        "name": "Draft protection.md"
+       },
+       {
+        "id": "synth.manifest",
+        "name": "Assemble Seed manifest"
+       }
+      ],
+      "tests": [
+       {
+        "id": "T-05",
+        "name": "Manifest schema valid"
+       }
+      ]
+     },
+     {
+      "id": "xexam",
+      "name": "Cross-Examination",
+      "weight": 8,
+      "steps": [
+       {
+        "id": "xexam.core",
+        "name": "Reviewer pass on core"
+       },
+       {
+        "id": "xexam.layers",
+        "name": "Reviewer pass on adaptation and protection"
+       },
+       {
+        "id": "xexam.resolve",
+        "name": "Resolve contradictions"
+       },
+       {
+        "id": "xexam.signoff",
+        "name": "Sign off drafts"
+       }
+      ],
+      "tests": [
+       {
+        "id": "T-06",
+        "name": "No contradictions between files"
+       }
+      ]
+     },
+     {
+      "id": "germ",
+      "name": "Germination Trial",
+      "weight": 8,
+      "steps": [
+       {
+        "id": "germ.dry-run",
+        "name": "Dry run on micro dataset"
+       },
+       {
+        "id": "germ.data-swap",
+        "name": "Data-swap test on alternate dataset"
+       },
+       {
+        "id": "germ.shape",
+        "name": "Output shape check"
+       }
+      ],
+      "tests": [
+       {
+        "id": "T-07",
+        "name": "Dry run completes"
+       },
+       {
+        "id": "T-08",
+        "name": "Data-swap logic unchanged"
+       }
+      ]
+     },
+     {
+      "id": "contain",
+      "name": "Containment",
+      "weight": 7,
+      "steps": [
+       {
+        "id": "contain.handshake",
+        "name": "Seed API handshake"
+       },
+       {
+        "id": "contain.sandbox",
+        "name": "Provision isolated sandbox"
+       },
+       {
+        "id": "contain.upload",
+        "name": "Upload seed files"
+       },
+       {
+        "id": "contain.checksums",
+        "name": "Verify upload checksums"
+       }
+      ],
+      "tests": [
+       {
+        "id": "T-09",
+        "name": "Upload checksums match"
+       }
+      ]
+     },
+     {
+      "id": "plant",
+      "name": "Planting",
+      "weight": 8,
+      "steps": [
+       {
+        "id": "plant.layers",
+        "name": "Plant the three layers"
+       },
+       {
+        "id": "plant.headings",
+        "name": "Heading summary per layer"
+       },
+       {
+        "id": "plant.stack",
+        "name": "List the declared stack"
+       }
+      ],
+      "tests": [
+       {
+        "id": "T-10",
+        "name": "Seed reports ready"
+       }
+      ]
+     },
+     {
+      "id": "seeding",
+      "name": "Seeding & Life",
+      "weight": 16,
+      "steps": [
+       {
+        "id": "seeding.discovery",
+        "name": "Discovery"
+       },
+       {
+        "id": "seeding.assessment",
+        "name": "Assessment"
+       },
+       {
+        "id": "seeding.implementation",
+        "name": "Implementation"
+       },
+       {
+        "id": "seeding.cleanup",
+        "name": "Cleanup"
+       },
+       {
+        "id": "seeding.life",
+        "name": "Life"
+       }
+      ],
+      "tests": [
+       {
+        "id": "T-11",
+        "name": "All gates resolved"
+       },
+       {
+        "id": "T-12",
+        "name": "Outputs produced"
+       }
+      ]
+     },
+     {
+      "id": "probe",
+      "name": "Stress & Probe",
+      "weight": 9,
+      "steps": [
+       {
+        "id": "probe.protection",
+        "name": "Protection rule probes"
+       },
+       {
+        "id": "probe.malformed",
+        "name": "Malformed input probes"
+       },
+       {
+        "id": "probe.latency",
+        "name": "Panel latency measurement"
+       }
+      ],
+      "tests": [
+       {
+        "id": "T-13",
+        "name": "Protection probes"
+       },
+       {
+        "id": "T-14",
+        "name": "Malformed input rejected"
+       },
+       {
+        "id": "T-15",
+        "name": "Latency within budget"
+       }
+      ]
+     },
+     {
+      "id": "harvest",
+      "name": "Harvest Validation",
+      "weight": 10,
+      "steps": [
+       {
+        "id": "harvest.collect",
+        "name": "Collect dashboard payload"
+       },
+       {
+        "id": "harvest.numeric",
+        "name": "Numeric reconciliation"
+       },
+       {
+        "id": "harvest.chart",
+        "name": "Chart and data consistency"
+       },
+       {
+        "id": "harvest.visual",
+        "name": "Visual QA"
+       },
+       {
+        "id": "harvest.contrast",
+        "name": "Contrast check"
+       }
+      ],
+      "tests": [
+       {
+        "id": "T-16",
+        "name": "Numeric reconciliation"
+       },
+       {
+        "id": "T-17",
+        "name": "Chart fitness"
+       },
+       {
+        "id": "T-18",
+        "name": "Format and label consistency"
+       },
+       {
+        "id": "T-19",
+        "name": "Palette and layout"
+       },
+       {
+        "id": "T-20",
+        "name": "Contrast"
+       }
+      ]
+     },
+     {
+      "id": "report",
+      "name": "Teardown & Report",
+      "weight": 6,
+      "steps": [
+       {
+        "id": "report.teardown",
+        "name": "Tear down sandbox"
+       },
+       {
+        "id": "report.compile",
+        "name": "Compile report"
+       },
+       {
+        "id": "report.package",
+        "name": "Package seed files"
+       }
+      ],
+      "tests": [
+       {
+        "id": "T-21",
+        "name": "Sandbox torn down cleanly"
+       }
+      ]
+     }
+    ],
+    "sim_seconds": 75.0
+   },
+   "replaces": []
+  },
+  "sim_t": 0.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 7,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": null,
+  "type": "phase.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Phase 1 of 11: Assay",
+  "data": {
+   "index": 1,
+   "name": "Assay",
+   "weight": 6
+  },
+  "sim_t": 0.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 8,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.inventory",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Inventory files",
+  "data": {
+   "name": "Inventory files"
+  },
+  "sim_t": 0.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 9,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.inventory",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Inventory: 4 core files, 1 context file, 16.8 KB",
+  "data": {
+   "files": [
+    {
+     "id": "f-1",
+     "name": "person.md",
+     "category": "person",
+     "size": 3071
+    },
+    {
+     "id": "f-2",
+     "name": "instrument-awareness.md",
+     "category": "instrument_awareness",
+     "size": 2784
+    },
+    {
+     "id": "f-3",
+     "name": "environment.md",
+     "category": "environment",
+     "size": 6505
+    },
+    {
+     "id": "f-4",
+     "name": "music.md",
+     "category": "music",
+     "size": 3649
+    },
+    {
+     "id": "f-5",
+     "name": "vendor-notes.md",
+     "category": "misc_context",
+     "size": 1156
+    }
+   ],
+   "bytes": 17165
+  },
+  "sim_t": 0.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 10,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.inventory",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-01",
+  "message": "T-01 Core files present: 4 of 4 present, each with content",
+  "data": {
+   "id": "T-01",
+   "name": "Core files present",
+   "status": "pass",
+   "detail": "4 of 4 present, each with content",
+   "simulated": false
+  },
+  "sim_t": 0.45,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 11,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.inventory",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Inventory files: 5 files",
+  "data": {
+   "name": "Inventory files",
+   "summary": "5 files"
+  },
+  "sim_t": 0.9,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 12,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.coverage",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Measure Ensemble coverage per file",
+  "data": {
+   "name": "Measure Ensemble coverage per file"
+  },
+  "sim_t": 0.9,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 13,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.coverage",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "person.md: 7 of 7 Ensemble sections (100%)",
+  "data": {
+   "file": "person.md",
+   "found": [
+    "Domain expertise",
+    "Subject matter knowledge",
+    "Reasoning methods",
+    "Analytical approaches",
+    "Decision-making patterns",
+    "Problem-solving strategies",
+    "Thinking frameworks"
+   ],
+   "missing": [],
+   "percent": 100
+  },
+  "sim_t": 0.9,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 14,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.coverage",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "instrument-awareness.md: 3 of 3 Ensemble sections (100%)",
+  "data": {
+   "file": "instrument-awareness.md",
+   "found": [
+    "Context Management",
+    "Model Behaviour",
+    "Execution Constraints"
+   ],
+   "missing": [],
+   "percent": 100
+  },
+  "sim_t": 1.35,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 15,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.coverage",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "environment.md: 5 of 5 Ensemble sections (100%)",
+  "data": {
+   "file": "environment.md",
+   "found": [
+    "Data Layer",
+    "User Experience",
+    "Styling",
+    "Adaptation Layer",
+    "Protection Layer"
+   ],
+   "missing": [],
+   "percent": 100
+  },
+  "sim_t": 1.8,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 16,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.coverage",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "music.md: 4 of 4 Ensemble sections (100%)",
+  "data": {
+   "file": "music.md",
+   "found": [
+    "Purpose",
+    "Core Principles",
+    "Value Logic",
+    "Decision Logic"
+   ],
+   "missing": [],
+   "percent": 100
+  },
+  "sim_t": 2.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 17,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.coverage",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-02",
+  "message": "T-02 Ensemble coverage: 19 of 19 sections across 4 files (100%)",
+  "data": {
+   "id": "T-02",
+   "name": "Ensemble coverage",
+   "status": "pass",
+   "detail": "19 of 19 sections across 4 files (100%)",
+   "simulated": false
+  },
+  "sim_t": 2.7,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 18,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.coverage",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Measure Ensemble coverage per file: 19 of 19 sections",
+  "data": {
+   "name": "Measure Ensemble coverage per file",
+   "summary": "19 of 19 sections"
+  },
+  "sim_t": 3.15,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 19,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.boundary",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Ensemble boundary check",
+  "data": {
+   "name": "Ensemble boundary check"
+  },
+  "sim_t": 3.15,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 20,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.boundary",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Boundary check: 5 rules over 4 core files",
+  "data": {},
+  "sim_t": 3.15,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 21,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.boundary",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-03",
+  "message": "T-03 Ensemble boundary check: 0 findings",
+  "data": {
+   "id": "T-03",
+   "name": "Ensemble boundary check",
+   "status": "pass",
+   "detail": "0 findings",
+   "simulated": false
+  },
+  "sim_t": 3.6,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 22,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.boundary",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Ensemble boundary check: 0 advisories",
+  "data": {
+   "name": "Ensemble boundary check",
+   "summary": "0 advisories"
+  },
+  "sim_t": 4.05,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 23,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.fingerprint",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Fingerprint intake",
+  "data": {
+   "name": "Fingerprint intake"
+  },
+  "sim_t": 4.05,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 24,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.fingerprint",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Intake fingerprint a127ba (sha256 over 5 files)",
+  "data": {
+   "fingerprint": "a127ba",
+   "sha256": "a127ba64f6b8cf7f30eea8a20de93a85e468cc17197fc29d782fd0b5aa716d21"
+  },
+  "sim_t": 4.05,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 25,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": "assay.fingerprint",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Fingerprint intake: a127ba",
+  "data": {
+   "name": "Fingerprint intake",
+   "summary": "a127ba"
+  },
+  "sim_t": 4.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 26,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "assay",
+  "step": null,
+  "type": "phase.completed",
+  "level": "PASS",
+  "code": null,
+  "message": "Assay: passed",
+  "data": {
+   "index": 1,
+   "name": "Assay",
+   "result": "passed",
+   "tests": {
+    "T-01": "pass",
+    "T-02": "pass",
+    "T-03": "pass"
+   }
+  },
+  "sim_t": 4.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 27,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": null,
+  "type": "phase.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Phase 2 of 11: Distillation",
+  "data": {
+   "index": 2,
+   "name": "Distillation",
+   "weight": 12
+  },
+  "sim_t": 4.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 28,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.profile",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Load model profile from Instrument Awareness",
+  "data": {
+   "name": "Load model profile from Instrument Awareness"
+  },
+  "sim_t": 4.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 29,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.profile",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Model profile from instrument-awareness.md: general-purpose large language model",
+  "data": {
+   "profile": "general-purpose large language model"
+  },
+  "sim_t": 4.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 30,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.profile",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Profile sections read: Context Management, Model Behaviour, Execution Constraints",
+  "data": {
+   "sections": [
+    "Context Management",
+    "Model Behaviour",
+    "Execution Constraints"
+   ]
+  },
+  "sim_t": 4.95,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 31,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.profile",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Load model profile from Instrument Awareness: general-purpose large language model",
+  "data": {
+   "name": "Load model profile from Instrument Awareness",
+   "summary": "general-purpose large language model"
+  },
+  "sim_t": 5.4,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 32,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.budget",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Plan context budget",
+  "data": {
+   "name": "Plan context budget"
+  },
+  "sim_t": 5.4,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 33,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.budget",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Context budget: about 4,291 tokens of intake over 5 distillation passes, one file at a time",
+  "data": {
+   "estimated_tokens": 4291,
+   "passes": 5
+  },
+  "sim_t": 5.4,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 34,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.budget",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Plan context budget: about 4,291 tokens",
+  "data": {
+   "name": "Plan context budget",
+   "summary": "about 4,291 tokens"
+  },
+  "sim_t": 5.85,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 35,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.music",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Distil Music",
+  "data": {
+   "name": "Distil Music"
+  },
+  "sim_t": 5.85,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 36,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.music",
+  "type": "llm.call",
+  "level": "LLM",
+  "code": null,
+  "message": "distil music.md: 910 tokens in, 572 out (simulated)",
+  "data": {
+   "task": "distil music.md",
+   "model": "simulated-llm",
+   "tokens_in": 910,
+   "tokens_out": 572,
+   "latency_ms": 1103,
+   "simulated": true
+  },
+  "sim_t": 5.85,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 37,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.music",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Extracted 3 purpose statements, 17 principles, 4 value statements, 7 decision rules",
+  "data": {
+   "Purpose": 3,
+   "Core Principles": 17,
+   "Value Logic": 4,
+   "Decision Logic": 7
+  },
+  "sim_t": 7.2,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 38,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.music",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-04",
+  "message": "T-04 All Music sections extracted: Purpose, Core Principles, Value Logic and Decision Logic",
+  "data": {
+   "id": "T-04",
+   "name": "All Music sections extracted",
+   "status": "pass",
+   "detail": "Purpose, Core Principles, Value Logic and Decision Logic",
+   "simulated": false
+  },
+  "sim_t": 7.65,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 39,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.music",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Distil Music: 31 statements",
+  "data": {
+   "name": "Distil Music",
+   "summary": "31 statements"
+  },
+  "sim_t": 8.1,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 40,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.person",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Distil Person",
+  "data": {
+   "name": "Distil Person"
+  },
+  "sim_t": 8.1,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 41,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.person",
+  "type": "llm.call",
+  "level": "LLM",
+  "code": null,
+  "message": "distil person.md: 788 tokens in, 544 out (simulated)",
+  "data": {
+   "task": "distil person.md",
+   "model": "simulated-llm",
+   "tokens_in": 788,
+   "tokens_out": 544,
+   "latency_ms": 949,
+   "simulated": true
+  },
+  "sim_t": 8.1,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 42,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.person",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Distilled person.md: 7 sections, 23 statements (Domain expertise 3; Subject matter knowledge 4; Reasoning methods 4; Analytical approaches 3; Decision-making patterns 3; Problem-solving strategies 3; Thinking frameworks 3)",
+  "data": {
+   "Domain expertise": 3,
+   "Subject matter knowledge": 4,
+   "Reasoning methods": 4,
+   "Analytical approaches": 3,
+   "Decision-making patterns": 3,
+   "Problem-solving strategies": 3,
+   "Thinking frameworks": 3
+  },
+  "sim_t": 9.45,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 43,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.person",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Distil Person: 23 statements",
+  "data": {
+   "name": "Distil Person",
+   "summary": "23 statements"
+  },
+  "sim_t": 9.9,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 44,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.environment",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Distil Environment layers",
+  "data": {
+   "name": "Distil Environment layers"
+  },
+  "sim_t": 9.9,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 45,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.environment",
+  "type": "llm.call",
+  "level": "LLM",
+  "code": null,
+  "message": "distil layers of environment.md: 1,682 tokens in, 474 out (simulated)",
+  "data": {
+   "task": "distil layers of environment.md",
+   "model": "simulated-llm",
+   "tokens_in": 1682,
+   "tokens_out": 474,
+   "latency_ms": 653,
+   "simulated": true
+  },
+  "sim_t": 9.9,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 46,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.environment",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Distilled environment.md: 5 layers, 50 statements (Data Layer 10; User Experience 11; Styling 12; Adaptation Layer 6; Protection Layer 11)",
+  "data": {
+   "Data Layer": 10,
+   "User Experience": 11,
+   "Styling": 12,
+   "Adaptation Layer": 6,
+   "Protection Layer": 11
+  },
+  "sim_t": 11.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 47,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.environment",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Distil Environment layers: 50 statements",
+  "data": {
+   "name": "Distil Environment layers",
+   "summary": "50 statements"
+  },
+  "sim_t": 11.7,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 48,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.context",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Merge Misc Context",
+  "data": {
+   "name": "Merge Misc Context"
+  },
+  "sim_t": 11.7,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 49,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.context",
+  "type": "llm.call",
+  "level": "LLM",
+  "code": null,
+  "message": "merge Misc Context: 287 tokens in, 341 out (simulated)",
+  "data": {
+   "task": "merge Misc Context",
+   "model": "simulated-llm",
+   "tokens_in": 287,
+   "tokens_out": 341,
+   "latency_ms": 1192,
+   "simulated": true
+  },
+  "sim_t": 11.7,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 50,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.context",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Merged 1 context file: vendor-notes.md (6 notes)",
+  "data": {
+   "files": [
+    "vendor-notes.md"
+   ]
+  },
+  "sim_t": 13.05,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 51,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.context",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Merge Misc Context: 1 file",
+  "data": {
+   "name": "Merge Misc Context",
+   "summary": "1 file"
+  },
+  "sim_t": 13.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 52,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": null,
+  "type": "phase.completed",
+  "level": "PASS",
+  "code": null,
+  "message": "Distillation: passed",
+  "data": {
+   "index": 2,
+   "name": "Distillation",
+   "result": "passed",
+   "tests": {
+    "T-04": "pass"
+   }
+  },
+  "sim_t": 13.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 53,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": null,
+  "type": "phase.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Phase 3 of 11: Synthesis",
+  "data": {
+   "index": 3,
+   "name": "Synthesis",
+   "weight": 10
+  },
+  "sim_t": 13.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 54,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.core",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Draft core.md",
+  "data": {
+   "name": "Draft core.md"
+  },
+  "sim_t": 13.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 55,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.core",
+  "type": "llm.call",
+  "level": "LLM",
+  "code": null,
+  "message": "draft core.md: 1,956 tokens in, 779 out (simulated)",
+  "data": {
+   "task": "draft core.md",
+   "model": "simulated-llm",
+   "tokens_in": 1956,
+   "tokens_out": 779,
+   "latency_ms": 667,
+   "simulated": true
+  },
+  "sim_t": 13.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 56,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.core",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Drafted core.md outline: 6 sections, 246 bytes",
+  "data": {
+   "sections": [
+    "Purpose",
+    "Core principles",
+    "Value logic",
+    "Decision rules",
+    "Reasoning approach",
+    "Execution guidance"
+   ]
+  },
+  "sim_t": 15.107,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 57,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.core",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Draft core.md: 6 sections",
+  "data": {
+   "name": "Draft core.md",
+   "summary": "6 sections"
+  },
+  "sim_t": 15.643,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 58,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.adaptation",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Draft adaptation.md",
+  "data": {
+   "name": "Draft adaptation.md"
+  },
+  "sim_t": 15.643,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 59,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.adaptation",
+  "type": "llm.call",
+  "level": "LLM",
+  "code": null,
+  "message": "draft adaptation.md: 1,844 tokens in, 840 out (simulated)",
+  "data": {
+   "task": "draft adaptation.md",
+   "model": "simulated-llm",
+   "tokens_in": 1844,
+   "tokens_out": 840,
+   "latency_ms": 1509,
+   "simulated": true
+  },
+  "sim_t": 15.643,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 60,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.adaptation",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Drafted adaptation.md outline: 4 sections, 251 bytes",
+  "data": {
+   "sections": [
+    "Operating context",
+    "Data sources and mappings",
+    "Account and industry adjustments",
+    "Presentation notes"
+   ]
+  },
+  "sim_t": 17.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 61,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.adaptation",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Draft adaptation.md: 4 sections",
+  "data": {
+   "name": "Draft adaptation.md",
+   "summary": "4 sections"
+  },
+  "sim_t": 17.786,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 62,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.protection",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Draft protection.md",
+  "data": {
+   "name": "Draft protection.md"
+  },
+  "sim_t": 17.786,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 63,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.protection",
+  "type": "llm.call",
+  "level": "LLM",
+  "code": null,
+  "message": "draft protection.md: 2,610 tokens in, 749 out (simulated)",
+  "data": {
+   "task": "draft protection.md",
+   "model": "simulated-llm",
+   "tokens_in": 2610,
+   "tokens_out": 749,
+   "latency_ms": 2143,
+   "simulated": true
+  },
+  "sim_t": 17.786,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 64,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Drafted protection.md outline: 4 sections, 210 bytes",
+  "data": {
+   "sections": [
+    "Guardrails",
+    "Validation checks",
+    "Quality controls",
+    "Security"
+   ]
+  },
+  "sim_t": 19.393,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 65,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.protection",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Draft protection.md: 4 sections",
+  "data": {
+   "name": "Draft protection.md",
+   "summary": "4 sections"
+  },
+  "sim_t": 19.929,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 66,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.manifest",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Assemble Seed manifest",
+  "data": {
+   "name": "Assemble Seed manifest"
+  },
+  "sim_t": 19.929,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 67,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.manifest",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Seed manifest: \"License Optimization\", iteration 1, 3 layers, fingerprint a127ba",
+  "data": {
+   "manifest": {
+    "seed": "License Optimization",
+    "iteration": 1,
+    "fingerprint": "a127ba",
+    "generator": "SeedFoundry",
+    "layers": [
+     {
+      "name": "core.md",
+      "role": "core",
+      "bytes": 246,
+      "sha256": "1b1530af5560623bd0b30830da841b4b48f43aa2387cd0f78db802cb4b921b54",
+      "sections": [
+       "Purpose",
+       "Core principles",
+       "Value logic",
+       "Decision rules",
+       "Reasoning approach",
+       "Execution guidance"
+      ]
+     },
+     {
+      "name": "adaptation.md",
+      "role": "adaptation",
+      "bytes": 251,
+      "sha256": "6ccc20ad052f8522f96d63996707ea1545c04b49f611ec44399ea1bee7f158b9",
+      "sections": [
+       "Operating context",
+       "Data sources and mappings",
+       "Account and industry adjustments",
+       "Presentation notes"
+      ]
+     },
+     {
+      "name": "protection.md",
+      "role": "protection",
+      "bytes": 210,
+      "sha256": "4f7243d4a903f5cb7f1f900d600b2cb6f834628b472e04403c3f2f4f89918404",
+      "sections": [
+       "Guardrails",
+       "Validation checks",
+       "Quality controls",
+       "Security"
+      ]
+     }
+    ]
+   }
+  },
+  "sim_t": 19.929,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 68,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.manifest",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-05",
+  "message": "T-05 Manifest schema valid: seed, iteration, fingerprint and 3 layers with sizes and digests",
+  "data": {
+   "id": "T-05",
+   "name": "Manifest schema valid",
+   "status": "pass",
+   "detail": "seed, iteration, fingerprint and 3 layers with sizes and digests",
+   "simulated": false
+  },
+  "sim_t": 20.464,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 69,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": "synth.manifest",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Assemble Seed manifest: assembled",
+  "data": {
+   "name": "Assemble Seed manifest",
+   "summary": "assembled"
+  },
+  "sim_t": 21.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 70,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "synth",
+  "step": null,
+  "type": "phase.completed",
+  "level": "PASS",
+  "code": null,
+  "message": "Synthesis: passed",
+  "data": {
+   "index": 3,
+   "name": "Synthesis",
+   "result": "passed",
+   "tests": {
+    "T-05": "pass"
+   }
+  },
+  "sim_t": 21.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 71,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": null,
+  "type": "phase.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Phase 4 of 11: Cross-Examination",
+  "data": {
+   "index": 4,
+   "name": "Cross-Examination",
+   "weight": 8
+  },
+  "sim_t": 21.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 72,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.core",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Reviewer pass on core",
+  "data": {
+   "name": "Reviewer pass on core"
+  },
+  "sim_t": 21.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 73,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.core",
+  "type": "llm.call",
+  "level": "LLM",
+  "code": null,
+  "message": "review core.md: 981 tokens in, 521 out (simulated)",
+  "data": {
+   "task": "review core.md",
+   "model": "simulated-llm",
+   "tokens_in": 981,
+   "tokens_out": 521,
+   "latency_ms": 2189,
+   "simulated": true
+  },
+  "sim_t": 21.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 74,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.core",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Reviewer read core.md against the distilled intake (simulated)",
+  "data": {},
+  "sim_t": 22.636,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 75,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.core",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Reviewer pass on core: reviewed",
+  "data": {
+   "name": "Reviewer pass on core",
+   "summary": "reviewed"
+  },
+  "sim_t": 23.182,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 76,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.layers",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Reviewer pass on adaptation and protection",
+  "data": {
+   "name": "Reviewer pass on adaptation and protection"
+  },
+  "sim_t": 23.182,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 77,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.layers",
+  "type": "llm.call",
+  "level": "LLM",
+  "code": null,
+  "message": "review adaptation.md and protection.md: 1,045 tokens in, 410 out (simulated)",
+  "data": {
+   "task": "review adaptation.md and protection.md",
+   "model": "simulated-llm",
+   "tokens_in": 1045,
+   "tokens_out": 410,
+   "latency_ms": 1638,
+   "simulated": true
+  },
+  "sim_t": 23.182,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 78,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.layers",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Reviewer read adaptation.md and protection.md against the distilled intake (simulated)",
+  "data": {},
+  "sim_t": 24.818,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 79,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.layers",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Reviewer pass on adaptation and protection: reviewed",
+  "data": {
+   "name": "Reviewer pass on adaptation and protection",
+   "summary": "reviewed"
+  },
+  "sim_t": 25.364,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 80,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.resolve",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Resolve contradictions",
+  "data": {
+   "name": "Resolve contradictions"
+  },
+  "sim_t": 25.364,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 81,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.resolve",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Contradictions between drafts: 0 (simulated reviewer)",
+  "data": {
+   "contradictions": 0
+  },
+  "sim_t": 25.364,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 82,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.resolve",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-06",
+  "message": "T-06 No contradictions between files: 0 contradictions (simulated reviewer)",
+  "data": {
+   "id": "T-06",
+   "name": "No contradictions between files",
+   "status": "pass",
+   "detail": "0 contradictions (simulated reviewer)",
+   "simulated": true
+  },
+  "sim_t": 25.909,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 83,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.resolve",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Resolve contradictions: 0 contradictions",
+  "data": {
+   "name": "Resolve contradictions",
+   "summary": "0 contradictions"
+  },
+  "sim_t": 26.455,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 84,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.signoff",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Sign off drafts",
+  "data": {
+   "name": "Sign off drafts"
+  },
+  "sim_t": 26.455,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 85,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.signoff",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Drafts signed off: core.md, adaptation.md, protection.md",
+  "data": {},
+  "sim_t": 26.455,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 86,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": "xexam.signoff",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Sign off drafts: signed off",
+  "data": {
+   "name": "Sign off drafts",
+   "summary": "signed off"
+  },
+  "sim_t": 27.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 87,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "xexam",
+  "step": null,
+  "type": "phase.completed",
+  "level": "PASS",
+  "code": null,
+  "message": "Cross-Examination: passed",
+  "data": {
+   "index": 4,
+   "name": "Cross-Examination",
+   "result": "passed",
+   "tests": {
+    "T-06": "pass"
+   }
+  },
+  "sim_t": 27.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 88,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": null,
+  "type": "phase.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Phase 5 of 11: Germination Trial",
+  "data": {
+   "index": 5,
+   "name": "Germination Trial",
+   "weight": 8
+  },
+  "sim_t": 27.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 89,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.dry-run",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Dry run on micro dataset",
+  "data": {
+   "name": "Dry run on micro dataset"
+  },
+  "sim_t": 27.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 90,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.dry-run",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Dry run on the micro dataset: drafts applied, output produced (simulated)",
+  "data": {},
+  "sim_t": 27.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 91,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.dry-run",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-07",
+  "message": "T-07 Dry run completes: completed (simulated)",
+  "data": {
+   "id": "T-07",
+   "name": "Dry run completes",
+   "status": "pass",
+   "detail": "completed (simulated)",
+   "simulated": true
+  },
+  "sim_t": 27.857,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 92,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.dry-run",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Dry run on micro dataset: completed",
+  "data": {
+   "name": "Dry run on micro dataset",
+   "summary": "completed"
+  },
+  "sim_t": 28.714,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 93,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.data-swap",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Data-swap test on alternate dataset",
+  "data": {
+   "name": "Data-swap test on alternate dataset"
+  },
+  "sim_t": 28.714,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 94,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.data-swap",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Primary estate: 13,050 seats, 17 products, 10 vendors; payload for 11 panels, 0 structural problems",
+  "data": {
+   "dataset": "primary",
+   "seats": 13050,
+   "products": 17,
+   "vendors": 10,
+   "problems": []
+  },
+  "sim_t": 28.714,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 95,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.data-swap",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Alternate estate: 5,620 seats, 11 products, 8 vendors; payload for 11 panels, 0 structural problems",
+  "data": {
+   "dataset": "alternate",
+   "seats": 5620,
+   "products": 11,
+   "vendors": 8,
+   "problems": []
+  },
+  "sim_t": 29.571,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 96,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.data-swap",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Same descriptor (e6a28a) and query engine on 2 estates; payload structure identical",
+  "data": {
+   "descriptor": "e6a28a",
+   "same_structure": true
+  },
+  "sim_t": 30.429,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 97,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.data-swap",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-08",
+  "message": "T-08 Data-swap logic unchanged: same descriptor and query engine on both estates, both payloads structurally valid",
+  "data": {
+   "id": "T-08",
+   "name": "Data-swap logic unchanged",
+   "status": "pass",
+   "detail": "same descriptor and query engine on both estates, both payloads structurally valid",
+   "simulated": false
+  },
+  "sim_t": 31.286,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 98,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.data-swap",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Data-swap test on alternate dataset: logic unchanged",
+  "data": {
+   "name": "Data-swap test on alternate dataset",
+   "summary": "logic unchanged"
+  },
+  "sim_t": 32.143,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 99,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.shape",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Output shape check",
+  "data": {
+   "name": "Output shape check"
+  },
+  "sim_t": 32.143,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 100,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.shape",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Output shape: every draft has its layer's sections in order (3 layers)",
+  "data": {},
+  "sim_t": 32.143,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 101,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": "germ.shape",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Output shape check: as expected",
+  "data": {
+   "name": "Output shape check",
+   "summary": "as expected"
+  },
+  "sim_t": 33.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 102,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "germ",
+  "step": null,
+  "type": "phase.completed",
+  "level": "PASS",
+  "code": null,
+  "message": "Germination Trial: passed",
+  "data": {
+   "index": 5,
+   "name": "Germination Trial",
+   "result": "passed",
+   "tests": {
+    "T-07": "pass",
+    "T-08": "pass"
+   }
+  },
+  "sim_t": 33.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 103,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": null,
+  "type": "phase.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Phase 6 of 11: Containment",
+  "data": {
+   "index": 6,
+   "name": "Containment",
+   "weight": 7
+  },
+  "sim_t": 33.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 104,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.handshake",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Seed API handshake",
+  "data": {
+   "name": "Seed API handshake"
+  },
+  "sim_t": 33.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 105,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.handshake",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "GET /v0.1/health 200 (simulated)",
+  "data": {
+   "method": "GET",
+   "path": "/v0.1/health",
+   "status": 200,
+   "latency_ms": 314,
+   "simulated": true,
+   "response": {
+    "status": "ok",
+    "version": "0.1"
+   }
+  },
+  "sim_t": 33.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 106,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.handshake",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds 201 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds",
+   "status": 201,
+   "latency_ms": 271,
+   "simulated": true,
+   "response": {
+    "seed_id": "seed-938f",
+    "name": "License Optimization"
+   }
+  },
+  "sim_t": 33.63,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 107,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.handshake",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Seed API handshake: seed seed-938f",
+  "data": {
+   "name": "Seed API handshake",
+   "summary": "seed seed-938f"
+  },
+  "sim_t": 34.26,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 108,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.sandbox",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Provision isolated sandbox",
+  "data": {
+   "name": "Provision isolated sandbox"
+  },
+  "sim_t": 34.26,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 109,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.sandbox",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/sandboxes 201 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/sandboxes",
+   "status": 201,
+   "latency_ms": 157,
+   "simulated": true,
+   "response": {
+    "sandbox_id": "sbx-7d38",
+    "seed_id": "seed-938f",
+    "egress": false
+   }
+  },
+  "sim_t": 34.26,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 110,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.sandbox",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Sandbox sbx-7d38 provisioned (isolated, no egress, simulated)",
+  "data": {
+   "sandbox_id": "sbx-7d38"
+  },
+  "sim_t": 34.89,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 111,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.sandbox",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Provision isolated sandbox: sbx-7d38",
+  "data": {
+   "name": "Provision isolated sandbox",
+   "summary": "sbx-7d38"
+  },
+  "sim_t": 35.31,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 112,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.upload",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Upload seed files",
+  "data": {
+   "name": "Upload seed files"
+  },
+  "sim_t": 35.31,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 113,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.upload",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "PUT /v0.1/sandboxes/sbx-7d38/files/core.md 201 (simulated)",
+  "data": {
+   "method": "PUT",
+   "path": "/v0.1/sandboxes/sbx-7d38/files/core.md",
+   "status": 201,
+   "latency_ms": 314,
+   "simulated": true,
+   "response": {
+    "name": "core.md",
+    "bytes": 246,
+    "sha256": "1b1530af5560623bd0b30830da841b4b48f43aa2387cd0f78db802cb4b921b54"
+   }
+  },
+  "sim_t": 35.31,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 114,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.upload",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "PUT /v0.1/sandboxes/sbx-7d38/files/adaptation.md 201 (simulated)",
+  "data": {
+   "method": "PUT",
+   "path": "/v0.1/sandboxes/sbx-7d38/files/adaptation.md",
+   "status": 201,
+   "latency_ms": 229,
+   "simulated": true,
+   "response": {
+    "name": "adaptation.md",
+    "bytes": 251,
+    "sha256": "6ccc20ad052f8522f96d63996707ea1545c04b49f611ec44399ea1bee7f158b9"
+   }
+  },
+  "sim_t": 35.73,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 115,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.upload",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "PUT /v0.1/sandboxes/sbx-7d38/files/protection.md 201 (simulated)",
+  "data": {
+   "method": "PUT",
+   "path": "/v0.1/sandboxes/sbx-7d38/files/protection.md",
+   "status": 201,
+   "latency_ms": 211,
+   "simulated": true,
+   "response": {
+    "name": "protection.md",
+    "bytes": 210,
+    "sha256": "4f7243d4a903f5cb7f1f900d600b2cb6f834628b472e04403c3f2f4f89918404"
+   }
+  },
+  "sim_t": 36.15,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 116,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.upload",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "PUT /v0.1/sandboxes/sbx-7d38/files/manifest.json 201 (simulated)",
+  "data": {
+   "method": "PUT",
+   "path": "/v0.1/sandboxes/sbx-7d38/files/manifest.json",
+   "status": 201,
+   "latency_ms": 249,
+   "simulated": true,
+   "response": {
+    "name": "manifest.json",
+    "bytes": 1120,
+    "sha256": "6107877022f420b2aeb20c19719a6f0439202475972b4ff23fdd383339194b14"
+   }
+  },
+  "sim_t": 36.57,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 117,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.upload",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Uploaded 4 files, 1,827 bytes",
+  "data": {
+   "files": [
+    "core.md",
+    "adaptation.md",
+    "protection.md",
+    "manifest.json"
+   ],
+   "bytes": 1827
+  },
+  "sim_t": 36.99,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 118,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.upload",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Upload seed files: 4 files",
+  "data": {
+   "name": "Upload seed files",
+   "summary": "4 files"
+  },
+  "sim_t": 37.41,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 119,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.checksums",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Verify upload checksums",
+  "data": {
+   "name": "Verify upload checksums"
+  },
+  "sim_t": 37.41,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 120,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.checksums",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Checksums compared: 4 files, sha256",
+  "data": {},
+  "sim_t": 37.41,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 121,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.checksums",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-09",
+  "message": "T-09 Upload checksums match: 4 of 4 match",
+  "data": {
+   "id": "T-09",
+   "name": "Upload checksums match",
+   "status": "pass",
+   "detail": "4 of 4 match",
+   "simulated": false
+  },
+  "sim_t": 37.83,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 122,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.checksums",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Verify upload checksums: 4 of 4 match",
+  "data": {
+   "name": "Verify upload checksums",
+   "summary": "4 of 4 match"
+  },
+  "sim_t": 38.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 123,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": null,
+  "type": "phase.completed",
+  "level": "PASS",
+  "code": null,
+  "message": "Containment: passed",
+  "data": {
+   "index": 6,
+   "name": "Containment",
+   "result": "passed",
+   "tests": {
+    "T-09": "pass"
+   }
+  },
+  "sim_t": 38.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 124,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": null,
+  "type": "phase.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Phase 7 of 11: Planting",
+  "data": {
+   "index": 7,
+   "name": "Planting",
+   "weight": 8
+  },
+  "sim_t": 38.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 125,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.layers",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Plant the three layers",
+  "data": {
+   "name": "Plant the three layers"
+  },
+  "sim_t": 38.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 126,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.layers",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/plant 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/plant",
+   "status": 200,
+   "latency_ms": 70,
+   "simulated": true,
+   "response": {
+    "phase": "INIT",
+    "state": "INITIALIZED",
+    "layers": [
+     "core.md",
+     "adaptation.md",
+     "protection.md"
+    ]
+   }
+  },
+  "sim_t": 38.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 127,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.layers",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Planting: three layers planted, Seed state INITIALIZED (simulated Seed v0.1)",
+  "data": {
+   "state": "INITIALIZED"
+  },
+  "sim_t": 39.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 128,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.layers",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Plant the three layers: INITIALIZED",
+  "data": {
+   "name": "Plant the three layers",
+   "summary": "INITIALIZED"
+  },
+  "sim_t": 39.917,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 129,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.headings",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Heading summary per layer",
+  "data": {
+   "name": "Heading summary per layer"
+  },
+  "sim_t": 39.917,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 130,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.headings",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "core.md: 7 headings, 6 sections",
+  "data": {
+   "layer": "core.md",
+   "headings": 7,
+   "sections": [
+    "Purpose",
+    "Core principles",
+    "Value logic",
+    "Decision rules",
+    "Reasoning approach",
+    "Execution guidance"
+   ]
+  },
+  "sim_t": 39.917,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 131,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.headings",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "adaptation.md: 5 headings, 4 sections",
+  "data": {
+   "layer": "adaptation.md",
+   "headings": 5,
+   "sections": [
+    "Operating context",
+    "Data sources and mappings",
+    "Account and industry adjustments",
+    "Presentation notes"
+   ]
+  },
+  "sim_t": 40.583,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 132,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.headings",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "protection.md: 5 headings, 4 sections",
+  "data": {
+   "layer": "protection.md",
+   "headings": 5,
+   "sections": [
+    "Guardrails",
+    "Validation checks",
+    "Quality controls",
+    "Security"
+   ]
+  },
+  "sim_t": 41.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 133,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.headings",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Heading summary per layer: 3 layers",
+  "data": {
+   "name": "Heading summary per layer",
+   "summary": "3 layers"
+  },
+  "sim_t": 41.917,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 134,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.stack",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "List the declared stack",
+  "data": {
+   "name": "List the declared stack"
+  },
+  "sim_t": 41.917,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 135,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.stack",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Declared stack from environment.md, Data Layer: License Management System (LMS), SAP (declared, not yet verified)",
+  "data": {
+   "systems": [
+    "License Management System (LMS)",
+    "SAP"
+   ]
+  },
+  "sim_t": 41.917,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 136,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.stack",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "GET /v0.1/seeds/seed-938f 200 (simulated)",
+  "data": {
+   "method": "GET",
+   "path": "/v0.1/seeds/seed-938f",
+   "status": 200,
+   "latency_ms": 278,
+   "simulated": true,
+   "response": {
+    "state": "INITIALIZED"
+   }
+  },
+  "sim_t": 42.583,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 137,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.stack",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-10",
+  "message": "T-10 Seed reports ready: Seed reports INITIALIZED (simulated)",
+  "data": {
+   "id": "T-10",
+   "name": "Seed reports ready",
+   "status": "pass",
+   "detail": "Seed reports INITIALIZED (simulated)",
+   "simulated": true
+  },
+  "sim_t": 43.583,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 138,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": "plant.stack",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "List the declared stack: 2 systems",
+  "data": {
+   "name": "List the declared stack",
+   "summary": "2 systems"
+  },
+  "sim_t": 44.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 139,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "plant",
+  "step": null,
+  "type": "phase.completed",
+  "level": "PASS",
+  "code": null,
+  "message": "Planting: passed",
+  "data": {
+   "index": 7,
+   "name": "Planting",
+   "result": "passed",
+   "tests": {
+    "T-10": "pass"
+   }
+  },
+  "sim_t": 44.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 140,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": null,
+  "type": "phase.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Phase 8 of 11: Seeding & Life",
+  "data": {
+   "index": 8,
+   "name": "Seeding & Life",
+   "weight": 16
+  },
+  "sim_t": 44.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 141,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.discovery",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Discovery",
+  "data": {
+   "name": "Discovery"
+  },
+  "sim_t": 44.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 142,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.discovery",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/discovery 202 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/discovery",
+   "status": 202,
+   "latency_ms": 58,
+   "simulated": true,
+   "response": {
+    "state": "DISCOVERING"
+   }
+  },
+  "sim_t": 44.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 143,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.discovery",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Discovery: reading the declared sources (simulated)",
+  "data": {},
+  "sim_t": 44.684,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 144,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.discovery",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Seed v0.1 raised request servicenow-incident-api (credentials); state DISCOVERY_BLOCKED (simulated)",
+  "data": {
+   "request": "servicenow-incident-api",
+   "kind": "credentials",
+   "state": "DISCOVERY_BLOCKED"
+  },
+  "sim_t": 44.973,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 145,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.discovery",
+  "type": "gate.auto_resolved",
+  "level": "INFO",
+  "code": "servicenow-incident-api",
+  "message": "Gate servicenow-incident-api (credentials) auto-resolved: sandbox read-only credential issued (simulated), values not stored. Basis: environment.md, Protection Layer",
+  "data": {
+   "gate": "servicenow-incident-api",
+   "kind": "credentials",
+   "stage": "discovery",
+   "resolution": "sandbox read-only credential issued (simulated), values not stored",
+   "basis": {
+    "file": "environment.md",
+    "file_id": "f-3",
+    "section": "Protection Layer",
+    "line": 118
+   }
+  },
+  "sim_t": 45.262,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 146,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.discovery",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/requests/servicenow-incident-api 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/requests/servicenow-incident-api",
+   "status": 200,
+   "latency_ms": 45,
+   "simulated": true,
+   "response": {
+    "request_id": "servicenow-incident-api",
+    "answered": [
+     "password",
+     "username"
+    ]
+   }
+  },
+  "sim_t": 45.84,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 147,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.discovery",
+  "type": "log",
+  "level": "WARN",
+  "code": null,
+  "message": "One endpoint timed out; retried and recovered (simulated)",
+  "data": {},
+  "sim_t": 46.274,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 148,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.discovery",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/discovery/complete 202 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/discovery/complete",
+   "status": 202,
+   "latency_ms": 308,
+   "simulated": true,
+   "response": {
+    "state": "DISCOVERY_COMPLETE"
+   }
+  },
+  "sim_t": 46.563,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 149,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.discovery",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Discovery: complete",
+  "data": {
+   "name": "Discovery",
+   "summary": "complete"
+  },
+  "sim_t": 46.997,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 150,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.assessment",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Assessment",
+  "data": {
+   "name": "Assessment"
+  },
+  "sim_t": 46.997,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 151,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.assessment",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/assessment 202 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/assessment",
+   "status": 202,
+   "latency_ms": 285,
+   "simulated": true,
+   "response": {
+    "state": "ASSESSING"
+   }
+  },
+  "sim_t": 46.997,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 152,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.assessment",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Assessment: License Optimization graded PARTIAL (simulated)",
+  "data": {
+   "potential": "PARTIAL"
+  },
+  "sim_t": 47.431,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 153,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.assessment",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Seed v0.1 raised request solution-approval (approval); state AWAITING_APPROVAL (simulated)",
+  "data": {
+   "request": "solution-approval",
+   "kind": "approval",
+   "state": "AWAITING_APPROVAL"
+  },
+  "sim_t": 47.72,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 154,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.assessment",
+  "type": "gate.auto_resolved",
+  "level": "INFO",
+  "code": "solution-approval",
+  "message": "Gate solution-approval (approval) auto-resolved: approve License Optimization at potential PARTIAL. Basis: music.md, Decision Logic",
+  "data": {
+   "gate": "solution-approval",
+   "kind": "approval",
+   "stage": "assessment",
+   "resolution": "approve License Optimization at potential PARTIAL",
+   "basis": {
+    "file": "music.md",
+    "file_id": "f-4",
+    "section": "Decision Logic",
+    "line": 57
+   }
+  },
+  "sim_t": 48.009,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 155,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.assessment",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/requests/solution-approval 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/requests/solution-approval",
+   "status": 200,
+   "latency_ms": 252,
+   "simulated": true,
+   "response": {
+    "request_id": "solution-approval",
+    "answered": [
+     "decision"
+    ]
+   }
+  },
+  "sim_t": 48.587,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 156,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.assessment",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Assessment: graded PARTIAL, approved",
+  "data": {
+   "name": "Assessment",
+   "summary": "graded PARTIAL, approved"
+  },
+  "sim_t": 49.021,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 157,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.implementation",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Implementation",
+  "data": {
+   "name": "Implementation"
+  },
+  "sim_t": 49.021,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 158,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.implementation",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/implementation 202 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/implementation",
+   "status": 202,
+   "latency_ms": 314,
+   "simulated": true,
+   "response": {
+    "state": "IMPLEMENTING"
+   }
+  },
+  "sim_t": 49.021,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 159,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.implementation",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Component License Optimization: Pending, Building, Testing (simulated)",
+  "data": {},
+  "sim_t": 49.455,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 160,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.implementation",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Component License Optimization: Validated, Complete (simulated)",
+  "data": {},
+  "sim_t": 49.744,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 161,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.implementation",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/implementation/complete 202 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/implementation/complete",
+   "status": 202,
+   "latency_ms": 268,
+   "simulated": true,
+   "response": {
+    "state": "IMPLEMENTATION_COMPLETE"
+   }
+  },
+  "sim_t": 50.033,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 162,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.implementation",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Implementation: component complete",
+  "data": {
+   "name": "Implementation",
+   "summary": "component complete"
+  },
+  "sim_t": 50.467,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 163,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Cleanup",
+  "data": {
+   "name": "Cleanup"
+  },
+  "sim_t": 50.467,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 164,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Seed v0.1 raised request close-seeding (confirmation); state IMPLEMENTATION_COMPLETE (simulated)",
+  "data": {
+   "request": "close-seeding",
+   "kind": "confirmation",
+   "state": "IMPLEMENTATION_COMPLETE"
+  },
+  "sim_t": 50.467,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 165,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "gate.auto_resolved",
+  "level": "INFO",
+  "code": "close-seeding",
+  "message": "Gate close-seeding (confirmation) auto-resolved: close seeding. Basis: environment.md, Protection Layer",
+  "data": {
+   "gate": "close-seeding",
+   "kind": "confirmation",
+   "stage": "cleanup",
+   "resolution": "close seeding",
+   "basis": {
+    "file": "environment.md",
+    "file_id": "f-3",
+    "section": "Protection Layer",
+    "line": 118
+   }
+  },
+  "sim_t": 50.756,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 166,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/requests/close-seeding 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/requests/close-seeding",
+   "status": 200,
+   "latency_ms": 271,
+   "simulated": true,
+   "response": {
+    "request_id": "close-seeding",
+    "answered": [
+     "acknowledged",
+     "choice"
+    ]
+   }
+  },
+  "sim_t": 51.334,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 167,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/cleanup/consolidate-notes 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/cleanup/consolidate-notes",
+   "status": 200,
+   "latency_ms": 219,
+   "simulated": true,
+   "response": {
+    "state": "CLOSING_SEEDING",
+    "operation": "consolidate-notes"
+   }
+  },
+  "sim_t": 51.768,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 168,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/cleanup/purge-scratch 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/cleanup/purge-scratch",
+   "status": 200,
+   "latency_ms": 194,
+   "simulated": true,
+   "response": {
+    "state": "CLOSING_SEEDING",
+    "operation": "purge-scratch"
+   }
+  },
+  "sim_t": 52.057,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 169,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/cleanup/promote-interfaces 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/cleanup/promote-interfaces",
+   "status": 200,
+   "latency_ms": 51,
+   "simulated": true,
+   "response": {
+    "state": "CLOSING_SEEDING",
+    "operation": "promote-interfaces"
+   }
+  },
+  "sim_t": 52.346,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 170,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/cleanup/retire-build-tools 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/cleanup/retire-build-tools",
+   "status": 200,
+   "latency_ms": 160,
+   "simulated": true,
+   "response": {
+    "state": "CLOSING_SEEDING",
+    "operation": "retire-build-tools"
+   }
+  },
+  "sim_t": 52.636,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 171,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Cleanup: 4 operations done, seed consumed (simulated)",
+  "data": {
+   "operations": [
+    "consolidate-notes",
+    "purge-scratch",
+    "promote-interfaces",
+    "retire-build-tools"
+   ]
+  },
+  "sim_t": 52.925,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 172,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Cleanup: seed consumed",
+  "data": {
+   "name": "Cleanup",
+   "summary": "seed consumed"
+  },
+  "sim_t": 53.214,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 173,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Life",
+  "data": {
+   "name": "Life"
+  },
+  "sim_t": 53.214,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 174,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/run 202 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/run",
+   "status": 202,
+   "latency_ms": 80,
+   "simulated": true,
+   "response": {
+    "state": "READY_TO_RUN"
+   }
+  },
+  "sim_t": 53.214,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 175,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/collect 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/collect",
+   "status": 200,
+   "latency_ms": 178,
+   "simulated": true,
+   "response": {
+    "state": "RUNNING",
+    "weeks": [
+     1,
+     4
+    ]
+   }
+  },
+  "sim_t": 53.648,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 176,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Life: weeks 1 to 4 of 12 collected, recalibration 1 of 3 (simulated)",
+  "data": {},
+  "sim_t": 53.937,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 177,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/collect 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/collect",
+   "status": 200,
+   "latency_ms": 48,
+   "simulated": true,
+   "response": {
+    "state": "RUNNING",
+    "weeks": [
+     5,
+     8
+    ]
+   }
+  },
+  "sim_t": 54.226,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 178,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Life: weeks 5 to 8 of 12 collected, recalibration 2 of 3 (simulated)",
+  "data": {},
+  "sim_t": 54.515,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 179,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-938f/collect 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-938f/collect",
+   "status": 200,
+   "latency_ms": 180,
+   "simulated": true,
+   "response": {
+    "state": "RUNNING",
+    "weeks": [
+     9,
+     12
+    ]
+   }
+  },
+  "sim_t": 54.804,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 180,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Life: weeks 9 to 12 of 12 collected, recalibration 3 of 3 (simulated)",
+  "data": {},
+  "sim_t": 55.093,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 181,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Life: caught up after 12 weeks (simulated)",
+  "data": {
+   "weeks": 12,
+   "recalibrations": 3
+  },
+  "sim_t": 55.383,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 182,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-11",
+  "message": "T-11 All gates resolved: 3 of 3 auto-resolved",
+  "data": {
+   "id": "T-11",
+   "name": "All gates resolved",
+   "status": "pass",
+   "detail": "3 of 3 auto-resolved",
+   "simulated": false
+  },
+  "sim_t": 55.672,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 183,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-12",
+  "message": "T-12 Outputs produced: component validated, 12 weeks collected (simulated)",
+  "data": {
+   "id": "T-12",
+   "name": "Outputs produced",
+   "status": "pass",
+   "detail": "component validated, 12 weeks collected (simulated)",
+   "simulated": true
+  },
+  "sim_t": 55.961,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 184,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.life",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Life: caught up",
+  "data": {
+   "name": "Life",
+   "summary": "caught up"
+  },
+  "sim_t": 56.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 185,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": null,
+  "type": "phase.completed",
+  "level": "PASS",
+  "code": null,
+  "message": "Seeding & Life: passed",
+  "data": {
+   "index": 8,
+   "name": "Seeding & Life",
+   "result": "passed",
+   "tests": {
+    "T-11": "pass",
+    "T-12": "pass"
+   }
+  },
+  "sim_t": 56.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 186,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": null,
+  "type": "phase.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Phase 9 of 11: Stress & Probe",
+  "data": {
+   "index": 9,
+   "name": "Stress & Probe",
+   "weight": 9
+  },
+  "sim_t": 56.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 187,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Protection rule probes",
+  "data": {
+   "name": "Protection rule probes"
+  },
+  "sim_t": 56.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 188,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Protection rules from environment.md, Protection Layer: 9 rules from 4 lines",
+  "data": {
+   "rules": [
+    {
+     "id": "P-1",
+     "effect": "ALLOW",
+     "actions": [
+      "read"
+     ],
+     "resource": "*",
+     "when": {},
+     "file": "environment.md",
+     "section": "Protection Layer",
+     "line": 122,
+     "text": "Read only. The Seed reports; it never removes, reassigns or changes a seat in any system."
+    },
+    {
+     "id": "P-2",
+     "effect": "DENY",
+     "actions": [
+      "remove",
+      "reassign",
+      "change",
+      "delete",
+      "write"
+     ],
+     "resource": "*",
+     "when": {},
+     "file": "environment.md",
+     "section": "Protection Layer",
+     "line": 122,
+     "text": "Read only. The Seed reports; it never removes, reassigns or changes a seat in any system."
+    },
+    {
+     "id": "P-3",
+     "effect": "DENY",
+     "actions": [
+      "remove",
+      "reassign",
+      "change"
+     ],
+     "resource": "seat",
+     "when": {},
+     "file": "environment.md",
+     "section": "Protection Layer",
+     "line": 122,
+     "text": "Read only. The Seed reports; it never removes, reassigns or changes a seat in any system."
+    },
+    {
+     "id": "P-4",
+     "effect": "ALLOW",
+     "actions": [
+      "show_cost"
+     ],
+     "resource": "product",
+     "when": {
+      "priced": "yes"
+     },
+     "file": "environment.md",
+     "section": "Protection Layer",
+     "line": 123,
+     "text": "A cost figure is shown only where a unit price exists. An unpriced product shows as withheld, never as zero."
+    },
+    {
+     "id": "P-5",
+     "effect": "DENY",
+     "actions": [
+      "show_cost"
+     ],
+     "resource": "product",
+     "when": {
+      "priced": "no"
+     },
+     "file": "environment.md",
+     "section": "Protection Layer",
+     "line": 123,
+     "text": "A cost figure is shown only where a unit price exists. An unpriced product shows as withheld, never as zero."
+    },
+    {
+     "id": "P-6",
+     "effect": "ALLOW",
+     "actions": [
+      "show_names"
+     ],
+     "resource": "names",
+     "when": {
+      "level": "seat"
+     },
+     "file": "environment.md",
+     "section": "Protection Layer",
+     "line": 140,
+     "text": "Assignee names appear only at the seat level, never in exports or in summaries above it."
+    },
+    {
+     "id": "P-7",
+     "effect": "DENY",
+     "actions": [
+      "show_names"
+     ],
+     "resource": "names",
+     "when": {
+      "level": "summary"
+     },
+     "file": "environment.md",
+     "section": "Protection Layer",
+     "line": 140,
+     "text": "Assignee names appear only at the seat level, never in exports or in summaries above it."
+    },
+    {
+     "id": "P-8",
+     "effect": "DENY",
+     "actions": [
+      "export"
+     ],
+     "resource": "names",
+     "when": {},
+     "file": "environment.md",
+     "section": "Protection Layer",
+     "line": 140,
+     "text": "Assignee names appear only at the seat level, never in exports or in summaries above it."
+    },
+    {
+     "id": "P-9",
+     "effect": "DENY",
+     "actions": [
+      "send"
+     ],
+     "resource": "dataset",
+     "when": {
+      "destination": "outside"
+     },
+     "file": "environment.md",
+     "section": "Protection Layer",
+     "line": 141,
+     "text": "The dataset stays inside the sandbox. Nothing is sent outside it."
+    }
+   ]
+  },
+  "sim_t": 56.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 189,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-1 remove an Unused seat from the License Management System: DENY by P-3 (environment.md, Protection Layer, line 122)",
+  "data": {
+   "decision": {
+    "probe": "PB-1",
+    "request": "remove an Unused seat from the License Management System",
+    "expected": "DENY",
+    "effect": "DENY",
+    "rule": "P-3",
+    "basis": "P-3 (environment.md, Protection Layer, line 122)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 56.75,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 190,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-2 reassign a Leaver's seat to another person: DENY by P-3 (environment.md, Protection Layer, line 122)",
+  "data": {
+   "decision": {
+    "probe": "PB-2",
+    "request": "reassign a Leaver's seat to another person",
+    "expected": "DENY",
+    "effect": "DENY",
+    "rule": "P-3",
+    "basis": "P-3 (environment.md, Protection Layer, line 122)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 57.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 191,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-3 show recoverable cost for an unpriced product as $0: DENY by P-5 (environment.md, Protection Layer, line 123)",
+  "data": {
+   "decision": {
+    "probe": "PB-3",
+    "request": "show recoverable cost for an unpriced product as $0",
+    "expected": "DENY",
+    "effect": "DENY",
+    "rule": "P-5",
+    "basis": "P-5 (environment.md, Protection Layer, line 123)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 57.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 192,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-4 show recoverable cost for a priced product: ALLOW by P-4 (environment.md, Protection Layer, line 123)",
+  "data": {
+   "decision": {
+    "probe": "PB-4",
+    "request": "show recoverable cost for a priced product",
+    "expected": "ALLOW",
+    "effect": "ALLOW",
+    "rule": "P-4",
+    "basis": "P-4 (environment.md, Protection Layer, line 123)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 57.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 193,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-5 show recoverable cost without knowing whether the product is priced: DENY by the default rule (the request does not state priced)",
+  "data": {
+   "decision": {
+    "probe": "PB-5",
+    "request": "show recoverable cost without knowing whether the product is priced",
+    "expected": "DENY",
+    "effect": "DENY",
+    "rule": "default",
+    "basis": "the default rule (the request does not state priced)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 57.75,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 194,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-6 list assignee names in a vendor summary: DENY by P-7 (environment.md, Protection Layer, line 140)",
+  "data": {
+   "decision": {
+    "probe": "PB-6",
+    "request": "list assignee names in a vendor summary",
+    "expected": "DENY",
+    "effect": "DENY",
+    "rule": "P-7",
+    "basis": "P-7 (environment.md, Protection Layer, line 140)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 58.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 195,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-7 list assignee names in the Seats table: ALLOW by P-6 (environment.md, Protection Layer, line 140)",
+  "data": {
+   "decision": {
+    "probe": "PB-7",
+    "request": "list assignee names in the Seats table",
+    "expected": "ALLOW",
+    "effect": "ALLOW",
+    "rule": "P-6",
+    "basis": "P-6 (environment.md, Protection Layer, line 140)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 58.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 196,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-8 export assignee names: DENY by P-8 (environment.md, Protection Layer, line 140)",
+  "data": {
+   "decision": {
+    "probe": "PB-8",
+    "request": "export assignee names",
+    "expected": "DENY",
+    "effect": "DENY",
+    "rule": "P-8",
+    "basis": "P-8 (environment.md, Protection Layer, line 140)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 58.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 197,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-9 send the seat dataset outside the sandbox: DENY by P-9 (environment.md, Protection Layer, line 141)",
+  "data": {
+   "decision": {
+    "probe": "PB-9",
+    "request": "send the seat dataset outside the sandbox",
+    "expected": "DENY",
+    "effect": "DENY",
+    "rule": "P-9",
+    "basis": "P-9 (environment.md, Protection Layer, line 141)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 58.75,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 198,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-10 read the seat records: ALLOW by P-1 (environment.md, Protection Layer, line 122)",
+  "data": {
+   "decision": {
+    "probe": "PB-10",
+    "request": "read the seat records",
+    "expected": "ALLOW",
+    "effect": "ALLOW",
+    "rule": "P-1",
+    "basis": "P-1 (environment.md, Protection Layer, line 122)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 59.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 199,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-13",
+  "message": "T-13 Protection probes: 10 of 10 probes as expected: 6 denied by Protection rules, 3 allowed, 1 denied by the default rule for a missing fact",
+  "data": {
+   "id": "T-13",
+   "name": "Protection probes",
+   "status": "pass",
+   "detail": "10 of 10 probes as expected: 6 denied by Protection rules, 3 allowed, 1 denied by the default rule for a missing fact",
+   "simulated": false
+  },
+  "sim_t": 59.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 200,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Protection rule probes: 10 of 10 as expected",
+  "data": {
+   "name": "Protection rule probes",
+   "summary": "10 of 10 as expected"
+  },
+  "sim_t": 59.75,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 201,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.malformed",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Malformed input probes",
+  "data": {
+   "name": "Malformed input probes"
+  },
+  "sim_t": 59.75,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 202,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.malformed",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Seat record contract: 13,050 of 13,050 rows of the primary estate accepted",
+  "data": {
+   "accepted": 13050,
+   "rows": 13050,
+   "refused": []
+  },
+  "sim_t": 59.75,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 203,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.malformed",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Malformed seat records: 11 of 11 refused",
+  "data": {
+   "rejected": [
+    {
+     "input": "a seat id that is not LIC- and six digits",
+     "reason": "seat id 'LIC-12' is not LIC- and six digits"
+    },
+    {
+     "input": "a product the estate does not have",
+     "reason": "no product 'no-such-product' in the estate"
+    },
+    {
+     "input": "a class that is not one of the five",
+     "reason": "class 'dormant' is not one of the five"
+    },
+    {
+     "input": "a class the usage does not give",
+     "reason": "class underused does not follow from the record (active by music.md's rules)"
+    },
+    {
+     "input": "eleven months of usage",
+     "reason": "usage is not one count for each of the 12 months"
+    },
+    {
+     "input": "a month of 40 days",
+     "reason": "usage holds a count that is not 0 to 31 days"
+    },
+    {
+     "input": "a negative unit cost",
+     "reason": "unit cost -36 is not the product's (36)"
+    },
+    {
+     "input": "an assignee status that is not employed or left",
+     "reason": "assignee status 'retired' is not employed or left"
+    },
+    {
+     "input": "a last-used date that does not exist",
+     "reason": "last used '2026-13-45' is not a date"
+    },
+    {
+     "input": "negative days idle",
+     "reason": "days idle -5 is not a count of days"
+    },
+    {
+     "input": "no product field",
+     "reason": "missing product"
+    }
+   ],
+   "accepted": []
+  },
+  "sim_t": 60.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 204,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.malformed",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Drill paths: 5 of 5 malformed refused, 3 of 3 well-formed accepted",
+  "data": {
+   "rejected": [
+    "no-such-vendor",
+    "microsoft/no-such-product",
+    "microsoft//unused",
+    "microsoft/microsoft-365-e3/dormant",
+    "microsoft/microsoft-365-e3/unused/extra"
+   ],
+   "accepted": [
+    "",
+    "microsoft",
+    "microsoft.microsoft-365-e3.unused"
+   ],
+   "accepted_malformed": []
+  },
+  "sim_t": 60.75,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 205,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.malformed",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-14",
+  "message": "T-14 Malformed input rejected: 16 of 16 malformed inputs refused; 13,050 seat rows and 3 drill paths accepted",
+  "data": {
+   "id": "T-14",
+   "name": "Malformed input rejected",
+   "status": "pass",
+   "detail": "16 of 16 malformed inputs refused; 13,050 seat rows and 3 drill paths accepted",
+   "simulated": false
+  },
+  "sim_t": 61.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 206,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.malformed",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Malformed input probes: 16 of 16 refused",
+  "data": {
+   "name": "Malformed input probes",
+   "summary": "16 of 16 refused"
+  },
+  "sim_t": 61.75,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 207,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.latency",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Panel latency measurement",
+  "data": {
+   "name": "Panel latency measurement"
+  },
+  "sim_t": 61.75,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 208,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.latency",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Panel latency: 11 panels read from the descriptor, 1 declaring a wait; budget 1.0 s",
+  "data": {
+   "declared": 1
+  },
+  "sim_t": 61.75,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 209,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.latency",
+  "type": "finding.raised",
+  "level": "WARN",
+  "code": "L-1",
+  "message": "L-1 Panel \"Seats by vendor and product\" responds in 4.5 s (budget 1.0 s)",
+  "data": {
+   "id": "L-1",
+   "category": "Latency",
+   "test": "T-15",
+   "checks": [
+    "latency"
+   ],
+   "panel": "seats-treemap",
+   "panels": [
+    "seats-treemap"
+   ],
+   "panel_titles": [
+    "Seats by vendor and product"
+   ],
+   "expected": "at most 1.0 s",
+   "shown": "4.5 s",
+   "severity": "medium",
+   "phase": "probe",
+   "step": "probe.latency",
+   "message": "Panel \"Seats by vendor and product\" responds in 4.5 s (budget 1.0 s)",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-15",
+     "check": "latency",
+     "panel": "seats-treemap",
+     "expected": "at most 1.0 s",
+     "shown": "4.5 s",
+     "message": "Panel \"Seats by vendor and product\" responds in 4.5 s (budget 1.0 s)",
+     "unit": ""
+    }
+   ]
+  },
+  "sim_t": 62.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 210,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.latency",
+  "type": "test.result",
+  "level": "WARN",
+  "code": "T-15",
+  "message": "T-15 Latency within budget: 1 finding (L-1) from 1 problem",
+  "data": {
+   "id": "T-15",
+   "name": "Latency within budget",
+   "status": "warn",
+   "detail": "1 finding (L-1) from 1 problem",
+   "simulated": false
+  },
+  "sim_t": 62.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 211,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.latency",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Panel latency measurement: 10 of 11 within budget",
+  "data": {
+   "name": "Panel latency measurement",
+   "summary": "10 of 11 within budget"
+  },
+  "sim_t": 63.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 212,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": null,
+  "type": "phase.completed",
+  "level": "WARN",
+  "code": null,
+  "message": "Stress & Probe: findings (L-1)",
+  "data": {
+   "index": 9,
+   "name": "Stress & Probe",
+   "result": "findings",
+   "tests": {
+    "T-13": "pass",
+    "T-14": "pass",
+    "T-15": "warn"
+   }
+  },
+  "sim_t": 63.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 213,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": null,
+  "type": "phase.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Phase 10 of 11: Harvest Validation",
+  "data": {
+   "index": 10,
+   "name": "Harvest Validation",
+   "weight": 10
+  },
+  "sim_t": 63.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 214,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.collect",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Collect dashboard payload",
+  "data": {
+   "name": "Collect dashboard payload"
+  },
+  "sim_t": 63.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 215,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.collect",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Collected the License Optimization payload: 11 panels at All products, from 13,050 seat rows in the primary estate",
+  "data": {
+   "dashboard": "license-optimization",
+   "variant": "rough",
+   "panels": 11,
+   "seats": 13050,
+   "descriptor": "e6a28a"
+  },
+  "sim_t": 63.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 216,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.collect",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Collect dashboard payload: 11 panels",
+  "data": {
+   "name": "Collect dashboard payload",
+   "summary": "11 panels"
+  },
+  "sim_t": 63.455,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 217,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.numeric",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Numeric reconciliation",
+  "data": {
+   "name": "Numeric reconciliation"
+  },
+  "sim_t": 63.455,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 218,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.numeric",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Recounted every figure on 11 panels from 13,050 seat rows: 38 figures differ from the recount",
+  "data": {
+   "problems": 38
+  },
+  "sim_t": 63.455,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 219,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.numeric",
+  "type": "finding.raised",
+  "level": "FAIL",
+  "code": "N-1",
+  "message": "N-1 Entitled seats: KPI shows 13,050, product chart sums to 15,660; 18 problems in all",
+  "data": {
+   "id": "N-1",
+   "category": "Numeric",
+   "test": "T-16",
+   "checks": [
+    "figure",
+    "part-sum"
+   ],
+   "panel": "entitlement",
+   "panels": [
+    "entitlement"
+   ],
+   "panel_titles": [
+    "Entitled, assigned and active by product"
+   ],
+   "expected": "13,050",
+   "shown": "15,660",
+   "severity": "high",
+   "phase": "harvest",
+   "step": "harvest.numeric",
+   "message": "Entitled seats: KPI shows 13,050, product chart sums to 15,660; 18 problems in all",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 4200,
+     "shown": 5040,
+     "message": "Product chart: Microsoft 365 E3 entitled bar: shows 5,040, the recount gives 4,200",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 1200,
+     "shown": 1440,
+     "message": "Product chart: Acrobat Pro entitled bar: shows 1,440, the recount gives 1,200",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 900,
+     "shown": 1080,
+     "message": "Product chart: Confluence entitled bar: shows 1,080, the recount gives 900",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 900,
+     "shown": 1080,
+     "message": "Product chart: Microsoft 365 E5 entitled bar: shows 1,080, the recount gives 900",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 900,
+     "shown": 1080,
+     "message": "Product chart: Zoom Workplace Business entitled bar: shows 1,080, the recount gives 900",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 800,
+     "shown": 960,
+     "message": "Product chart: Jira Software entitled bar: shows 960, the recount gives 800",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 800,
+     "shown": 960,
+     "message": "Product chart: Power BI Pro entitled bar: shows 960, the recount gives 800",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 620,
+     "shown": 744,
+     "message": "Product chart: Sales Cloud Enterprise entitled bar: shows 744, the recount gives 620",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 520,
+     "shown": 624,
+     "message": "Product chart: Miro Business entitled bar: shows 624, the recount gives 520",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 420,
+     "shown": 504,
+     "message": "Product chart: Visio Plan 2 entitled bar: shows 504, the recount gives 420",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 360,
+     "shown": 432,
+     "message": "Product chart: Project Plan 3 entitled bar: shows 432, the recount gives 360",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 310,
+     "shown": 372,
+     "message": "Product chart: DocuSign eSignature entitled bar: shows 372, the recount gives 310",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 300,
+     "shown": 360,
+     "message": "Product chart: Smartsheet Business entitled bar: shows 360, the recount gives 300",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 260,
+     "shown": 312,
+     "message": "Product chart: Westlaw Edge entitled bar: shows 312, the recount gives 260",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 240,
+     "shown": 288,
+     "message": "Product chart: Creative Cloud All Apps entitled bar: shows 288, the recount gives 240",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 180,
+     "shown": 216,
+     "message": "Product chart: Tableau Creator entitled bar: shows 216, the recount gives 180",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "entitlement",
+     "expected": 140,
+     "shown": 168,
+     "message": "Product chart: AutoCAD LT entitled bar: shows 168, the recount gives 140",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "part-sum",
+     "panel": "entitlement",
+     "expected": 13050,
+     "shown": 15660,
+     "message": "Entitled seats: KPI shows 13,050, product chart sums to 15,660",
+     "unit": ""
+    }
+   ]
+  },
+  "sim_t": 63.909,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 220,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.numeric",
+  "type": "finding.raised",
+  "level": "FAIL",
+  "code": "N-2",
+  "message": "N-2 Treemap legend: class shares sum to 112.0%, not 100%; 6 problems in all",
+  "data": {
+   "id": "N-2",
+   "category": "Numeric",
+   "test": "T-16",
+   "checks": [
+    "percent-sum",
+    "figure"
+   ],
+   "panel": "seats-treemap",
+   "panels": [
+    "seats-treemap"
+   ],
+   "panel_titles": [
+    "Seats by vendor and product"
+   ],
+   "expected": "100.0%",
+   "shown": "112.0%",
+   "severity": "high",
+   "phase": "harvest",
+   "step": "harvest.numeric",
+   "message": "Treemap legend: class shares sum to 112.0%, not 100%; 6 problems in all",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-16",
+     "check": "percent-sum",
+     "panel": "seats-treemap",
+     "expected": 100.0,
+     "shown": 112.0,
+     "message": "Treemap legend: class shares sum to 112.0%, not 100%",
+     "unit": "%"
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "seats-treemap",
+     "expected": 63.5,
+     "shown": 71.1,
+     "message": "Treemap legend: Active share shows 71.1%, the recount gives 63.5%",
+     "unit": "%"
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "seats-treemap",
+     "expected": 14.0,
+     "shown": 15.7,
+     "message": "Treemap legend: Underused share shows 15.7%, the recount gives 14.0%",
+     "unit": "%"
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "seats-treemap",
+     "expected": 13.9,
+     "shown": 15.6,
+     "message": "Treemap legend: Unused share shows 15.6%, the recount gives 13.9%",
+     "unit": "%"
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "seats-treemap",
+     "expected": 3.6,
+     "shown": 4.0,
+     "message": "Treemap legend: Leaver share shows 4.0%, the recount gives 3.6%",
+     "unit": "%"
+    },
+    {
+     "test": "T-16",
+     "check": "figure",
+     "panel": "seats-treemap",
+     "expected": 5.0,
+     "shown": 5.6,
+     "message": "Treemap legend: Unassigned share shows 5.6%, the recount gives 5.0%",
+     "unit": "%"
+    }
+   ]
+  },
+  "sim_t": 64.136,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 221,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.numeric",
+  "type": "finding.raised",
+  "level": "FAIL",
+  "code": "N-3",
+  "message": "N-3 Recoverable a year: KPI shows $1,191,396, unit cost x 12 over the recoverable seats of priced products gives $1,035,384; 3 problems in all",
+  "data": {
+   "id": "N-3",
+   "category": "Numeric",
+   "test": "T-16",
+   "checks": [
+    "kpi-formula",
+    "cross-panel"
+   ],
+   "panel": "k-recoverable",
+   "panels": [
+    "k-recoverable"
+   ],
+   "panel_titles": [
+    "Recoverable a year"
+   ],
+   "expected": "$1,035,384",
+   "shown": "$1,191,396",
+   "severity": "high",
+   "phase": "harvest",
+   "step": "harvest.numeric",
+   "message": "Recoverable a year: KPI shows $1,191,396, unit cost x 12 over the recoverable seats of priced products gives $1,035,384; 3 problems in all",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-16",
+     "check": "kpi-formula",
+     "panel": "k-recoverable",
+     "expected": 1035384,
+     "shown": 1191396,
+     "message": "Recoverable a year: KPI shows $1,191,396, unit cost x 12 over the recoverable seats of priced products gives $1,035,384",
+     "unit": "$"
+    },
+    {
+     "test": "T-16",
+     "check": "cross-panel",
+     "panel": "k-recoverable",
+     "expected": 1035384,
+     "shown": 1191396,
+     "message": "Recoverable a year against the sum of recoverable cost by product: the Recoverable a year KPI shows $1,191,396, the recount gives $1,035,384",
+     "unit": "$"
+    },
+    {
+     "test": "T-16",
+     "check": "cross-panel",
+     "panel": "k-recoverable",
+     "expected": 1035384,
+     "shown": 1191396,
+     "message": "Recoverable a year: the Recoverable a year KPI shows $1,191,396, the recount gives $1,035,384",
+     "unit": "$"
+    }
+   ]
+  },
+  "sim_t": 64.364,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 222,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.numeric",
+  "type": "finding.raised",
+  "level": "FAIL",
+  "code": "N-4",
+  "message": "N-4 Seats footer: Total shows 12,401, the class counts sum to 13,050; 2 problems in all",
+  "data": {
+   "id": "N-4",
+   "category": "Numeric",
+   "test": "T-16",
+   "checks": [
+    "table-total",
+    "cross-panel"
+   ],
+   "panel": "seats",
+   "panels": [
+    "seats"
+   ],
+   "panel_titles": [
+    "Seats"
+   ],
+   "expected": "13,050",
+   "shown": "12,401",
+   "severity": "high",
+   "phase": "harvest",
+   "step": "harvest.numeric",
+   "message": "Seats footer: Total shows 12,401, the class counts sum to 13,050; 2 problems in all",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-16",
+     "check": "table-total",
+     "panel": "seats",
+     "expected": 13050,
+     "shown": 12401,
+     "message": "Seats footer: Total shows 12,401, the class counts sum to 13,050",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "cross-panel",
+     "panel": "seats",
+     "expected": 13050,
+     "shown": 12401,
+     "message": "Entitled seats: the Seats footer shows 12,401, the recount gives 13,050",
+     "unit": ""
+    }
+   ]
+  },
+  "sim_t": 64.591,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 223,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.numeric",
+  "type": "finding.raised",
+  "level": "FAIL",
+  "code": "N-5",
+  "message": "N-5 Optimisation candidates: total row shows 17,250 entitled seats, the rows sum to 13,050; 9 problems in all",
+  "data": {
+   "id": "N-5",
+   "category": "Numeric",
+   "test": "T-16",
+   "checks": [
+    "table-total",
+    "cross-panel"
+   ],
+   "panel": "candidates",
+   "panels": [
+    "candidates"
+   ],
+   "panel_titles": [
+    "Optimisation candidates"
+   ],
+   "expected": "13,050",
+   "shown": "17,250",
+   "severity": "high",
+   "phase": "harvest",
+   "step": "harvest.numeric",
+   "message": "Optimisation candidates: total row shows 17,250 entitled seats, the rows sum to 13,050; 9 problems in all",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-16",
+     "check": "table-total",
+     "panel": "candidates",
+     "expected": 13050,
+     "shown": 17250,
+     "message": "Optimisation candidates: total row shows 17,250 entitled seats, the rows sum to 13,050",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "table-total",
+     "panel": "candidates",
+     "expected": 8286,
+     "shown": 11708,
+     "message": "Optimisation candidates: total row shows 11,708 Active seats, the rows sum to 8,286",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "table-total",
+     "panel": "candidates",
+     "expected": 1822,
+     "shown": 2062,
+     "message": "Optimisation candidates: total row shows 2,062 Underused seats, the rows sum to 1,822",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "table-total",
+     "panel": "candidates",
+     "expected": 1820,
+     "shown": 2080,
+     "message": "Optimisation candidates: total row shows 2,080 Unused seats, the rows sum to 1,820",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "table-total",
+     "panel": "candidates",
+     "expected": 473,
+     "shown": 625,
+     "message": "Optimisation candidates: total row shows 625 Leaver seats, the rows sum to 473",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "table-total",
+     "panel": "candidates",
+     "expected": 649,
+     "shown": 775,
+     "message": "Optimisation candidates: total row shows 775 Unassigned seats, the rows sum to 649",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "table-total",
+     "panel": "candidates",
+     "expected": 1035384,
+     "shown": 1267800,
+     "message": "Optimisation candidates: total row shows $1,267,800 recoverable a year, the rows sum to $1,035,384",
+     "unit": "$"
+    },
+    {
+     "test": "T-16",
+     "check": "cross-panel",
+     "panel": "candidates",
+     "expected": 13050,
+     "shown": 17250,
+     "message": "Entitled seats: the candidates total row shows 17,250, the recount gives 13,050",
+     "unit": ""
+    },
+    {
+     "test": "T-16",
+     "check": "cross-panel",
+     "panel": "candidates",
+     "expected": 1035384,
+     "shown": 1267800,
+     "message": "Recoverable a year: the candidates total row shows $1,267,800, the recount gives $1,035,384",
+     "unit": "$"
+    }
+   ]
+  },
+  "sim_t": 64.818,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 224,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.numeric",
+  "type": "test.result",
+  "level": "FAIL",
+  "code": "T-16",
+  "message": "T-16 Numeric reconciliation: 5 findings (N-1, N-2, N-3, N-4, N-5) from 38 problems",
+  "data": {
+   "id": "T-16",
+   "name": "Numeric reconciliation",
+   "status": "fail",
+   "detail": "5 findings (N-1, N-2, N-3, N-4, N-5) from 38 problems",
+   "simulated": false
+  },
+  "sim_t": 65.045,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 225,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.numeric",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Numeric reconciliation: 5 findings",
+  "data": {
+   "name": "Numeric reconciliation",
+   "summary": "5 findings"
+  },
+  "sim_t": 65.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 226,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.chart",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Chart and data consistency",
+  "data": {
+   "name": "Chart and data consistency"
+  },
+  "sim_t": 65.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 227,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.chart",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Chart fitness: 4 charts checked for mark and data (bar, line, pie, treemap)",
+  "data": {},
+  "sim_t": 65.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 228,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.chart",
+  "type": "finding.raised",
+  "level": "WARN",
+  "code": "V-1",
+  "message": "V-1 Recoverable cost by product: a pie of 12 slices, where a pie holds at most 6; 2 problems in all",
+  "data": {
+   "id": "V-1",
+   "category": "Visual",
+   "test": "T-17",
+   "checks": [
+    "pie-slices",
+    "categorical-bar"
+   ],
+   "panel": "recoverable",
+   "panels": [
+    "recoverable"
+   ],
+   "panel_titles": [
+    "Recoverable cost by product"
+   ],
+   "expected": "at most 6 slices",
+   "shown": "12 slices",
+   "severity": "medium",
+   "phase": "harvest",
+   "step": "harvest.chart",
+   "message": "Recoverable cost by product: a pie of 12 slices, where a pie holds at most 6; 2 problems in all",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-17",
+     "check": "pie-slices",
+     "panel": "recoverable",
+     "expected": "at most 6 slices",
+     "shown": "12 slices",
+     "message": "Recoverable cost by product: a pie of 12 slices, where a pie holds at most 6",
+     "unit": ""
+    },
+    {
+     "test": "T-17",
+     "check": "categorical-bar",
+     "panel": "recoverable",
+     "expected": "bars",
+     "shown": "a pie",
+     "message": "Recoverable cost by product: a comparison between products drawn as a pie, not as bars",
+     "unit": ""
+    }
+   ]
+  },
+  "sim_t": 65.955,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 229,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.chart",
+  "type": "test.result",
+  "level": "WARN",
+  "code": "T-17",
+  "message": "T-17 Chart fitness: 1 finding (V-1) from 2 problems",
+  "data": {
+   "id": "T-17",
+   "name": "Chart fitness",
+   "status": "warn",
+   "detail": "1 finding (V-1) from 2 problems",
+   "simulated": false
+  },
+  "sim_t": 66.182,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 230,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.chart",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Chart and data consistency: 1 finding",
+  "data": {
+   "name": "Chart and data consistency",
+   "summary": "1 finding"
+  },
+  "sim_t": 66.636,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 231,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.visual",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Visual QA",
+  "data": {
+   "name": "Visual QA"
+  },
+  "sim_t": 66.636,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 232,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.visual",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Visual QA over the descriptor and the rules of defects.css: formats, labels, palette, class colours, grid and fonts, both themes",
+  "data": {
+   "stylesheet": "defects.css"
+  },
+  "sim_t": 66.636,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 233,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.visual",
+  "type": "finding.raised",
+  "level": "WARN",
+  "code": "V-4",
+  "message": "V-4 Entitled: the figure reads 13050 (plain), where seat counts read 13,050 (count) on every other panel; 4 problems on 3 panels",
+  "data": {
+   "id": "V-4",
+   "category": "Visual",
+   "test": "T-18",
+   "checks": [
+    "format",
+    "currency"
+   ],
+   "panel": "k-entitled",
+   "panels": [
+    "k-entitled",
+    "k-active",
+    "candidates"
+   ],
+   "panel_titles": [
+    "Entitled",
+    "Active",
+    "Optimisation candidates"
+   ],
+   "expected": "13,050 (count)",
+   "shown": "13050 (plain)",
+   "severity": "medium",
+   "phase": "harvest",
+   "step": "harvest.visual",
+   "message": "Entitled: the figure reads 13050 (plain), where seat counts read 13,050 (count) on every other panel; 4 problems on 3 panels",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-18",
+     "check": "format",
+     "panel": "k-entitled",
+     "expected": "13,050 (count)",
+     "shown": "13050 (plain)",
+     "message": "Entitled: the figure reads 13050 (plain), where seat counts read 13,050 (count) on every other panel",
+     "unit": ""
+    },
+    {
+     "test": "T-18",
+     "check": "format",
+     "panel": "k-active",
+     "expected": "8,286 (count)",
+     "shown": "8.3k (compact)",
+     "message": "Active: the figure reads 8.3k (compact), where seat counts read 8,286 (count) on every other panel",
+     "unit": ""
+    },
+    {
+     "test": "T-18",
+     "check": "format",
+     "panel": "candidates",
+     "expected": "$1,267,800 (usd)",
+     "shown": "1,267,800 (number)",
+     "message": "Optimisation candidates: the Recoverable a year column reads 1,267,800 (number), where recoverable cost read $1,267,800 (usd) on every other panel",
+     "unit": ""
+    },
+    {
+     "test": "T-18",
+     "check": "currency",
+     "panel": "candidates",
+     "expected": "US dollars with the $ sign",
+     "shown": "1,267,800 (number)",
+     "message": "Optimisation candidates: the Recoverable a year column shows money without the $ sign",
+     "unit": ""
+    }
+   ]
+  },
+  "sim_t": 67.091,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 234,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.visual",
+  "type": "finding.raised",
+  "level": "WARN",
+  "code": "V-5",
+  "message": "V-5 Entitled, assigned and active by product: the category axis has no name; 6 problems on 2 panels",
+  "data": {
+   "id": "V-5",
+   "category": "Visual",
+   "test": "T-18",
+   "checks": [
+    "axis-label",
+    "axis-unit"
+   ],
+   "panel": "entitlement",
+   "panels": [
+    "entitlement",
+    "trend"
+   ],
+   "panel_titles": [
+    "Entitled, assigned and active by product",
+    "Assigned and in use, by month"
+   ],
+   "expected": "an axis name",
+   "shown": "no name",
+   "severity": "medium",
+   "phase": "harvest",
+   "step": "harvest.visual",
+   "message": "Entitled, assigned and active by product: the category axis has no name; 6 problems on 2 panels",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-18",
+     "check": "axis-label",
+     "panel": "entitlement",
+     "expected": "an axis name",
+     "shown": "no name",
+     "message": "Entitled, assigned and active by product: the category axis has no name",
+     "unit": ""
+    },
+    {
+     "test": "T-18",
+     "check": "axis-label",
+     "panel": "entitlement",
+     "expected": "an axis name",
+     "shown": "no name",
+     "message": "Entitled, assigned and active by product: the value axis has no name",
+     "unit": ""
+    },
+    {
+     "test": "T-18",
+     "check": "axis-unit",
+     "panel": "entitlement",
+     "expected": "a unit",
+     "shown": "no unit",
+     "message": "Entitled, assigned and active by product: the value axis has no unit",
+     "unit": ""
+    },
+    {
+     "test": "T-18",
+     "check": "axis-label",
+     "panel": "trend",
+     "expected": "an axis name",
+     "shown": "no name",
+     "message": "Assigned and in use, by month: the category axis has no name",
+     "unit": ""
+    },
+    {
+     "test": "T-18",
+     "check": "axis-label",
+     "panel": "trend",
+     "expected": "an axis name",
+     "shown": "no name",
+     "message": "Assigned and in use, by month: the value axis has no name",
+     "unit": ""
+    },
+    {
+     "test": "T-18",
+     "check": "axis-unit",
+     "panel": "trend",
+     "expected": "a unit",
+     "shown": "no unit",
+     "message": "Assigned and in use, by month: the value axis has no unit",
+     "unit": ""
+    }
+   ]
+  },
+  "sim_t": 67.318,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 235,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.visual",
+  "type": "test.result",
+  "level": "WARN",
+  "code": "T-18",
+  "message": "T-18 Format and label consistency: 2 findings (V-4, V-5) from 10 problems",
+  "data": {
+   "id": "T-18",
+   "name": "Format and label consistency",
+   "status": "warn",
+   "detail": "2 findings (V-4, V-5) from 10 problems",
+   "simulated": false
+  },
+  "sim_t": 67.545,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 236,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.visual",
+  "type": "finding.raised",
+  "level": "WARN",
+  "code": "V-2",
+  "message": "V-2 Assigned and in use, by month: In use drawn in red (negative), which is kept for faults",
+  "data": {
+   "id": "V-2",
+   "category": "Visual",
+   "test": "T-19",
+   "checks": [
+    "red-for-faults"
+   ],
+   "panel": "trend",
+   "panels": [
+    "trend"
+   ],
+   "panel_titles": [
+    "Assigned and in use, by month"
+   ],
+   "expected": "a role that is not red",
+   "shown": "negative",
+   "severity": "medium",
+   "phase": "harvest",
+   "step": "harvest.visual",
+   "message": "Assigned and in use, by month: In use drawn in red (negative), which is kept for faults",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-19",
+     "check": "red-for-faults",
+     "panel": "trend",
+     "expected": "a role that is not red",
+     "shown": "negative",
+     "message": "Assigned and in use, by month: In use drawn in red (negative), which is kept for faults",
+     "unit": ""
+    }
+   ]
+  },
+  "sim_t": 68.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 237,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.visual",
+  "type": "finding.raised",
+  "level": "WARN",
+  "code": "V-3",
+  "message": "V-3 Seats by vendor and product: Unused drawn in #5470c6, which is not a palette token; 2 problems on 2 panels",
+  "data": {
+   "id": "V-3",
+   "category": "Visual",
+   "test": "T-19",
+   "checks": [
+    "palette",
+    "class-colour"
+   ],
+   "panel": "seats-treemap",
+   "panels": [
+    "seats-treemap",
+    "entitlement"
+   ],
+   "panel_titles": [
+    "Seats by vendor and product",
+    "Entitled, assigned and active by product"
+   ],
+   "expected": "a design token",
+   "shown": "#5470c6",
+   "severity": "medium",
+   "phase": "harvest",
+   "step": "harvest.visual",
+   "message": "Seats by vendor and product: Unused drawn in #5470c6, which is not a palette token; 2 problems on 2 panels",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-19",
+     "check": "palette",
+     "panel": "seats-treemap",
+     "expected": "a design token",
+     "shown": "#5470c6",
+     "message": "Seats by vendor and product: Unused drawn in #5470c6, which is not a palette token",
+     "unit": ""
+    },
+    {
+     "test": "T-19",
+     "check": "class-colour",
+     "panel": "entitlement",
+     "expected": "positive",
+     "shown": "series-3",
+     "message": "Entitled, assigned and active by product: Active drawn in series-3, where every other panel draws it in positive",
+     "unit": ""
+    }
+   ]
+  },
+  "sim_t": 68.227,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 238,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.visual",
+  "type": "finding.raised",
+  "level": "WARN",
+  "code": "V-6",
+  "message": "V-6 Assigned: the card is moved off the grid (margin-left: 6px); 7 problems on 5 panels",
+  "data": {
+   "id": "V-6",
+   "category": "Visual",
+   "test": "T-19",
+   "checks": [
+    "grid",
+    "overflow",
+    "truncation"
+   ],
+   "panel": "k-assigned",
+   "panels": [
+    "k-assigned",
+    "k-active",
+    "k-idle",
+    "seats-treemap",
+    "seats"
+   ],
+   "panel_titles": [
+    "Assigned",
+    "Active",
+    "Unused or underused",
+    "Seats by vendor and product",
+    "Seats"
+   ],
+   "expected": "on the grid, with the band's one gutter",
+   "shown": "margin-left: 6px",
+   "severity": "medium",
+   "phase": "harvest",
+   "step": "harvest.visual",
+   "message": "Assigned: the card is moved off the grid (margin-left: 6px); 7 problems on 5 panels",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-19",
+     "check": "grid",
+     "panel": "k-assigned",
+     "expected": "on the grid, with the band's one gutter",
+     "shown": "margin-left: 6px",
+     "message": "Assigned: the card is moved off the grid (margin-left: 6px)",
+     "unit": ""
+    },
+    {
+     "test": "T-19",
+     "check": "grid",
+     "panel": "k-active",
+     "expected": "on the grid, with the band's one gutter",
+     "shown": "margin-left: 22px",
+     "message": "Active: the card is moved off the grid (margin-left: 22px)",
+     "unit": ""
+    },
+    {
+     "test": "T-19",
+     "check": "grid",
+     "panel": "k-idle",
+     "expected": "on the grid, with the band's one gutter",
+     "shown": "top: 11px; left: 9px",
+     "message": "Unused or underused: the card is moved off the grid (top: 11px; left: 9px)",
+     "unit": ""
+    },
+    {
+     "test": "T-19",
+     "check": "overflow",
+     "panel": "seats-treemap",
+     "expected": "at most the width of its card",
+     "shown": "width: calc(100% + 40px)",
+     "message": "Seats by vendor and product: the chart is wider than its card (width: calc(100% + 40px))",
+     "unit": ""
+    },
+    {
+     "test": "T-19",
+     "check": "truncation",
+     "panel": "seats",
+     "expected": "every column readable",
+     "shown": "overflow: hidden",
+     "message": "Seats: the table is clipped (overflow: hidden)",
+     "unit": ""
+    },
+    {
+     "test": "T-19",
+     "check": "truncation",
+     "panel": "seats",
+     "expected": "every column readable",
+     "shown": "overflow: hidden; text-overflow: clip",
+     "message": "Seats: the last two column headers are clipped (overflow: hidden; text-overflow: clip)",
+     "unit": ""
+    },
+    {
+     "test": "T-19",
+     "check": "truncation",
+     "panel": "seats",
+     "expected": "every column readable",
+     "shown": "overflow: hidden; text-overflow: clip",
+     "message": "Seats: the last two columns are clipped (overflow: hidden; text-overflow: clip)",
+     "unit": ""
+    }
+   ]
+  },
+  "sim_t": 68.455,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 239,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.visual",
+  "type": "finding.raised",
+  "level": "WARN",
+  "code": "V-7",
+  "message": "V-7 Assigned and in use, by month: the title is set in Georgia, 'Times New Roman', Times, serif, not a font token",
+  "data": {
+   "id": "V-7",
+   "category": "Visual",
+   "test": "T-19",
+   "checks": [
+    "font"
+   ],
+   "panel": "trend",
+   "panels": [
+    "trend"
+   ],
+   "panel_titles": [
+    "Assigned and in use, by month"
+   ],
+   "expected": "a font token (Inter or JetBrains Mono)",
+   "shown": "Georgia, 'Times New Roman', Times, serif",
+   "severity": "medium",
+   "phase": "harvest",
+   "step": "harvest.visual",
+   "message": "Assigned and in use, by month: the title is set in Georgia, 'Times New Roman', Times, serif, not a font token",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-19",
+     "check": "font",
+     "panel": "trend",
+     "expected": "a font token (Inter or JetBrains Mono)",
+     "shown": "Georgia, 'Times New Roman', Times, serif",
+     "message": "Assigned and in use, by month: the title is set in Georgia, 'Times New Roman', Times, serif, not a font token",
+     "unit": ""
+    }
+   ]
+  },
+  "sim_t": 68.682,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 240,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.visual",
+  "type": "test.result",
+  "level": "WARN",
+  "code": "T-19",
+  "message": "T-19 Palette and layout: 4 findings (V-2, V-3, V-6, V-7) from 11 problems",
+  "data": {
+   "id": "T-19",
+   "name": "Palette and layout",
+   "status": "warn",
+   "detail": "4 findings (V-2, V-3, V-6, V-7) from 11 problems",
+   "simulated": false
+  },
+  "sim_t": 68.909,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 241,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.visual",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Visual QA: 6 findings",
+  "data": {
+   "name": "Visual QA",
+   "summary": "6 findings"
+  },
+  "sim_t": 69.364,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 242,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.contrast",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Contrast check",
+  "data": {
+   "name": "Contrast check"
+  },
+  "sim_t": 69.364,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 243,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.contrast",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Contrast: text at 4.5:1 and chart roles at 3:1 on the panel surface, light and dark themes",
+  "data": {},
+  "sim_t": 69.364,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 244,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.contrast",
+  "type": "finding.raised",
+  "level": "WARN",
+  "code": "V-8",
+  "message": "V-8 Optimisation candidates: the caption (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1); 4 problems in all",
+  "data": {
+   "id": "V-8",
+   "category": "Visual",
+   "test": "T-20",
+   "checks": [
+    "contrast"
+   ],
+   "panel": "candidates",
+   "panels": [
+    "candidates"
+   ],
+   "panel_titles": [
+    "Optimisation candidates"
+   ],
+   "expected": "4.50:1",
+   "shown": "1.55:1",
+   "severity": "medium",
+   "phase": "harvest",
+   "step": "harvest.contrast",
+   "message": "Optimisation candidates: the caption (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1); 4 problems in all",
+   "catalogued": true,
+   "advisory": false,
+   "problems": [
+    {
+     "test": "T-20",
+     "check": "contrast",
+     "panel": "candidates",
+     "expected": 4.5,
+     "shown": 1.55,
+     "message": "Optimisation candidates: the caption (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1)",
+     "unit": ":1"
+    },
+    {
+     "test": "T-20",
+     "check": "contrast",
+     "panel": "candidates",
+     "expected": 4.5,
+     "shown": 1.44,
+     "message": "Optimisation candidates: the caption (var(--border-default)) at 1.44:1 on the card in the dark theme (needs 4.5:1)",
+     "unit": ":1"
+    },
+    {
+     "test": "T-20",
+     "check": "contrast",
+     "panel": "candidates",
+     "expected": 4.5,
+     "shown": 1.55,
+     "message": "Optimisation candidates: the Withheld cells (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1)",
+     "unit": ":1"
+    },
+    {
+     "test": "T-20",
+     "check": "contrast",
+     "panel": "candidates",
+     "expected": 4.5,
+     "shown": 1.44,
+     "message": "Optimisation candidates: the Withheld cells (var(--border-default)) at 1.44:1 on the card in the dark theme (needs 4.5:1)",
+     "unit": ":1"
+    }
+   ]
+  },
+  "sim_t": 69.818,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 245,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.contrast",
+  "type": "test.result",
+  "level": "WARN",
+  "code": "T-20",
+  "message": "T-20 Contrast: 1 finding (V-8) from 4 problems",
+  "data": {
+   "id": "T-20",
+   "name": "Contrast",
+   "status": "warn",
+   "detail": "1 finding (V-8) from 4 problems",
+   "simulated": false
+  },
+  "sim_t": 70.045,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 246,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": "harvest.contrast",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Contrast check: 1 finding",
+  "data": {
+   "name": "Contrast check",
+   "summary": "1 finding"
+  },
+  "sim_t": 70.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 247,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "harvest",
+  "step": null,
+  "type": "phase.completed",
+  "level": "WARN",
+  "code": null,
+  "message": "Harvest Validation: findings (N-1, N-2, N-3, N-4, N-5, V-1, V-2, V-3, V-4, V-5, V-6, V-7, V-8)",
+  "data": {
+   "index": 10,
+   "name": "Harvest Validation",
+   "result": "findings",
+   "tests": {
+    "T-16": "fail",
+    "T-17": "warn",
+    "T-18": "warn",
+    "T-19": "warn",
+    "T-20": "warn"
+   }
+  },
+  "sim_t": 70.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 248,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": null,
+  "type": "phase.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Phase 11 of 11: Teardown & Report",
+  "data": {
+   "index": 11,
+   "name": "Teardown & Report",
+   "weight": 6
+  },
+  "sim_t": 70.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 249,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": "report.teardown",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Tear down sandbox",
+  "data": {
+   "name": "Tear down sandbox"
+  },
+  "sim_t": 70.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 250,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": "report.teardown",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "DELETE /v0.1/sandboxes/sbx-7d38 204 (simulated)",
+  "data": {
+   "method": "DELETE",
+   "path": "/v0.1/sandboxes/sbx-7d38",
+   "status": 204,
+   "latency_ms": 97,
+   "simulated": true,
+   "response": {
+    "residue": 0
+   }
+  },
+  "sim_t": 70.5,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 251,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": "report.teardown",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Sandbox sbx-7d38 torn down, no residue (simulated)",
+  "data": {},
+  "sim_t": 71.727,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 252,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": "report.teardown",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-21",
+  "message": "T-21 Sandbox torn down cleanly: no residue (simulated)",
+  "data": {
+   "id": "T-21",
+   "name": "Sandbox torn down cleanly",
+   "status": "pass",
+   "detail": "no residue (simulated)",
+   "simulated": true
+  },
+  "sim_t": 72.545,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 253,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": "report.teardown",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Tear down sandbox: torn down",
+  "data": {
+   "name": "Tear down sandbox",
+   "summary": "torn down"
+  },
+  "sim_t": 73.364,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 254,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": "report.compile",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Compile report",
+  "data": {
+   "name": "Compile report"
+  },
+  "sim_t": 73.364,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 255,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": "report.compile",
+  "type": "report.ready",
+  "level": "INFO",
+  "code": null,
+  "message": "Report compiled: 14 findings across 3 categories; verdict Completed with findings",
+  "data": {
+   "verdict": {
+    "id": "findings",
+    "label": "Completed with findings",
+    "tone": "warning"
+   },
+   "counts": {
+    "phases": 11,
+    "phases_with_findings": 2,
+    "tests": 21,
+    "pass": 15,
+    "warn": 5,
+    "fail": 1,
+    "not_run": 0,
+    "findings": 14,
+    "advisories": 0,
+    "gates": 3
+   },
+   "findings": {
+    "Numeric": [
+     "N-1",
+     "N-2",
+     "N-3",
+     "N-4",
+     "N-5"
+    ],
+    "Visual": [
+     "V-1",
+     "V-2",
+     "V-3",
+     "V-4",
+     "V-5",
+     "V-6",
+     "V-7",
+     "V-8"
+    ],
+    "Latency": [
+     "L-1"
+    ],
+    "Boundary": []
+   }
+  },
+  "sim_t": 73.364,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 256,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": "report.compile",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Compile report: Completed with findings",
+  "data": {
+   "name": "Compile report",
+   "summary": "Completed with findings"
+  },
+  "sim_t": 74.182,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 257,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": "report.package",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Package seed files",
+  "data": {
+   "name": "Package seed files"
+  },
+  "sim_t": 74.182,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 258,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": "report.package",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Seed files: core.md, adaptation.md, protection.md outlines and manifest.json, 1,827 bytes; full files and the zip arrive in M11",
+  "data": {},
+  "sim_t": 74.182,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 259,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": "report.package",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Package seed files: outlines ready",
+  "data": {
+   "name": "Package seed files",
+   "summary": "outlines ready"
+  },
+  "sim_t": 75.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 260,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "report",
+  "step": null,
+  "type": "phase.completed",
+  "level": "PASS",
+  "code": null,
+  "message": "Teardown & Report: passed",
+  "data": {
+   "index": 11,
+   "name": "Teardown & Report",
+   "result": "passed",
+   "tests": {
+    "T-21": "pass"
+   }
+  },
+  "sim_t": 75.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 261,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": null,
+  "step": null,
+  "type": "build.completed",
+  "level": "WARN",
+  "code": null,
+  "message": "Build completed: 15 tests passed, 5 warned, 1 failed; 14 findings, 0 boundary advisories; verdict Completed with findings",
+  "data": {
+   "status": "completed",
+   "verdict": {
+    "id": "findings",
+    "label": "Completed with findings",
+    "tone": "warning"
+   },
+   "seed_name": "License Optimization",
+   "fingerprint": "a127ba",
+   "tests": {
+    "T-01": "pass",
+    "T-02": "pass",
+    "T-03": "pass",
+    "T-04": "pass",
+    "T-05": "pass",
+    "T-06": "pass",
+    "T-07": "pass",
+    "T-08": "pass",
+    "T-09": "pass",
+    "T-10": "pass",
+    "T-11": "pass",
+    "T-12": "pass",
+    "T-13": "pass",
+    "T-14": "pass",
+    "T-15": "warn",
+    "T-16": "fail",
+    "T-17": "warn",
+    "T-18": "warn",
+    "T-19": "warn",
+    "T-20": "warn",
+    "T-21": "pass"
+   },
+   "counts": {
+    "pass": 15,
+    "warn": 5,
+    "fail": 1,
+    "not_run": 0
+   },
+   "findings": [
+    "L-1",
+    "N-1",
+    "N-2",
+    "N-3",
+    "N-4",
+    "N-5",
+    "V-1",
+    "V-4",
+    "V-5",
+    "V-2",
+    "V-3",
+    "V-6",
+    "V-7",
+    "V-8"
+   ],
+   "advisories": [],
+   "gates": [
+    "servicenow-incident-api",
+    "solution-approval",
+    "close-seeding"
+   ],
+   "sim_seconds": 75.0
+  },
+  "sim_t": 75.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ }
+]
