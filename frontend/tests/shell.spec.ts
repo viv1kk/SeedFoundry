@@ -11,12 +11,16 @@ describe('routes', () => {
   // D-43: /knowledge renders the Knowledge page from M3, so it left this placeholder table.
   // D-54 (h): /build/1 and /build/2 render the Build page from M6, so they left it too.
   // D-59: /review/1 and /review/2 render the Review page from M7, so they left it as well.
-  it.each([['/seed', 'seed', 'Seed']])('%s renders its placeholder inside the shell', async (path, name, title) => {
-    const { wrapper, router } = await mountApp(path)
-    expect(router.currentRoute.value.name).toBe(name)
+  // D-76: /seed renders the Seed page from M11, the last route to leave it.
+  it('/seed renders the Seed page inside the shell, and says why it is empty before approval (D-76)', async () => {
+    const { wrapper, router } = await mountApp('/seed', emptySnapshot())
+    expect(router.currentRoute.value.name).toBe('seed')
     expect(wrapper.find('header [data-test="wordmark"]').exists()).toBe(true)
     expect(wrapper.find('nav[aria-label="Journey"]').exists()).toBe(true)
-    expect(wrapper.find('main [data-test="placeholder"] h1').text()).toBe(title)
+    expect(wrapper.find('main [data-test="seed"]').exists()).toBe(true)
+    expect(wrapper.find('main [data-test="placeholder"]').exists()).toBe(false)
+    expect(wrapper.find('main h1').text()).toBe('Seed')
+    expect(wrapper.find('[data-test="seed-empty-reason"]').text()).toBe('No Seed is approved yet, so there are no Seed files to show.')
   })
 
   it('/knowledge renders the Knowledge page inside the shell (D-43)', async () => {
@@ -99,6 +103,17 @@ describe('journey indicator', () => {
     const links = wrapper.findAll('nav[aria-label="Journey"] a')
     expect(links.map((a) => a.text())).toEqual(['Knowledge'])
     expect(links[0].attributes('href')).toBe('/knowledge')
+  })
+
+  it('links Seed too once a Seed is approved, and marks it reached (D-75)', async () => {
+    const approved = emptySnapshot({ approval: { iteration: 2, build_id: 'b-2', approved_at: '2026-10-04T12:00:00.000+00:00' } })
+    const { wrapper } = await mountApp('/knowledge', approved)
+    const links = wrapper.findAll('nav[aria-label="Journey"] a')
+    expect(links.map((a) => [a.text(), a.attributes('href')])).toEqual([
+      ['Knowledge', '/knowledge'],
+      ['Seed', '/seed'],
+    ])
+    expect(links[1].classes()).toContain('journey__step--done')
   })
 
   it('goes to Knowledge when Knowledge is clicked', async () => {

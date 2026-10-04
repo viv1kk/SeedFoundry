@@ -120,7 +120,13 @@ class Build(BaseModel):
 
 
 class Approval(BaseModel):
+    """The approved Seed (FR-F-1, D-73): which completed build it is. `approved_at` is the wall-clock
+    time of the approval, kept like an event's wall_ts: the Seed page shows its date, and no file,
+    zip or compared value holds it (NFR-1, OQ-33)."""
+
     iteration: int
+    build_id: str = ""
+    approved_at: str | None = None
 
 
 class State(BaseModel):

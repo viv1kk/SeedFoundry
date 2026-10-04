@@ -406,7 +406,7 @@
  ],
  "usage": {
   "llm_calls": 10,
-  "tokens_in": 15280,
+  "tokens_in": 20399,
   "tokens_out": 7450,
   "api_calls": 26,
   "sandbox_seconds": 36.2,

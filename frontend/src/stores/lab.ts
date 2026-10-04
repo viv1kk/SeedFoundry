@@ -57,7 +57,14 @@ export interface Snapshot {
   next_build_id?: number
   intake: { files: IntakeFile[] }
   builds: Build[]
-  approval: { iteration: number } | null
+  /** The approved Seed (D-73): its build and when it was approved (wall clock, shown as a date only). */
+  approval: Approval | null
+}
+
+export interface Approval {
+  iteration: number
+  build_id?: string
+  approved_at?: string | null
 }
 
 /** Exactly two iterations (D-6). */

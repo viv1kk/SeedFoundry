@@ -48,8 +48,10 @@ INTAKE_EVENT_TYPES = (
 )
 # Demo controller (D-46): Reset to start. Load sample and Clear intake emit intake events.
 DEMO_EVENT_TYPES = ("demo.reset",)
+# Approve (D-73): the Seed is a completed build's files. Reset clears it with demo.reset.
+SEED_EVENT_TYPES = ("seed.approved",)
 STREAM_EVENT_TYPES = ("stream.resync",)
-EVENT_TYPES = BUILD_EVENT_TYPES + INTAKE_EVENT_TYPES + DEMO_EVENT_TYPES + STREAM_EVENT_TYPES
+EVENT_TYPES = BUILD_EVENT_TYPES + INTAKE_EVENT_TYPES + DEMO_EVENT_TYPES + SEED_EVENT_TYPES + STREAM_EVENT_TYPES
 
 LEVELS = ("INFO", "LLM", "API", "TEST", "PASS", "WARN", "FAIL")
 

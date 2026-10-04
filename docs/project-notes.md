@@ -838,3 +838,73 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
   - The Seed page's iteration history can read `changes` (findings, feedback, updates) from iteration 2's report; the feedback text is `changes.feedback.content`.
   - Generated files read the routed core files, which build 2 keeps in `files`; the observer feedback sections are part of them.
   - Approve is still the stub in `BuildReport.vue` (`APPROVE_WHY`).
+
+### M11: Seed file generation and final page (2026-10-04)
+
+**What changed**
+- Generation is real (D-72). Synthesis writes `core.md`, `adaptation.md` and `protection.md` in full from the intake the build reads, replacing D-51's outlines, so the manifest, the upload checksums and Planting's heading summary are computed from the real files. Each file has the header block, one line on what the layer holds, and build-simulation §7's sections in order, filled by project-notes §4's mapping, which no file or screen states. Iteration 2 reads build 2's routed files, so each "Observer feedback (iteration 1)" sits in the layer its section belongs to. A mention of an intake file by name reads as the layer that holds it now ("as core.md defines them").
+- Learned rules (iteration 2): one rule per class of finding iteration 1 raised, from its kept findings, each citing the findings it came from. Synthesis's line ("3 rules, one per finding class (Latency, Numeric, Visual)") and the file agree.
+- Approve is real (D-73): `POST /api/seed/approve` approves the current iteration's completed build, once, with no build running. Iteration 1 cannot be approved once iteration 2 has started. A build after approval is refused, and Reset clears the approval. One new event, `seed.approved`, outside any build. Known issues are the approved build's open findings, advisories never (OQ-31): iteration 1's 14, in a Known issues section of each file and on the page.
+- Downloads (D-74): each file and `license-optimization-seed.zip` from `/api/seed/...`. The zip is stored with fixed times and attributes, so the same approval gives the same bytes.
+- The Seed page, `/seed` (D-75): the hero with the real approval date (OQ-33), what the Seed does, tests by phase, the iteration history with the feedback as a disclosure, known issues, and three file cards with Preview (sanitised) and Download, plus Download all (.zip). Before approval it says why it is empty and points the way. Approve on a report opens it with no confirmation (OQ-32). The journey's Seed step links once approved.
+- Events and console: unchanged at 256 events and 168 lines (iteration 1), 278 and 178 (iteration 2). Only the Synthesis and Package lines read differently, and Cross-Examination's simulated token counts grew with the drafts.
+
+**Files**
+- MOVE backend/seedfoundry/generate/outline.py to generate/layers.py (the templates, rewritten)
+- NEW backend/seedfoundry/package.py
+- CHANGE backend/seedfoundry/engine/script.py (full drafts, Package line), state.py (`Approval.build_id`, `approved_at`), events.py (`seed.approved`), main.py (the four `/api/seed` routes), report/assemble.py and report/__init__.py (`raised` public)
+- NEW backend/tests/test_seed.py, seed_fixtures.py, golden/seed/iteration-1/ and iteration-2/ (the three files each); CHANGE backend/tests/test_no_em_dash.py (generated output and the zip)
+- NEW frontend/src/seed.ts, stores/seed.ts, components/seed/SeedHistory.vue, SeedFiles.vue; MOVE (removed) frontend/src/components/ScreenPlaceholder.vue, no screen uses it now; CHANGE frontend/src/views/SeedView.vue (the page, replacing the placeholder), components/report/BuildReport.vue (Approve), components/shell/JourneyIndicator.vue, events.ts, stores/lab.ts
+- NEW frontend/tests/seed.spec.ts, fixtures/seed/; CHANGE frontend/tests/fake-server.ts, shell.spec.ts, build-view.spec.ts, fixtures/reports/ (rewritten)
+- CHANGE docs/decisions.md (D-72 to D-76; OQ-31 to OQ-34; notes on D-10, D-44, D-51, D-65), docs/build-simulation.md (§2 to §4, §7, §9 as built), docs/ui-spec.md (§1, §3, §4, §7 as built), docs/implementation-plan.md (M11 status, as-built note), docs/CLAUDE.md (the Seed fixture command), docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 562 passed, frontend: 443 passed (through `python run.py test`)
+- `npm run build`: typecheck, build and `postbuild` network check pass (downloads are relative `/api` links)
+- Exit criteria:
+  - Golden tests for both paths. Iteration 2 approved: learned rules, one per class from the data, and no known issues. Iteration 1 approved: all 14 open findings in a Known issues section of each file and on the page, and no learned rules. Header block and §7's sections in order in every file (`test_seed.py`).
+  - The no em dash test scans both paths' files, the zip's contents read back from its bytes, and the page data (`test_no_em_dash.py`).
+  - Over HTTP: each file and the zip download; the zip holds exactly the three files, byte for byte; the same approval twice gives the same zip bytes, files, page (with `approved_at` set aside) and events; a build after approval is refused; Reset clears the approval; downloads and the page survive a restart (`test_seed.py`).
+  - The Seed page: every §7 section for both paths, Preview sanitised (the hostile sample), the feedback disclosure expands and collapses, no intake file named on the page, the empty page says why and points the way, Approve's availability and refusals, the journey's Seed link (`seed.spec.ts`, `shell.spec.ts`).
+  - FR-F-1 to FR-F-5, AC-4 and AC-5: the tests above.
+- Checked that the tests can fail. Each change below was made, the matching tests failed, and it was reverted:
+  - the zip's entries in reverse order;
+  - the zip dated from the clock;
+  - no Known issues on approval;
+  - learned rules from a fixed list;
+  - Reset keeping the approval;
+  - iteration 1 approvable after the rebuild;
+  - intake file names not rewritten;
+  - an em dash in a generated rule;
+  - the feedback always shown;
+  - Preview without the sanitiser;
+  - Approve not opening the Seed page;
+  - known issues hidden on the page.
+- determinism: pass (and the same approval twice: identical files, zip, page and events) | no-em-dash: pass (generated output included) | network: pass | contrast: pass (no new token)
+- Assertions edited, recorded first in D-76:
+  - `shell.spec.ts`: the `/seed` placeholder row becomes the Seed page test.
+  - `build-view.spec.ts`: Approve approves and opens the Seed page instead of saying M11 brings it.
+
+**Hand checks** (terminal, through the Vite proxy at `http://127.0.0.1:5273`; `var/state.json` backed up first and restored after, same SHA-256 `9e510636...`)
+- 4x: Reset, Load sample, iteration 1 (18.8 s), the rebuild with `GET /api/demo/feedback`'s text, iteration 2 (18.9 s), Approve iteration 2. Downloaded the three files and the zip. The zip holds exactly the three files, byte for byte.
+- Read the three files. They read as one Seed: the header block, §7's sections in order, and the feedback sections in Execution guidance, Reasoning approach, Value logic, Data sources and mappings and Presentation notes. Learned rules has Numeric, Visual and Latency, each citing its findings. No intake file is named and there is no em dash.
+- Reset, then Approve iteration 1: all 14 findings, catalogue order, in the Known issues section of each file and in the page data; no Learned rules.
+- The iteration 2 path run twice: the files and the zip bytes are identical. The page data differs only in build ids (the counter carries across Reset) and `approved_at`.
+- Server restart (both processes stopped and started): the files, the zip and the page are byte for byte as before, `approved_at` included; `/seed` and the zip are served through the proxy.
+- Nothing was checked in a browser. Waiting on the stakeholder, in a browser:
+  - Approve from iteration 2's report and read the Seed page top to bottom. Expand and collapse the observer feedback. Preview and download each file, and download the zip.
+  - Reset, Load sample, build iteration 1, approve it from its report, and read the known issues on the page.
+  - Both themes, and the whole page by keyboard only.
+  - Still pending from M9 and M10: the report and its finding links on the dashboard, and the rebuild modal (its three views, Prefill, Start Rebuild at 1x).
+
+**Decisions and questions**
+- New: D-72 (generation), D-73 (Approve), D-74 (downloads and the zip), D-75 (the Seed page and Approve on screen), D-76 (assertions changed)
+- Asked and closed by the stakeholder: OQ-31 (advisories are not known issues), OQ-32 (no confirmation on Approve), OQ-33 (the real approval date, on the page only)
+- Opened: OQ-34 (an iteration 2 approved with findings lists them as known issues; the sample never has any)
+- OQ-19 to OQ-30 are unanswered, so their assumptions stand.
+
+**Notes for next milestone**
+- M12:
+  - The demo script's end: Approve on iteration 2's report, then the Seed page and Download all (.zip). Reset clears the approval for the next rehearsal.
+  - The offline check should cover the downloads: they are same-origin `/api` links.
+  - Approve has no shortcut; the operator presses it on the report.

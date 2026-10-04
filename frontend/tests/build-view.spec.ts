@@ -498,23 +498,25 @@ describe('completion hand-off (FR-B-9, D-54 (f), D-65)', () => {
     expect(text('[data-test="build-status"]')).toBe('Completed')
   })
 
-  // D-59: View Dashboard opens the dashboard from M7. D-71: Rebuild opens the rebuild modal from M10;
-  // Approve still says which milestone brings it.
-  it('offers View Dashboard, which opens the dashboard, Rebuild, which opens the rebuild modal, and Approve, which says M11 brings it', async () => {
+  // D-59: View Dashboard opens the dashboard from M7. D-71: Rebuild opens the rebuild modal from M10.
+  // D-76: Approve approves the build and opens the Seed page from M11 (it said "Approve arrives with
+  // the Seed page in M11." until then).
+  it('offers View Dashboard, which opens the dashboard, Rebuild, which opens the rebuild modal, and Approve, which approves the build and opens the Seed page', async () => {
     await openCompleted()
     const actions = $$('[data-test="report-actions"] button')
     expect(actions.map((b) => [b.textContent?.trim(), b.getAttribute('aria-disabled')])).toEqual([
       ['View Dashboard', null],
       ['Rebuild', null],
-      ['Approve', 'true'],
+      ['Approve', null],
     ])
     expect(actions[2].hasAttribute('disabled')).toBe(false)
-    expect(actions[2].getAttribute('aria-describedby')).toBeTruthy()
     await click(actions[1])
     expect(document.querySelector('[role="dialog"][data-modal="rebuild"]')?.textContent).toContain('Rebuild Seed: observer feedback')
     await click(document.querySelector('[data-action="cancel"]'))
     await click($$('[data-test="report-actions"] button')[2])
-    expect(text('[data-test="report-status"]')).toBe('Approve arrives with the Seed page in M11.')
+    expect(server.writes().map((c) => [c.path, c.body])).toEqual([['/api/seed/approve', { build_id: 'b-1' }]])
+    expect(router.currentRoute.value.fullPath).toBe('/seed')
+    expect(text('[data-test="seed-name"]')).toBe('License Optimization')
   })
 
   it('has no Rebuild on iteration 2 (D-6)', async () => {

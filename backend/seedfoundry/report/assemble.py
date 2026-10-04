@@ -59,7 +59,7 @@ def _of(events: list[Event], type_: str) -> list[Event]:
     return [e for e in events if e.type == type_]
 
 
-def _raised(build: Build) -> list[dict[str, Any]]:
+def raised(build: Build) -> list[dict[str, Any]]:
     """The build's findings, advisories aside, in catalogue order."""
     found = [e.data for e in _of(build.log, "finding.raised") if not e.data.get("advisory")]
     return sorted(found, key=lambda f: order(f["id"]))
@@ -68,7 +68,7 @@ def _raised(build: Build) -> list[dict[str, Any]]:
 def changes(build: Build, prior: Build | None) -> dict[str, Any]:
     """Changes since iteration 1 (FR-R-3): iteration 1's findings, each resolved when this build has
     none of that id, the feedback that started this build, and the edits its routing made."""
-    now = {f["id"] for f in _raised(build)}
+    now = {f["id"] for f in raised(build)}
     findings = [
         {
             "id": f["id"],
@@ -78,7 +78,7 @@ def changes(build: Build, prior: Build | None) -> dict[str, Any]:
             "severity": f.get("severity"),
             "status": "open" if f["id"] in now else "resolved",
         }
-        for f in (_raised(prior) if prior is not None else [])
+        for f in (raised(prior) if prior is not None else [])
     ]
     feedback = feedback_file(build.files)
     steps = [e for e in build.log if e.type == "log" and (e.step or "").startswith("assay.feedback-")]

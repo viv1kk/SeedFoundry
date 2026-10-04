@@ -15,7 +15,7 @@ from fastapi import FastAPI, Header, Query, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
-from seedfoundry import dashboard, demo, events, report
+from seedfoundry import dashboard, demo, events, package, report
 from seedfoundry.config import var_dir
 from seedfoundry.data import DATASETS, dataset
 from seedfoundry.engine.clock import Clock
@@ -49,6 +49,10 @@ class StartBuild(BaseModel):
     # feedback as observer-feedback-iteration-1.md and starts iteration 2 in one change (D-67).
     iteration: Literal[1, 2] | None = None
     feedback: str | None = None
+
+
+class ApproveSeed(BaseModel):
+    build_id: str
 
 
 class SetSpeed(BaseModel):
@@ -218,6 +222,44 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
         if build.iteration == 2:
             prior = next((b for b in lab(request).state.builds if b.iteration == 1 and b.status == "completed"), None)
         return report.assemble(build, prior)
+
+    # The approved Seed (FR-F-1 to FR-F-5, D-73 to D-75). Everything but the approval itself is
+    # computed from the approved build's kept files and log, so it is the same after a restart.
+
+    @app.post("/api/seed/approve", status_code=201)
+    async def approve_seed(request: Request, body: ApproveSeed) -> dict[str, Any]:
+        """Approve a completed build as the Seed (FR-R-4): the current iteration's, once, with no build
+        running. 409 seed_approved, build_running, report_not_ready or iteration_superseded."""
+        manager = lab(request)
+        manager.apply(package.approve(body.build_id))
+        return package.page(manager.state)
+
+    @app.get("/api/seed")
+    async def seed_page(request: Request) -> dict[str, Any]:
+        """The Seed page's data (ui-spec.md §7). 404 seed_not_approved before Approve."""
+        return package.page(lab(request).state)
+
+    @app.get("/api/seed/files/{name}")
+    async def seed_file(request: Request, name: str) -> Response:
+        """core.md, adaptation.md or protection.md, as a download (FR-F-3)."""
+        made = package.seed_files(*package.approved(lab(request).state))
+        if name not in made:
+            raise files.IntakeError(404, "seed_file_not_found", f"The Seed has no file {name}. Its files are {', '.join(made)}.")
+        return Response(
+            made[name].encode("utf-8"),
+            media_type="text/markdown; charset=utf-8",
+            headers={"Content-Disposition": f'attachment; filename="{name}"'},
+        )
+
+    @app.get("/api/seed/zip")
+    async def seed_zip(request: Request) -> Response:
+        """The three files as one zip, the same bytes for the same approval (FR-F-3, D-74)."""
+        build, earlier = package.approved(lab(request).state)
+        return Response(
+            package.zip_bytes(package.seed_files(build, earlier)),
+            media_type="application/zip",
+            headers={"Content-Disposition": f'attachment; filename="{package.zip_name(build.seed_name)}"'},
+        )
 
     # Dashboard and datasets (FR-D-1 to FR-D-6, D-56). The query engine runs here: every figure
     # is aggregated from the seat rows at request time, and the frontend only renders.

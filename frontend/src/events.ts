@@ -28,6 +28,8 @@ export const EVENT_TYPES = [
   'intake.file_deleted',
   // demo controller (D-46)
   'demo.reset',
+  // the approved Seed (D-73)
+  'seed.approved',
   // stream (D-31)
   'stream.resync',
 ] as const

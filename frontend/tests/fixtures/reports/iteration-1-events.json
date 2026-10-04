@@ -1333,7 +1333,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Drafted core.md outline: 6 sections, 246 bytes",
+  "message": "Drafted core.md: 6 sections, 9,660 bytes",
   "data": {
    "sections": [
     "Purpose",
@@ -1342,7 +1342,8 @@
     "Decision rules",
     "Reasoning approach",
     "Execution guidance"
-   ]
+   ],
+   "bytes": 9660
   },
   "sim_t": 15.107,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -1410,14 +1411,15 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Drafted adaptation.md outline: 4 sections, 251 bytes",
+  "message": "Drafted adaptation.md: 4 sections, 6,867 bytes",
   "data": {
    "sections": [
     "Operating context",
     "Data sources and mappings",
     "Account and industry adjustments",
     "Presentation notes"
-   ]
+   ],
+   "bytes": 6867
   },
   "sim_t": 17.25,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -1485,14 +1487,15 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Drafted protection.md outline: 4 sections, 210 bytes",
+  "message": "Drafted protection.md: 4 sections, 1,318 bytes",
   "data": {
    "sections": [
     "Guardrails",
     "Validation checks",
     "Quality controls",
     "Security"
-   ]
+   ],
+   "bytes": 1318
   },
   "sim_t": 19.393,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -1550,8 +1553,8 @@
      {
       "name": "core.md",
       "role": "core",
-      "bytes": 246,
-      "sha256": "1b1530af5560623bd0b30830da841b4b48f43aa2387cd0f78db802cb4b921b54",
+      "bytes": 9660,
+      "sha256": "9581fce9de4deb1e8b22ae1b06badfd7b7e69b84505b1768de8d6f5064f5a315",
       "sections": [
        "Purpose",
        "Core principles",
@@ -1564,8 +1567,8 @@
      {
       "name": "adaptation.md",
       "role": "adaptation",
-      "bytes": 251,
-      "sha256": "6ccc20ad052f8522f96d63996707ea1545c04b49f611ec44399ea1bee7f158b9",
+      "bytes": 6867,
+      "sha256": "e9500dd845fd8dba203960ca31b965c75d380282ad222c6aa72957545cc824f3",
       "sections": [
        "Operating context",
        "Data sources and mappings",
@@ -1576,8 +1579,8 @@
      {
       "name": "protection.md",
       "role": "protection",
-      "bytes": 210,
-      "sha256": "4f7243d4a903f5cb7f1f900d600b2cb6f834628b472e04403c3f2f4f89918404",
+      "bytes": 1318,
+      "sha256": "7564d8e5b8e3eea0c9758c11adbda8ec998404434bfaa8edcbfe64ad48811c94",
       "sections": [
        "Guardrails",
        "Validation checks",
@@ -1692,11 +1695,11 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "review core.md: 981 tokens in, 521 out (simulated)",
+  "message": "review core.md: 3,354 tokens in, 521 out (simulated)",
   "data": {
    "task": "review core.md",
    "model": "simulated-llm",
-   "tokens_in": 981,
+   "tokens_in": 3354,
    "tokens_out": 521,
    "latency_ms": 2189,
    "simulated": true
@@ -1760,11 +1763,11 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "review adaptation.md and protection.md: 1,045 tokens in, 410 out (simulated)",
+  "message": "review adaptation.md and protection.md: 3,009 tokens in, 410 out (simulated)",
   "data": {
    "task": "review adaptation.md and protection.md",
    "model": "simulated-llm",
-   "tokens_in": 1045,
+   "tokens_in": 3009,
    "tokens_out": 410,
    "latency_ms": 1638,
    "simulated": true
@@ -2411,8 +2414,8 @@
    "simulated": true,
    "response": {
     "name": "core.md",
-    "bytes": 246,
-    "sha256": "1b1530af5560623bd0b30830da841b4b48f43aa2387cd0f78db802cb4b921b54"
+    "bytes": 9660,
+    "sha256": "9581fce9de4deb1e8b22ae1b06badfd7b7e69b84505b1768de8d6f5064f5a315"
    }
   },
   "sim_t": 35.31,
@@ -2436,8 +2439,8 @@
    "simulated": true,
    "response": {
     "name": "adaptation.md",
-    "bytes": 251,
-    "sha256": "6ccc20ad052f8522f96d63996707ea1545c04b49f611ec44399ea1bee7f158b9"
+    "bytes": 6867,
+    "sha256": "e9500dd845fd8dba203960ca31b965c75d380282ad222c6aa72957545cc824f3"
    }
   },
   "sim_t": 35.73,
@@ -2461,8 +2464,8 @@
    "simulated": true,
    "response": {
     "name": "protection.md",
-    "bytes": 210,
-    "sha256": "4f7243d4a903f5cb7f1f900d600b2cb6f834628b472e04403c3f2f4f89918404"
+    "bytes": 1318,
+    "sha256": "7564d8e5b8e3eea0c9758c11adbda8ec998404434bfaa8edcbfe64ad48811c94"
    }
   },
   "sim_t": 36.15,
@@ -2486,8 +2489,8 @@
    "simulated": true,
    "response": {
     "name": "manifest.json",
-    "bytes": 1120,
-    "sha256": "6107877022f420b2aeb20c19719a6f0439202475972b4ff23fdd383339194b14"
+    "bytes": 1123,
+    "sha256": "9abd48dd7f19f366118d2df0f98c3e547d58685e4d2300f06af856cb4c257fc4"
    }
   },
   "sim_t": 36.57,
@@ -2502,7 +2505,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Uploaded 4 files, 1,827 bytes",
+  "message": "Uploaded 4 files, 18,968 bytes",
   "data": {
    "files": [
     "core.md",
@@ -2510,7 +2513,7 @@
     "protection.md",
     "manifest.json"
    ],
-   "bytes": 1827
+   "bytes": 18968
   },
   "sim_t": 36.99,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -2741,10 +2744,10 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "core.md: 7 headings, 6 sections",
+  "message": "core.md: 27 headings, 6 sections",
   "data": {
    "layer": "core.md",
-   "headings": 7,
+   "headings": 27,
    "sections": [
     "Purpose",
     "Core principles",
@@ -2766,10 +2769,10 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "adaptation.md: 5 headings, 4 sections",
+  "message": "adaptation.md: 24 headings, 4 sections",
   "data": {
    "layer": "adaptation.md",
-   "headings": 5,
+   "headings": 24,
    "sections": [
     "Operating context",
     "Data sources and mappings",
@@ -6333,8 +6336,14 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Seed files: core.md, adaptation.md, protection.md outlines and manifest.json, 1,827 bytes; full files and the zip arrive in M11",
-  "data": {},
+  "message": "Seed files packaged: core.md (9,660 bytes), adaptation.md (6,867 bytes), protection.md (1,318 bytes); Approve offers them one by one and as one zip",
+  "data": {
+   "files": {
+    "core.md": 9660,
+    "adaptation.md": 6867,
+    "protection.md": 1318
+   }
+  },
   "sim_t": 74.182,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
@@ -6347,10 +6356,10 @@
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Package seed files: outlines ready",
+  "message": "Package seed files: 3 files packaged",
   "data": {
    "name": "Package seed files",
-   "summary": "outlines ready"
+   "summary": "3 files packaged"
   },
   "sim_t": 75.0,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"

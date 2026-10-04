@@ -8,7 +8,10 @@
 // that finding's panels highlighted (`finding=<id>` in the URL); with `finding-links="event"` (the
 // rebuild modal) it is a button that emits the id instead, so the page URL never changes (D-70).
 // Rebuild (iteration 1 only, D-6) opens the rebuild modal; once iteration 2 has started, iteration 1's
-// report says so and links to it instead (D-67). Approve stays a stub that says M11 brings it.
+// report says so and links to it instead (D-67). Approve (FR-R-4, D-73, D-75) approves the build
+// and opens the Seed page; it is offered on the current iteration's completed build, once, with no
+// build running, and says why not otherwise. Once the Seed is approved, the footer says so and links
+// to the Seed page instead.
 // Iteration 2's report adds "Changes since iteration 1" (FR-R-3, D-69), the feedback quoted through
 // the Preview's sanitising renderer (D-40).
 import { computed, ref, watch } from 'vue'
@@ -18,7 +21,8 @@ import type { Finding, Report, Severity, TestStatus } from '../../report'
 import { clock } from '../../stepper'
 import { useReportsStore } from '../../stores/reports'
 import { useRebuildStore } from '../../stores/rebuild'
-import { ITERATIONS, type Build } from '../../stores/lab'
+import { useSeedStore } from '../../stores/seed'
+import { ITERATIONS, useLabStore, type Build } from '../../stores/lab'
 import BaseButton from '../base/BaseButton.vue'
 import BaseChip, { type ChipTone } from '../base/BaseChip.vue'
 import MarkdownPreview from '../intake/MarkdownPreview.vue'
@@ -32,6 +36,8 @@ const emit = defineEmits<{ finding: [id: string] }>()
 
 const reports = useReportsStore()
 const rebuild = useRebuildStore()
+const seedStore = useSeedStore()
+const lab = useLabStore()
 const router = useRouter()
 
 watch(
@@ -103,7 +109,6 @@ const usage = computed(() => {
   ]
 })
 
-const APPROVE_WHY = 'Approve arrives with the Seed page in M11.'
 const REBUILT = 'Iteration 2 was rebuilt from this report.'
 
 const said = ref('')
@@ -141,6 +146,26 @@ const keptLine = computed(() => {
   const list = segmentList(c.kept)
   return `${list[0].toUpperCase()}${list.slice(1)} stayed in ${c.feedback?.name ?? 'the feedback file'} only: ${fits} no Ensemble file.`
 })
+
+const approval = computed(() => lab.snapshot?.approval ?? null)
+/** Why Approve cannot act now, or null; asked only before the Seed is approved. */
+const approveWhy = computed(() => (approval.value ? null : seedStore.unavailable(props.build)))
+const approvedLine = computed(() => {
+  const a = approval.value
+  if (!a) return ''
+  return a.build_id === props.build.id ? 'This build is the approved Seed.' : `The Seed was approved at iteration ${a.iteration}.`
+})
+
+async function approve(): Promise<void> {
+  if (approveWhy.value) {
+    said.value = approveWhy.value
+    return
+  }
+  said.value = ''
+  const refused = await seedStore.approve(props.build)
+  if (refused) said.value = refused
+  else await router.push({ name: 'seed' })
+}
 
 function viewDashboard(): void {
   void router.push({ name: 'review', params: { iteration: String(props.build.iteration) }, query: { dashboard: DASHBOARD_ID } })
@@ -346,11 +371,21 @@ const ids = computed(() => `report-${props.build.id}`)
       >
         Rebuild
       </BaseButton>
-      <BaseButton variant="primary" aria-disabled="true" :aria-describedby="`${ids}-why-approve`" data-action="approve" @click="said = APPROVE_WHY">
+      <BaseButton
+        v-if="!approval"
+        variant="primary"
+        :aria-disabled="approveWhy || seedStore.approving ? 'true' : undefined"
+        :aria-describedby="approveWhy ? `${ids}-why-approve` : undefined"
+        data-action="approve"
+        @click="approve"
+      >
         Approve
       </BaseButton>
       <span v-if="rebuildWhy && !rebuilt" :id="`${ids}-why-rebuild`" class="visually-hidden">{{ rebuildWhy }}</span>
-      <span :id="`${ids}-why-approve`" class="visually-hidden">{{ APPROVE_WHY }}</span>
+      <span v-if="approveWhy" :id="`${ids}-why-approve`" class="visually-hidden">{{ approveWhy }}</span>
+      <p v-if="approval" class="report__rebuilt" data-test="report-approved">
+        {{ approvedLine }} <RouterLink to="/seed">Go to the Seed</RouterLink>
+      </p>
       <p v-if="rebuilt" class="report__rebuilt" data-test="report-rebuilt">
         {{ REBUILT }} <RouterLink to="/build/2">Go to iteration 2</RouterLink>
       </p>

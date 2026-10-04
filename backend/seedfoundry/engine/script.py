@@ -8,8 +8,9 @@ schedule and never from a clock. The script is a pure function of the intake, th
 iteration and the earlier build, made in full when the build starts: speed and skip,
 which the runner applies, cannot change a word of it (FR-DC-4, NFR-1).
 
-Real work happens here where it is cheap (Assay statistics, the boundary check, the
-manifest and its checksums, the gates' citations, the validators). LLM and Seed API calls go
+Real work happens here where it is cheap (Assay statistics, the boundary check, the three
+Seed files Synthesis drafts in full from M11, the manifest and its checksums, the gates'
+citations, the validators). LLM and Seed API calls go
 through the simulated clients (D-22). T-08 runs the dashboard's logic on both datasets of M7
 (D-58). From M9 phases 9 and 10 run the validators for real: protection probes over rules from
 the Protection layer, malformed inputs fed to the record contract and the drill parser, and the
@@ -32,7 +33,7 @@ from seedfoundry import dashboard
 from seedfoundry.clients import ApiCall, LLMCall, LLMClient, SeedClient, SimulatedLLMClient, SimulatedSeedClient
 from seedfoundry.data import DATASETS, dataset
 from seedfoundry.engine.catalogue import BUDGET_SECONDS, PHASES, TEST_NAMES, TOTAL_WEIGHT, Phase, plan
-from seedfoundry.generate import outline as layers
+from seedfoundry.generate import layers
 from seedfoundry.intake import assay, boundary, routing
 from seedfoundry.intake.feedback import FEEDBACK_NAME, feedback_file, segments
 from seedfoundry.report.assemble import verdict
@@ -85,6 +86,7 @@ class BuildContext:
     findings: list[dict[str, Any]] = field(default_factory=list)
     gates: list[str] = field(default_factory=list)
     drafts: dict[str, str] = field(default_factory=dict)
+    seed_files: dict[str, str] = field(default_factory=dict)  # generated once, by the first draft step
     manifest: dict[str, Any] = field(default_factory=dict)
     uploads: dict[str, str] = field(default_factory=dict)  # name: sha256 the Seed API returned
     seed_id: str = ""
@@ -469,14 +471,23 @@ def ingest_feedback(ctx: BuildContext) -> Step:
 # Phase 3: Synthesis
 
 
+def generated(ctx: BuildContext) -> dict[str, str]:
+    """The three layers from the intake this build reads (generate/layers.py, D-72), made once.
+    Iteration 2's learned rules come from iteration 1's kept findings, as the line below counts them."""
+    if not ctx.seed_files:
+        ctx.seed_files = layers.drafts(ctx.files, ctx.seed_name, ctx.iteration, ctx.fingerprint, prior_findings(ctx))
+    return ctx.seed_files
+
+
 def draft(name: str, sources: tuple[Category, ...]) -> Callable[[BuildContext], Step]:
     def step(ctx: BuildContext) -> Step:
         source = ctx.text(*sources) + "\n".join(f.content for f in ctx.inventory.context)
         yield llm(ctx.llm.call(f"draft {name}", source, (560, 1400)))
-        text = layers.outline(name, ctx.seed_name, ctx.iteration, ctx.fingerprint)
+        text = generated(ctx)[name]
         ctx.drafts[name] = text
         count = len(layers.sections(name, ctx.iteration))
-        yield log(f"Drafted {name} outline: {plural(count, 'section')}, {len(text.encode('utf-8')):,} bytes", sections=list(layers.sections(name, ctx.iteration)))
+        size = len(text.encode("utf-8"))
+        yield log(f"Drafted {name}: {plural(count, 'section')}, {size:,} bytes", sections=list(layers.sections(name, ctx.iteration)), bytes=size)
         if name == "protection.md" and ctx.iteration == 2:
             classes = sorted({str(f.get("category")) for f in prior_findings(ctx)})
             if classes:
@@ -1010,9 +1021,12 @@ def compile_report(ctx: BuildContext) -> Step:
 
 
 def package(ctx: BuildContext) -> Step:
-    total = sum(len(t.encode("utf-8")) for t in ctx.drafts.values()) + len(manifest_bytes(ctx))
-    yield log(f"Seed files: {', '.join(ctx.drafts)} outlines and manifest.json, {total:,} bytes; full files and the zip arrive in M11")
-    return "outlines ready"
+    """The three layers as planted are the Seed's files: Approve offers them one by one and as one
+    zip, with Known issues added when the build has findings (D-72, D-73)."""
+    sizes = {name: len(text.encode("utf-8")) for name, text in ctx.drafts.items()}
+    listed = ", ".join(f"{name} ({size:,} bytes)" for name, size in sizes.items())
+    yield log(f"Seed files packaged: {listed}; Approve offers them one by one and as one zip", files=sizes)
+    return "3 files packaged"
 
 
 STEPS: dict[str, Callable[[BuildContext], Step]] = {

@@ -2,7 +2,9 @@
 backend source, the tests, the launchers and SeedFoundry's own docs.
 
 docs/seed_docs/ is Seed v0.1's reference material, kept as it was written, so it is not
-scanned (docs/CLAUDE.md rule 4). Generated output joins the scan in M11.
+scanned (docs/CLAUDE.md rule 4). From M11 generated output is scanned too (D-44): the golden Seed
+files sit in tests/golden/ and so in the scan, and the files and zip of both approval paths are
+generated and scanned here, the zip's contents read back from its bytes.
 
 The patterns are built from parts so this file does not match itself.
 """
@@ -94,4 +96,24 @@ def test_no_em_dash_anywhere():
     for path in scanned_files():
         for line in em_dashes(path.read_text(encoding="utf-8")):
             offenders.append(f"{path.relative_to(ROOT).as_posix()}:{line}")
+    assert offenders == []
+
+
+def test_no_em_dash_in_the_generated_seed_files_or_their_zip():
+    import io
+    import zipfile
+
+    from seed_fixtures import PATHS, approved_state
+    from seedfoundry import package
+
+    offenders = []
+    for iteration in PATHS:
+        state = approved_state(iteration)
+        made = package.seed_files(*package.approved(state))
+        archive = zipfile.ZipFile(io.BytesIO(package.zip_bytes(made)))
+        texts = {f"iteration {iteration}: {n}": t for n, t in made.items()}
+        texts |= {f"iteration {iteration} zip: {n}": archive.read(n).decode("utf-8") for n in archive.namelist()}
+        texts[f"iteration {iteration}: page"] = str(package.page(state))
+        for where, text in texts.items():
+            offenders += [f"{where}:{line}" for line in em_dashes(text)]
     assert offenders == []

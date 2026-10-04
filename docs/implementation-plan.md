@@ -17,7 +17,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | | M8 | Defect overlay (iteration 1 dashboard) | Done (2026-10-03) |
 | | M9 | Validators and build report | Done (2026-10-04) |
 | E. Loop | M10 | Rebuild modal and iteration 2 | Done (2026-10-04) |
-| | M11 | Seed file generation and final page | Not started |
+| | M11 | Seed file generation and final page | Done (2026-10-04) |
 | F. Ship | M12 | Hardening, operator guide, rehearsal | Not started |
 | | M13 | As-built reconciliation | Not started |
 
@@ -82,6 +82,8 @@ seedfoundry/
 *As built (M9):* `backend/seedfoundry/validators/` gained `findings.py` (problems to findings, D-63), `protection.py` (T-13) and `records.py` (T-14) (D-62); `report/assemble.py` assembles the report from a build's kept log (D-64), served at `GET /api/builds/{id}/report`. The validators run in `engine/script.py`, and `pending(...)` is gone. Frontend: `src/report.ts` (types, API), `src/stores/reports.ts` (one load per build), `components/report/BuildReport.vue` (the report, on the Build and Review pages, D-65); `components/build/BuildSummary.vue` is removed. The dashboard frame has the "N findings" link and the finding highlight (`finding=<id>`), drawn by `DashboardRenderer.vue`. New tests: `backend/tests/test_findings.py`, `test_probes.py`, `test_report.py`, with `report_fixtures.py` writing `frontend/tests/fixtures/reports/`; `frontend/tests/report.spec.ts`.
 
 *As built (M10):* `backend/seedfoundry/intake/routing.py` routes the observer feedback into the four core files (D-68); `engine/script.py`'s Apply observer feedback sub-steps use it and `engine/runner.py` writes each routed file as its beat plays and saves the rebuild's feedback with the build's start (D-67); the build record keeps `files` (`GET /api/builds/{id}/files`); `report/assemble.py` adds `changes` to iteration 2's report (D-69); `GET /api/demo/feedback` serves `sample/rebuild/observer-feedback-iteration-1.md`. Frontend: `components/rebuild/RebuildModal.vue` and `stores/rebuild.ts` (D-70), `components/intake/MarkdownEditor.vue` (the editor FileEditor and the modal share), and `BaseModal` gained `name`, a `controls` slot and a `flush` body. New tests: `backend/tests/test_routing.py`, `test_rebuild.py`; `frontend/tests/rebuild-modal.spec.ts`.
+
+*As built (M11):* `backend/seedfoundry/generate/` holds `layers.py` (the three files' templates, the manifest; the M5 `outline.py` renamed, D-72); the zip, Approve and the Seed page's data are `backend/seedfoundry/package.py` (D-73, D-74), served at `POST /api/seed/approve`, `GET /api/seed`, `GET /api/seed/files/{name}` and `GET /api/seed/zip`. `state.py`'s `Approval` gained `build_id` and `approved_at`; `events.py` gained `seed.approved`. Frontend: `src/seed.ts` (types, API), `stores/seed.ts`, `views/SeedView.vue` and `components/seed/` (`SeedHistory.vue`, `SeedFiles.vue`); `BuildReport.vue`'s Approve is real and the journey indicator links Seed once approved (D-75). `components/ScreenPlaceholder.vue` is removed: `/seed` was the last screen using it. New tests: `backend/tests/test_seed.py`, with `seed_fixtures.py` writing the golden files (`backend/tests/golden/seed/`) and `frontend/tests/fixtures/seed/`; `frontend/tests/seed.spec.ts`.
 
 ## 3. Milestones
 

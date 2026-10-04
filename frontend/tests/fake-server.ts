@@ -15,14 +15,18 @@
 // backend/tests/report_fixtures.py and checked by test_report.py), with the build's own id. The
 // rebuild (D-67) is POST /api/builds with iteration 2 and the feedback: it keeps the server's rules
 // (feedback that is not blank, a completed iteration 1, still on iteration 1) and saves the feedback
-// file with the build, in one step; Prefill's text is the real demo feedback file.
+// file with the build, in one step; Prefill's text is the real demo feedback file. Approve (D-73)
+// keeps the server's rules (the current iteration's completed build, once, with no build running)
+// and the Seed page's data is what the backend assembled for that approval path
+// (tests/fixtures/seed/, written by backend/tests/seed_fixtures.py and checked by test_seed.py), with
+// the approved build's own id; a build after approval is refused, and Reset clears it.
 
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { vi } from 'vitest'
 import type { LabEvent } from '../src/events'
 import type { IntakeFile } from '../src/intake'
-import type { Build, Snapshot } from '../src/stores/lab'
+import type { Approval, Build, Snapshot } from '../src/stores/lab'
 
 export const CATEGORIES = {
   categories: [
@@ -92,6 +96,13 @@ export function reportFixture(iteration: number): Record<string, unknown> {
   return JSON.parse(readFileSync(resolve(REPORT_DIR, `iteration-${iteration}.json`), 'utf8'))
 }
 
+const SEED_DIR = resolve(__dirname, 'fixtures/seed')
+
+/** The Seed page's data the backend assembled for approving the sample's iteration 1 or 2 (D-73). */
+export function seedFixture(iteration: number): Record<string, unknown> {
+  return JSON.parse(readFileSync(resolve(SEED_DIR, `iteration-${iteration}.json`), 'utf8'))
+}
+
 /** The sample's iteration 1 build, every event as the backend kept it (wall_ts fixed). */
 export function sampleBuildEvents(): LabEvent[] {
   return JSON.parse(readFileSync(resolve(REPORT_DIR, 'iteration-1-events.json'), 'utf8'))
@@ -124,7 +135,10 @@ export class FakeServer {
   buildEvents = new Map<string, LabEvent[]>()
   /** Fields to put over the fixture report of an iteration, for a test that needs another report. */
   reportPatches = new Map<number, Record<string, unknown>>()
+  /** Fields to put over the Seed page fixture of an iteration (a hostile file for Preview, say). */
+  seedPatches = new Map<number, Record<string, unknown>>()
   iteration = 1
+  approval: Approval | null = null
   speed = 1
   seq = 0
   nextId = 1
@@ -172,9 +186,15 @@ export class FakeServer {
         next_build_id: this.nextBuild,
         intake: { files: this.files },
         builds: this.builds,
-        approval: null,
+        approval: this.approval,
       }),
     )
+  }
+
+  /** The approved Seed's page data: the fixture for its iteration, with this approval's build and time. */
+  seedPage(): Record<string, unknown> {
+    const page = { ...seedFixture(this.approval!.iteration), ...this.seedPatches.get(this.approval!.iteration) }
+    return { ...page, approval: { ...(page.approval as object), ...this.approval } }
   }
 
   /** The next request that matches gets this refusal instead. */
@@ -246,6 +266,10 @@ export class FakeServer {
       if (build.status !== 'completed') return refusal(409, 'report_not_ready', `Build ${build.id} has not completed, so it has no report.`)
       return { status: 200, body: { ...reportFixture(build.iteration), ...this.reportPatches.get(build.iteration), build_id: build.id } }
     }
+    if (method === 'GET' && path === '/api/seed') {
+      if (!this.approval) return refusal(404, 'seed_not_approved', 'No Seed is approved yet. Approve a completed build from its report first.')
+      return { status: 200, body: this.seedPage() }
+    }
     if (method === 'GET' && path === '/api/demo/speed') return { status: 200, body: { speed: this.speed } }
     if (method === 'GET' && path === '/api/demo/feedback') return { status: 200, body: { name: FEEDBACK_NAME, content: DEMO_FEEDBACK } }
     if (method === 'POST' && path === '/api/demo/speed') {
@@ -260,7 +284,20 @@ export class FakeServer {
       const to = (call.body as { to?: string }).to
       return { status: 200, body: to === 'phase' ? { skipping: 'phase', phase: 'assay', name: 'Assay' } : { skipping: 'build' } }
     }
+    if (method === 'POST' && path === '/api/seed/approve') {
+      if (this.approval) return refusal(409, 'seed_approved', `This Seed is already approved at iteration ${this.approval.iteration}. Use Reset to start a new one.`)
+      const id = (call.body as { build_id?: string }).build_id
+      const build = this.builds.find((b) => b.id === id)
+      if (!build) return refusal(404, 'build_not_found', `No build with id ${id}.`)
+      if (running) return refusal(409, 'build_running', 'A build is running. Approve once it has finished.')
+      if (build.status !== 'completed') return refusal(409, 'report_not_ready', `Build ${build.id} has not completed, so there is nothing to approve.`)
+      if (build.iteration !== this.iteration) return refusal(409, 'iteration_superseded', 'Iteration 2 was rebuilt from this build, so iteration 2 is the one to approve.')
+      this.approval = { iteration: build.iteration, build_id: build.id, approved_at: '2026-10-04T12:00:00.000+00:00' }
+      this.seq++
+      return { status: 201, body: this.seedPage() }
+    }
     if (method === 'POST' && path === '/api/builds') {
+      if (this.approval) return refusal(409, 'seed_approved', 'This Seed is approved, so it is not built again. Use Reset to start a new one.')
       if (running) return refusal(409, 'build_running', 'A build is running. Wait for it to finish, or use Reset to start.')
       const missing = [...CORE].filter((c) => !this.files.some((f) => f.category === c && f.content.trim()))
       if (missing.length) {
@@ -291,6 +328,7 @@ export class FakeServer {
       const removed = { files_removed: this.files.length, builds_removed: this.builds.length }
       this.files = []
       this.builds = []
+      this.approval = null
       this.iteration = 1
       this.seq++
       return { status: 200, body: removed }

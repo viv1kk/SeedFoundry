@@ -50,6 +50,7 @@ uv sync                          # make backend/.venv with dev packages
 uv run pytest                    # backend tests
 uv run python tests/dashboard_fixtures.py   # rewrite the frontend's dashboard fixtures, both iterations, after a dashboard change (D-56, D-60)
 uv run python tests/report_fixtures.py      # rewrite the frontend's report fixtures (both iterations' reports, iteration 2 rebuilt with the demo feedback; iteration 1's events) after a build, routing, validator or report change (D-64, D-67)
+uv run python tests/seed_fixtures.py        # rewrite the golden Seed files (tests/golden/seed/) and the frontend's Seed page fixtures, both approval paths, after a generation, approval or report change (D-72, D-73)
 
 # frontend (from frontend/)
 npm install

@@ -1,9 +1,12 @@
 <script setup lang="ts">
-// Knowledge, Build, Review, Seed (ui-spec.md section 1). Shows where you are. In M2 only
-// Knowledge is a link; Build, Review and Seed become links in their own milestones.
+// Knowledge, Build, Review, Seed (ui-spec.md section 1). Shows where you are. Knowledge is always a
+// link; Seed follows the approval (D-75): once a Seed is approved it is a link to the Seed page and
+// reads as reached. Build and Review are not links: which iteration they would open is the page's
+// own choice.
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { JOURNEY, type JourneyStep } from '../../router'
+import { useLabStore } from '../../stores/lab'
 
 const LABELS: Record<JourneyStep, string> = {
   knowledge: 'Knowledge',
@@ -12,9 +15,10 @@ const LABELS: Record<JourneyStep, string> = {
   seed: 'Seed',
 }
 
-const LINKED: ReadonlySet<JourneyStep> = new Set(['knowledge'])
-
 const route = useRoute()
+const lab = useLabStore()
+const approved = computed(() => Boolean(lab.snapshot?.approval))
+const linked = computed<ReadonlySet<JourneyStep>>(() => new Set(approved.value ? ['knowledge', 'seed'] : ['knowledge']))
 const current = computed(() => (JOURNEY as readonly string[]).indexOf(String(route.name ?? '')))
 
 const steps = computed(() =>
@@ -22,8 +26,8 @@ const steps = computed(() =>
     step,
     label: LABELS[step],
     current: index === current.value,
-    done: current.value > index,
-    linked: LINKED.has(step),
+    done: current.value > index || (step === 'seed' && approved.value && index !== current.value),
+    linked: linked.value.has(step),
   })),
 )
 </script>
