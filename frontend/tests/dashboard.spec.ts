@@ -135,7 +135,7 @@ describe('opening the dashboard (OQ-22, OQ-23)', () => {
   it('shows the frame: Back to report and the iteration badge; the M7 line on the overlay is gone (OQ-23)', async () => {
     await open(DASHBOARD_1)
     expect(text('[data-test="back-to-report"]')).toBe('Back to report')
-    expect(text('[data-test="frame-iteration"]')).toBe('Iteration 1 of 2')
+    expect(text('[data-test="frame-iteration"]')).toBe('Iteration 1')
     expect($('[data-test="overlay-note"]')).toBeNull()
     expect(text('[data-test="dashboard-frame"]')).not.toContain('M8')
     expect(text('[data-test="dashboard-source"]')).toBe('Primary estate, 13,050 seats; monthly usage Oct 2025 to Sep 2026, snapshot 2026-09-30')
@@ -144,7 +144,7 @@ describe('opening the dashboard (OQ-22, OQ-23)', () => {
   it('iteration 2 has no overlay line', async () => {
     server.builds = [completed(1), completed(2)]
     await open('/review/2?dashboard=license-optimization')
-    expect(text('[data-test="frame-iteration"]')).toBe('Iteration 2 of 2')
+    expect(text('[data-test="frame-iteration"]')).toBe('Iteration 2')
     expect($('[data-test="overlay-note"]')).toBeNull()
     expect(dashboardCalls()[0].query.iteration).toBe('2')
   })

@@ -10,9 +10,10 @@ Experience, Data Layer and Protection Layer, then instrument-awareness.md, perso
 music.md, D-36's fixed order. A segment that matches nothing stays in the feedback file only.
 
 Each routed segment is appended verbatim at the end of its `##` section, under
-`### Observer feedback (iteration 1)`, which is created if the section lacks it; a missing
-section is created at the end of the file. A segment already under that heading is not added
-again, so routing the same feedback twice changes nothing the second time.
+`### Observer feedback (iteration <n>)`, n being the iteration the feedback rejected (D-81), which
+is created if the section lacks it; a missing section is created at the end of the file. A
+segment already under that heading is not added again, so routing the same feedback twice changes
+nothing the second time.
 
 Everything here is a pure function of the intake files, so the same intake and feedback always
 give the same edits (NFR-1). The build logs the routing as an LLMClient decision (simulated):
@@ -28,7 +29,12 @@ from seedfoundry.intake import assay, boundary
 from seedfoundry.intake.feedback import feedback_file, segments
 from seedfoundry.state import CORE_CATEGORIES, Category, IntakeFile
 
-HEADING = "Observer feedback (iteration 1)"
+
+def heading(rejected: int = 1) -> str:
+    return f"Observer feedback (iteration {rejected})"
+
+
+HEADING = heading(1)
 
 
 @dataclass(frozen=True)
@@ -233,8 +239,8 @@ def _bounds(content: str, length: int, section: str) -> tuple[int, int] | None:
     return start, next((i for i, level, _ in heads if i > start and level <= 2), length)
 
 
-def _append(content: str, section: str, texts: list[tuple[int, str]]) -> tuple[str, SectionChange]:
-    """Append each (number, segment) under the section's feedback heading, verbatim."""
+def _append(content: str, section: str, texts: list[tuple[int, str]], title: str = HEADING) -> tuple[str, SectionChange]:
+    """Append each (number, segment) under the section's feedback heading, `title`, verbatim."""
     lines = content.split("\n")
     change = SectionChange(section)
     bounds = _bounds(content, len(lines), section)
@@ -243,7 +249,7 @@ def _append(content: str, section: str, texts: list[tuple[int, str]]) -> tuple[s
         at = len(lines)
         while at > 0 and not lines[at - 1].strip():
             at -= 1
-        block = ["", f"## {section}", "", f"### {HEADING}"]
+        block = ["", f"## {section}", "", f"### {title}"]
         for number, text in texts:
             block += ["", *text.split("\n")]
             change.segments.append(number)
@@ -254,14 +260,14 @@ def _append(content: str, section: str, texts: list[tuple[int, str]]) -> tuple[s
     start, end = bounds
     heads = [(s.line - 1, s.level, s.title) for s in assay.sections(content) if start <= s.line - 1 < end]
     change.section = heads[0][2]
-    own = next((i for i, level, title in heads if level == 3 and assay.key(title) == assay.key(HEADING)), None)
+    own = next((i for i, level, name in heads if level == 3 and assay.key(name) == assay.key(title)), None)
     stop = end if own is None else next((i for i, level, _ in heads if i > own and level <= 3), end)
     existing = "\n".join(lines[own + 1 : stop]) if own is not None else ""
     floor = own if own is not None else start
     at = stop
     while at > floor + 1 and not lines[at - 1].strip():
         at -= 1
-    block = [] if own is not None else ["", f"### {HEADING}"]
+    block = [] if own is not None else ["", f"### {title}"]
     for number, text in texts:
         if own is not None and text in existing:
             change.present.append(number)
@@ -277,10 +283,10 @@ def _append(content: str, section: str, texts: list[tuple[int, str]]) -> tuple[s
     return "\n".join(lines), change
 
 
-def route(files: list[IntakeFile]) -> Routing:
-    """Route the feedback file's segments into the core files. Without a feedback file, or with
-    one that has no segment, nothing changes."""
-    feedback = feedback_file(files)
+def route(files: list[IntakeFile], rejected: int = 1) -> Routing:
+    """Route the feedback file of iteration `rejected` into the core files, for the iteration after
+    it. Without that feedback file, or with one that has no segment, nothing changes."""
+    feedback = feedback_file(files, rejected)
     placements = [place(n, text) for n, text in enumerate(segments(feedback.content), start=1)] if feedback else []
     core = {f.category: f for f in files if f.category in CORE_CATEGORIES}
     changes: dict[Category, FileChange] = {}
@@ -295,7 +301,7 @@ def route(files: list[IntakeFile]) -> Routing:
                 continue
             texts = [(p.number, p.text) for p in placements if p.target is target]
             if texts:
-                content, change = _append(content, target.section, texts)
+                content, change = _append(content, target.section, texts, heading(rejected))
                 sections.append(change)
         changes[category] = FileChange(before, before.model_copy(update={"content": content}), sections)
     after = {change.after.id: change.after for change in changes.values()}

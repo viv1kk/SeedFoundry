@@ -21,7 +21,7 @@ export const useSeedStore = defineStore('seed', () => {
 
   /**
    * Why a build cannot be approved now, or null when it can (D-73): a completed build of the current
-   * iteration, once, with no build running. Iteration 1 is not approved once iteration 2 has started.
+   * iteration, once, with no build running. An iteration is not approved once the next has started (D-81).
    */
   function unavailable(build: Build): string | null {
     const snapshot = lab.snapshot
@@ -29,7 +29,9 @@ export const useSeedStore = defineStore('seed', () => {
     if (snapshot.approval) return `This Seed is already approved at iteration ${snapshot.approval.iteration}.`
     if (build.status !== 'completed') return 'Approve is offered on a completed build only.'
     if (lab.runningBuild) return 'A build is running. Approve once it has finished.'
-    if (build.iteration !== snapshot.iteration) return 'Iteration 2 was rebuilt from this report, so iteration 2 is the one to approve.'
+    if (build.iteration !== snapshot.iteration) {
+      return `Iteration ${build.iteration + 1} was rebuilt from this report, so iteration ${snapshot.iteration} is the one to approve.`
+    }
     return null
   }
 

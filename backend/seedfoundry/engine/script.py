@@ -35,7 +35,7 @@ from seedfoundry.data import DATASETS, dataset
 from seedfoundry.engine.catalogue import BUDGET_SECONDS, PHASES, TEST_NAMES, TOTAL_WEIGHT, Phase, plan
 from seedfoundry.generate import layers
 from seedfoundry.intake import assay, boundary, routing
-from seedfoundry.intake.feedback import FEEDBACK_NAME, feedback_file, segments
+from seedfoundry.intake.feedback import feedback_file, feedback_name, is_feedback, segments
 from seedfoundry.report.assemble import verdict
 from seedfoundry.state import Build, Category, IntakeFile
 from seedfoundry.validators import findings as found
@@ -78,7 +78,10 @@ class BuildContext:
     build_id: str
     iteration: int
     files: list[IntakeFile]
-    prior: Build | None = None  # iteration 1's build, for iteration 2
+    prior: Build | None = None  # the previous iteration's build, for iteration 2 on
+    # Every earlier iteration's completed build, oldest first, which the learned rules come from
+    # (D-81). Without it, the prior build alone.
+    earlier: list[Build] | None = None
     llm: LLMClient | None = None
     seed: SeedClient | None = None
 
@@ -95,12 +98,15 @@ class BuildContext:
 
     def __post_init__(self) -> None:
         self.files = [f.model_copy() for f in self.files]
-        # Iteration 2 first routes the observer feedback into the core files (D-36), and every
-        # step after Apply observer feedback reads the routed files. `given` is the intake as
-        # the build was started with it.
+        # Iteration 2 on first routes the observer feedback that rejected the iteration before into
+        # the core files (D-36, D-81), and every step after Apply observer feedback reads the routed
+        # files. `given` is the intake as the build was started with it.
+        if self.earlier is None:
+            self.earlier = [self.prior] if self.prior is not None else []
+        self.feedback_name = feedback_name(max(1, self.iteration - 1))
         self.given = self.files
         self.given_fingerprint = assay.fingerprint(self.given)
-        self.routing = routing.route(self.files) if self.iteration == 2 else None
+        self.routing = routing.route(self.files, self.iteration - 1) if self.iteration >= 2 else None
         if self.routing is not None:
             self.files = self.routing.files
         self.digest = assay.digest(self.files)
@@ -193,11 +199,11 @@ def feedback_route(ctx: BuildContext) -> Step:
     routed = ctx.routing
     feedback = routed.feedback if routed else None
     if feedback is None:
-        yield log(f"No {FEEDBACK_NAME} in Knowledge, so there is no observer feedback to route")
+        yield log(f"No {ctx.feedback_name} in Knowledge, so there is no observer feedback to route")
         return "nothing to route"
     parts = routed.placements
     yield log(
-        f"Read {FEEDBACK_NAME}: {plural(len(parts), 'segment')}, {feedback.size:,} bytes",
+        f"Read {ctx.feedback_name}: {plural(len(parts), 'segment')}, {feedback.size:,} bytes",
         segments=len(parts),
         bytes=feedback.size,
     )
@@ -208,7 +214,7 @@ def feedback_route(ctx: BuildContext) -> Step:
     for p in parts:
         if p.target is None:
             yield log(
-                f"Segment {p.number} kept in {FEEDBACK_NAME} only: it fits no Ensemble file",
+                f"Segment {p.number} kept in {ctx.feedback_name} only: it fits no Ensemble file",
                 weight=0.5,
                 segment=p.number,
                 kept=True,
@@ -220,11 +226,12 @@ def feedback_route(ctx: BuildContext) -> Step:
                 weight=0.5,
                 segment=p.number,
                 file=name,
+                category=p.target.category.value,
                 section=p.target.section,
                 matched=list(p.matched),
             )
     files = len({p.target.category for p in routed.routed})
-    kept = f"; {len(routed.kept)} kept in {FEEDBACK_NAME} only" if routed.kept else ""
+    kept = f"; {len(routed.kept)} kept in {ctx.feedback_name} only" if routed.kept else ""
     yield log(
         f"Routed {len(routed.routed)} of {plural(len(parts), 'segment')} to {plural(files, 'file')}{kept}",
         routed=len(routed.routed),
@@ -433,7 +440,8 @@ def distil_sections(category: Category, task: str, unit: str) -> Callable[[Build
 
 
 def merge_context(ctx: BuildContext) -> Step:
-    context = [f for f in ctx.inventory.context if f.name != FEEDBACK_NAME or ctx.iteration == 1]
+    # From iteration 2 on, the feedback files are routed into the core files, not merged (D-81).
+    context = [f for f in ctx.inventory.context if not is_feedback(f) or ctx.iteration == 1]
     if not context:
         yield log("No Misc Context files to merge")
         return "none"
@@ -444,21 +452,32 @@ def merge_context(ctx: BuildContext) -> Step:
 
 
 def prior_findings(ctx: BuildContext) -> list[dict[str, Any]]:
-    """Iteration 1's findings, advisories aside, from its kept log."""
+    """The previous iteration's findings, advisories aside, from its kept log."""
     if ctx.prior is None:
         return []
     return [e.data for e in ctx.prior.log if e.type == "finding.raised" and not e.data.get("advisory")]
 
 
+def learned_findings(ctx: BuildContext) -> list[dict[str, Any]]:
+    """Every earlier iteration's findings, advisories aside, each with the iteration that raised it:
+    what protection.md's learned rules come from (D-81)."""
+    return [
+        {**e.data, "iteration": build.iteration}
+        for build in ctx.earlier or []
+        for e in build.log
+        if e.type == "finding.raised" and not e.data.get("advisory")
+    ]
+
+
 def ingest_feedback(ctx: BuildContext) -> Step:
-    feedback = feedback_file(ctx.files)
+    feedback = feedback_file(ctx.files, ctx.iteration - 1)
     if feedback is None:
-        yield log(f"No {FEEDBACK_NAME} to ingest")
+        yield log(f"No {ctx.feedback_name} to ingest")
     else:
         parts = segments(feedback.content)
         yield log(f"Observer feedback: {len(feedback.content):,} characters, {plural(len(parts), 'segment')}", characters=len(feedback.content), segments=len(parts))
     prior = prior_findings(ctx)
-    yield log(f"Prior findings from iteration 1: {len(prior)}", prior_findings=[f.get("id") for f in prior])
+    yield log(f"Prior findings from iteration {ctx.iteration - 1}: {len(prior)}", prior_findings=[f.get("id") for f in prior])
     if prior:
         yield log(f"Planning corrections for all {plural(len(prior), 'prior finding')}")
     else:
@@ -471,9 +490,10 @@ def ingest_feedback(ctx: BuildContext) -> Step:
 
 def generated(ctx: BuildContext) -> dict[str, str]:
     """The three layers from the intake this build reads (generate/layers.py, D-72), made once.
-    Iteration 2's learned rules come from iteration 1's kept findings, as the line below counts them."""
+    Iteration 2 on has learned rules from the earlier iterations' kept findings, as the line below
+    counts them."""
     if not ctx.seed_files:
-        ctx.seed_files = layers.drafts(ctx.files, ctx.seed_name, ctx.iteration, ctx.fingerprint, prior_findings(ctx))
+        ctx.seed_files = layers.drafts(ctx.files, ctx.seed_name, ctx.iteration, ctx.fingerprint, learned_findings(ctx))
     return ctx.seed_files
 
 
@@ -486,12 +506,12 @@ def draft(name: str, sources: tuple[Category, ...]) -> Callable[[BuildContext], 
         count = len(layers.sections(name, ctx.iteration))
         size = len(text.encode("utf-8"))
         yield log(f"Drafted {name}: {plural(count, 'section')}, {size:,} bytes", sections=list(layers.sections(name, ctx.iteration)), bytes=size)
-        if name == "protection.md" and ctx.iteration == 2:
-            classes = sorted({str(f.get("category")) for f in prior_findings(ctx)})
+        if name == "protection.md" and ctx.iteration >= 2:
+            classes = sorted({str(f.get("category")) for f in learned_findings(ctx)})
             if classes:
                 yield log(f"Learned rules for protection.md: {plural(len(classes), 'rule')}, one per finding class ({', '.join(classes)})", classes=classes)
             else:
-                yield log("Learned rules for protection.md: none, iteration 1 recorded no findings", classes=[])
+                yield log(f"Learned rules for protection.md: none, {layers.earlier(ctx.iteration)} recorded no findings", classes=[])
         return f"{plural(count, 'section')}"
 
     return step

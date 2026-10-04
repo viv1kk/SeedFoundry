@@ -58,7 +58,8 @@ export function plan(iteration = 1): PhasePlan[] {
     id,
     name,
     weight,
-    steps: steps.filter(([, , only]) => only === undefined || only === iteration).map(([step, stepName]) => ({ id: `${id}.${step}`, name: stepName })),
+    // A step marked 2 runs in every iteration from 2 on (D-81).
+    steps: steps.filter(([, , from]) => from === undefined || iteration >= from).map(([step, stepName]) => ({ id: `${id}.${step}`, name: stepName })),
     tests: tests.map(([test, testName]) => ({ id: test, name: testName })),
   }))
 }
@@ -88,6 +89,41 @@ export interface ScriptOptions {
   results?: Partial<Record<string, PhaseResult>>
   /** A phase to raise one boundary advisory in, which never counts as a finding (D-12). */
   advisoryIn?: string
+  /** Iteration 2 on: the feedback sub-steps log what the real routing of the demo's feedback logs (D-83). */
+  routing?: boolean
+}
+
+type Data = Record<string, unknown>
+const placed = (segment: number, file: string, category: string, section: string, matched: string[]): Data => ({ segment, file, category, section, matched })
+const updated = (file: string, section: string, segments: number[], lines_added: number): Data => ({ file, section, segments, lines_added, created: false })
+
+/**
+ * The routing log lines of the demo's feedback, by sub-step, with the data the backend gives them
+ * (engine/script.py feedback_route and feedback_update, D-36, D-83).
+ */
+export const DEMO_ROUTING: Record<string, [message: string, data: Data][]> = {
+  'assay.feedback-route': [
+    ['Read observer-feedback-iteration-1.md: 10 segments, 1,812 bytes', { segments: 10, bytes: 1812 }],
+    ['Segment 1 to environment.md, Data Layer: totals', placed(1, 'environment.md', 'environment', 'Data Layer', ['totals'])],
+    ['Segment 2 to environment.md, Styling: pie, slices', placed(2, 'environment.md', 'environment', 'Styling', ['pie', 'slices'])],
+    ['Segment 3 to environment.md, Styling: red', placed(3, 'environment.md', 'environment', 'Styling', ['red'])],
+    ['Segment 4 to environment.md, Styling: number formats', placed(4, 'environment.md', 'environment', 'Styling', ['number formats'])],
+    ['Segment 5 to environment.md, Styling: misaligned', placed(5, 'environment.md', 'environment', 'Styling', ['misaligned'])],
+    ['Segment 6 to environment.md, User Experience: spinner', placed(6, 'environment.md', 'environment', 'User Experience', ['spinner'])],
+    ['Segment 7 to instrument-awareness.md, Model Behaviour: language model', placed(7, 'instrument-awareness.md', 'instrument_awareness', 'Model Behaviour', ['language model'])],
+    ['Segment 8 to person.md, Reasoning methods: reasoning', placed(8, 'person.md', 'person', 'Reasoning methods', ['reasoning'])],
+    ['Segment 9 to music.md, Value Logic: value', placed(9, 'music.md', 'music', 'Value Logic', ['value'])],
+    ['Segment 10 kept in observer-feedback-iteration-1.md only: it fits no Ensemble file', { segment: 10, kept: true }],
+    ['Routed 9 of 10 segments to 4 files; 1 kept in observer-feedback-iteration-1.md only', { routed: 9, kept: [10], files: 4 }],
+  ],
+  'assay.feedback-person': [['person.md: +4 lines in Reasoning methods (segment 8)', updated('person.md', 'Reasoning methods', [8], 4)]],
+  'assay.feedback-instrument': [['instrument-awareness.md: +4 lines in Model Behaviour (segment 7)', updated('instrument-awareness.md', 'Model Behaviour', [7], 4)]],
+  'assay.feedback-environment': [
+    ['environment.md: +10 lines in Styling (segments 2, 3, 4, 5)', updated('environment.md', 'Styling', [2, 3, 4, 5], 10)],
+    ['environment.md: +4 lines in User Experience (segment 6)', updated('environment.md', 'User Experience', [6], 4)],
+    ['environment.md: +4 lines in Data Layer (segment 1)', updated('environment.md', 'Data Layer', [1], 4)],
+  ],
+  'assay.feedback-music': [['music.md: +4 lines in Value Logic (segment 9)', updated('music.md', 'Value Logic', [9], 4)]],
 }
 
 /** The sample's findings by phase, and the tests that find them (D-63). */
@@ -163,6 +199,8 @@ export function script(options: ScriptOptions = {}): LabEvent[] {
       emit('step.started', step.name, { ...inStep, sim_t: t(), data: { name: step.name } })
       if (i === 1 && phase.id === 'distill') {
         emit('llm.call', `distil ${step.name}: 910 tokens in, 572 out (simulated)`, { ...inStep, level: 'LLM', sim_t: t(), data: { simulated: true } })
+      } else if (options.routing && DEMO_ROUTING[step.id]) {
+        for (const [message, data] of DEMO_ROUTING[step.id]) emit('log', message, { ...inStep, sim_t: t(), data })
       } else if (step.id === 'contain.handshake') {
         emit('api.call', 'POST /v0.1/seeds 201 (simulated)', { ...inStep, level: 'API', sim_t: t(), data: { simulated: true } })
       } else {

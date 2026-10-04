@@ -11,8 +11,8 @@ import SeedView from './views/SeedView.vue'
 export const JOURNEY = ['knowledge', 'build', 'review', 'seed'] as const
 export type JourneyStep = (typeof JOURNEY)[number]
 
-// Two iterations only (D-6).
-const ITERATION = ':iteration(1|2)'
+// Any iteration from 1: they go on while the observer rejects them (D-81).
+const ITERATION = ':iteration([1-9]\\d*)'
 
 export const routes: RouteRecordRaw[] = [
   { path: '/', redirect: '/knowledge' },

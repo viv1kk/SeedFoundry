@@ -32,7 +32,7 @@ const dashboardOpen = computed(() => route.query.dashboard === DASHBOARD_ID && c
       <p v-if="!lab.snapshot" class="review__note">Loading the review</p>
       <template v-else-if="!build">
         <p class="review__note" data-test="review-state">No build for iteration {{ iteration }} yet, so there is nothing to review.</p>
-        <RouterLink v-if="iteration === 2" to="/build/1" class="review__link">Go to iteration 1</RouterLink>
+        <RouterLink v-if="iteration > 1" :to="`/build/${iteration - 1}`" class="review__link">Go to iteration {{ iteration - 1 }}</RouterLink>
         <RouterLink v-else to="/knowledge" class="review__link">Go to Knowledge</RouterLink>
       </template>
       <template v-else-if="build.status === 'running'">

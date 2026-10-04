@@ -306,7 +306,7 @@ describe('Shift+Enter: Start Build (FR-B-1)', () => {
     expect(router.currentRoute.value.fullPath).toBe('/build/1')
     expect(status()).toBe('Build started: iteration 1.')
     // D-54 (h): the Build page replaced the placeholder's "Build running" line.
-    expect($('main [data-test="build-iteration"]')?.textContent?.trim()).toBe('Iteration 1 of 2')
+    expect($('main [data-test="build-iteration"]')?.textContent?.trim()).toBe('Iteration 1')
     expect($('main [data-test="build-status"]')?.textContent?.trim()).toBe('Starting')
   })
 
@@ -396,13 +396,14 @@ describe('Shift+S and Shift+E: skip (D-48)', () => {
 describe('Shift+F: Prefill (FR-DC-2, D-70)', () => {
   // D-71: until M10 the button said Prefill arrives in M10. It still does nothing without the modal,
   // and now says the modal must be open; inside the modal, rebuild-modal.spec.ts shows it filling it.
-  it('Shift+F does nothing without the rebuild modal; its button says to open Rebuild first', async () => {
+  // D-81: Rebuild is Reject on screen, on any iteration's report.
+  it('Shift+F does nothing without the rebuild modal; its button says to open Reject first', async () => {
     await open()
     await letter('O')
     await letter('F')
     expect(status()).toBe('')
     await click('[data-action="prefill"]')
-    expect(status()).toBe("Prefill fills the rebuild modal. Open Rebuild from iteration 1's report first.")
+    expect(status()).toBe('Prefill fills the rebuild modal. Open Reject from the current report first.')
     expect(server.writes()).toEqual([])
     expect(server.calls.filter((c) => c.path === '/api/demo/feedback')).toEqual([])
   })

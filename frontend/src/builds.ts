@@ -19,11 +19,12 @@ export const buildsApi = {
   /** Start a build of the current iteration. 409 while one runs or a core file is missing. */
   start: () => api<Build>('/api/builds', { method: 'POST', json: {} }),
   /**
-   * Start Rebuild (FR-RB-4, FR-RB-5, D-67): one request saves the feedback as
-   * observer-feedback-iteration-1.md and starts iteration 2, so a refusal leaves neither.
-   * 422 feedback_empty, 409 build_running, wrong_iteration or seed_approved.
+   * Start Rebuild (FR-RB-4, FR-RB-5, D-67, D-81): rejecting iteration n, one request saves the
+   * feedback as observer-feedback-iteration-<n>.md and starts iteration n + 1, so a refusal leaves
+   * neither. 422 feedback_empty, 409 build_running, wrong_iteration or seed_approved.
    */
-  rebuild: (feedback: string) => api<Build>('/api/builds', { method: 'POST', json: { iteration: 2, feedback } }),
+  rebuild: (rejected: number, feedback: string) =>
+    api<Build>('/api/builds', { method: 'POST', json: { iteration: rejected + 1, feedback } }),
   /** The intake a build read, as it read it: iteration 1's versions of the files stay with build 1 (D-67). */
   files: (id: string) => api<{ build_id: string; iteration: number; files: IntakeFile[] }>(`/api/builds/${encodeURIComponent(id)}/files`),
   /** The kept log of a finished build, or what a running build has emitted so far. 404 if gone. */

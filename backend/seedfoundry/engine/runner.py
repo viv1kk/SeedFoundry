@@ -11,10 +11,11 @@ StateManager.apply, which changes how often the state is written, never what is 
 One build at a time. stop() cancels the running build without touching the state;
 Reset to start calls it before it removes the build (D-46).
 
-The rebuild (FR-RB-4, FR-RB-5, D-67): start(2, feedback) saves the feedback as the Misc Context
-file observer-feedback-iteration-1.md and starts iteration 2 in one state change, so a refusal or
-a failed save leaves neither the file nor the build. Iteration 2's Update sub-steps carry the
-routed files (D-36); each is written to intake when its beat plays, with intake.file_updated.
+The rebuild (FR-RB-4, FR-RB-5, D-67, D-81): rejecting iteration n is start(n + 1, feedback), which
+saves the feedback as the Misc Context file observer-feedback-iteration-<n>.md and starts iteration
+n + 1 in one state change, so a refusal or a failed save leaves neither the file nor the build. The
+Update sub-steps of iteration 2 on carry the routed files (D-36); each is written to intake when its
+beat plays, with intake.file_updated.
 """
 
 from __future__ import annotations
@@ -28,7 +29,7 @@ from seedfoundry.engine.clock import Clock, RealClock
 from seedfoundry.engine.script import Beat, BuildContext, script
 from seedfoundry.intake import files as intake_files
 from seedfoundry.intake.assay import inventory, missing_labels
-from seedfoundry.intake.feedback import FEEDBACK_NAME, feedback_file
+from seedfoundry.intake.feedback import feedback_file, feedback_name
 from seedfoundry.intake.files import IntakeError
 from seedfoundry.events import Event
 from seedfoundry.state import CATEGORY_LABELS, Build, Category, Emit, IntakeFile, State, StateManager
@@ -65,18 +66,22 @@ class BuildEngine:
     # Requests
 
     def start(self, iteration: int | None = None, feedback: str | None = None) -> Build:
-        """Create a build for the current iteration and start playing it (FR-B-1). Moving to
-        iteration 2 is the rebuild: it needs the observer feedback, which is saved with the build's
-        start (FR-RB-3 to FR-RB-5, D-67)."""
+        """Create a build for the current iteration and start playing it (FR-B-1). Moving to the
+        next iteration is the rebuild: it needs the observer feedback that rejected the current one,
+        which is saved with the build's start (FR-RB-3 to FR-RB-5, D-67, D-81)."""
         state = self.manager.state
         if state.build_running or self.running:
             raise BuildError(409, "build_running", "A build is running. Wait for it to finish, or use Reset to start.")
         target = self._target(state, iteration)
-        rebuilding = target == 2 and state.iteration == 1
+        rebuilding = target == state.iteration + 1
         if feedback is not None and not rebuilding:
-            raise BuildError(409, "wrong_iteration", "Observer feedback starts iteration 2 from iteration 1's report; this Seed is past that.")
+            raise BuildError(
+                409,
+                "wrong_iteration",
+                f"Observer feedback starts iteration {state.iteration + 1} from iteration {state.iteration}'s report; this request names iteration {target}.",
+            )
         if rebuilding and (feedback is None or not feedback.strip()):
-            raise BuildError(422, "feedback_empty", "Start Rebuild needs observer feedback. Write what iteration 2 should change first.")
+            raise BuildError(422, "feedback_empty", f"Start Rebuild needs observer feedback. Write what iteration {target} should change first.")
         missing = inventory(state.intake.files).missing
         if missing:
             raise BuildError(
@@ -88,16 +93,18 @@ class BuildEngine:
         files = list(state.intake.files)
         saved: IntakeFile | None = None
         if rebuilding:
-            text = intake_files.check_text(FEEDBACK_NAME, feedback or "")
-            existing = feedback_file(files)
+            name = feedback_name(state.iteration)
+            text = intake_files.check_text(name, feedback or "")
+            existing = feedback_file(files, state.iteration)
             if existing is not None:
                 saved = existing.model_copy(update={"content": text})
                 files = [saved if f.id == existing.id else f for f in files]
             else:
-                saved = IntakeFile(id=f"f-{state.next_file_id}", name=FEEDBACK_NAME, category=Category.MISC_CONTEXT, content=text)
+                saved = IntakeFile(id=f"f-{state.next_file_id}", name=name, category=Category.MISC_CONTEXT, content=text)
                 files.append(saved)
-        prior = next((b for b in reversed(state.builds) if b.iteration == 1 and b.status == "completed"), None)
-        context = BuildContext(f"b-{state.next_build_id}", target, files, prior=prior if target == 2 else None)
+        earlier = earlier_builds(state, target)
+        prior = earlier[-1] if earlier and earlier[-1].iteration == target - 1 else None
+        context = BuildContext(f"b-{state.next_build_id}", target, files, prior=prior, earlier=earlier)
         beats = script(context)
         record = context.record()
 
@@ -162,10 +169,11 @@ class BuildEngine:
             raise BuildError(409, "seed_approved", "This Seed is approved, so it is not built again. Use Reset to start a new one.")
         if iteration is None or iteration == state.iteration:
             return state.iteration
-        if iteration == 2 and state.iteration == 1:
-            if not any(b.iteration == 1 and b.status == "completed" for b in state.builds):
-                raise BuildError(409, "iteration_1_not_built", "Iteration 2 needs a completed iteration 1 build.")
-            return 2
+        if iteration == state.iteration + 1:
+            current = state.iteration
+            if not any(b.iteration == current and b.status == "completed" for b in state.builds):
+                raise BuildError(409, f"iteration_{current}_not_built", f"Iteration {iteration} needs a completed iteration {current} build.")
+            return iteration
         raise BuildError(409, "wrong_iteration", f"The current iteration is {state.iteration}.")
 
     # Playing
@@ -262,6 +270,15 @@ class BuildEngine:
 
         with contextlib.suppress(Exception):
             self.manager.apply(change)
+
+
+def earlier_builds(state: State, iteration: int) -> list[Build]:
+    """The latest completed build of each iteration before `iteration`, oldest first (D-81)."""
+    found: dict[int, Build] = {}
+    for build in state.builds:
+        if build.iteration < iteration and build.status == "completed":
+            found[build.iteration] = build
+    return [found[n] for n in sorted(found)]
 
 
 def _save_feedback(state: State, emit: Emit, saved: IntakeFile) -> None:

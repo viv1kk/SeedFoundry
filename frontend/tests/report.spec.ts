@@ -112,7 +112,7 @@ describe('the report (FR-R-1, ui-spec.md section 4)', () => {
     const verdict = $('[data-test="report-verdict"]')!
     expect([text(verdict), verdict.className.match(/chip--(\w+)/)?.[1]]).toEqual(['Completed with findings', 'warning'])
     expect($$('[data-test="report-fact"]').map((d) => d.textContent)).toEqual([
-      '1 of 2',
+      '1',
       '01:15 simulated',
       '11, 2 with findings',
       '21: 15 passed, 5 warned, 1 failed',
@@ -187,13 +187,14 @@ describe('the report (FR-R-1, ui-spec.md section 4)', () => {
     expect(text('[data-test="usage-note"]')).toBe('Simulated: no model, Seed API or sandbox was called.')
   })
 
-  it('iteration 2 passes with no findings and no Rebuild (D-6)', async () => {
+  // D-81 supersedes D-6: a passed iteration 2 has Reject too.
+  it('iteration 2 passes with no findings, and has Reject and Approve (D-81)', async () => {
     await open('/review/2')
     const verdict = $('[data-test="report-verdict"]')!
     expect([text(verdict), verdict.className.match(/chip--(\w+)/)?.[1]]).toEqual(['Passed', 'positive'])
     expect($$('[data-test="group-none"]')).toHaveLength(4)
     expect($$('[data-test="test-row"] [data-test="test-result"]').every((c) => text(c) === 'Passed')).toBe(true)
-    expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Dashboard', 'Approve'])
+    expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Dashboard', 'Reject', 'Approve'])
     expect(TWO.counts.findings).toBe(0)
     // D-71: from M10 it also has "Changes since iteration 1" (FR-R-3, AC-3, D-69).
     expect($('[data-test="report-changes"]')).not.toBeNull()
@@ -234,6 +235,21 @@ describe('the report (FR-R-1, ui-spec.md section 4)', () => {
     expect(text(quote)).toContain('<img src=x onerror=alert(1)>')
   })
 
+  // D-81: iteration 3 compares with iteration 2, which had no findings.
+  it('iteration 3 shows the changes since iteration 2', async () => {
+    const changes = { ...TWO.changes!, prior_build_id: 'b-2', findings: [], resolved: 0, open: 0, feedback: { name: 'observer-feedback-iteration-2.md', content: 'Sort by saving.', segments: 1 } }
+    server.builds = [completed(1), completed(2), completed(3)]
+    server.iteration = 3
+    server.reportPatches.set(3, { changes })
+    await open('/review/3')
+    expect(text('[data-test="report-changes"] h3')).toBe('Changes since iteration 2')
+    expect(text('[data-test="changes-summary"]')).toBe('Iteration 2 had no findings, so there were none to resolve.')
+    expect($$('[data-test="change"]')).toEqual([])
+    expect(text('[data-test="changes-feedback"]')).toBe('Sort by saving.')
+    expect($$('[data-test="report-fact"]')[0].textContent).toBe('3')
+    expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Dashboard', 'Reject', 'Approve'])
+  })
+
   it('iteration 1 has no changes section', async () => {
     await open('/review/1')
     expect($('[data-test="report-changes"]')).toBeNull()
@@ -255,6 +271,40 @@ describe('the report (FR-R-1, ui-spec.md section 4)', () => {
     expect(text('[data-test="report-error"]')).toContain('Build b-1 has not completed, so it has no report.')
     await click($('[data-test="report-error"] button'))
     expect(text('[data-test="report-verdict"]')).toBe('Completed with findings')
+  })
+})
+
+describe('the context footprint (D-82)', () => {
+  it("shows each Seed file's share of the context window against the 20% budget", async () => {
+    await open('/review/2')
+    const section = $('[data-test="report-context"]')!
+    expect(text($('h3', section))).toBe('Context footprint when planted')
+    // After the changes, before the findings.
+    expect($('[data-test="report-changes"]')!.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(section.compareDocumentPosition($('[data-test="report-findings"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    const c = TWO.context!
+    expect([c.window, c.budget, c.within]).toEqual([32000, 20, true])
+    expect(text('[data-test="context-summary"]')).toBe(
+      `Planted together, the three Seed files take ${c.share.toFixed(1)}% of the model's context window, within the 20% budget, so ${(100 - c.share).toFixed(1)}% stays free for the work. Within budget`,
+    )
+    expect($('[data-test="context-verdict"]')!.className).toContain('chip--positive')
+    expect($$('[data-test="context-layer"] .report__id').map((el) => text(el))).toEqual(['core.md', 'adaptation.md', 'protection.md'])
+    expect($$('[data-test="context-share"]').map((el) => text(el))).toEqual(c.layers.map((l) => `${l.share.toFixed(1)}%`))
+    expect(text('[data-test="context-total"]')).toBe(`${c.share.toFixed(1)}% of 20%`)
+    // The bar: one part per file, as wide as its share of the window, and the budget marked at 20%.
+    const parts = $$('[data-test="context-bar"] .context__part')
+    expect(parts.map((el) => el.style.width)).toEqual(c.layers.map((l) => `${l.share}%`))
+    expect($('[data-test="context-bar"] .context__budget')!.style.left).toBe('20%')
+    expect($('[data-test="context-bar"]')!.getAttribute('aria-label')).toContain(`${c.share.toFixed(1)}% in all, against a 20% budget`)
+    expect(text('[data-test="context-note"]')).toBe('Simulated: a 32,000-token context window, at about four bytes a token.')
+  })
+
+  it('says when a Seed is over the budget, as a caution', async () => {
+    const big = { ...TWO.context!, share: 24.5, within: false }
+    server.reportPatches.set(1, { context: big })
+    await open('/review/1')
+    expect(text('[data-test="context-summary"]')).toBe("Planted together, the three Seed files take 24.5% of the model's context window, over the 20% budget. Over budget")
+    expect($('[data-test="context-verdict"]')!.className).toContain('chip--warning')
   })
 })
 
@@ -371,7 +421,7 @@ describe('keyboard and screen readers (NFR-6)', () => {
       expect(control.getAttribute('tabindex')).not.toBe('-1')
     }
     const tables = $$('table', report)
-    expect(tables).toHaveLength(4) // three groups with findings, and the tests
+    expect(tables).toHaveLength(5) // three groups with findings, the context footprint (D-82), and the tests
     for (const table of tables) {
       expect(text($('caption', table))).not.toBe('')
       expect($$('thead th', table).every((th) => th.getAttribute('scope') === 'col')).toBe(true)

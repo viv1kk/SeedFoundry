@@ -67,9 +67,6 @@ export interface Approval {
   approved_at?: string | null
 }
 
-/** Exactly two iterations (D-6). */
-export const ITERATIONS = 2
-
 const RETRY_MS = 2000
 
 function isBuild(value: unknown): value is Build {

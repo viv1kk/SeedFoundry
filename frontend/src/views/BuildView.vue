@@ -1,19 +1,22 @@
 <script setup lang="ts">
-// Build (ui-spec.md section 3, FR-B-3 to FR-B-9, D-54). `/build/1` and `/build/2` show that
-// iteration's latest build: the header and stepper left, the console right. Everything on
+// Build (ui-spec.md section 3, FR-B-3 to FR-B-9, D-54). `/build/<n>` shows that iteration's latest
+// build: the header and stepper left, the console right. Everything on
 // the page comes from the build record in the snapshot and the build's events
 // (stores/buildLog.ts), and every time from sim_t, so it reads the same at any speed and after
 // a refresh (FR-B-7). On completion the build report (FR-B-9, D-65) sits above the collapsed
 // stepper, with its actions, and the console can be hidden. The page stays on `/build/<n>` (OQ-21).
+// From iteration 2 on, a panel above the stepper shows the observer feedback going into the four
+// Knowledge files as the routing and Update sub-steps play (D-83).
 import { computed, ref, watch } from 'vue'
 import BaseChip from '../components/base/BaseChip.vue'
 import BuildConsole from '../components/build/BuildConsole.vue'
+import FeedbackRouting from '../components/build/FeedbackRouting.vue'
 import PhaseStepper from '../components/build/PhaseStepper.vue'
 import BuildReport from '../components/report/BuildReport.vue'
 import type { LabEvent } from '../events'
-import { clock, consoleLines, derivePhases, elapsed, progress } from '../stepper'
+import { clock, consoleLines, derivePhases, elapsed, feedbackRouting, progress } from '../stepper'
 import { useBuildLogStore } from '../stores/buildLog'
-import { ITERATIONS, useLabStore } from '../stores/lab'
+import { useLabStore } from '../stores/lab'
 
 const props = defineProps<{ iteration: string }>()
 const lab = useLabStore()
@@ -35,6 +38,7 @@ watch(
 const ready = computed(() => build.value !== null && log.loaded && log.buildId === build.value.id)
 const phases = computed(() => (build.value ? derivePhases(build.value, log.events) : []))
 const lines = computed(() => consoleLines(log.events))
+const routing = computed(() => (build.value ? feedbackRouting(build.value, log.events) : null))
 const seconds = computed(() => elapsed(log.events))
 const percent = computed(() => (build.value ? Math.floor(progress(build.value, phases.value, seconds.value) * 100) : 0))
 
@@ -59,7 +63,7 @@ watch(
   },
 )
 
-const otherBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteration === 1) ?? null)
+const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteration === iteration.value - 1) ?? null)
 </script>
 
 <template>
@@ -73,8 +77,8 @@ const otherBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteration =
         <RouterLink to="/knowledge" class="build__link">Go to Knowledge</RouterLink>
       </template>
       <template v-else>
-        <p>No build for iteration 2 yet. Iteration 2 starts when you rebuild from iteration 1's report.</p>
-        <RouterLink v-if="otherBuild" to="/build/1" class="build__link">Go to iteration 1</RouterLink>
+        <p>No build for iteration {{ iteration }} yet. Iteration {{ iteration }} starts when you reject iteration {{ iteration - 1 }} from its report.</p>
+        <RouterLink v-if="previousBuild" :to="`/build/${iteration - 1}`" class="build__link">Go to iteration {{ iteration - 1 }}</RouterLink>
         <RouterLink v-else to="/knowledge" class="build__link">Go to Knowledge</RouterLink>
       </template>
     </section>
@@ -92,7 +96,7 @@ const otherBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteration =
         <div class="build__main">
           <header class="build__header" data-test="build-header">
             <div class="build__heading">
-              <BaseChip tone="accent" class="build__iteration" data-test="build-iteration">Iteration {{ iteration }} of {{ ITERATIONS }}</BaseChip>
+              <BaseChip tone="accent" class="build__iteration" data-test="build-iteration">Iteration {{ iteration }}</BaseChip>
               <h1 class="build__title">{{ build.seed_name || 'Untitled Seed' }}</h1>
               <span class="build__elapsed">
                 <span class="caps-label">Elapsed</span>
@@ -121,6 +125,7 @@ const otherBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteration =
           <p v-if="!ready" class="build__note">Loading the build log</p>
           <template v-else>
             <BuildReport v-if="build.status === 'completed' && completedEvent" :build="build" />
+            <FeedbackRouting v-if="routing" :routing="routing" />
             <PhaseStepper :phases="phases" />
           </template>
         </div>

@@ -1,18 +1,24 @@
 <script setup lang="ts">
-// The Seed page's iteration history (ui-spec.md section 7, OQ-9, D-75): Iteration 1 (n findings), then
-// the observer feedback, then Iteration 2, as a timeline; it ends at iteration 1 when iteration 1 is the
-// Seed. The feedback is a real disclosure (a button with aria-expanded, NFR-6), closed at first, and
-// renders through the Knowledge Preview's sanitiser (D-40), so nothing in it loads or navigates.
+// The Seed page's iteration history (ui-spec.md section 7, OQ-9, D-75, D-81): Iteration 1 (n findings),
+// then each observer feedback and the iteration it started, up to the approved one, as a timeline; it
+// ends at iteration 1 when iteration 1 is the Seed. Each feedback is a real disclosure (a button with
+// aria-expanded, NFR-6), closed at first, and renders through the Knowledge Preview's sanitiser (D-40),
+// so nothing in it loads or navigates.
 import { computed, ref, useId } from 'vue'
-import { ITERATIONS } from '../../stores/lab'
 import type { HistoryItem } from '../../seed'
 import BaseChip from '../base/BaseChip.vue'
 import MarkdownPreview from '../intake/MarkdownPreview.vue'
 
 const props = defineProps<{ items: HistoryItem[] }>()
 
-const open = ref(false)
-const panelId = useId()
+const opened = ref(new Set<string>())
+const uid = useId()
+
+function toggle(key: string): void {
+  const next = new Set(opened.value)
+  if (!next.delete(key)) next.add(key)
+  opened.value = next
+}
 
 const plural = (n: number, word: string) => `${n} ${n === 1 ? word : `${word}s`}`
 
@@ -20,11 +26,11 @@ const entries = computed(() =>
   props.items.map((item) => {
     if (item.kind === 'feedback') {
       const routed = `${item.routed} of ${plural(item.segments, 'segment')} went into ${plural(item.files_updated, 'Knowledge file')}`
-      return { item, key: 'feedback', title: 'Observer feedback', detail: `${item.name}: ${routed}.` }
+      return { item, key: `feedback-${item.rejected ?? 1}`, title: 'Observer feedback', detail: `${item.name}: ${routed}.` }
     }
     const parts = [plural(item.findings, 'finding')]
-    if (item.prior_findings) parts.push(`${item.resolved} of ${item.prior_findings} iteration 1 findings resolved`)
-    return { item, key: `iteration-${item.iteration}`, title: `Iteration ${item.iteration} of ${ITERATIONS}`, detail: `${parts.join('; ')}.` }
+    if (item.prior_findings) parts.push(`${item.resolved} of ${item.prior_findings} iteration ${item.iteration - 1} findings resolved`)
+    return { item, key: `iteration-${item.iteration}`, title: `Iteration ${item.iteration}`, detail: `${parts.join('; ')}.` }
   }),
 )
 </script>
@@ -49,14 +55,14 @@ const entries = computed(() =>
           <button
             type="button"
             class="history__toggle"
-            :aria-expanded="open ? 'true' : 'false'"
-            :aria-controls="panelId"
+            :aria-expanded="opened.has(entry.key) ? 'true' : 'false'"
+            :aria-controls="`${uid}-${entry.key}`"
             data-test="feedback-toggle"
-            @click="open = !open"
+            @click="toggle(entry.key)"
           >
-            {{ open ? 'Hide the feedback' : 'Show the feedback' }}
+            {{ opened.has(entry.key) ? 'Hide the feedback' : 'Show the feedback' }}
           </button>
-          <blockquote v-show="open" :id="panelId" class="history__quote" data-test="feedback-text">
+          <blockquote v-show="opened.has(entry.key)" :id="`${uid}-${entry.key}`" class="history__quote" data-test="feedback-text">
             <MarkdownPreview compact :text="entry.item.content" :label="`Observer feedback, ${entry.item.name}`" />
           </blockquote>
         </template>

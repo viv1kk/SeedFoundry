@@ -10,17 +10,20 @@ simulated, from `sim_t`.
 - Tests: every test with its phase, name, result and detail.
 - Gates: each auto-resolved Seed v0.1 gate, how it was resolved and from which section.
 - Simulated usage: LLM calls and tokens, API calls, sandbox time.
-- Iteration 2 only, "Changes since iteration 1" (FR-R-3, D-68): every iteration 1 finding, resolved
-  when this build raised none with its id; the observer feedback as build 2 kept it; and how the
-  routing updated the four files, from this build's Apply observer feedback lines. It reads iteration
-  1's kept log too, which never changes once iteration 2 has started, so it is still the same report
-  for the same build and after a restart.
+- Context footprint (D-82): how much of the model's context window the three Seed files take when
+  they are planted together, from the sizes Synthesis put in the manifest, against a 20% budget.
+- Iteration 2 on, "Changes since iteration n - 1" (FR-R-3, D-68, D-81): every finding of the previous
+  iteration, resolved when this build raised none with its id; the observer feedback as this build
+  kept it; and how the routing updated the four files, from this build's Apply observer feedback
+  lines. It reads the previous build's kept log too, which never changes once the next iteration has
+  started, so it is still the same report for the same build and after a restart.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
+from seedfoundry.clients.llm import SIMULATED_CONTEXT_WINDOW
 from seedfoundry.engine.catalogue import PHASES, TEST_NAMES
 from seedfoundry.events import Event
 from seedfoundry.intake.feedback import feedback_file, segments
@@ -66,7 +69,7 @@ def raised(build: Build) -> list[dict[str, Any]]:
 
 
 def changes(build: Build, prior: Build | None) -> dict[str, Any]:
-    """Changes since iteration 1 (FR-R-3): iteration 1's findings, each resolved when this build has
+    """Changes since the previous iteration (FR-R-3): its findings, each resolved when this build has
     none of that id, the feedback that started this build, and the edits its routing made."""
     now = {f["id"] for f in raised(build)}
     findings = [
@@ -80,7 +83,7 @@ def changes(build: Build, prior: Build | None) -> dict[str, Any]:
         }
         for f in (raised(prior) if prior is not None else [])
     ]
-    feedback = feedback_file(build.files)
+    feedback = feedback_file(build.files, build.iteration - 1)
     steps = [e for e in build.log if e.type == "log" and (e.step or "").startswith("assay.feedback-")]
     updates = [
         {k: e.data.get(k) for k in ("file", "section", "segments", "lines_added", "created")}
@@ -99,9 +102,48 @@ def changes(build: Build, prior: Build | None) -> dict[str, Any]:
     }
 
 
+# The share of the context window, in percent, the planted Seed files may take together (D-82).
+CONTEXT_BUDGET = 20
+
+
+def context(events: list[Event]) -> dict[str, Any] | None:
+    """The Seed files' context footprint when planted (D-82): each layer's tokens (about four bytes a
+    token, as the simulated LLM client counts them) and its share of the simulated context window,
+    from the manifest Synthesis assembled. None for a build with no manifest."""
+    manifest = next(
+        (e.data.get("manifest") for e in events if e.type == "log" and e.step == "synth.manifest" and e.data.get("manifest")),
+        None,
+    )
+    if not manifest:
+        return None
+    window = SIMULATED_CONTEXT_WINDOW
+    layers = []
+    for layer in manifest.get("layers", []):
+        tokens = round(int(layer.get("bytes", 0)) / 4)
+        layers.append(
+            {
+                "name": layer.get("name"),
+                "role": layer.get("role"),
+                "bytes": layer.get("bytes"),
+                "tokens": tokens,
+                "share": round(tokens / window * 100, 1),
+            }
+        )
+    tokens = sum(layer["tokens"] for layer in layers)
+    return {
+        "window": window,
+        "budget": CONTEXT_BUDGET,
+        "layers": layers,
+        "tokens": tokens,
+        "share": round(tokens / window * 100, 1),
+        "within": tokens <= window * CONTEXT_BUDGET / 100,
+        "simulated": True,
+    }
+
+
 def assemble(build: Build, prior: Build | None = None) -> dict[str, Any]:
-    """The report of a completed build, from its kept log. For iteration 2, `prior` is iteration 1's
-    completed build, which "Changes since iteration 1" reads."""
+    """The report of a completed build, from its kept log. From iteration 2 on, `prior` is the previous
+    iteration's completed build, which "Changes since" reads."""
     events = build.log
     completed = next(e for e in reversed(events) if e.type == "build.completed")
     names = {p.id: p.name for p in PHASES}
@@ -196,7 +238,8 @@ def assemble(build: Build, prior: Build | None = None) -> dict[str, Any]:
         "tests": tests,
         "gates": gates,
         "usage": usage,
-        "changes": changes(build, prior) if build.iteration == 2 else None,
+        "context": context(events),
+        "changes": changes(build, prior) if build.iteration >= 2 else None,
     }
 
 

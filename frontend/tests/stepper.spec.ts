@@ -2,7 +2,7 @@
 // iteration 2's feedback group, an interrupted build, times from sim_t, console lines and filter.
 
 import { describe, expect, it } from 'vitest'
-import { clock, consoleLines, derivePhases, duration, elapsed, filterLines, progress, stamp } from '../src/stepper'
+import { clock, consoleLines, derivePhases, duration, elapsed, feedbackRouting, filterLines, progress, stamp } from '../src/stepper'
 import { buildRecord, expectedLines, script } from './build-script'
 
 const upTo = (events: ReturnType<typeof script>, predicate: (e: (typeof events)[number]) => boolean) =>
@@ -67,6 +67,60 @@ describe('phases and sub-steps from events (FR-B-3)', () => {
     // After a restart the server kept none of its events (D-49): only build.interrupted.
     const lost = derivePhases(buildRecord({ status: 'interrupted', phase: 'contain' }), [])
     expect(lost.map((p) => [p.state, p.result])).toEqual([...Array(5).fill(['done', null]), ['stopped', null], ...Array(5).fill(['pending', null])])
+  })
+})
+
+describe('feedback routing into the four files (D-83)', () => {
+  const build = buildRecord({ id: 'b-2', iteration: 2 })
+  const events = script({ build, routing: true })
+  const tiles = (view: NonNullable<ReturnType<typeof feedbackRouting>>) =>
+    view.files.map((f) => [f.name, f.category, f.state, f.segments, f.sections.map((s) => `+${s.lines} ${s.section}`)])
+
+  it('is not there for iteration 1, which has no feedback sub-steps', () => {
+    expect(feedbackRouting(buildRecord(), script())).toBeNull()
+  })
+
+  it("waits before the routing, then lists each file's segments as soon as the routing decides", () => {
+    const before = feedbackRouting(build, [])!
+    expect([before.feedback, before.state, before.total, before.kept]).toEqual(['observer-feedback-iteration-1.md', 'pending', null, []])
+    expect(before.files.every((f) => f.state === 'pending' && !f.segments.length)).toBe(true)
+    const routed = feedbackRouting(build, upTo(events, (e) => e.type === 'step.completed' && e.step === 'assay.feedback-route'))!
+    expect([routed.state, routed.total, routed.kept, routed.placements.length]).toEqual(['done', 10, [10], 10])
+    expect(tiles(routed)).toEqual([
+      ['person.md', 'Person', 'pending', [8], []],
+      ['instrument-awareness.md', 'Instrument Awareness', 'pending', [7], []],
+      ['environment.md', 'Environment', 'pending', [1, 2, 3, 4, 5, 6], []],
+      ['music.md', 'Music', 'pending', [9], []],
+    ])
+  })
+
+  it("adds each file's sections and lines as its Update sub-step plays", () => {
+    const midway = feedbackRouting(build, upTo(events, (e) => e.type === 'step.started' && e.step === 'assay.feedback-environment'))!
+    expect(tiles(midway).map(([name, , state, , sections]) => [name, state, sections])).toEqual([
+      ['person.md', 'done', ['+4 Reasoning methods']],
+      ['instrument-awareness.md', 'done', ['+4 Model Behaviour']],
+      ['environment.md', 'active', []],
+      ['music.md', 'pending', []],
+    ])
+    const all = feedbackRouting(build, events)!
+    expect(all.files.find((f) => f.id === 'environment')!.sections.map((s) => [s.section, s.lines, s.segments])).toEqual([
+      ['Styling', 10, [2, 3, 4, 5]],
+      ['User Experience', 4, [6]],
+      ['Data Layer', 4, [1]],
+    ])
+    expect(all.files.every((f) => f.state === 'done')).toBe(true)
+  })
+
+  it('follows the category, so a core file with its own name gets its segments', () => {
+    const renamed = events.map((e) => (e.data.file === 'person.md' ? { ...e, data: { ...e.data, file: 'player.md' } } : e))
+    const person = feedbackRouting(build, renamed)!.files[0]
+    expect([person.name, person.segments, person.sections.length]).toEqual(['player.md', [8], 1])
+  })
+
+  it('names the feedback of the iteration it rejected, and stops with an interrupted build', () => {
+    const third = buildRecord({ id: 'b-3', iteration: 3, status: 'interrupted' })
+    const view = feedbackRouting(third, [{ ...events[0], step: 'assay.feedback-route', type: 'step.started' }])!
+    expect([view.feedback, view.state]).toEqual(['observer-feedback-iteration-2.md', 'stopped'])
   })
 })
 

@@ -20,6 +20,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | | M11 | Seed file generation and final page | Done (2026-10-04) | `37155f5` |
 | F. Ship | M12 | Hardening, operator guide, rehearsal | Done (2026-10-04) | `351a1c7` |
 | | M13 | As-built reconciliation | Done (2026-10-04) | "M13: as-built reconciliation", the commit after `351a1c7` |
+| G. Feedback | CR-1 | Stakeholder feedback after M13: open-ended iterations, Reject everywhere, context footprint, feedback routing panel | Done (2026-10-04) | the commit after `a50bd81` |
 
 *As built (M13):* the Commit column was added in M13, as Seed v0.1's status table had one (`seed-reuse-notes.md` §7).
 
@@ -118,7 +119,7 @@ SeedFoundry/                       # the repository root; no wrapper folder
       validators/                  # numeric, visual, styles, tokens, structure, latency, protection, records, findings
       report/                      # the report, assembled from a build's kept log (D-64, D-69)
       generate/                    # the three Seed files' templates, layers.py (D-72)
-      sample/                      # the sample Seed's five files; rebuild/ holds the demo feedback
+      sample/                      # the sample Seed's five files; rebuild/ holds the demo feedback (iteration 1's, and later's, D-81)
     tests/                         # pytest, one file per area; offline.py (the guard); the fixture writers
       golden/seed/                 # the Seed files for both approval paths
       offline_guard/               # sitecustomize.py: the guard inside a server process (D-77)
@@ -214,6 +215,10 @@ Each milestone lists scope, exit criteria and hand checks. Tag changes in the bu
 ### M13: As-built reconciliation
 - **Scope:** update every doc to match the code (As built notes), close remaining OQs, final build log entry.
 - **Exit:** no doc contradicts the code.
+
+### CR-1: Stakeholder feedback after M13
+- **Scope:** no iteration total on screen (D-80); Reject (Rebuild renamed) and Approve on every report, and iteration n + 1 from a rejected iteration n, iteration 3 on replaying iteration 2's outcome (D-81, A-7); the Seed files' context footprint in the report against a 20% budget (D-82, A-8); a Build page panel showing the feedback going into the four files (D-83).
+- **Exit:** both suites and the rehearsal pass; iterations 1 and 2 give the same files and reports as at M13; the docs say what the code does.
 
 ## 4. Safety gates (every milestone)
 

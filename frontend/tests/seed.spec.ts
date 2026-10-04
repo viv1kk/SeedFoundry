@@ -161,7 +161,7 @@ describe('the Seed page, iteration 2 approved (AC-4, ui-spec.md section 7)', () 
   it('hero: the Seed name, Approved, the iteration and the date', () => {
     expect(text('[data-test="seed-name"]')).toBe('License Optimization')
     expect($('[data-test="seed-approved"]')?.className).toContain('chip--positive')
-    expect(text('[data-test="seed-approval"]')).toBe(`Approved at iteration 2 of 2, on 4 October 2026. Intake fingerprint ${TWO.fingerprint}`)
+    expect(text('[data-test="seed-approval"]')).toBe(`Approved at iteration 2, on 4 October 2026. Intake fingerprint ${TWO.fingerprint}`)
   })
 
   it('what this Seed does: the Purpose, rendered', () => {
@@ -249,13 +249,48 @@ describe('the Seed page, iteration 2 approved (AC-4, ui-spec.md section 7)', () 
   })
 })
 
+// D-81: the history runs through every iteration, each rejection's feedback between two of them.
+describe('the Seed page, iteration 3 approved (D-80, D-81)', () => {
+  beforeEach(async () => {
+    const [first, feedback, second] = TWO.history
+    const later = { ...feedback, rejected: 2, name: 'observer-feedback-iteration-2.md', content: 'Sort the candidates by saving.', segments: 6, routed: 5, files_updated: 4 }
+    const history = [first, feedback, { ...second, approved: false }, later, { ...second, iteration: 3, build_id: 'b-3', resolved: 0, open: 0, prior_findings: 0, approved: true }]
+    server.seedPatches.set(3, { history })
+    server.builds = [completed(1), completed(2), completed(3)]
+    server.iteration = 3
+    await open('/review/3')
+    await click(approveButton())
+    expect(router.currentRoute.value.fullPath).toBe('/seed')
+  })
+
+  it('shows every iteration and each feedback, with no total, and its own disclosure for each feedback', async () => {
+    expect(text('[data-test="seed-approval"]')).toContain('Approved at iteration 3,')
+    const items = $$('[data-test="history-item"]')
+    expect(items.map((i) => [i.dataset.kind, text($('.history__title', i))])).toEqual([
+      ['iteration', 'Iteration 1'],
+      ['feedback', 'Observer feedback'],
+      ['iteration', 'Iteration 2'],
+      ['feedback', 'Observer feedback'],
+      ['iteration', 'Iteration 3'],
+    ])
+    expect(text($('[data-test="history-detail"]', items[3]))).toBe('observer-feedback-iteration-2.md: 5 of 6 segments went into 4 Knowledge files.')
+    expect(text($('[data-test="history-detail"]', items[4]))).toBe('0 findings. Read its report')
+    expect($$('[data-test="history-approved"]')).toHaveLength(1)
+    const [firstToggle, secondToggle] = $$('[data-test="feedback-toggle"]')
+    expect(firstToggle.getAttribute('aria-controls')).not.toBe(secondToggle.getAttribute('aria-controls'))
+    await click(secondToggle)
+    expect([firstToggle.getAttribute('aria-expanded'), secondToggle.getAttribute('aria-expanded')]).toEqual(['false', 'true'])
+    expect(text(document.getElementById(secondToggle.getAttribute('aria-controls')!))).toBe('Sort the candidates by saving.')
+  })
+})
+
 describe('the Seed page, iteration 1 approved (AC-5, FR-F-4)', () => {
   beforeEach(async () => {
     await approveFromReport(1)
   })
 
   it('lists every open finding as a known issue, and the history ends at iteration 1', () => {
-    expect(text('[data-test="seed-approval"]')).toContain('Approved at iteration 1 of 2')
+    expect(text('[data-test="seed-approval"]')).toContain('Approved at iteration 1,')
     expect(text('[data-test="seed-known-issues"] .seed__lead')).toBe(
       'Approved at iteration 1 with 14 open findings. Each is also listed under Known issues in every Seed file.',
     )

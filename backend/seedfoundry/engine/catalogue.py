@@ -20,7 +20,9 @@ TOTAL_WEIGHT = 100
 class Step:
     id: str
     name: str
-    iterations: tuple[int, ...] = (1, 2)
+    # A rebuild step runs in every iteration after the first, which each start from the observer
+    # feedback that rejected the iteration before (D-36, D-81).
+    rebuild: bool = False
 
 
 @dataclass(frozen=True)
@@ -36,10 +38,10 @@ class Phase:
         return BUDGET_SECONDS * self.weight / TOTAL_WEIGHT
 
     def steps_for(self, iteration: int) -> list[Step]:
-        return [step for step in self.steps if iteration in step.iterations]
+        return [step for step in self.steps if not step.rebuild or iteration >= 2]
 
 
-ITERATION_2 = (2,)
+REBUILD = True
 
 PHASES: tuple[Phase, ...] = (
     Phase(
@@ -47,12 +49,12 @@ PHASES: tuple[Phase, ...] = (
         "Assay",
         6,
         (
-            # Apply observer feedback (FR-RB-7, FR-RB-8, D-36): iteration 2 only, before anything else.
-            Step("feedback-route", "Route feedback to Ensemble files", ITERATION_2),
-            Step("feedback-person", "Update person.md", ITERATION_2),
-            Step("feedback-instrument", "Update instrument-awareness.md", ITERATION_2),
-            Step("feedback-environment", "Update environment.md", ITERATION_2),
-            Step("feedback-music", "Update music.md", ITERATION_2),
+            # Apply observer feedback (FR-RB-7, FR-RB-8, D-36): iteration 2 on, before anything else (D-81).
+            Step("feedback-route", "Route feedback to Ensemble files", REBUILD),
+            Step("feedback-person", "Update person.md", REBUILD),
+            Step("feedback-instrument", "Update instrument-awareness.md", REBUILD),
+            Step("feedback-environment", "Update environment.md", REBUILD),
+            Step("feedback-music", "Update music.md", REBUILD),
             Step("inventory", "Inventory files"),
             Step("coverage", "Measure Ensemble coverage per file"),
             Step("boundary", "Ensemble boundary check"),
@@ -71,7 +73,7 @@ PHASES: tuple[Phase, ...] = (
             Step("person", "Distil Person"),
             Step("environment", "Distil Environment layers"),
             Step("context", "Merge Misc Context"),
-            Step("feedback", "Ingest observer feedback and prior findings", ITERATION_2),
+            Step("feedback", "Ingest observer feedback and prior findings", REBUILD),
         ),
         (("T-04", "All Music sections extracted"),),
     ),

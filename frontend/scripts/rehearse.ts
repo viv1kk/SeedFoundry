@@ -10,7 +10,7 @@
 // - Chrome headless with a fresh profile and every host but 127.0.0.1 unresolvable. Every request the
 //   page makes is logged; any that leaves 127.0.0.1 fails the run (NFR-2, AC-9).
 // - The demo through the UI, with the operator's shortcuts: Load sample, Start Build, a reload mid-build,
-//   the report, the dashboard, Rebuild with Prefill, iteration 2, Approve, the Seed page and its
+//   the report, the dashboard, Reject with Prefill, iteration 2, Approve, the Seed page and its
 //   downloads, a server restart, Reset (AC-1 to AC-10). Builds are timed by the wall clock (FR-B-6 at 1x),
 //   dashboards from View Dashboard to every panel drawn (NFR-3), long tasks while the console streams,
 //   and keystrokes in a 1 MB file.
@@ -479,7 +479,7 @@ async function rehearse(): Promise<void> {
   await bothThemes('03-dashboard-1')
   await click('[data-test="back-to-report"]')
 
-  // Rebuild with Prefill (AC-3)
+  // Reject with Prefill (AC-3, D-81)
   await click('[data-test="report-actions"] [data-action="rebuild"]')
   await waitFor('the rebuild modal', `document.querySelector('[role="dialog"][data-modal="rebuild"]')`, 5)
   await shortcut('F')
@@ -494,6 +494,20 @@ async function rehearse(): Promise<void> {
   timings['iteration 2 build (s)'] = Math.round(took2 * 10) / 10
   check('AC-3', 'Iteration 2 completes with zero findings, verdict Passed', (await text('[data-test="report-verdict"]')) === 'Passed' && (await page.eval<number>(`document.querySelectorAll('[data-test="finding"]').length`)) === 0, `${took2.toFixed(1)} s`)
   check('AC-3', 'The report shows all 14 iteration 1 findings resolved and quotes the feedback', (await text('[data-test="changes-summary"]')) === '14 of 14 iteration 1 findings resolved.' && !!(await text('[data-test="changes-feedback"]')))
+  // The stakeholder's feedback after M13 (D-80 to D-83): no iteration total, Reject on a passed
+  // iteration 2, the context footprint within its budget, and the feedback shown going into the files.
+  const feedbackLook = await page.eval<{ badge: string; reject: string | null; context: string; files: number }>(`({
+    badge: document.querySelector('[data-test="iteration-badge"]')?.textContent.trim() ?? '',
+    reject: (() => { const b = document.querySelector('[data-test="report-actions"] [data-action="rebuild"]'); return b ? b.getAttribute('aria-disabled') : 'absent' })(),
+    context: document.querySelector('[data-test="context-verdict"]')?.textContent.trim() ?? '',
+    files: [...document.querySelectorAll('[data-test="routing-file"] [data-test="routing-state"]')].filter((c) => c.textContent.trim() === 'Updated').length,
+  })`)
+  check(
+    'D-81',
+    'Iteration 2 reads "Iteration 2", offers Reject, shows the context footprint within budget and the feedback in all four files',
+    feedbackLook.badge === 'Iteration 2' && feedbackLook.reject === null && feedbackLook.context === 'Within budget' && feedbackLook.files === 4,
+    JSON.stringify(feedbackLook),
+  )
   await bothThemes('05-build-2-report')
   const render2 = await dashboardRender()
   timings['iteration 2 dashboard first render (ms)'] = render2.ms

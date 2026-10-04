@@ -61,7 +61,7 @@ The **demo controller** (Shift+O) has a button for every shortcut and a status l
 
 Speed and skip change only the pacing, never what a build does or says (FR-DC-4); they act within a twentieth of a second. Speed survives Reset.
 
-There is no shortcut for **Rebuild** or **Approve**: press them on the report, where the audience sees them.
+There is no shortcut for **Reject** or **Approve**: press them on the report, where the audience sees them. Every report has both, whatever its verdict (D-81).
 
 ---
 
@@ -77,13 +77,13 @@ The narrative runs **8 to 10 minutes at 1x**. The two builds take 75 seconds eac
 | 1:30 to 2:45 | Build, iteration 1: the stepper on the left, the console on the right | Narrate as phases pass: Assay counts sections and runs the boundary check; Distillation and Synthesis write `core.md`, `adaptation.md`, `protection.md`; Containment uploads them to a sandbox; Planting and Seeding & Life run the simulated Seed v0.1, its three human gates auto-resolved from the knowledge files; Stress & Probe and Harvest Validation find problems (amber, then red FAIL lines). Use the console's filter to show only FAIL |
 | 2:45 | The **Build Report**: Completed with findings, 14 findings | Walk the groups: Numeric (high), Visual, Latency; each with expected and shown. "Every one of these was recomputed from the data, not typed in" |
 | 3:30 | **View Dashboard**: iteration 1, plainly unfinished | Let it sink in: mixed number formats, a twelve-slice pie, a red line, a serif title, the treemap waiting 4.5 s. Back to report, then click **N-1**: the dashboard opens with the panel outlined and the finding named |
-| 4:30 | Back to report, **Rebuild** | The modal: switch to **Feedback + Dashboard** to write while looking at it. Click a tab (not the text) and press **Shift+F** to prefill. Read a line or two of the feedback |
-| 5:00 | **Start Rebuild**: Build, iteration 2 | Phase 1 opens with **Apply observer feedback**: the console says where each segment went, and each core file is updated (open Knowledge in passing if you want to show the new "Observer feedback (iteration 1)" sections; it is read-only while the build runs) |
-| 6:15 | Iteration 2's report: **Passed**, 0 findings | **Changes since iteration 1**: 14 of 14 resolved, the feedback quoted, the files it updated |
+| 4:30 | Back to report, **Reject** | The modal: switch to **Feedback + Dashboard** to write while looking at it. Click a tab (not the text) and press **Shift+F** to prefill. Read a line or two of the feedback |
+| 5:00 | **Start Rebuild**: Build, iteration 2 | Phase 1 opens with **Apply observer feedback**, and the **Observer feedback into Knowledge** panel above the stepper shows each segment going into person.md, instrument-awareness.md, environment.md and music.md as the console says where it went; each core file is updated (open Knowledge in passing if you want to show the new "Observer feedback (iteration 1)" sections; it is read-only while the build runs) |
+| 6:15 | Iteration 2's report: **Passed**, 0 findings | **Changes since iteration 1**: 14 of 14 resolved, the feedback quoted, the files it updated. **Context footprint when planted**: the three Seed files take 16.7% of the context window, under the 20% budget. Point out that iteration 2 also has **Reject**: the loop goes on until the observer approves |
 | 6:45 | **View Dashboard**: iteration 2, polished | Drill: click a treemap cell, then a product, a class, down to the seats; the breadcrumb and Back step out again |
 | 7:45 | Back to report, **Approve** | The Seed page: the Seed's name, Approved, the date; what it does; the tests by phase; the iteration history (open **Show the feedback**); the three files |
 | 8:30 | The Seed files | **Preview** `protection.md` and scroll to **Learned rules**: one rule per class of finding, learned from iteration 1. **Download all (.zip)** |
-| 9:00 | End | Optional second ending: Reset, Shift+P, Shift+4, Start Build, and **Approve iteration 1** instead: the Seed page lists the 14 open findings as known issues, and so does each file |
+| 9:00 | End | Optional: before Approve, **Reject** iteration 2 instead, Shift+F (refinements), Start Rebuild: iteration 3 runs the 11 phases again, the panel shows the new feedback going into the four files, and the report reads Passed with "Changes since iteration 2"; then Approve it. Optional second ending: Reset, Shift+P, Shift+4, Start Build, and **Approve iteration 1** instead: the Seed page lists the 14 open findings as known issues, and so does each file |
 
 ---
 

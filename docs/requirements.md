@@ -2,6 +2,8 @@
 
 Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline with strike-through.
 
+*Change request (2026-10-04, after M13):* A-7 and A-8 (D-80 to D-83) apply the stakeholder's feedback on the M13 demo; the code meets them.
+
 *As built (M13, 2026-10-04):* every requirement is met by the code at M13. Where the code meets one in a way its wording does not say, §11 records how; where the meaning changed, an amendment does (A-5, A-6).
 
 ## 1. Goals
@@ -31,7 +33,7 @@ Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline wit
 
 - Any real LLM or network call, API keys, accounts, auth, multi-user.
 - Functional voice input or speech recognition.
-- More than two iterations, or more than one Seed in progress at a time.
+- ~~More than two iterations, or~~ More than one Seed in progress at a time. Iterations go on while the observer rejects them; the demo is written for two, and iteration 3 on replays iteration 2's outcome (A-7).
 - Editing the generated core/adaptation/protection files inside SeedFoundry.
 - Running the real Seed v0.1 code. SeedFoundry simulates its API.
 - Mobile layouts below 1280 px wide (desktop demo only; must not break, need not be optimised).
@@ -66,7 +68,7 @@ Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline wit
 | FR-B-6 | A build takes 60 to 90 seconds at 1x speed (D-7) |
 | FR-B-7 | Refreshing the page mid-build reconnects and shows the same state and full log (snapshot then replay) |
 | FR-B-8 | Intake is read-only while a build runs |
-| FR-B-9 | When the build completes, the report panel appears with View Dashboard, Approve and Rebuild |
+| FR-B-9 | When the build completes, the report panel appears with View Dashboard, Approve and ~~Rebuild~~ Reject (A-7) |
 
 ### FR-T: Testing and validation
 
@@ -84,10 +86,10 @@ Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline wit
 
 | Id | Requirement |
 |---|---|
-| FR-R-1 | The report shows: verdict, iteration, duration, phase results, test table, findings, auto-resolved gates, simulated usage metrics |
+| FR-R-1 | The report shows: verdict, iteration, duration, phase results, test table, findings, auto-resolved gates, simulated usage metrics, and the Seed files' context footprint when planted: each file's share of the model's context window and their total against a 20% budget (A-8) |
 | FR-R-2 | Findings are grouped by category, each with its id so the observer can cite it in feedback |
-| FR-R-3 | The iteration 2 report has a "Changes since iteration 1" section listing every iteration 1 finding as resolved, and quoting the observer feedback |
-| FR-R-4 | Report actions: View Dashboard, Approve, Rebuild. Rebuild is not shown on iteration 2 (D-6) |
+| FR-R-3 | The ~~iteration 2 report~~ report of iteration 2 on has a "Changes since iteration ~~1~~ n - 1" section listing every ~~iteration 1~~ finding of the previous iteration as resolved, and quoting the observer feedback (A-7) |
+| FR-R-4 | Report actions: View Dashboard, Approve, ~~Rebuild. Rebuild is not shown on iteration 2 (D-6)~~ Reject, on every iteration whatever its verdict. Reject opens the rebuild modal (A-7, D-81) |
 
 ### FR-D: Dashboard
 
@@ -104,14 +106,14 @@ Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline wit
 
 | Id | Requirement |
 |---|---|
-| FR-RB-1 | Rebuild opens a modal with the same editor as intake (Edit / Preview, mic icon) for observer feedback |
+| FR-RB-1 | ~~Rebuild~~ Reject opens a modal with the same editor as intake (Edit / Preview, mic icon) for observer feedback (A-7) |
 | FR-RB-2 | The modal has a view toggle: Feedback only, Feedback + Report, Feedback + Dashboard (side by side) |
 | FR-RB-3 | Start Rebuild requires non-empty feedback |
-| FR-RB-4 | The feedback is saved as a Misc Context file named `observer-feedback-iteration-1.md`, visible in the intake file list |
-| FR-RB-5 | Start Rebuild starts iteration 2 from phase 1 with all original intake plus the feedback file, and opens the build page |
-| FR-RB-6 | Iteration 2 logs show the feedback being ingested and acted on (scripted, D-5), including how it updated the four Ensemble files (FR-RB-7, A-4) |
+| FR-RB-4 | The feedback is saved as a Misc Context file named ~~`observer-feedback-iteration-1.md`~~ `observer-feedback-iteration-<n>.md`, n being the rejected iteration, visible in the intake file list (A-7) |
+| FR-RB-5 | Start Rebuild starts ~~iteration 2~~ iteration n + 1 from phase 1 with all original intake plus the feedback file, and opens the build page. Iteration 3 on replays iteration 2's outcome: the polished dashboard and no findings (A-7) |
+| FR-RB-6 | Iteration 2 (and every later iteration, A-7) logs show the feedback being ingested and acted on (scripted, D-5), including how it updated the four Ensemble files (FR-RB-7, A-4) |
 | FR-RB-7 | Before iteration 2 rebuilds, the observer feedback updates the four core files. The feedback is split into segments (paragraphs and list items); each segment is routed to the one Ensemble file, and section, its content belongs in; routed segments are appended verbatim to that file under an "Observer feedback (iteration 1)" subsection; a segment that fits no core file stays in the feedback file only. The routing is shown as an LLM decision (simulated) but is deterministic. The updated files are what iteration 2 builds from, and the Knowledge page shows them (A-4, D-36) |
-| FR-RB-8 | On the build page in iteration 2, the feedback routing and each file update are visible as sub-steps of phase 1 and as log lines naming the file, the section and the lines added (A-4) |
+| FR-RB-8 | On the build page in iteration 2 (and every later iteration, A-7), the feedback routing and each file update are visible as sub-steps of phase 1, as log lines naming the file, the section and the lines added (A-4), and in a panel showing which segments went into each of the four files (D-83) |
 
 ### FR-F: Final page
 
@@ -143,6 +145,7 @@ Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline wit
 | `report` | Build Report |
 | `seed_package` | Seed |
 | `observer_feedback` | Observer feedback |
+| `rebuild` (the report action) | Reject (the modal's own button stays Start Rebuild, D-81) |
 | Seed v0.1 terms | As in `seed_docs` (INIT = Planting, RUNTIME = Life, CLOSING_SEEDING = Cleanup) |
 
 ## 6. Non-functional requirements
@@ -202,6 +205,8 @@ Recorded in detail in `seed-reuse-notes.md` (written in M0).
 | A-4 | 2026-10-03 | FR-RB-6; new FR-RB-7, FR-RB-8 | Iteration 2 first routes the observer feedback into the four Ensemble files and updates them, visibly, then rebuilds from them | D-36 |
 | A-5 | 2026-10-04 | FR-F-4 | Known issues are the approved build's open findings, whichever iteration is approved, not only an iteration 1 approval; advisories are never known issues. The sample's iteration 2 has none, so the demo is unchanged | D-73 (OQ-31, OQ-34, stakeholder) |
 | A-6 | 2026-10-04 | NFR-3 | The three performance requirements get the thresholds the rehearsal measures: 100 ms from a key to its frame, no task over 200 ms while the console streams, 1 s from View Dashboard to every panel drawn | D-77 (stakeholder, M13) |
+| A-7 | 2026-10-04 | §3, FR-B-9, FR-R-3, FR-R-4, FR-RB-1, FR-RB-4 to FR-RB-6, FR-RB-8 | Every report has Reject (Rebuild renamed) and Approve, whatever its verdict; rejecting iteration n starts iteration n + 1 from its feedback, with no limit; iteration 3 on routes its feedback as iteration 2 did and replays iteration 2's outcome. No iteration total is shown | D-80, D-81 (stakeholder, after M13) |
+| A-8 | 2026-10-04 | FR-R-1 | The report shows the Seed files' context footprint when planted, against a 20% budget | D-82 (stakeholder, after M13) |
 
 ## 11. As built (M13)
 
@@ -219,7 +224,7 @@ Where the code meets a requirement in a way its wording does not say. None of th
 | FR-T-5 | A failed protection probe (T-13) or an accepted malformed input (T-14) is a failed test, not a finding | D-62 (OQ-27) |
 | FR-T-7 | Severity is high (Numeric), medium (Visual, Latency) or advisory (Boundary). A problem no catalogue entry owns still becomes a finding, with an id such as N-X1 | D-63 (OQ-26) |
 | FR-R-3 | Each iteration 1 finding is listed as resolved or open, measured against iteration 2's report rather than asserted. The section also lists the files and sections the feedback updated | D-69, D-70 (OQ-30) |
-| FR-R-4 | Rebuild is also withdrawn from iteration 1's report once iteration 2 has started. Once a Seed is approved, every report says so in place of Approve | D-67, D-75 |
+| FR-R-4 | ~~Rebuild is also withdrawn from iteration 1's report once iteration 2 has started.~~ Reject stays on a superseded report, unavailable, and says the next iteration was rebuilt from it (D-81). Once a Seed is approved, every report says so in place of Approve | D-67, D-75, D-81 |
 | FR-F-1 | Iteration 1 cannot be approved once iteration 2 has started; Reset is the way back. Approve asks no confirmation | D-73, D-75 (OQ-32) |
 | FR-F-2 | The date is the approval's real date, on the page only; every file and compared value stays deterministic | D-73 (OQ-33) |
 | FR-DC-1 | Shift+O. Shortcuts are also ignored with Ctrl, Alt or Meta held, on a key repeat, in a modal they do not belong to, and Shift+Enter on a focused button | D-47 |

@@ -123,6 +123,124 @@ export function derivePhases(build: Build, events: readonly LabEvent[]): PhaseVi
   return phases
 }
 
+// Feedback routing (FR-RB-8, D-83)
+
+/** The Ensemble files, by their Update sub-step, in plan order, with their screen category. */
+const FEEDBACK_FILES = [
+  { step: 'assay.feedback-person', id: 'person', category: 'Person' },
+  { step: 'assay.feedback-instrument', id: 'instrument_awareness', category: 'Instrument Awareness' },
+  { step: 'assay.feedback-environment', id: 'environment', category: 'Environment' },
+  { step: 'assay.feedback-music', id: 'music', category: 'Music' },
+] as const
+
+export interface RoutedSection {
+  section: string
+  segments: number[]
+  lines: number
+  created: boolean
+}
+
+export interface RoutedFile {
+  step: string
+  /** The intake category id (`person`, `instrument_awareness`, ...). */
+  id: string
+  /** The file's name as the build logged it, else from its sub-step ("Update person.md"). */
+  name: string
+  category: string
+  /** pending until the routing names a segment for it; then its Update sub-step's state. */
+  state: StepState
+  /** Segments the routing sent here, in order, as soon as the routing decides. */
+  segments: number[]
+  /** What the Update sub-step added, section by section, as it plays. */
+  sections: RoutedSection[]
+}
+
+export interface FeedbackRouting {
+  /** The feedback file this build routes: observer-feedback-iteration-<n - 1>.md. */
+  feedback: string
+  /** The routing sub-step's state. */
+  state: StepState
+  /** Segments in the feedback, once read. */
+  total: number | null
+  /** Every placement so far, in segment order: a file and section, or kept in the feedback file. */
+  placements: { segment: number; file: string | null; section: string | null; matched: string[] }[]
+  files: RoutedFile[]
+  /** Segments that fit no Ensemble file and stay in the feedback file only. */
+  kept: number[]
+}
+
+/**
+ * Where the observer feedback goes, for the Build page's panel (D-83): the routing's decisions and
+ * each core file's update, from the build's events alone, so it fills in as the sub-steps play and
+ * reads the same after a refresh. Null for a build with no feedback sub-steps (iteration 1).
+ */
+export function feedbackRouting(build: Build, events: readonly LabEvent[]): FeedbackRouting | null {
+  const steps = (build.plan ?? []).flatMap((phase) => phase.steps)
+  if (!steps.some((step) => step.id.startsWith(FEEDBACK_PREFIX))) return null
+  const routeStep = `${FEEDBACK_PREFIX}route`
+  const view: FeedbackRouting = {
+    feedback: `observer-feedback-iteration-${Math.max(1, build.iteration - 1)}.md`,
+    state: 'pending',
+    total: null,
+    placements: [],
+    files: FEEDBACK_FILES.map(({ step, id, category }) => ({
+      step,
+      id,
+      name: steps.find((s) => s.id === step)?.name.replace(/^Update /, '') ?? category,
+      category,
+      state: 'pending' as StepState,
+      segments: [],
+      sections: [],
+    })),
+    kept: [],
+  }
+  const byStep = new Map(view.files.map((file) => [file.step, file]))
+  const states = new Map<string, StepState>()
+  const numbers = (value: unknown) => (Array.isArray(value) ? value.filter((n): n is number => typeof n === 'number') : [])
+
+  for (const event of events) {
+    const step = event.step ?? ''
+    if (!step.startsWith(FEEDBACK_PREFIX)) continue
+    if (event.type === 'step.started') states.set(step, 'active')
+    else if (event.type === 'step.completed') states.set(step, 'done')
+    else if (event.type !== 'log') continue
+    const data = event.data ?? {}
+    if (step === routeStep) {
+      if (typeof data.segments === 'number' && typeof data.bytes === 'number') view.total = data.segments
+      if (typeof data.segment === 'number') {
+        if (data.kept) {
+          view.kept.push(data.segment)
+          view.placements.push({ segment: data.segment, file: null, section: null, matched: [] })
+        } else if (typeof data.file === 'string') {
+          const section = typeof data.section === 'string' ? data.section : null
+          const matched = Array.isArray(data.matched) ? data.matched.filter((m): m is string => typeof m === 'string') : []
+          view.placements.push({ segment: data.segment, file: data.file, section, matched })
+          const target = view.files.find((f) => f.id === data.category) ?? view.files.find((f) => f.name === data.file)
+          if (target) {
+            target.name = data.file
+            if (!target.segments.includes(data.segment)) target.segments.push(data.segment)
+          }
+        }
+      }
+      continue
+    }
+    const file = byStep.get(step)
+    if (!file) continue
+    if (typeof data.file === 'string') file.name = data.file
+    const added = numbers(data.segments)
+    if (typeof data.section === 'string' && added.length && typeof data.lines_added === 'number' && data.lines_added > 0) {
+      file.sections.push({ section: data.section, segments: added, lines: data.lines_added, created: Boolean(data.created) })
+    }
+  }
+  view.state = states.get(routeStep) ?? 'pending'
+  for (const file of view.files) file.state = states.get(file.step) ?? 'pending'
+  if (build.status === 'interrupted') {
+    if (view.state === 'active') view.state = 'stopped'
+    for (const file of view.files) if (file.state === 'active') file.state = 'stopped'
+  }
+  return view
+}
+
 function isResult(value: unknown): value is PhaseResult {
   return value === 'passed' || value === 'findings' || value === 'incomplete' || value === 'failed'
 }

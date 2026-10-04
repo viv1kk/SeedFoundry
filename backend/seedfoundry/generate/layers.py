@@ -11,11 +11,11 @@ screen (D-9):
 - adaptation.md: environment.md's lead and the Misc Context notes as the operating context; its Data
   Layer; its Adaptation Layer; its User Experience and Styling as the presentation notes.
 - protection.md: environment.md's Protection Layer, each sub-section under the section its title
-  names (guardrails otherwise); in iteration 2, one learned rule per class of finding iteration 1
-  raised, from iteration 1's kept findings.
+  names (guardrails otherwise); from iteration 2 on, one learned rule per class of finding the
+  earlier iterations raised, from their kept findings (D-81).
 
-Iteration 2 reads the routed files build 2 keeps, so each `### Observer feedback (iteration 1)` sits
-in the layer its section belongs to. Text is copied as written; only its headings move to fit under
+Iteration 2 on reads the routed files its build keeps, so each `### Observer feedback (iteration n)`
+sits in the layer its section belongs to. Text is copied as written; only its headings move to fit under
 the layer's sections, and a mention of an intake file by name becomes the layer or note that now
 holds it, so the Seed reads as one whole. Synthesis drafts all three in the build, so the manifest,
 the upload checksums and Planting's heading summary are computed from these bytes; Approve adds the
@@ -30,7 +30,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from seedfoundry.intake import assay
-from seedfoundry.intake.feedback import FEEDBACK_NAME
+from seedfoundry.intake.feedback import is_feedback
 from seedfoundry.state import Category, IntakeFile
 from seedfoundry.validators.findings import order
 from seedfoundry.validators.latency import BUDGET_MS
@@ -70,7 +70,7 @@ LAYERS: tuple[Layer, ...] = (
 )
 NAMES = tuple(layer.name for layer in LAYERS)
 
-LEARNED_RULES = "Learned rules"  # protection.md, iteration 2 only
+LEARNED_RULES = "Learned rules"  # protection.md, iteration 2 on
 KNOWN_ISSUES = "Known issues"  # every file, when the approved build has findings (D-10, D-73)
 NOTHING = "Nothing is stated for this section."
 
@@ -103,7 +103,7 @@ def layer(name: str) -> Layer:
 
 def sections(name: str, iteration: int, known_issues: bool = False) -> tuple[str, ...]:
     found = layer(name).sections
-    if layer(name).role == "protection" and iteration == 2:
+    if layer(name).role == "protection" and iteration >= 2:
         found += (LEARNED_RULES,)
     return found + (KNOWN_ISSUES,) if known_issues else found
 
@@ -113,7 +113,14 @@ def description(name: str, iteration: int) -> str:
     file it came from, D-9)."""
     item = layer(name)
     text = f"{item.title} layer: {item.description}"
-    return text + " It also holds the rules learned from iteration 1." if item.role == "protection" and iteration == 2 else text
+    return text + f" It also holds the rules learned from {earlier(iteration)}." if item.role == "protection" and iteration >= 2 else text
+
+
+def earlier(iteration: int) -> str:
+    """The iterations before `iteration`: "iteration 1", "iterations 1 and 2", "iterations 1 to 3"."""
+    if iteration <= 2:
+        return "iteration 1"
+    return f"iterations 1 and {iteration - 1}" if iteration == 3 else f"iterations 1 to {iteration - 1}"
 
 
 # Reading the intake
@@ -213,7 +220,7 @@ class Source:
 
     def __init__(self, files: list[IntakeFile]) -> None:
         inventory = assay.inventory(files)
-        self.context = [f for f in inventory.context if f.name != FEEDBACK_NAME and assay.filled(f)]
+        self.context = [f for f in inventory.context if not is_feedback(f) and assay.filled(f)]
         self.titles = {f.name: context_title(f) for f in self.context}
         targets = {Category.ENVIRONMENT: "adaptation.md"}
         self.renames = [(f.name, targets.get(f.category, "core.md")) for f in inventory.core]
@@ -311,20 +318,27 @@ def protection_sections(source: Source) -> dict[str, list[str]]:
     return bodies
 
 
-def learned_rules(prior: list[dict[str, Any]]) -> list[str]:
-    """One rule per class of finding iteration 1 raised (advisories aside, D-12), in report order,
-    each citing the findings it was learned from."""
+def learned_rules(prior: list[dict[str, Any]], iteration: int = 2) -> list[str]:
+    """One rule per class of finding the earlier iterations raised (advisories aside, D-12), in report
+    order, each citing the findings it was learned from and the iteration that raised them (D-81). A
+    finding with no `iteration` is iteration 1's."""
     raised = sorted((f for f in prior if not f.get("advisory")), key=lambda f: order(str(f["id"])))
     classes = [c for c in ("Numeric", "Visual", "Latency") if any(f.get("category") == c for f in raised)]
     classes += sorted({str(f.get("category")) for f in raised} - set(classes))
     if not classes:
-        return ["Iteration 1 raised no findings, so no rule was learned from it."]
-    lines = ["One rule for each class of finding iteration 1 raised. The checks behind each one run on every build."]
+        before = earlier(iteration)
+        return [f"{before[0].upper()}{before[1:]} raised no findings, so no rule was learned from {'it' if iteration <= 2 else 'them'}."]
+    raisers = sorted({int(f.get("iteration", 1)) for f in raised})
+    who = f"iteration {raisers[0]}" if len(raisers) == 1 else earlier(iteration)
+    lines = [f"One rule for each class of finding {who} raised. The checks behind each one run on every build."]
     for category in classes:
         cited = [f for f in raised if f.get("category") == category]
-        rule = RULES.get(category, f"A {category} finding must not recur: each check that found one in iteration 1 runs again on every build.")
-        names = [f"{f['id']} ({'; '.join(f.get('panel_titles') or []) or 'no panel'})" for f in cited]
-        lines += ["", f"### {category}", "", rule, "", f"Learned from iteration 1's {listing(names)}."]
+        rule = RULES.get(category, f"A {category} finding must not recur: each check that found one in {who} runs again on every build.")
+        sources = []
+        for number in sorted({int(f.get("iteration", 1)) for f in cited}):
+            names = [f"{f['id']} ({'; '.join(f.get('panel_titles') or []) or 'no panel'})" for f in cited if int(f.get("iteration", 1)) == number]
+            sources.append(f"iteration {number}'s {listing(names)}")
+        lines += ["", f"### {category}", "", rule, "", f"Learned from {listing(sources)}."]
     return lines
 
 
@@ -362,14 +376,14 @@ def tidy(lines: list[str]) -> str:
 
 
 def drafts(files: list[IntakeFile], seed: str, iteration: int, fingerprint: str, prior: list[dict[str, Any]] | None = None) -> dict[str, str]:
-    """The three layers from the intake a build read. `prior` is iteration 1's findings, which
-    iteration 2's learned rules come from."""
+    """The three layers from the intake a build read. `prior` is the earlier iterations' findings,
+    which the learned rules of iteration 2 on come from."""
     source = Source(files)
     protection = protection_sections(source)
     bodies = {
         "core.md": lambda title: core_section(source, title),
         "adaptation.md": lambda title: adaptation_section(source, title),
-        "protection.md": lambda title: learned_rules(prior or []) if title == LEARNED_RULES else protection[title],
+        "protection.md": lambda title: learned_rules(prior or [], iteration) if title == LEARNED_RULES else protection[title],
     }
     out = {}
     for item in LAYERS:
@@ -424,8 +438,9 @@ def manifest_problems(document: Any) -> list[str]:
     if not isinstance(document, dict):
         return ["the manifest is not an object"]
     problems = [f"{field} is missing or empty" for field in ("seed", "fingerprint", "generator") if not document.get(field)]
-    if document.get("iteration") not in (1, 2):
-        problems.append("iteration is not 1 or 2")
+    number = document.get("iteration")
+    if not isinstance(number, int) or isinstance(number, bool) or number < 1:
+        problems.append("iteration is not a positive whole number")
     layers = document.get("layers")
     if not isinstance(layers, list) or [item.get("role") for item in layers if isinstance(item, dict)] != [item.role for item in LAYERS]:
         return problems + ["layers are not core, adaptation and protection in that order"]

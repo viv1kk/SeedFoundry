@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // The rebuild modal (FR-RB-1 to FR-RB-5, ui-spec.md section 6, D-19, D-70). A large modal over any
-// page, opened by Rebuild on iteration 1's report. Its body is the Knowledge editor (Edit / Preview,
-// mic) for observer-feedback-iteration-1.md; the header's tablist switches between the feedback alone
-// and the feedback beside iteration 1's report or dashboard, each pane scrolling on its own. The
+// page, opened by Reject on the current iteration's report (D-81). Its body is the Knowledge editor (Edit / Preview,
+// mic) for observer-feedback-iteration-<n>.md; the header's tablist switches between the feedback alone
+// and the feedback beside iteration n's report or dashboard, each pane scrolling on its own. The
 // embedded report has no actions, and a finding id in it shows that finding on the embedded
 // dashboard, outlined, instead of leaving the modal; the embedded dashboard holds its drill path in
 // the store, so the page URL never changes. Start Rebuild stays disabled, with its reason, while the
@@ -12,7 +12,7 @@ import { computed, ref, useId } from 'vue'
 import { useRouter } from 'vue-router'
 import { DASHBOARD_ID } from '../../dashboard/api'
 import { dashboardFindings } from '../../report'
-import { FEEDBACK_NAME, useRebuildStore, type RebuildView } from '../../stores/rebuild'
+import { useRebuildStore, type RebuildView } from '../../stores/rebuild'
 import { useReportsStore } from '../../stores/reports'
 import BaseButton from '../base/BaseButton.vue'
 import BaseModal from '../base/BaseModal.vue'
@@ -31,11 +31,13 @@ const VIEWS: { id: RebuildView; label: string }[] = [
   { id: 'dashboard', label: 'Feedback + Dashboard' },
 ]
 
-const PLACEHOLDER =
-  'Write what iteration 2 should change. Cover the data and its correctness, the style, the choice of charts, ' +
-  'the latency, and anything else you noticed. Cite finding ids such as N-1 or V-3 where you can.'
-
-const EMPTY = 'Start Rebuild needs observer feedback. Write what iteration 2 should change first.'
+const next = computed(() => rebuild.rejected + 1)
+const placeholder = computed(
+  () =>
+    `Write what iteration ${next.value} should change. Cover the data and its correctness, the style, the choice of charts, ` +
+    'the latency, and anything else you noticed. Cite finding ids such as N-1 or V-3 where you can.',
+)
+const empty = computed(() => `Start Rebuild needs observer feedback. Write what iteration ${next.value} should change first.`)
 
 const tabId = (view: RebuildView) => `${uid}-tab-${view}`
 const panelId = `${uid}-panel`
@@ -106,19 +108,19 @@ async function start(): Promise<void> {
       <section class="rebuild__feedback" aria-label="Observer feedback" data-test="rebuild-feedback">
         <div class="rebuild__meta">
           <span class="caps-label">Name</span>
-          <span class="rebuild__name" data-test="feedback-name">{{ FEEDBACK_NAME }}</span>
+          <span class="rebuild__name" data-test="feedback-name">{{ rebuild.name }}</span>
           <span class="caps-label">Category</span>
           <span class="rebuild__category">Misc Context</span>
           <span class="rebuild__hint">Saved to Knowledge when the rebuild starts.</span>
         </div>
-        <MarkdownEditor :text="rebuild.draft" :label="`Content of ${FEEDBACK_NAME}`" :placeholder="PLACEHOLDER" @input="rebuild.draft = $event" />
+        <MarkdownEditor :text="rebuild.draft" :label="`Content of ${rebuild.name}`" :placeholder="placeholder" @input="rebuild.draft = $event" />
       </section>
 
-      <section v-if="rebuild.view === 'report' && rebuild.build" class="rebuild__reference" aria-label="Iteration 1 report" data-test="rebuild-report">
+      <section v-if="rebuild.view === 'report' && rebuild.build" class="rebuild__reference" :aria-label="`Iteration ${rebuild.rejected} report`" data-test="rebuild-report">
         <BuildReport :build="rebuild.build" :heading-level="3" :actions="false" finding-links="event" @finding="rebuild.showFinding" />
       </section>
 
-      <section v-if="rebuild.view === 'dashboard'" class="rebuild__reference" aria-label="Iteration 1 dashboard" data-test="rebuild-dashboard">
+      <section v-if="rebuild.view === 'dashboard'" class="rebuild__reference" :aria-label="`Iteration ${rebuild.rejected} dashboard`" data-test="rebuild-dashboard">
         <p v-if="shownFinding" class="rebuild__finding" data-test="rebuild-finding">
           <span>
             Showing {{ shownFinding.id }} on {{ (shownFinding.panel_titles ?? []).join(', ') }}. <span class="rebuild__message">{{ shownFinding.message }}</span>
@@ -127,7 +129,7 @@ async function start(): Promise<void> {
         </p>
         <DashboardView
           :dashboard-id="DASHBOARD_ID"
-          :iteration="1"
+          :iteration="rebuild.rejected"
           :drill="rebuild.drill"
           :heading-level="3"
           :highlight="highlight"
@@ -141,7 +143,7 @@ async function start(): Promise<void> {
     <template #footer>
       <p class="rebuild__status" :class="{ 'rebuild__status--error': rebuild.error }" :role="rebuild.error ? 'alert' : undefined" data-test="rebuild-status">
         <span v-if="rebuild.error">{{ rebuild.error }}</span>
-        <span v-else-if="rebuild.empty" :id="reasonId">{{ EMPTY }}</span>
+        <span v-else-if="rebuild.empty" :id="reasonId">{{ empty }}</span>
         <span v-else-if="rebuild.busy">Starting the rebuild</span>
       </p>
       <BaseButton data-action="cancel" @click="rebuild.close()">Cancel</BaseButton>

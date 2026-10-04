@@ -2,7 +2,7 @@
 the Seed page's data (FR-F-1 to FR-F-5, FR-R-4, ui-spec.md §7, D-73 to D-75).
 
 Approve records which completed build is the Seed. Everything else is computed on request from that
-build's kept files and log, and iteration 1's for iteration 2, as the report is (D-64), so it reads
+build's kept files and log, and the earlier iterations' builds, as the report is (D-64), so it reads
 the same after a restart, and the same approval always gives the same files, zip bytes and page data
 (NFR-1). The one exception is `approved_at`, the wall-clock time of the approval: the page shows its
 date, and nothing else holds it (OQ-33).
@@ -21,6 +21,7 @@ import zipfile
 from typing import Any
 
 from seedfoundry import report
+from seedfoundry.engine.runner import earlier_builds
 from seedfoundry.events import wall_now
 from seedfoundry.generate import layers
 from seedfoundry.intake import assay
@@ -40,10 +41,9 @@ def file_url(name: str) -> str:
 
 
 def prior_build(state: State, build: Build) -> Build | None:
-    """Iteration 1's completed build, which iteration 2 learned from."""
-    if build.iteration != 2:
-        return None
-    return next((b for b in state.builds if b.iteration == 1 and b.status == "completed"), None)
+    """The previous iteration's completed build, which "Changes since" reads (D-81)."""
+    earlier = earlier_builds(state, build.iteration)
+    return earlier[-1] if earlier and earlier[-1].iteration == build.iteration - 1 else None
 
 
 def approve(build_id: str):
@@ -65,8 +65,12 @@ def approve(build_id: str):
         if build.status != "completed" or not build.log:
             raise IntakeError(409, "report_not_ready", f"Build {build_id} has not completed, so there is nothing to approve.")
         if build.iteration != state.iteration:
-            raise IntakeError(409, "iteration_superseded", "Iteration 2 was rebuilt from this build, so iteration 2 is the one to approve.")
-        made = seed_files(build, prior_build(state, build))
+            raise IntakeError(
+                409,
+                "iteration_superseded",
+                f"Iteration {build.iteration + 1} was rebuilt from this build, so iteration {state.iteration} is the one to approve.",
+            )
+        made = seed_files(build, earlier_builds(state, build.iteration))
         issues = [f["id"] for f in report.raised(build)]
         state.approval = Approval(iteration=build.iteration, build_id=build.id, approved_at=wall_now())
         known = f"{len(issues)} known {'issue' if len(issues) == 1 else 'issues'}" if issues else "no known issues"
@@ -86,12 +90,12 @@ def approve(build_id: str):
     return change
 
 
-def approved(state: State) -> tuple[Build, Build | None]:
-    """The approved build and iteration 1's, or 404 seed_not_approved."""
+def approved(state: State) -> tuple[Build, list[Build]]:
+    """The approved build and every earlier iteration's, oldest first, or 404 seed_not_approved."""
     build = state.build(state.approval.build_id) if state.approval is not None else None
     if build is None:
         raise IntakeError(404, "seed_not_approved", "No Seed is approved yet. Approve a completed build from its report first.")
-    return build, prior_build(state, build)
+    return build, earlier_builds(state, build.iteration)
 
 
 # The files and the zip
@@ -101,10 +105,12 @@ def digest(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def seed_files(build: Build, prior: Build | None) -> dict[str, str]:
+def seed_files(build: Build, earlier: list[Build]) -> dict[str, str]:
     """core.md, adaptation.md and protection.md: the build's drafts, regenerated from its kept files
-    exactly as Synthesis made them, with Known issues when the build has open findings."""
-    made = layers.drafts(build.files, build.seed_name, build.iteration, build.fingerprint, report.raised(prior) if prior else [])
+    exactly as Synthesis made them (the learned rules from the earlier builds' findings), with Known
+    issues when the build has open findings."""
+    learned = [{**f, "iteration": b.iteration} for b in earlier for f in report.raised(b)]
+    made = layers.drafts(build.files, build.seed_name, build.iteration, build.fingerprint, learned)
     issues = report.raised(build)
     if issues:
         made = {name: layers.with_known_issues(text, issues, build.iteration) for name, text in made.items()}
@@ -171,53 +177,49 @@ def tests_by_phase(built: dict[str, Any]) -> list[dict[str, Any]]:
     ]
 
 
-def history(build: Build, built: dict[str, Any], first: dict[str, Any]) -> list[dict[str, Any]]:
-    """Iteration 1, then (when iteration 2 is the Seed) the observer feedback and iteration 2, from
-    the reports and iteration 2's "Changes since iteration 1" (OQ-9, OQ-30)."""
-    items: list[dict[str, Any]] = [
-        {
+def history(build: Build, reports: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Each iteration up to the approved one, with the observer feedback that rejected it between it
+    and the next, from the reports and their "Changes since" (OQ-9, OQ-30, D-81). `reports` are the
+    iterations' reports, oldest first, ending with the approved build's."""
+    items: list[dict[str, Any]] = []
+    for built in reports:
+        changes = built.get("changes")
+        if changes:
+            routed = sorted({n for update in changes["updates"] for n in update["segments"]})
+            items.append(
+                {
+                    "kind": "feedback",
+                    "rejected": built["iteration"] - 1,
+                    "name": changes["feedback"]["name"] if changes["feedback"] else "",
+                    "content": changes["feedback"]["content"] if changes["feedback"] else "",
+                    "segments": changes["feedback"]["segments"] if changes["feedback"] else 0,
+                    "routed": len(routed),
+                    "files_updated": len({update["file"] for update in changes["updates"]}),
+                }
+            )
+        item: dict[str, Any] = {
             "kind": "iteration",
-            "iteration": 1,
-            "build_id": first["build_id"],
-            "verdict": first["verdict"],
-            "findings": first["counts"]["findings"],
-            "approved": build.iteration == 1,
+            "iteration": built["iteration"],
+            "build_id": built["build_id"],
+            "verdict": built["verdict"],
+            "findings": built["counts"]["findings"],
+            "approved": built["build_id"] == build.id,
         }
-    ]
-    changes = built.get("changes")
-    if build.iteration == 2 and changes:
-        routed = sorted({n for update in changes["updates"] for n in update["segments"]})
-        items.append(
-            {
-                "kind": "feedback",
-                "name": changes["feedback"]["name"] if changes["feedback"] else "",
-                "content": changes["feedback"]["content"] if changes["feedback"] else "",
-                "segments": changes["feedback"]["segments"] if changes["feedback"] else 0,
-                "routed": len(routed),
-                "files_updated": len({update["file"] for update in changes["updates"]}),
-            }
-        )
-        items.append(
-            {
-                "kind": "iteration",
-                "iteration": 2,
-                "build_id": built["build_id"],
-                "verdict": built["verdict"],
-                "findings": built["counts"]["findings"],
-                "resolved": changes["resolved"],
-                "open": changes["open"],
-                "prior_findings": len(changes["findings"]),
-                "approved": True,
-            }
-        )
+        if changes:
+            item.update(resolved=changes["resolved"], open=changes["open"], prior_findings=len(changes["findings"]))
+        items.append(item)
     return items
 
 
 def page(state: State) -> dict[str, Any]:
     """The Seed page's data: everything ui-spec.md §7 shows, with the three files' text for Preview."""
     build, earlier = approved(state)
-    built = report.assemble(build, earlier)
-    first = report.assemble(earlier) if earlier is not None else built
+    chain = [*earlier, build]
+    reports = [
+        report.assemble(b, chain[i - 1] if i and chain[i - 1].iteration == b.iteration - 1 else None)
+        for i, b in enumerate(chain)
+    ]
+    built = reports[-1]
     made = seed_files(build, earlier)
     approval = state.approval
     return {
@@ -228,7 +230,7 @@ def page(state: State) -> dict[str, Any]:
         "verdict": built["verdict"],
         "counts": built["counts"],
         "phases": tests_by_phase(built),
-        "history": history(build, built, first),
+        "history": history(build, reports),
         "known_issues": [
             {k: f.get(k) for k in ("id", "category", "severity", "panel_titles", "message", "expected", "shown")}
             for f in report.raised(build)

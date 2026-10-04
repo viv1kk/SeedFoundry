@@ -9,6 +9,9 @@ from dataclasses import asdict, dataclass
 from typing import Protocol
 
 SIMULATED_MODEL = "simulated-llm"
+# The simulated model's context window, in tokens: what a planted Seed's files are measured against
+# (D-82). No model is asked; like every token count here, it is simulated.
+SIMULATED_CONTEXT_WINDOW = 32_000
 
 
 @dataclass(frozen=True)

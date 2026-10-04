@@ -63,7 +63,7 @@ describe('routes', () => {
     expect(router.currentRoute.value.fullPath).toBe('/knowledge')
   })
 
-  it.each(['/nowhere', '/build/3', '/review/0', '/build', '/review/1/dashboard'])('redirects %s to /knowledge', async (path) => {
+  it.each(['/nowhere', '/build/0', '/review/0', '/build', '/review/1/dashboard'])('redirects %s to /knowledge', async (path) => {
     const { router } = await mountApp(path)
     expect(router.currentRoute.value.fullPath).toBe('/knowledge')
   })
@@ -136,12 +136,12 @@ describe('iteration badge', () => {
     expect(wrapper.find('[data-test="iteration-badge"]').exists()).toBe(false)
   })
 
-  it('reads "Iteration 1 of 2" once a build exists', async () => {
+  it('reads "Iteration 1" once a build exists, with no total (D-80)', async () => {
     const snapshot = emptySnapshot({ seq: 4, builds: [{ id: 'b-1', iteration: 1, status: 'running' }] })
     const { wrapper } = await mountApp('/build/1', snapshot)
     const badge = wrapper.find('header [data-test="iteration-badge"]')
     expect(badge.exists()).toBe(true)
-    expect(badge.text()).toBe('Iteration 1 of 2')
+    expect(badge.text()).toBe('Iteration 1')
   })
 
   it("shows the latest build's iteration", async () => {
@@ -153,7 +153,7 @@ describe('iteration badge', () => {
       ],
     })
     const { wrapper } = await mountApp('/build/2', snapshot)
-    expect(wrapper.find('[data-test="iteration-badge"]').text()).toBe('Iteration 2 of 2')
+    expect(wrapper.find('[data-test="iteration-badge"]').text()).toBe('Iteration 2')
   })
 })
 

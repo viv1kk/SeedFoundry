@@ -11,8 +11,8 @@ export const demoApi = {
   clear: () => api<{ deleted: number }>('/api/demo/clear', { method: 'POST' }),
   reset: () => api<{ files_removed: number; builds_removed: number }>('/api/demo/reset', { method: 'POST' }),
   speed: () => api<{ speed: number }>('/api/demo/speed'),
-  /** The demo's observer feedback, which Prefill puts in the rebuild modal (FR-DC-2, D-68). */
-  feedback: () => api<{ name: string; content: string }>('/api/demo/feedback'),
+  /** The demo's observer feedback on iteration `rejected`, which Prefill puts in the rebuild modal (FR-DC-2, D-68, D-81). */
+  feedback: (rejected = 1) => api<{ name: string; content: string }>(`/api/demo/feedback?rejected=${rejected}`),
   setSpeed: (speed: number) => api<{ speed: number }>('/api/demo/speed', { method: 'POST', json: { speed } }),
   /** Skip to the end of the running phase or build. 409 when no build runs. */
   skip: (to: 'phase' | 'build') => api<{ skipping: string; phase?: string; name?: string }>('/api/demo/skip', { method: 'POST', json: { to } }),

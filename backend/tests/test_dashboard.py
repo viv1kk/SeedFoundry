@@ -277,7 +277,10 @@ def test_the_dashboard_endpoint_refuses_what_does_not_exist(client):
     missing = client.get(f"/api/dashboards/{DASHBOARD_ID}", params={"iteration": 1, "drill": "nobody"})
     assert missing.status_code == 404 and missing.json()["detail"]["code"] == "drill_not_found"
     assert client.get("/api/dashboards/spend", params={"iteration": 1}).json()["detail"]["code"] == "dashboard_not_found"
-    assert client.get(f"/api/dashboards/{DASHBOARD_ID}", params={"iteration": 3}).status_code == 422
+    # D-81: iterations go on past 2, and every one after the first shows the polished dashboard.
+    assert client.get(f"/api/dashboards/{DASHBOARD_ID}", params={"iteration": 0}).status_code == 422
+    later, second = (client.get(f"/api/dashboards/{DASHBOARD_ID}", params={"iteration": n}).json() for n in (3, 2))
+    assert later.pop("iteration") == 3 and second.pop("iteration") == 2 and later == second
     assert client.get(f"/api/dashboards/{DASHBOARD_ID}", params={"iteration": 1, "dataset": "x"}).status_code == 404
     assert client.get(f"/api/dashboards/{DASHBOARD_ID}", params={"iteration": 1, "sort": "usage"}).status_code == 400
 

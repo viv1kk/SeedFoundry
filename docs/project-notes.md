@@ -10,6 +10,8 @@ SeedFoundry is a lab where Seeds are formed. A person brings domain knowledge as
 
 The point of the demo is the improvement loop. Iteration 1 is visibly flawed and the report catches the flaws. Iteration 2, after human feedback, is clean.
 
+*Change request CR-1 (2026-10-04):* the observer can reject any iteration, passed or not, and the loop goes on: rejecting iteration n starts iteration n + 1 from its feedback, and no iteration total is shown (D-80, D-81). The demo shows two; iteration 3 on replays iteration 2's outcome.
+
 *As built (M13):* a rebuild first routes the observer's feedback into the four Ensemble files, really and deterministically, then replays every phase from the updated files (A-4, D-68); what iteration 2 fixes is still scripted (D-5). The observer can also approve iteration 1, and its open findings then ship as known issues on the Seed page and in each file (D-10, A-5).
 
 ## 2. Why it exists
@@ -1060,6 +1062,53 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
 **Notes for next milestone**
 - None: M13 is the last milestone. A later change starts from the as-built tree (`implementation-plan.md` §2) and the reconciliation table (`decisions.md` §4).
 
+### Change request CR-1: stakeholder feedback after M13 (2026-10-04)
+
+**What changed**
+- **No iteration total (D-80).** The badge, the Build page's chip, the dashboard frame, the report's Iteration fact and the Seed page read "Iteration 2", not "Iteration 2 of 2": the loop is continuous, and nobody knows in advance which iteration gives the Seed to approve.
+- **Reject on every iteration (D-81, A-7).** Rebuild is renamed Reject on screen (code term `rebuild`), and every report has View Dashboard, Reject and Approve, whatever its verdict. Reject on iteration n opens the same feedback modal; Start Rebuild saves `observer-feedback-iteration-<n>.md` and starts iteration n + 1. A superseded report keeps Reject, unavailable, and says the next iteration was rebuilt from it. Prefill gives iteration 1's demo feedback, or the new refinements file for a later iteration.
+- **Iteration 3 on (D-81).** The 11 phases run again from phase 1. Apply observer feedback routes the new feedback into the four core files under `### Observer feedback (iteration 2)`, logged as in iteration 2, and the rest replays iteration 2's outcome: the polished dashboard, no findings, the same 21 tests (D-5). "Changes since iteration 2" says iteration 2 had no findings. protection.md's learned rules come from every earlier iteration, so an iteration 3 Seed keeps iteration 1's three rules. The Seed page's history runs through every iteration, each feedback with its own disclosure.
+- **Context footprint (D-82, A-8).** Every report has "Context footprint when planted": each Seed file's tokens (bytes / 4) and share of a simulated 32,000-token window, from the manifest Synthesis logs, against a 20% budget, as a sentence, a chip, a bar with the budget marked and a table. The sample: 13.9% (iteration 1), 16.7% (iteration 2: core.md 8.0, adaptation.md 6.4, protection.md 2.3), 17.3% (iteration 3). No event is added.
+- **Feedback into the four files on the Build page (D-83).** From iteration 2 on, a panel "Observer feedback into Knowledge" above the stepper shows one tile per core file (Person, Instrument Awareness, Environment, Music) with the segments routed to it as soon as the routing decides, then the sections and lines its Update sub-step adds, and a tile for what stays in the feedback file. Derived from the build's events alone. Each routing log line's data gains `category`, so a renamed core file still gets its tiles.
+- Iterations 1 and 2 are unchanged: the golden Seed files and the report fixtures are byte for byte the same, but for the new `context` field in each report and the `rejected` field on the Seed page's feedback item.
+
+**Files**
+- CHANGE backend/seedfoundry/intake/feedback.py (`feedback_name`, `is_feedback`), intake/routing.py (`heading(n)`, `route(files, rejected)`), engine/catalogue.py (rebuild steps from iteration 2 on), engine/script.py (iteration 2 on; `learned_findings`; `category` in routing lines), engine/runner.py (iteration n + 1; `earlier_builds`), generate/layers.py (learned rules from several iterations; `earlier()`; the manifest's iteration check), package.py (history of every iteration; learned rules), report/assemble.py and report/__init__.py (`context`, `CONTEXT_BUDGET`; changes from iteration 2 on), clients/llm.py (`SIMULATED_CONTEXT_WINDOW`), main.py (iteration n + 1; dashboards for any iteration; Prefill by rejected iteration), sample/__init__.py (`demo_feedback(rejected)`)
+- NEW backend/seedfoundry/sample/rebuild/observer-feedback-later.md, backend/tests/test_later_iterations.py
+- CHANGE backend/tests/test_dashboard.py (D-81)
+- CHANGE frontend/src/stores/lab.ts (no `ITERATIONS`), stores/rebuild.ts (Reject's rules, `feedbackName`, `rebuiltFrom`), stores/seed.ts, stores/demo.ts, builds.ts, demo/api.ts, report.ts, seed.ts, stepper.ts (`feedbackRouting`), router.ts, views/BuildView.vue, views/ReviewView.vue, views/SeedView.vue, components/report/BuildReport.vue, components/rebuild/RebuildModal.vue, components/seed/SeedHistory.vue, components/shell/IterationBadge.vue, components/dashboard/DashboardFrame.vue, scripts/rehearse.ts (one check added)
+- NEW frontend/src/components/build/FeedbackRouting.vue
+- CHANGE frontend/tests/fake-server.ts, build-script.ts (`routing` option, `DEMO_ROUTING`), build-view.spec.ts, stepper.spec.ts, report.spec.ts, rebuild-modal.spec.ts, seed.spec.ts, shell.spec.ts, dashboard.spec.ts, demo.spec.ts; fixtures/reports/iteration-1.json, iteration-2.json, fixtures/seed/iteration-2.json (rewritten by the scripts)
+- CHANGE docs/requirements.md (A-7, A-8), decisions.md (D-6 struck, D-80 to D-83), ui-spec.md, build-simulation.md, operator-guide.md, implementation-plan.md (CR-1), project-notes.md (§1, this entry, the state of the project)
+
+**Assertions changed** (each under D-80, D-81 or D-82, which list them)
+- "Iteration n of 2" to "Iteration n": `shell.spec.ts` (two), `build-view.spec.ts` (two), `dashboard.spec.ts` (two), `report.spec.ts` and `build-view.spec.ts` (the Iteration fact "1 of 2" to "1"), `seed.spec.ts` (two), `demo.spec.ts` (one). D-80.
+- Rebuild to Reject, and Reject on iteration 2: `build-view.spec.ts` (the actions; "has no Rebuild on iteration 2" became "has Reject on iteration 2 too"; the iteration 2 empty state), `report.spec.ts` ("iteration 2 passes ... no Rebuild" now expects Reject), `rebuild-modal.spec.ts` ("is not offered on iteration 2" became "is offered on iteration 2 too, and starts iteration 3"), `demo.spec.ts` (Prefill's reason). D-81.
+- `shell.spec.ts`: `/build/3` is a route now, so the redirect case is `/build/0`. `test_dashboard.py`: iteration 3 was a 422; it is now the polished dashboard, and 0 is the 422. D-81.
+- `report.spec.ts`: the report has five tables, not four (the context footprint). D-82.
+- `build-view.spec.ts`'s `openCompleted` sets the fake server's iteration to the build's, so iteration 2's Reject and Approve are available as they are on the real server; `build-script.ts`'s `plan()` gives the rebuild steps from iteration 2 on.
+
+**New tests**
+- Backend `test_later_iterations.py` (9): rejecting iteration 2 starts iteration 3 from its feedback (file, headings in all four files, the plan); iteration 3 replays iteration 2's outcome (report, changes, log lines, the dashboard); the iteration rules (wrong iteration, empty feedback, build running, superseded approve, a skipped iteration); an iteration needs the one before it completed; approving iteration 3 (history, learned rules, description, downloads); Prefill for a later iteration; iteration 3's script is deterministic; the context footprint against the manifest for all three builds; a Seed over the budget.
+- Frontend: `stepper.spec.ts` (5, the routing derivation: none on iteration 1, waiting then segments, sections as Updates play, a renamed file, a later iteration's file name and an interrupted build), `build-view.spec.ts` (3, the panel: not on iteration 1, filling in, below the report once complete), `report.spec.ts` (3: changes since iteration 2, the context footprint, over budget), `seed.spec.ts` (1: an iteration 3 history with two disclosures), `rebuild-modal.spec.ts` (the iteration 2 to 3 flow with Prefill).
+
+**Gates**
+- backend: 575 passed, frontend: 455 passed (through `python run.py test`)
+- `npm run build`: typecheck, build and `postbuild` network check pass
+- `npm run rehearse -- --speed 4`: 31 of 31 checks (the new D-81 check: "Iteration 2", Reject available on the passed iteration 2, the context footprint Within budget, all four files Updated in the panel). Iteration 1 in 19.3 s, iteration 2 in 19.4 s; the dashboards in 255 ms and 181 ms; the slowest 1 MB keystroke 64 ms; 593 requests, none outside 127.0.0.1. The Seed files and zip are the M13 sizes (core.md 10,216 B, adaptation.md 8,218 B, protection.md 2,918 B, zip 21,668 B)
+- determinism: pass (the existing two-run tests, and iteration 3's script played twice) | no-em-dash: pass (code, docs, the new sample file, iteration 3's log lines and files) | network: pass | contrast: pass (no new token: the panel and the bar use existing surface, border, status and chart series tokens)
+- Assertions edited: the list above, each with its decision.
+
+**Decisions and questions**
+- New: D-80, D-81, D-82, D-83; A-7, A-8. Superseded: D-6.
+- Choices made without asking, as technical or as the simplest reading of the feedback: iteration 3 on is a new iteration (n + 1) rather than a re-run of iteration 2, which fits "no iteration total"; the window is 32,000 tokens, which puts the sample's real files at 14% to 17%, so the split is the files' own rather than invented; the routing panel stays on the page after phase 1, below the report once the build completes.
+- Opened: none.
+
+**Notes**
+- Still for the stakeholder, in a browser: the routing panel at 1x (it fills in over about 4.5 s of Assay), the context footprint in both themes, and a Reject of iteration 2 through to an iteration 3 Seed.
+
 ### State of the project (2026-10-04)
 
 SeedFoundry is complete as specified. It is a deterministic, offline lab with no LLM that turns four Ensemble knowledge files (plus any Misc Context) into a Seed v0.1 deployment. It assays the files and lints their boundaries, distils and synthesises `core.md`, `adaptation.md` and `protection.md` from them, plants and runs the Seed in a simulated sandbox with Seed v0.1's three human gates auto-resolved, and validates the result. Iteration 1's License Optimization dashboard carries fourteen planted defects, and real validators find all fourteen by recomputing from the data. An observer writes feedback beside the report or the dashboard; the rebuild routes that feedback into the four files, visibly, and iteration 2 passes with every finding resolved. Approve on either iteration gives the Seed page and the three files, singly or as one zip, with known issues listed when the approved build still has findings. Every simulated call is labelled as simulated and goes through the `LLMClient` and `SeedClient` seams, so real ones can replace them. To run it: `python run.py` (or `run.ps1` where uv is blocked), then open `http://127.0.0.1:5273/`. To present it: `docs/operator-guide.md`, a demo of 8 to 10 minutes at 1x, driven by the hidden demo controller (Shift+O), after `python run.py test` and `npm run rehearse -- --speed 4` as the checks before a demo. What remains is the stakeholder's own pass in a browser, listed under Hand checks above: the timed demo by hand, the network switched off, and a person's reading of the report links, the rebuild modal and the Seed page. No requirement, open question or known defect is outstanding.
+
+*After CR-1 (2026-10-04):* the loop is open-ended on screen. There is no iteration total; every report has Reject and Approve; rejecting any iteration routes the new feedback into the four files, visibly on the Build page, and runs the next iteration, which from iteration 3 replays iteration 2's outcome. Every report shows the Seed files' share of the context window against a 20% budget. The demo is still written for two iterations (`operator-guide.md` §4, with an optional third).

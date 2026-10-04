@@ -13,7 +13,7 @@ import SeedFiles from '../components/seed/SeedFiles.vue'
 import SeedHistory from '../components/seed/SeedHistory.vue'
 import type { Severity, TestStatus } from '../report'
 import { approvedOn, type SeedPhase } from '../seed'
-import { ITERATIONS, useLabStore } from '../stores/lab'
+import { useLabStore } from '../stores/lab'
 import { useSeedStore } from '../stores/seed'
 
 const lab = useLabStore()
@@ -105,7 +105,7 @@ const issuesLine = computed(() => {
           <BaseChip tone="positive" class="seed__approved" data-test="seed-approved">Approved</BaseChip>
         </div>
         <p class="seed__meta" data-test="seed-approval">
-          Approved at iteration {{ seed.approval.iteration }} of {{ ITERATIONS }}<template v-if="date">, on {{ date }}</template>.
+          Approved at iteration {{ seed.approval.iteration }}<template v-if="date">, on {{ date }}</template>.
           <span class="seed__fingerprint">Intake fingerprint {{ seed.fingerprint }}</span>
         </p>
       </header>

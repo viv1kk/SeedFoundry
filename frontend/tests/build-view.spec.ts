@@ -143,7 +143,8 @@ describe('route (D-54 (g), closes OQ-18)', () => {
 
   it('says when iteration 2 has no build, and points to iteration 1 once it exists', async () => {
     await open('/build/2')
-    expect(text('[data-test="no-build"] p')).toBe("No build for iteration 2 yet. Iteration 2 starts when you rebuild from iteration 1's report.")
+    // D-81: the next iteration starts from Reject on the one before it.
+    expect(text('[data-test="no-build"] p')).toBe('No build for iteration 2 yet. Iteration 2 starts when you reject iteration 1 from its report.')
     expect($('[data-test="no-build"] a')?.getAttribute('href')).toBe('/knowledge')
     wrapper.unmount()
     serverAt(script(), buildRecord({ status: 'completed' }))
@@ -158,7 +159,7 @@ describe('route (D-54 (g), closes OQ-18)', () => {
     const second = script({ build: two, first: 300 })
     serverAt(second, two, 10)
     await open('/build/2')
-    expect(text('[data-test="build-iteration"]')).toBe('Iteration 2 of 2')
+    expect(text('[data-test="build-iteration"]')).toBe('Iteration 2')
     expect(server.calls.some((c) => c.path === '/api/builds/b-2/events')).toBe(true)
     expect(server.calls.some((c) => c.path === '/api/builds/b-1/events')).toBe(false)
   })
@@ -372,13 +373,60 @@ describe('stepper (FR-B-3)', () => {
   })
 })
 
+describe('observer feedback into Knowledge (D-83)', () => {
+  async function openAt(predicate: (e: LabEvent) => boolean, iteration = 2) {
+    const build = buildRecord({ id: `b-${iteration}`, iteration })
+    const events = script({ build, routing: true })
+    serverAt(events, build, events.findIndex(predicate) + 1)
+    await open(`/build/${iteration}`)
+  }
+  const tiles = () =>
+    $$('[data-test="routing-file"]').map((tile) => [
+      tile.querySelector('.tile__name')?.textContent,
+      tile.querySelector('[data-test="routing-state"]')?.textContent,
+      tile.querySelector('[data-test="routing-segments"]')?.textContent,
+    ])
+
+  it('is not on iteration 1', async () => {
+    await openAt((e) => e.type === 'step.started' && e.step === 'assay.inventory', 1)
+    expect($('[data-test="feedback-routing"]')).toBeNull()
+  })
+
+  it('shows where each segment went, above the stepper, filling in as the sub-steps play', async () => {
+    await openAt((e) => e.type === 'step.started' && e.step === 'assay.feedback-environment')
+    const panel = $('[data-test="feedback-routing"]')!
+    expect(panel.compareDocumentPosition($('[data-test="stepper"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(text('[data-test="feedback-routing"] h2')).toBe('Observer feedback into Knowledge')
+    expect(text('[data-test="routing-lead"]')).toBe('observer-feedback-iteration-1.md: 10 segments. 9 routed to 4 Ensemble files, 1 kept in the feedback file.')
+    expect(tiles()).toEqual([
+      ['person.md', 'Updated', 'Segment 8 routed here.'],
+      ['instrument-awareness.md', 'Updated', 'Segment 7 routed here.'],
+      ['environment.md', 'Updating', 'Segments 1, 2, 3, 4, 5, 6 routed here.'],
+      ['music.md', 'Waiting', 'Segment 9 routed here.'],
+    ])
+    expect($$('[data-test="routing-file"]').map((t) => t.querySelector('.caps-label')?.textContent)).toEqual(['Person', 'Instrument Awareness', 'Environment', 'Music'])
+    expect(text('[data-test="routing-file"][data-category="person"] [data-test="routing-sections"]')).toBe('+4 lines in Reasoning methods')
+    expect(text('[data-test="routing-kept"] .tile__note')).toBe('Segment 10: fits no Ensemble file.')
+  })
+
+  it('stays below the report once the build completes', async () => {
+    await openAt((e) => e.type === 'build.completed')
+    expect(tiles().map((t) => t[1])).toEqual(['Updated', 'Updated', 'Updated', 'Updated'])
+    expect(text('[data-test="routing-file"][data-category="environment"] [data-test="routing-sections"]')).toBe(
+      '+10 lines in Styling +4 lines in User Experience +4 lines in Data Layer',
+    )
+    const report = $('[data-test="build-report"]')!
+    expect(report.compareDocumentPosition($('[data-test="feedback-routing"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+})
+
 describe('header (FR-DC-4: from sim_t)', () => {
   it('shows the iteration, the simulated elapsed time, the progress and the phase', async () => {
     const build = buildRecord()
     const events = script({ build })
     serverAt(events, build, events.findIndex((e) => e.type === 'phase.started' && e.phase === 'seeding') + 1)
     await open('/build/1')
-    expect(text('[data-test="build-iteration"]')).toBe('Iteration 1 of 2')
+    expect(text('[data-test="build-iteration"]')).toBe('Iteration 1')
     expect(text('[data-test="build-elapsed"]')).toBe('00:44')
     expect($('[data-test="build-progress"]')?.getAttribute('aria-valuenow')).toBe('59')
     expect(text('[data-test="build-status"]')).toBe('Phase 8 of 11: Seeding & Life')
@@ -474,6 +522,7 @@ describe('completion hand-off (FR-B-9, D-54 (f), D-65)', () => {
   async function openCompleted(iteration = 1) {
     const build = buildRecord({ id: `b-${iteration}`, iteration, status: 'completed' })
     serverAt(script({ build }), build)
+    server.iteration = iteration
     await open(`/build/${iteration}`)
   }
 
@@ -483,7 +532,7 @@ describe('completion hand-off (FR-B-9, D-54 (f), D-65)', () => {
     expect(text('[data-test="report-verdict"]')).toBe('Completed with findings')
     expect($('[data-test="report-verdict"]')?.className).toContain('chip--warning')
     expect($$('[data-test="report-fact"]').map((d) => d.textContent)).toEqual([
-      '1 of 2',
+      '1',
       '01:15 simulated',
       '11, 2 with findings',
       '21: 15 passed, 5 warned, 1 failed',
@@ -501,12 +550,13 @@ describe('completion hand-off (FR-B-9, D-54 (f), D-65)', () => {
   // D-59: View Dashboard opens the dashboard from M7. D-71: Rebuild opens the rebuild modal from M10.
   // D-76: Approve approves the build and opens the Seed page from M11 (it said "Approve arrives with
   // the Seed page in M11." until then).
-  it('offers View Dashboard, which opens the dashboard, Rebuild, which opens the rebuild modal, and Approve, which approves the build and opens the Seed page', async () => {
+  // D-81: Rebuild is Reject on screen.
+  it('offers View Dashboard, which opens the dashboard, Reject, which opens the rebuild modal, and Approve, which approves the build and opens the Seed page', async () => {
     await openCompleted()
     const actions = $$('[data-test="report-actions"] button')
     expect(actions.map((b) => [b.textContent?.trim(), b.getAttribute('aria-disabled')])).toEqual([
       ['View Dashboard', null],
-      ['Rebuild', null],
+      ['Reject', null],
       ['Approve', null],
     ])
     expect(actions[2].hasAttribute('disabled')).toBe(false)
@@ -519,10 +569,18 @@ describe('completion hand-off (FR-B-9, D-54 (f), D-65)', () => {
     expect(text('[data-test="seed-name"]')).toBe('License Optimization')
   })
 
-  it('has no Rebuild on iteration 2 (D-6)', async () => {
+  // D-81 supersedes D-6: a passed iteration 2 can be rejected too, and Reject opens the same modal.
+  it('has Reject on iteration 2 too, which opens the rebuild modal for iteration 2 (D-81)', async () => {
     await openCompleted(2)
-    expect($$('[data-test="report-actions"] button').map((b) => b.textContent?.trim())).toEqual(['View Dashboard', 'Approve'])
+    const actions = $$('[data-test="report-actions"] button')
+    expect(actions.map((b) => [b.textContent?.trim(), b.getAttribute('aria-disabled')])).toEqual([
+      ['View Dashboard', null],
+      ['Reject', null],
+      ['Approve', null],
+    ])
     expect(text('[data-test="report-verdict"]')).toBe('Passed')
+    await click(actions[1])
+    expect(document.querySelector('[data-test="feedback-name"]')?.textContent).toBe('observer-feedback-iteration-2.md')
   })
 
   it('lets the console be hidden and shown again', async () => {

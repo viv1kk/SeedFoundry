@@ -13,7 +13,7 @@ from typing import Any, Literal
 
 from fastapi import FastAPI, Header, Query, Request, Response
 from fastapi.responses import JSONResponse, StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from seedfoundry import dashboard, demo, events, package, report
 from seedfoundry.config import var_dir
@@ -21,7 +21,7 @@ from seedfoundry.data import DATASETS, dataset
 from seedfoundry.engine.clock import Clock
 from seedfoundry.engine.runner import BuildEngine
 from seedfoundry.intake import files
-from seedfoundry.intake.feedback import FEEDBACK_NAME
+from seedfoundry.intake.feedback import feedback_name
 from seedfoundry.sample import demo_feedback
 from seedfoundry.state import (
     CATEGORY_DESCRIPTIONS,
@@ -45,9 +45,10 @@ class LoadSample(BaseModel):
 
 
 class StartBuild(BaseModel):
-    # Omitted: the current iteration (FR-B-1). 2 with `feedback` is the rebuild: it saves the
-    # feedback as observer-feedback-iteration-1.md and starts iteration 2 in one change (D-67).
-    iteration: Literal[1, 2] | None = None
+    # Omitted: the current iteration (FR-B-1). The next iteration with `feedback` is the rebuild: it
+    # saves the feedback as observer-feedback-iteration-<n>.md, n the iteration it rejects, and
+    # starts iteration n + 1 in one change (D-67, D-81).
+    iteration: int | None = Field(None, ge=1)
     feedback: str | None = None
 
 
@@ -218,10 +219,7 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
             raise files.IntakeError(404, "build_not_found", f"No build with id {build_id}.")
         if build.status != "completed" or not build.log:
             raise files.IntakeError(409, "report_not_ready", f"Build {build_id} has not completed, so it has no report.")
-        prior = None
-        if build.iteration == 2:
-            prior = next((b for b in lab(request).state.builds if b.iteration == 1 and b.status == "completed"), None)
-        return report.assemble(build, prior)
+        return report.assemble(build, package.prior_build(lab(request).state, build))
 
     # The approved Seed (FR-F-1 to FR-F-5, D-73 to D-75). Everything but the approval itself is
     # computed from the approved build's kept files and log, so it is the same after a restart.
@@ -275,7 +273,7 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
     @app.get("/api/dashboards/{dashboard_id}")
     async def get_dashboard(
         dashboard_id: str,
-        iteration: int = Query(..., ge=1, le=2),
+        iteration: int = Query(..., ge=1),
         dataset_name: str = Query(dashboard.DEFAULT_DATASET, alias="dataset"),
         drill: str = Query(""),
         page: int = Query(1, ge=1),
@@ -289,7 +287,7 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
         return dashboard.dashboard(iteration, dataset_name, drill or None, page, sort, direction)
 
     @app.get("/api/dashboards/{dashboard_id}/descriptor")
-    async def get_descriptor(dashboard_id: str, iteration: int = Query(..., ge=1, le=2)) -> dict[str, Any]:
+    async def get_descriptor(dashboard_id: str, iteration: int = Query(..., ge=1)) -> dict[str, Any]:
         known_dashboard(dashboard_id)
         return dashboard.descriptor(iteration)
 
@@ -318,9 +316,10 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
         return lab(request).apply(demo.load_sample(body.replace))
 
     @app.get("/api/demo/feedback")
-    async def get_demo_feedback() -> dict[str, str]:
-        """The demo's observer feedback, which Prefill puts in the rebuild modal (FR-DC-2)."""
-        return {"name": FEEDBACK_NAME, "content": demo_feedback()}
+    async def get_demo_feedback(rejected: int = Query(1, ge=1)) -> dict[str, str]:
+        """The demo's observer feedback on iteration `rejected`, which Prefill puts in the rebuild modal
+        (FR-DC-2): iteration 1's cites its findings; a later iteration's asks for refinements (D-81)."""
+        return {"name": feedback_name(rejected), "content": demo_feedback(rejected)}
 
     @app.post("/api/demo/clear")
     async def clear_intake(request: Request) -> dict[str, int]:

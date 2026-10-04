@@ -4,7 +4,7 @@
 // modal with the Knowledge editor; the view toggle shows the feedback alone or beside iteration 1's
 // report or dashboard, whose drill never moves the page URL; Start Rebuild is one request and is
 // disabled while the feedback is empty; Cancel and Escape save nothing and lose nothing typed;
-// Shift+F prefills only inside the modal; Rebuild is not offered on iteration 2.
+// Shift+F prefills only inside the modal; Reject is on every iteration's report (D-81).
 
 import { mount, type VueWrapper } from '@vue/test-utils'
 import { readFileSync } from 'node:fs'
@@ -20,7 +20,7 @@ import { useLabStore, type Build } from '../src/stores/lab'
 import { applyTheme } from '../src/theme'
 import { buildRecord } from './build-script'
 import { chartFor, charts } from './fake-echarts'
-import { DEMO_FEEDBACK, dashboardFixture, FakeServer, FEEDBACK_NAME, reportFixture } from './fake-server'
+import { DEMO_FEEDBACK, dashboardFixture, FakeServer, FEEDBACK_NAME, LATER_FEEDBACK, reportFixture } from './fake-server'
 
 vi.mock('../src/dashboard/echarts', () => import('./fake-echarts'))
 const latency = vi.hoisted(() => ({ waits: [] as { ms: number; release: () => void }[] }))
@@ -150,19 +150,30 @@ describe('the modal (FR-RB-1, ui-spec.md section 6)', () => {
     expect($('img', preview)).toBeNull()
   })
 
-  it('is not offered on iteration 2, nor on iteration 1 once iteration 2 has started (D-6, D-67)', async () => {
+  // D-81 supersedes D-6: Reject is on iteration 2's report too, and starts iteration 3. Iteration 1's
+  // report keeps Reject once iteration 2 has started, unavailable, and says why (D-67).
+  it('is offered on iteration 2 too, and starts iteration 3; not on iteration 1 once iteration 2 has started (D-81, D-67)', async () => {
     server.builds = [completed(1), completed(2)]
     server.iteration = 2
     await open('/review/2')
-    expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Dashboard', 'Approve'])
-    // No shortcut reaches the modal: every one pressed on the iteration 2 report opens no dialog.
-    for (const shortcut of SHORTCUTS.filter((s) => !['reset', 'clear', 'sample', 'start'].includes(s.action))) {
-      await key(document.body, { key: shortcut.key ?? '', code: shortcut.code ?? `Key${(shortcut.key ?? '').toUpperCase()}`, shiftKey: true })
-    }
-    expect(dialog()).toBeNull()
+    expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Dashboard', 'Reject', 'Approve'])
+    expect(rebuildButton()?.getAttribute('aria-disabled')).toBeNull()
+    await click(rebuildButton())
+    expect(text('[data-modal="rebuild"] [data-test="feedback-name"]')).toBe('observer-feedback-iteration-2.md')
+    expect($('[data-modal="rebuild"] [data-test="text"]')!.getAttribute('placeholder')).toContain('Write what iteration 3 should change.')
+    await key(dialog(), { key: 'F', code: 'KeyF', shiftKey: true })
+    expect(draft()).toBe(LATER_FEEDBACK)
+    expect(server.calls.filter((c) => c.path === '/api/demo/feedback').map((c) => c.query)).toEqual([{ rejected: '2' }])
+    await click(startButton())
+    expect(rebuildCalls().map((c) => c.body)).toEqual([{ iteration: 3, feedback: LATER_FEEDBACK }])
+    expect(router.currentRoute.value.fullPath).toBe('/build/3')
+    expect(server.files.some((f) => f.name === 'observer-feedback-iteration-2.md')).toBe(true)
     await router.push('/review/1')
     await settle()
-    expect(rebuildButton()).toBeNull()
+    expect(rebuildButton()?.getAttribute('aria-disabled')).toBe('true')
+    await click(rebuildButton())
+    expect(dialog()).toBeNull()
+    expect(text('[data-test="report-status"]')).toBe('Iteration 2 was rebuilt from this report.')
     expect(text('[data-test="report-rebuilt"]')).toBe('Iteration 2 was rebuilt from this report. Go to iteration 2')
   })
 })

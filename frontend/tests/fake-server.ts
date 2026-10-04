@@ -13,9 +13,10 @@
 // server refuses a path the data does not have. A completed build's report (D-64) is the report the
 // backend assembled for the sample's build of that iteration (tests/fixtures/reports/, written by
 // backend/tests/report_fixtures.py and checked by test_report.py), with the build's own id. The
-// rebuild (D-67) is POST /api/builds with iteration 2 and the feedback: it keeps the server's rules
-// (feedback that is not blank, a completed iteration 1, still on iteration 1) and saves the feedback
-// file with the build, in one step; Prefill's text is the real demo feedback file. Approve (D-73)
+// rebuild (D-67, D-81) is POST /api/builds with the next iteration and the feedback: it keeps the
+// server's rules (feedback that is not blank, a completed current iteration) and saves the feedback
+// file of the rejected iteration with the build, in one step; Prefill's text is the real demo
+// feedback file for that iteration. Iteration 3 on replays iteration 2's fixtures (D-81). Approve (D-73)
 // keeps the server's rules (the current iteration's completed build, once, with no build running)
 // and the Seed page's data is what the backend assembled for that approval path
 // (tests/fixtures/seed/, written by backend/tests/seed_fixtures.py and checked by test_seed.py), with
@@ -68,6 +69,10 @@ export const SAMPLE = (
 export const DEMO_FEEDBACK = readFileSync(resolve(SAMPLE_DIR, 'rebuild/observer-feedback-iteration-1.md'), 'utf8').replace(/\r\n?/g, '\n')
 
 export const FEEDBACK_NAME = 'observer-feedback-iteration-1.md'
+export const LATER_FEEDBACK = readFileSync(resolve(SAMPLE_DIR, 'rebuild/observer-feedback-later.md'), 'utf8').replace(/\r\n?/g, '\n')
+const feedbackName = (rejected: number) => `observer-feedback-iteration-${rejected}.md`
+/** Iteration 3 on has no fixtures of its own: it plays iteration 2's outcome (D-81). */
+const fixtureIteration = (iteration: number) => Math.min(iteration, 2)
 
 const DASHBOARD_DIR = resolve(__dirname, 'fixtures/dashboard')
 
@@ -193,7 +198,7 @@ export class FakeServer {
 
   /** The approved Seed's page data: the fixture for its iteration, with this approval's build and time. */
   seedPage(): Record<string, unknown> {
-    const page = { ...seedFixture(this.approval!.iteration), ...this.seedPatches.get(this.approval!.iteration) }
+    const page = { ...seedFixture(fixtureIteration(this.approval!.iteration)), ...this.seedPatches.get(this.approval!.iteration) }
     return { ...page, approval: { ...(page.approval as object), ...this.approval } }
   }
 
@@ -237,7 +242,7 @@ export class FakeServer {
       if (drill && !(drill in DASHBOARD_FIXTURES)) return refusal(404, 'drill_not_found', `No vendor '${drill.split(/[./]/)[0]}' in the data (drill path '${drill}').`)
       return refusal(500, 'no_fixture', `The fake server has no dashboard fixture for ${key}.`)
     }
-    return { status: 200, body: dashboardFixture(Number(query.iteration), name) }
+    return { status: 200, body: dashboardFixture(fixtureIteration(Number(query.iteration)), name) }
   }
 
   private handle(call: Call): Reply {
@@ -264,14 +269,18 @@ export class FakeServer {
       const build = this.builds.find((b) => b.id === reportMatch[1])
       if (!build) return refusal(404, 'build_not_found', `No build with id ${reportMatch[1]}.`)
       if (build.status !== 'completed') return refusal(409, 'report_not_ready', `Build ${build.id} has not completed, so it has no report.`)
-      return { status: 200, body: { ...reportFixture(build.iteration), ...this.reportPatches.get(build.iteration), build_id: build.id } }
+      const fixture = reportFixture(fixtureIteration(build.iteration))
+      return { status: 200, body: { ...fixture, ...this.reportPatches.get(build.iteration), build_id: build.id, iteration: build.iteration } }
     }
     if (method === 'GET' && path === '/api/seed') {
       if (!this.approval) return refusal(404, 'seed_not_approved', 'No Seed is approved yet. Approve a completed build from its report first.')
       return { status: 200, body: this.seedPage() }
     }
     if (method === 'GET' && path === '/api/demo/speed') return { status: 200, body: { speed: this.speed } }
-    if (method === 'GET' && path === '/api/demo/feedback') return { status: 200, body: { name: FEEDBACK_NAME, content: DEMO_FEEDBACK } }
+    if (method === 'GET' && path === '/api/demo/feedback') {
+      const rejected = Number(call.query.rejected ?? 1)
+      return { status: 200, body: { name: feedbackName(rejected), content: rejected > 1 ? LATER_FEEDBACK : DEMO_FEEDBACK } }
+    }
     if (method === 'POST' && path === '/api/demo/speed') {
       const speed = (call.body as { speed?: number }).speed
       if (speed !== 1 && speed !== 2 && speed !== 4) return { status: 422, body: { detail: [] } }
@@ -291,7 +300,9 @@ export class FakeServer {
       if (!build) return refusal(404, 'build_not_found', `No build with id ${id}.`)
       if (running) return refusal(409, 'build_running', 'A build is running. Approve once it has finished.')
       if (build.status !== 'completed') return refusal(409, 'report_not_ready', `Build ${build.id} has not completed, so there is nothing to approve.`)
-      if (build.iteration !== this.iteration) return refusal(409, 'iteration_superseded', 'Iteration 2 was rebuilt from this build, so iteration 2 is the one to approve.')
+      if (build.iteration !== this.iteration) {
+        return refusal(409, 'iteration_superseded', `Iteration ${build.iteration + 1} was rebuilt from this build, so iteration ${this.iteration} is the one to approve.`)
+      }
       this.approval = { iteration: build.iteration, build_id: build.id, approved_at: '2026-10-04T12:00:00.000+00:00' }
       this.seq++
       return { status: 201, body: this.seedPage() }
@@ -305,17 +316,25 @@ export class FakeServer {
         return refusal(409, 'core_files_missing', `Start Build needs every core file. Missing: ${labels}.`, { missing })
       }
       const body = (call.body ?? {}) as { iteration?: number; feedback?: string }
-      const rebuilding = body.iteration === 2 && this.iteration === 1
-      if (body.feedback !== undefined && !rebuilding) return refusal(409, 'wrong_iteration', "Observer feedback starts iteration 2 from iteration 1's report; this Seed is past that.")
+      const current = this.iteration
+      const rebuilding = body.iteration === current + 1
+      if (body.feedback !== undefined && !rebuilding) {
+        const target = body.iteration ?? current
+        return refusal(409, 'wrong_iteration', `Observer feedback starts iteration ${current + 1} from iteration ${current}'s report; this request names iteration ${target}.`)
+      }
       if (rebuilding) {
-        if (!this.builds.some((b) => b.iteration === 1 && b.status === 'completed')) return refusal(409, 'iteration_1_not_built', 'Iteration 2 needs a completed iteration 1 build.')
-        if (!body.feedback?.trim()) return refusal(422, 'feedback_empty', 'Start Rebuild needs observer feedback. Write what iteration 2 should change first.')
-        const existing = this.files.find((f) => f.category === 'misc_context' && f.name === FEEDBACK_NAME)
+        const next = current + 1
+        if (!this.builds.some((b) => b.iteration === current && b.status === 'completed')) {
+          return refusal(409, `iteration_${current}_not_built`, `Iteration ${next} needs a completed iteration ${current} build.`)
+        }
+        if (!body.feedback?.trim()) return refusal(422, 'feedback_empty', `Start Rebuild needs observer feedback. Write what iteration ${next} should change first.`)
+        const name = feedbackName(current)
+        const existing = this.files.find((f) => f.category === 'misc_context' && f.name === name)
         if (existing) {
           existing.content = body.feedback
           existing.size = encoder.encode(body.feedback).length
-        } else this.add(FEEDBACK_NAME, 'misc_context', body.feedback)
-        this.iteration = 2
+        } else this.add(name, 'misc_context', body.feedback)
+        this.iteration = next
         this.seq++
       }
       const build: Build = { id: `b-${this.nextBuild++}`, iteration: this.iteration, status: 'running', seed_name: 'License Optimization', phase: null, plan: [] }

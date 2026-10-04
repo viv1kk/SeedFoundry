@@ -15,7 +15,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { DASHBOARD_ID } from '../../dashboard/api'
 import { drillOf } from '../../dashboard/drill'
 import { dashboardFindings } from '../../report'
-import { ITERATIONS, type Build } from '../../stores/lab'
+import type { Build } from '../../stores/lab'
 import { useReportsStore } from '../../stores/reports'
 import BaseChip from '../base/BaseChip.vue'
 import DashboardView from './DashboardView.vue'
@@ -89,7 +89,7 @@ function clearHighlight(): void {
         <RouterLink v-if="iteration === 1 && findingCount" :to="`/review/${iteration}`" class="frame__findings" data-test="findings-link">
           {{ findingCount }} {{ findingCount === 1 ? 'finding' : 'findings' }}
         </RouterLink>
-        <BaseChip tone="accent" class="frame__badge" data-test="frame-iteration">Iteration {{ iteration }} of {{ ITERATIONS }}</BaseChip>
+        <BaseChip tone="accent" class="frame__badge" data-test="frame-iteration">Iteration {{ iteration }}</BaseChip>
       </div>
     </div>
     <p v-if="notice" class="frame__note" role="status" data-test="drill-notice">{{ notice }}</p>

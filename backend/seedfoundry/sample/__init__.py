@@ -29,10 +29,13 @@ SAMPLE_FILES = (
 # finding ids, written so that routing (D-36) reaches all four core files and raises no boundary
 # advisory. In its own folder, so it is never loaded as part of the sample Seed.
 DEMO_FEEDBACK = SAMPLE_DIR / "rebuild" / "observer-feedback-iteration-1.md"
+# The demo's feedback on any later iteration, which has no findings to cite: refinements, written
+# like the first so that routing reaches the core files and raises no boundary advisory (D-81).
+DEMO_REFINEMENT = SAMPLE_DIR / "rebuild" / "observer-feedback-later.md"
 
 
-def demo_feedback() -> str:
-    return normalise(DEMO_FEEDBACK.read_text(encoding="utf-8"))
+def demo_feedback(rejected: int = 1) -> str:
+    return normalise((DEMO_FEEDBACK if rejected <= 1 else DEMO_REFINEMENT).read_text(encoding="utf-8"))
 
 
 def sample_files() -> list[tuple[str, Category, str]]:

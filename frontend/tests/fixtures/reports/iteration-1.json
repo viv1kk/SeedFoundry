@@ -1416,5 +1416,36 @@
   "sandbox_seconds": 36.2,
   "simulated": true
  },
+ "context": {
+  "window": 32000,
+  "budget": 20,
+  "layers": [
+   {
+    "name": "core.md",
+    "role": "core",
+    "bytes": 9660,
+    "tokens": 2415,
+    "share": 7.5
+   },
+   {
+    "name": "adaptation.md",
+    "role": "adaptation",
+    "bytes": 6867,
+    "tokens": 1717,
+    "share": 5.4
+   },
+   {
+    "name": "protection.md",
+    "role": "protection",
+    "bytes": 1318,
+    "tokens": 330,
+    "share": 1.0
+   }
+  ],
+  "tokens": 4462,
+  "share": 13.9,
+  "within": true,
+  "simulated": true
+ },
  "changes": null
 }

@@ -21,7 +21,7 @@ export const SPEEDS: readonly Speed[] = [1, 2, 4]
 
 const LOCKED = 'A build is running. Knowledge files are read-only until it finishes.'
 const NO_BUILD = 'No build is running, so there is nothing to skip.'
-const NO_REBUILD = "Prefill fills the rebuild modal. Open Rebuild from iteration 1's report first."
+const NO_REBUILD = 'Prefill fills the rebuild modal. Open Reject from the current report first.'
 
 export function plural(count: number, word: string): string {
   return `${count} ${word}${count === 1 ? '' : 's'}`

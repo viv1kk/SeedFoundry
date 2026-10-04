@@ -38,7 +38,8 @@ export type HistoryItem =
       open?: number
       prior_findings?: number
     }
-  | { kind: 'feedback'; name: string; content: string; segments: number; routed: number; files_updated: number }
+  /** The observer feedback that rejected iteration `rejected` (missing before D-81: iteration 1). */
+  | { kind: 'feedback'; rejected?: number; name: string; content: string; segments: number; routed: number; files_updated: number }
 
 export interface KnownIssue {
   id: string

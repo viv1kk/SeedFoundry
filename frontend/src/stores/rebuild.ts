@@ -1,10 +1,10 @@
 // The rebuild modal's state (FR-RB-1 to FR-RB-5, ui-spec.md section 6, D-70). One modal for the app,
-// opened from iteration 1's report. Its feedback draft lives here, in memory only: closing the
+// opened by Reject on the current iteration's report, whatever its verdict (D-81). Its feedback draft lives here, in memory only: closing the
 // modal (Cancel, Escape, the close button) keeps it, so nothing typed is lost, and reopening shows
 // it; a page reload or a successful Start Rebuild clears it. The view (Feedback, Feedback + Report,
 // Feedback + Dashboard) and the embedded dashboard's drill path live here too, never in the URL,
 // so the page behind the modal does not move. Start Rebuild is one request that saves the
-// feedback and starts iteration 2 (D-67).
+// feedback as observer-feedback-iteration-<n>.md and starts iteration n + 1 (D-67, D-81).
 
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
@@ -13,15 +13,25 @@ import { buildsApi } from '../builds'
 import { demoApi } from '../demo/api'
 import { useLabStore, type Build } from './lab'
 
-export const FEEDBACK_NAME = 'observer-feedback-iteration-1.md'
+/** The feedback file of the iteration it rejects (D-81). */
+export function feedbackName(rejected: number): string {
+  return `observer-feedback-iteration-${rejected}.md`
+}
+
+export const FEEDBACK_NAME = feedbackName(1)
 
 export type RebuildView = 'feedback' | 'report' | 'dashboard'
+
+/** What a superseded report says: the next iteration was rebuilt from it. */
+export function rebuiltFrom(build: Build): string {
+  return `Iteration ${build.iteration + 1} was rebuilt from this report.`
+}
 
 export const useRebuildStore = defineStore('rebuild', () => {
   const lab = useLabStore()
 
   const open = ref(false)
-  /** The iteration 1 build the feedback is about. */
+  /** The build the feedback rejects. */
   const buildId = ref<string | null>(null)
   const draft = ref('')
   const view = ref<RebuildView>('feedback')
@@ -34,28 +44,35 @@ export const useRebuildStore = defineStore('rebuild', () => {
 
   const build = computed(() => lab.build(buildId.value))
   const empty = computed(() => !draft.value.trim())
+  /** The iteration the open modal rejects, and its feedback file. */
+  const rejected = computed(() => build.value?.iteration ?? 1)
+  const name = computed(() => feedbackName(rejected.value))
 
   /**
-   * Why Rebuild is not offered for a build, or null when it is: iteration 1 only (D-6), completed,
-   * while the Seed is still on iteration 1 and not approved, with no build running (D-67).
+   * Why Reject is not offered for a build, or null when it is (D-81): the current iteration's
+   * completed build, passed or not, while the Seed is not approved, with no build running (D-67).
    */
   function unavailable(candidate: Build): string | null {
     const snapshot = lab.snapshot
-    if (candidate.iteration !== 1 || candidate.status !== 'completed') return 'Rebuild is offered on a completed iteration 1 only.'
+    if (candidate.status !== 'completed') return 'Reject is offered on a completed build only.'
     if (!snapshot) return 'The lab is still loading.'
     if (snapshot.approval) return 'This Seed is approved, so it is not rebuilt.'
-    if (snapshot.iteration !== 1 || snapshot.builds.some((b) => b.iteration === 2)) return 'Iteration 2 was rebuilt from this report.'
+    if (snapshot.iteration !== candidate.iteration || snapshot.builds.some((b) => b.iteration > candidate.iteration)) {
+      return rebuiltFrom(candidate)
+    }
     if (lab.runningBuild) return 'A build is running.'
     return null
   }
 
   function show(from: Build): void {
     if (unavailable(from)) return
+    // A draft kept from another iteration's modal is not this one's feedback.
+    if (buildId.value !== from.id) draft.value = ''
     buildId.value = from.id
     error.value = ''
     // A feedback file made by hand on Knowledge is where the draft starts; Start Rebuild rewrites it.
     if (!draft.value.trim()) {
-      const saved = lab.files.find((f) => f.category === 'misc_context' && f.name === FEEDBACK_NAME)
+      const saved = lab.files.find((f) => f.category === 'misc_context' && f.name === feedbackName(from.iteration))
       if (saved) draft.value = saved.content
     }
     open.value = true
@@ -83,9 +100,9 @@ export const useRebuildStore = defineStore('rebuild', () => {
     finding.value = null
   }
 
-  /** Prefill (Shift+F, FR-DC-2): the demo's feedback, from the server. Replaces the draft. */
+  /** Prefill (Shift+F, FR-DC-2): the demo's feedback on this iteration, from the server. Replaces the draft. */
   async function prefill(): Promise<string> {
-    const { content } = await demoApi.feedback()
+    const { content } = await demoApi.feedback(rejected.value)
     draft.value = content
     return 'Feedback prefilled with the demo text.'
   }
@@ -96,7 +113,7 @@ export const useRebuildStore = defineStore('rebuild', () => {
     busy.value = true
     error.value = ''
     try {
-      const started = await buildsApi.rebuild(draft.value)
+      const started = await buildsApi.rebuild(rejected.value, draft.value)
       lab.upsertBuild(started)
       draft.value = ''
       drill.value = ''
@@ -112,5 +129,5 @@ export const useRebuildStore = defineStore('rebuild', () => {
     }
   }
 
-  return { open, buildId, build, draft, view, drill, finding, busy, error, empty, unavailable, show, close, setView, showFinding, navigate, prefill, start }
+  return { open, buildId, build, rejected, name, draft, view, drill, finding, busy, error, empty, unavailable, show, close, setView, showFinding, navigate, prefill, start }
 })
