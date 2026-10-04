@@ -19,7 +19,7 @@ $venv = Join-Path $backend '.venv'
 $python = Join-Path $venv 'Scripts\python.exe'
 
 if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-    Write-Error 'npm is not on the path. Install Node.js 20 or newer.'
+    Write-Error 'npm is not on the path. Install Node.js 22.18 or newer.'
 }
 
 function Test-Native([string]$exe, [string[]]$arguments) {

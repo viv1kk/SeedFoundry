@@ -1,7 +1,7 @@
 <script setup lang="ts">
-// One dashboard at one drill level, embeddable (the review route's frame now, M10's split view
-// later). It asks the server for the descriptor and payload whenever the drill path, page or
-// sort changes (D-56) and renders the drill bar over the bands. It never changes the URL itself:
+// One dashboard at one drill level, embeddable (the review route's frame, and the rebuild modal's
+// Feedback + Dashboard view). It asks the server for the descriptor and payload whenever the drill
+// path, page or sort changes (D-56) and renders the drill bar over the bands. It never changes the URL itself:
 // a drill, a crumb or Back is emitted as the path to show, so the host decides where the path
 // lives. An answer to an older request is dropped, so a fast click never shows a stale level.
 // A descriptor that names a scoped stylesheet (iteration 1's defect overlay, D-60) has it loaded

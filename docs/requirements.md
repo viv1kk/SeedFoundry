@@ -2,6 +2,8 @@
 
 Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline with strike-through.
 
+*As built (M13, 2026-10-04):* every requirement is met by the code at M13. Where the code meets one in a way its wording does not say, §11 records how; where the meaning changed, an amendment does (A-5, A-6).
+
 ## 1. Goals
 
 | Id | Goal |
@@ -118,7 +120,7 @@ Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline wit
 | FR-F-1 | Approve (either iteration) opens the final page |
 | FR-F-2 | The final page shows: Seed name, what it does (from the Music purpose), tests conducted with results, iteration history, and known issues |
 | FR-F-3 | Downloads: `core.md`, `adaptation.md`, `protection.md`, each individually and as one zip |
-| FR-F-4 | If iteration 1 was approved, every open finding is listed as a known issue on the page and in a "Known issues" section of each generated file (D-10) |
+| FR-F-4 | ~~If iteration 1 was approved, every open finding is listed as a known issue on the page and in a "Known issues" section of each generated file (D-10)~~ If the approved build has open findings (an iteration 1 approval always does; an iteration 2 approval only if it still has some), every open finding is listed as a known issue on the page and in a "Known issues" section of each generated file. Boundary advisories are not known issues (D-10, D-73, OQ-31, OQ-34, A-5) |
 | FR-F-5 | Generated files contain no em dashes and follow the structure in `build-simulation.md` §7 |
 
 ### FR-DC: Demo controller
@@ -149,7 +151,7 @@ Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline wit
 |---|---|---|
 | NFR-1 | Determinism | Same intake + same actions = identical event stream (ignoring `wall_ts`), report, dashboard payload and generated files. Covered by a test |
 | NFR-2 | Offline | Works with the network disabled. No runtime fetches outside localhost |
-| NFR-3 | Performance | Intake editor stays responsive with a 1 MB file. Console handles a full build's log without jank. Dashboard first render under 1 s, except the deliberately slow panel in iteration 1 |
+| NFR-3 | Performance | ~~Intake editor stays responsive with a 1 MB file. Console handles a full build's log without jank. Dashboard first render under 1 s, except the deliberately slow panel in iteration 1~~ Intake editor stays responsive with a 1 MB file: every keystroke is drawn within 100 ms of its key. Console handles a full build's log without jank: no main-thread task over 200 ms while it streams a whole build. Dashboard first render under 1 s, from View Dashboard to every panel drawn, except the deliberately slow panel in iteration 1 (A-6) |
 | NFR-4 | Architecture | State is the single source of truth on the server; event log + SSE with snapshot-then-replay; `LLMClient` and `SeedClient` interfaces with simulated implementations; descriptor-driven dashboard |
 | NFR-5 | Visual | SeedFoundry's own UI follows Seed v0.1's design system (tokens, type, colour meaning, contrast). Only the iteration 1 dashboard breaks it, and only through the scoped defect overlay |
 | NFR-6 | Accessibility | WCAG AA contrast for SeedFoundry's own UI in both themes (test). Keyboard reachable controls |
@@ -185,8 +187,8 @@ Recorded in detail in `seed-reuse-notes.md` (written in M0).
 | Design system: tokens, type, colour meaning, contrast test | ACME environment specifics beyond the License Optimization data |
 | Architecture patterns: state snapshot, event log + SSE, EventSource seam, beat engine with weights, descriptor-driven dashboards, policy evaluation | Seed v0.1 rule ids as SeedFoundry ids |
 | Lifecycle names and order for the Planting, Life and Cleanup phases | The growth tree |
-| Human gate ids and types (to auto-resolve them in Life) | Seed/Life naming for SeedFoundry's own screens |
-| License Optimization dashboard: panels, data, figures | |
+| Human gate ids and types (to auto-resolve them ~~in Life~~ in phase 8, Seeding & Life, A-1) | Seed/Life naming for SeedFoundry's own screens |
+| License Optimization dashboard: panels, ~~data, figures~~ methodology and layout; the data is SeedFoundry's own (A-3) | |
 | Operator pattern: Shift shortcuts, ignored in text fields, demo script, rehearsal tools | |
 | Process: requirements, decisions, milestone plan, build log, amendments | |
 
@@ -198,3 +200,31 @@ Recorded in detail in `seed-reuse-notes.md` (written in M0).
 | A-2 | 2026-10-03 | FR-D (new FR-D-6) | The dashboard supports drill-down along Seed v0.1's hierarchy | D-29 (OQ-14) |
 | A-3 | 2026-10-03 | FR-D-1 | The dashboard follows Seed v0.1's methodology and layout; its data is SeedFoundry's own, not Seed v0.1's figures | D-30 |
 | A-4 | 2026-10-03 | FR-RB-6; new FR-RB-7, FR-RB-8 | Iteration 2 first routes the observer feedback into the four Ensemble files and updates them, visibly, then rebuilds from them | D-36 |
+| A-5 | 2026-10-04 | FR-F-4 | Known issues are the approved build's open findings, whichever iteration is approved, not only an iteration 1 approval; advisories are never known issues. The sample's iteration 2 has none, so the demo is unchanged | D-73 (OQ-31, OQ-34, stakeholder) |
+| A-6 | 2026-10-04 | NFR-3 | The three performance requirements get the thresholds the rehearsal measures: 100 ms from a key to its frame, no task over 200 ms while the console streams, 1 s from View Dashboard to every panel drawn | D-77 (stakeholder, M13) |
+
+## 11. As built (M13)
+
+Where the code meets a requirement in a way its wording does not say. None of these changes what a requirement means; those that did became amendments (§10).
+
+| Id | As built | Ruling |
+|---|---|---|
+| §2 Scope | The feedback routing into the four core files is real and deterministic (A-4); what iteration 2 fixes is still scripted. Voice input is the mic icon and its tooltip only | D-5, D-36, D-68, D-8a |
+| FR-IN-6 | Autosave runs 800 ms after the last keystroke, and at once on a file switch, on leaving Knowledge and before Start Build. Delete, Clear Knowledge and Reset ask first | D-41, D-47 |
+| FR-IN-8, FR-IN-9 | A file of only whitespace counts as missing. The checklist follows what the editor shows, saved or not. Start Build's tooltip reads "Missing: ..."; the disabled button stays focusable so the tooltip can be reached from the keyboard | D-42 (a), (c) |
+| FR-IN-11 | 1 MB is 1,048,576 bytes of UTF-8. A refused file shows the server's message as written (too large, not UTF-8 text, not a `.md` name) | D-34 |
+| FR-B-3 | A phase is pending, active, done, or stopped (an interrupted build). A done phase's chip carries its result: Passed, Findings: n, Failed: T-nn, or Incomplete: n of m not run. "Done-with-findings" is a done phase with a Findings chip | D-54 (c) |
+| FR-B-6 | Every build is 75.0 s of simulated time. Speed and skip change only how fast it plays | D-48 |
+| FR-B-9 | The page stays on `/build/<n>`: the report appears above the collapsed stepper, with its actions. `/review/<n>` shows the same report, and the dashboard's Back to report returns there | D-65 (OQ-21, OQ-22) |
+| FR-T-5 | A failed protection probe (T-13) or an accepted malformed input (T-14) is a failed test, not a finding | D-62 (OQ-27) |
+| FR-T-7 | Severity is high (Numeric), medium (Visual, Latency) or advisory (Boundary). A problem no catalogue entry owns still becomes a finding, with an id such as N-X1 | D-63 (OQ-26) |
+| FR-R-3 | Each iteration 1 finding is listed as resolved or open, measured against iteration 2's report rather than asserted. The section also lists the files and sections the feedback updated | D-69, D-70 (OQ-30) |
+| FR-R-4 | Rebuild is also withdrawn from iteration 1's report once iteration 2 has started. Once a Seed is approved, every report says so in place of Approve | D-67, D-75 |
+| FR-F-1 | Iteration 1 cannot be approved once iteration 2 has started; Reset is the way back. Approve asks no confirmation | D-73, D-75 (OQ-32) |
+| FR-F-2 | The date is the approval's real date, on the page only; every file and compared value stays deterministic | D-73 (OQ-33) |
+| FR-DC-1 | Shift+O. Shortcuts are also ignored with Ctrl, Alt or Meta held, on a key repeat, in a modal they do not belong to, and Shift+Enter on a focused button | D-47 |
+| FR-DC-2 | Clear intake is "Clear Knowledge" on screen (§5). The panel also offers Start Build (Shift+Enter). Speed is kept by the server and survives Reset | D-47, D-48 |
+| NFR-1 | Also the Seed page's data (all but the approval date) and the zip's bytes | D-73, D-74 |
+| NFR-2 | Checked three ways: the backend under a guard that refuses any connection outside loopback (`test_offline.py`), the `postbuild` scan of `dist/`, and the rehearsal's Chrome that resolves no host but 127.0.0.1 | D-38, D-77 |
+| NFR-6 | Contrast is a test over `tokens.css` in both themes; keyboard reach and focus rings are checked in a real browser by the rehearsal | D-38, D-77 |
+| NFR-7 | `python run.py`, or `run.ps1` where uv is blocked. On Windows the launcher's children also end when the launcher is ended from outside | D-23, D-25, D-78 |

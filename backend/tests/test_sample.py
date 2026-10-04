@@ -1,7 +1,7 @@
 """M4: the sample Seed (FR-DC-3, build-simulation.md §8). It is deterministic
 (FR-DC-4, NFR-1), has every Ensemble section so Assay coverage can read 100%,
-and has the sections D-36's feedback routing appends to in M10. The boundary
-lint itself lands in M5; its zero findings on the sample are tested there."""
+and has the sections D-36's feedback routing appends to (intake/routing.py, D-68). The
+boundary lint's zero findings on the sample are tested in test_boundary.py."""
 
 from __future__ import annotations
 
@@ -76,7 +76,7 @@ def test_each_core_file_has_every_ensemble_section():
 
 
 def test_routing_targets_exist():
-    # D-36: feedback is appended under named sections in M10. These are the ones the
+    # D-36: feedback is appended under named sections (D-68). These are the ones the
     # demo's prefilled feedback is written to reach (build-simulation.md §9).
     assert {"Styling", "User Experience", "Data Layer", "Protection Layer"} <= set(headings(content("environment.md"), 2))
     assert "Decision Logic" in headings(content("music.md"), 2)

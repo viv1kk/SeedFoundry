@@ -1,7 +1,6 @@
 """Observer feedback as intake sees it (FR-RB-4, FR-RB-7): the Misc Context file the
 rebuild saves, and its segments (paragraphs and list items). Routing segments into the
-four core files is M10's (D-36); until then iteration 2 reads the feedback and routes
-nothing (D-52)."""
+four core files is routing.py's (D-36, D-68)."""
 
 from __future__ import annotations
 

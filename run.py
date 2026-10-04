@@ -5,6 +5,9 @@
 
 The backend runs from backend/.venv. If that does not exist, uv makes it;
 where uv is blocked or missing, run.ps1 makes it with pip instead.
+
+On Windows both processes also stop when the launcher is ended from outside
+(a job object, D-78). Elsewhere, stop it with Ctrl+C, which stops both.
 """
 
 from __future__ import annotations
@@ -41,7 +44,7 @@ def backend_python() -> str:
 def npm() -> str:
     found = shutil.which("npm")
     if not found:
-        sys.exit("npm is not on the path. Install Node.js 20 or newer.")
+        sys.exit("npm is not on the path. Install Node.js 22.18 or newer.")
     return found
 
 
@@ -69,6 +72,50 @@ def wait_for(url: str, name: str, process: subprocess.Popen, seconds: float = 60
     raise RuntimeError(f"{name} did not answer at {url} within {seconds:.0f} s")
 
 
+def contain_children() -> bool:
+    """On Windows, put this launcher in a job object that ends every process in it when its last
+    handle closes (D-78). The handle is this process's own, and the children (uvicorn, npm and the
+    node it starts) join the job as they start, so they end with the launcher however it ends:
+    Ctrl+C, a closed window, or a kill from outside, which skips launch()'s `finally`. Returns
+    False where there is no job object (elsewhere, or if Windows refuses), and the launcher then
+    relies on Ctrl+C alone, as before."""
+    if os.name != "nt":
+        return False
+    import ctypes
+    from ctypes import wintypes
+
+    class BasicLimits(ctypes.Structure):
+        _fields_ = [
+            ("PerProcessUserTimeLimit", ctypes.c_int64), ("PerJobUserTimeLimit", ctypes.c_int64),
+            ("LimitFlags", wintypes.DWORD), ("MinimumWorkingSetSize", ctypes.c_size_t),
+            ("MaximumWorkingSetSize", ctypes.c_size_t), ("ActiveProcessLimit", wintypes.DWORD),
+            ("Affinity", ctypes.c_size_t), ("PriorityClass", wintypes.DWORD), ("SchedulingClass", wintypes.DWORD),
+        ]
+
+    class ExtendedLimits(ctypes.Structure):
+        _fields_ = [
+            ("BasicLimitInformation", BasicLimits), ("IoInfo", ctypes.c_uint64 * 6),
+            ("ProcessMemoryLimit", ctypes.c_size_t), ("JobMemoryLimit", ctypes.c_size_t),
+            ("PeakProcessMemoryUsed", ctypes.c_size_t), ("PeakJobMemoryUsed", ctypes.c_size_t),
+        ]
+
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel32.CreateJobObjectW.restype = wintypes.HANDLE
+    kernel32.GetCurrentProcess.restype = wintypes.HANDLE
+    kernel32.SetInformationJobObject.argtypes = [wintypes.HANDLE, ctypes.c_int, ctypes.c_void_p, wintypes.DWORD]
+    kernel32.AssignProcessToJobObject.argtypes = [wintypes.HANDLE, wintypes.HANDLE]
+    job = kernel32.CreateJobObjectW(None, None)
+    if not job:
+        return False
+    limits = ExtendedLimits()
+    limits.BasicLimitInformation.LimitFlags = 0x2000  # JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
+    extended_limit_information = 9
+    if not kernel32.SetInformationJobObject(job, extended_limit_information, ctypes.byref(limits), ctypes.sizeof(limits)):
+        return False
+    # The handle is never closed: it closes when this process ends, whichever way it ends.
+    return bool(kernel32.AssignProcessToJobObject(job, kernel32.GetCurrentProcess()))
+
+
 def stop(process: subprocess.Popen) -> None:
     if process.poll() is not None:
         return
@@ -89,6 +136,7 @@ def launch() -> int:
             sys.exit(f"Something already answers at {url}. Stop the earlier {name} server first.")
     python = backend_python()
     ensure_frontend_packages()
+    contain_children()
     processes: list[subprocess.Popen] = []
     try:
         backend = subprocess.Popen(

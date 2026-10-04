@@ -7,8 +7,8 @@ mistake in it. Checks: derived KPIs equal their formula; part sums equal their t
 treemap legend's shares sum to 100 within 0.1; table totals equal their row sums; the same
 measure agrees on every panel where it appears; every figure equals its recount.
 
-Minimal in M7 (the exit criterion: the polished payload passes). From M9 it runs in the build
-(T-16), and findings.py groups its problems into findings (N-1 to N-5) by panel. Each message
+It runs in the build (T-16), and findings.py groups its problems into findings (N-1 to N-5) by
+panel. Each message
 reads on its own, with the figures it compares.
 """
 

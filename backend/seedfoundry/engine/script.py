@@ -8,11 +8,11 @@ schedule and never from a clock. The script is a pure function of the intake, th
 iteration and the earlier build, made in full when the build starts: speed and skip,
 which the runner applies, cannot change a word of it (FR-DC-4, NFR-1).
 
-Real work happens here where it is cheap (Assay statistics, the boundary check, the three
-Seed files Synthesis drafts in full from M11, the manifest and its checksums, the gates'
-citations, the validators). LLM and Seed API calls go
-through the simulated clients (D-22). T-08 runs the dashboard's logic on both datasets of M7
-(D-58). From M9 phases 9 and 10 run the validators for real: protection probes over rules from
+Real work happens here where it is cheap (Assay statistics, the boundary check, the feedback
+routing, the three Seed files Synthesis drafts in full, the manifest and its checksums, the
+gates' citations, the validators). LLM and Seed API calls go through the simulated clients
+(D-22). T-08 runs the dashboard's logic on both estates (D-55, D-58). Phases 9 and 10 run the
+validators for real: protection probes over rules from
 the Protection layer, malformed inputs fed to the record contract and the drill parser, and the
 latency, numeric and visual checks over the iteration's dashboard. Their problems are grouped into
 findings (validators/findings.py), each raised in the sub-step that finds it, and Compile report
@@ -174,11 +174,9 @@ def api(call: ApiCall, weight: float = API) -> Beat:
 TEST_LEVELS = {"pass": "PASS", "warn": "WARN", "fail": "FAIL", "not_run": "TEST"}
 
 
-def test(ctx: BuildContext, test_id: str, status: str, detail: str, *, simulated: bool = False, arrives_in: str | None = None) -> Beat:
+def test(ctx: BuildContext, test_id: str, status: str, detail: str, *, simulated: bool = False) -> Beat:
     ctx.results[test_id] = status
     data: dict[str, Any] = {"id": test_id, "name": TEST_NAMES[test_id], "status": status, "detail": detail, "simulated": simulated}
-    if arrives_in:
-        data["arrives_in"] = arrives_in
     return Beat(TEST, [event("test.result", f"{test_id} {TEST_NAMES[test_id]}: {detail}", TEST_LEVELS[status], test_id, **data)])
 
 

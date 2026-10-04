@@ -10,6 +10,8 @@ SeedFoundry is a lab where Seeds are formed. A person brings domain knowledge as
 
 The point of the demo is the improvement loop. Iteration 1 is visibly flawed and the report catches the flaws. Iteration 2, after human feedback, is clean.
 
+*As built (M13):* a rebuild first routes the observer's feedback into the four Ensemble files, really and deterministically, then replays every phase from the updated files (A-4, D-68); what iteration 2 fixes is still scripted (D-5). The observer can also approve iteration 1, and its open findings then ship as known issues on the Seed page and in each file (D-10, A-5).
+
 ## 2. Why it exists
 
 Seed v0.1 showed what a methodology-driven analytical system looks like once it is running. It did not show where a Seed comes from or how one gets better. SeedFoundry fills that gap: knowledge in, Seed out, with testing and a human in the loop. Like Seed v0.1, it is a simulation built to communicate the idea convincingly and reliably, with seams left in place so real components could replace the simulated ones later.
@@ -39,6 +41,8 @@ SeedFoundry also accepts any number of **Misc Context** files.
 
 This mapping drives generation but the UI never states it (D-9).
 
+*As built (M11, D-72; recorded in M13):* the mapping in full is `build-simulation.md` §7. Beyond the table: `adaptation.md`'s Operating context also takes `environment.md`'s opening text, and its Presentation notes take the User Experience and Styling layers; Misc Context notes go to Operating context except the observer feedback, whose routed segments reach every layer through the sections they were routed to. A file names no Knowledge file: a mention of one reads as the layer that now holds its text.
+
 ## 5. Glossary
 
 | Term | Meaning |
@@ -52,6 +56,8 @@ This mapping drives generation but the UI never states it (D-9).
 | Observer | The human in the loop who approves or rejects |
 | Demo controller | Hidden operator panel toggled by a Shift shortcut |
 | Sandbox | The simulated isolated environment where the Seed is planted |
+
+*As built (M13):* terms the build added. **Advisory:** a boundary finding (B-DATA-1 and so on), reported apart and never counted against the verdict (D-12). **Known issue:** an open finding of the approved build, listed on the Seed page and in each file (A-5). **Learned rule:** a rule in iteration 2's `protection.md`, one per class of finding iteration 1 raised (D-72). **Knowledge:** intake, on screen (requirements §5). **Verdict:** Passed, Completed with findings, Failed or Incomplete (D-64).
 
 ## 6. Build log
 
@@ -978,3 +984,82 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
   - `docs/requirements.md` NFR-3 gives no numbers for "responsive" and "without jank"; D-77 chose 100 ms and 200 ms. Record them as built or amend.
   - `run.py`: when the launcher is killed rather than sent Ctrl+C (as a tool's stop does), its children survive. Ctrl+C, the documented way, stops both. Consider a job object on Windows, or say so in the guide's troubleshooting.
   - The six transient frontend failures above, if they come back.
+
+### M13: As-built reconciliation (2026-10-04)
+
+**What changed**
+- Every SeedFoundry doc was read against the code. The 31 differences found are the as-built reconciliation table in `decisions.md` §4; each was fixed in the doc, fixed in the code, amended, or left as history with a reason. Older as-built notes that described a stub a later milestone replaced have that clause struck through, with a pointer to what replaced it, and the busiest sections gained an "As built (summary, M13)" note.
+- Every open question (OQ-16, OQ-19 to OQ-30, OQ-34) was put to the stakeholder in four groups and closed. Every answer kept the product as built, so no answer changed behaviour. Two amendments: A-5 (FR-F-4: known issues are the approved build's open findings, whichever iteration) and A-6 (NFR-3: 100 ms, 200 ms and 1 s). `requirements.md` gained §11, which records where the code meets a requirement in a way its wording does not say.
+- `run.py`: on Windows, uvicorn and Vite now end with the launcher however it ends, through a job object (D-78). Tested, and checked by hand with the real launcher.
+- Code comments and docstrings that described the product before a later milestone now describe it as built. The build script's dead `arrives_in` argument is gone, and the launchers ask for Node.js 22.18 or newer, which the test runner and the rehearsal need (D-79). The duplicate `docs/ensemble_context.md` is removed (stakeholder).
+- `implementation-plan.md` has the as-built repo tree, a commit per milestone, and M13 Done.
+- The six transient frontend failures from M12 did not recur in 14 runs, 9 of them under triple load; recorded as R-10, with no timeout raised.
+
+**Files**
+- CHANGE run.py (`contain_children()`, its docstring, the Node message), run.ps1 (the Node message)
+- NEW backend/tests/test_launcher.py
+- CHANGE backend/seedfoundry/engine/script.py (docstring; `test()` without `arrives_in`), dashboard/descriptor.py, generate/__init__.py, intake/feedback.py, validators/__init__.py, validators/latency.py, validators/numeric.py, validators/problems.py, validators/visual.py (docstrings)
+- CHANGE backend/tests/test_sample.py, test_validators.py (a docstring each, and one comment)
+- CHANGE frontend/src/components/dashboard/DashboardView.vue, components/build/PhaseStepper.vue (comments)
+- MOVE (removed) docs/ensemble_context.md
+- CHANGE docs/requirements.md (A-5, A-6, §9, §11), ui-spec.md, build-simulation.md, decisions.md (strikes with pointers, D-78, D-79, the OQ closures, R-10, §4), implementation-plan.md, operator-guide.md, seed-reuse-notes.md, project-notes.md (§1, §4, §5, this entry), methodology.md, README.md
+
+**Comments changed** (none changes behaviour)
+- `engine/script.py`, module docstring: "drafts in full from M11", "both datasets of M7" and "From M9 phases 9 and 10 run the validators" now describe the build as it is.
+- `dashboard/descriptor.py`: "so M8's overlay can patch this descriptor and M9's validators" now names the overlay and the validators.
+- `generate/__init__.py`: "Templates ... and the zip. Built in M11." The zip, Approve and Known issues are `package.py`'s.
+- `intake/feedback.py`: "Routing ... is M10's (D-36); until then iteration 2 ... routes nothing" now points to `routing.py`.
+- `validators/__init__.py`: a milestone-by-milestone history replaced by what the package holds.
+- `validators/latency.py`, `numeric.py`, `visual.py`: "Minimal in M7 (or M8). From M9 it runs in the build" now reads "It runs in the build".
+- `validators/problems.py`: "M9 groups problems into findings" now reads "findings.py groups".
+- `tests/test_validators.py`, docstring: "The minimal validators of M7 ... a break of the kind M8 will plant".
+- `tests/test_sample.py`, docstring and one comment: "the sections D-36's feedback routing appends to in M10", "The boundary lint itself lands in M5; ... tested there".
+- `DashboardView.vue`: "the review route's frame now, M10's split view later".
+- `PhaseStepper.vue`: "A test not run yet" now reads "A test that did not run".
+- Kept as written: comments that cite a decision's history ("D-53: in M3 this saved every draft ..."), compatibility notes ("0 on a record saved before M6"), `vi.stubGlobal` in tests, CSS `outline`, and the textarea `placeholder` attribute.
+
+**How each doc was checked**
+- `requirements.md`: each FR, NFR and AC against the module that meets it and its tests (`intake/files.py` and `knowledge.spec.ts`; `engine/` and `test_engine.py`; `validators/` and `test_findings.py`; `report/assemble.py` and `report.spec.ts`; `package.py`, `test_seed.py` and `seed.spec.ts`; `demo/shortcuts.ts` and `demo.spec.ts`), and against the 1x rehearsal's 30 checks.
+- `ui-spec.md`: each section against its view and components: `router.ts`, `JourneyIndicator.vue`, `IterationBadge.vue`, the grid widths in `KnowledgeView.vue` and `BuildView.vue`, `BuildReport.vue`, `DashboardFrame.vue`, `RebuildModal.vue` and `stores/rebuild.ts`, `SeedView.vue`, `SeedHistory.vue` and `SeedFiles.vue`, `DemoController.vue`'s groups and notes; and the rehearsal's screenshots.
+- `build-simulation.md`: §2 against `engine/catalogue.py` and `script.py` (which tests are simulated); §3 against `events.py` (`Event`, every `*_EVENT_TYPES`); §4 and §7 against the report fixtures and the golden Seed files; §5 against `dashboard/overlay.py` and `test_findings.py`; §6 against `validators/` and `intake/boundary.py`; §9 against `intake/routing.py` and `test_routing.py`.
+- `decisions.md`: each ruling against the module it names; each open question's assumption against the code before it was asked (`runner._target` for OQ-19, the descriptor's `FONTS` for OQ-24, `ChartPanel.vue` for OQ-25, and so on).
+- `implementation-plan.md`: §2 against `git ls-files`; §1 against `git log`.
+- `operator-guide.md`: against `run.py`, `run.ps1`, `shortcuts.ts`, `DemoController.vue`, `rehearse.ts` (its options, `CHROME`, its messages, `stopped-here.png`), the `engines` of vite, vitest and @vitejs/plugin-vue, and the 1x rehearsal's timings.
+- `seed-reuse-notes.md`: §6 to §10 against `shortcuts.ts`, `config.py`, `run.py` and `package.json`; §1 to §5 carry notes checked in their own milestones, and the contrast test still reads §1.3's values.
+- `project-notes.md` §1 to §5: against `generate/layers.py` (the mapping), `intake/boundary.py` and `engine/script.py` (ids), and requirements §5.
+- `methodology.md`, `README.md`, `docs/CLAUDE.md`: the commands against `package.json` and the fixture scripts. `docs/CLAUDE.md` has no difference.
+- `docs/ensemble/ensemble_context.md`: `test_sample.py` checks the sample's sections against it, and `assay.py`'s sections follow it. No difference.
+- `KICKOFF_PROMPT.md`: M0's prompt, history.
+
+**Gates**
+- backend: 566 passed, frontend: 443 passed (through `python run.py test`)
+- `npm run build`: typecheck, build and `postbuild` network check pass
+- `npm run rehearse -- --speed 4`: 30 of 30 checks in 157 s (iteration 1 in 19.2 s, iteration 2 in 19.4 s; the dashboards in 339 ms and 223 ms; the slowest 1 MB keystroke 51 ms), which matches the guide's "about 2.5 minutes"
+- determinism: pass | no-em-dash: pass (every doc and comment changed here included) | network: pass | contrast: pass (no new token)
+- `test_launcher.py` can fail: its control test shows the grandchild surviving a killed launcher without the job object.
+- The frontend suite 14 more times: 5 alone (443 of 443 each, about 17 s) and 9 as three suites at once (443 of 443 each, about 49 s). The slowest single test under that load: `dashboard.spec.ts`, "waits again on a drill and on reload, not on paging, sorting or a theme switch (OQ-25)", 2.95 s against the 5 s timeout. M12's failing run had `dashboard.spec.ts` at 47 s against 27 s here, which fits a timeout under heavier load. No timeout was raised (R-10).
+- Assertions edited: none.
+
+**Hand checks**
+- `run.py` (D-78): the real `launch()`, on spare ports 8190 and 5373 with a throwaway `var/`, came up in 7.3 s with the proxy answering; killed with TerminateProcess (no Ctrl+C, no `finally`), uvicorn and Vite stopped listening within 0.5 s.
+- The operator guide, start to finish, against the product: every command, shortcut, label and quoted line was compared with the code above, and the flow with the 1x rehearsal in real Chrome. The rehearsal at 1x: 30 of 30 checks in 210 s. Iteration 1 took 75.5 s and iteration 2 75.5 s by the wall clock (the guide said 75.5 s and 75.7 s from M12; both now quoted). The dashboards drew in 290 ms and 209 ms, the slowest 1 MB keystroke took 57 ms, and nothing left 127.0.0.1 (586 requests). The guide's "4 to 5 minutes" for a 1x rehearsal became "about 3.5 minutes", and its Node version became 22.18.
+- The app from the M11 hand check (8100 and 5273) was not stopped or used by M13, and `var/state.json` has the SHA-256 it had when M13 began (`e9bae26f...`, last written at 16:33). Both servers were listening through the 1x rehearsal and the first test gate, but by the end of the final gates both processes had exited. The cause was not found: nothing M13 ran ends a process it did not start (the rehearsal and the test fixtures end only the PIDs they started, the launcher test only its stand-ins, and nothing kills by port or name). `python run.py` brings that session back from the same state file.
+- Still for the stakeholder, in a browser (the rehearsal covers each mechanically, but not "reads well"):
+  - The operator guide §4 at 1x with a stopwatch, by hand (M12's hand check).
+  - AC-9 with the network actually off (operator guide §7, step 3).
+  - The report's finding links on the iteration 1 dashboard (M9).
+  - The rebuild modal: its three views, Prefill, and Start Rebuild at 1x (M10).
+  - The Seed page on both approval paths, both themes, and by keyboard only (M11).
+  - On Windows, stop a running `python run.py` by closing its window: both servers should stop (D-78).
+
+**Decisions and questions**
+- New: D-78 (the launcher's job object), D-79 (the reconciliation's code fixes and the removed duplicate); A-5, A-6; R-10
+- Closed (stakeholder, 2026-10-04, every one as built): OQ-16, OQ-19, OQ-20, OQ-21, OQ-22, OQ-23, OQ-24, OQ-25, OQ-26, OQ-27, OQ-28, OQ-29, OQ-30, OQ-34
+- Opened: none. No question is open.
+
+**Notes for next milestone**
+- None: M13 is the last milestone. A later change starts from the as-built tree (`implementation-plan.md` §2) and the reconciliation table (`decisions.md` §4).
+
+### State of the project (2026-10-04)
+
+SeedFoundry is complete as specified. It is a deterministic, offline lab with no LLM that turns four Ensemble knowledge files (plus any Misc Context) into a Seed v0.1 deployment. It assays the files and lints their boundaries, distils and synthesises `core.md`, `adaptation.md` and `protection.md` from them, plants and runs the Seed in a simulated sandbox with Seed v0.1's three human gates auto-resolved, and validates the result. Iteration 1's License Optimization dashboard carries fourteen planted defects, and real validators find all fourteen by recomputing from the data. An observer writes feedback beside the report or the dashboard; the rebuild routes that feedback into the four files, visibly, and iteration 2 passes with every finding resolved. Approve on either iteration gives the Seed page and the three files, singly or as one zip, with known issues listed when the approved build still has findings. Every simulated call is labelled as simulated and goes through the `LLMClient` and `SeedClient` seams, so real ones can replace them. To run it: `python run.py` (or `run.ps1` where uv is blocked), then open `http://127.0.0.1:5273/`. To present it: `docs/operator-guide.md`, a demo of 8 to 10 minutes at 1x, driven by the hidden demo controller (Shift+O), after `python run.py test` and `npm run rehearse -- --speed 4` as the checks before a demo. What remains is the stakeholder's own pass in a browser, listed under Hand checks above: the timed demo by hand, the network switched off, and a person's reading of the report links, the rebuild modal and the Seed page. No requirement, open question or known defect is outstanding.

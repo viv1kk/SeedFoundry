@@ -1,5 +1,5 @@
 """What a validator reports: the test, the check, the panel, what was expected and what the payload,
-descriptor or styles show, and a message that reads on its own. M9 groups problems into findings
+descriptor or styles show, and a message that reads on its own. findings.py groups problems into findings
 (findings.py, FR-T-7) and maps them to the catalogue's ids by test, check and panel; a problem
 never names a defect itself."""
 

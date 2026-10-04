@@ -12,7 +12,7 @@ SeedFoundry is a deterministic, offline, no-LLM simulation of a lab that takes E
 | `requirements.md` | Binding spec: goals, scope, FRs, NFRs, acceptance | Before any feature work |
 | `ui-spec.md` | The four screens, the demo controller, the rebuild modal | Before any frontend work |
 | `build-simulation.md` | Phase catalogue, log format, timing budget, planted defects, validators, generated files | Before engine, report or dashboard work |
-| `decisions.md` | Rulings (D-n), open questions (OQ-n), risks (R-n) | When something seems arbitrary |
+| `decisions.md` | Rulings (D-n), open questions (OQ-n), risks (R-n), the as-built reconciliation (§4, M13) | When something seems arbitrary |
 | `implementation-plan.md` | Milestones M0 to M13, repo layout, critical path | At the start of every session |
 | `methodology.md` | Working method, build log format, gates | Once, then as needed |
 | `seed-reuse-notes.md` | Written in M0: what is reused from Seed v0.1 and where it lives | Before reusing anything |

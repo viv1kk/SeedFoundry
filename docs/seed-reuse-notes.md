@@ -475,7 +475,7 @@ Seed read the typed character, so Shift+1 assumed a US layout (it types `!`).
 
 Shortcuts are ignored while focus is in an `input`, `textarea`, `select`, a `contenteditable` element, or the editor. Digits are matched on `KeyboardEvent.code` (`Digit1`, `Digit2`, `Digit4`), so they work on any layout; letters on `key`, case-insensitive. No browser default collides: Chrome uses Ctrl or Alt chords, not Shift plus a letter.
 
-*As built (M4, D-47):* the map is `frontend/src/demo/shortcuts.ts`. Also ignored: any shortcut with Ctrl, Alt or Meta, key repeats, anything under `[data-no-shortcuts]`, every shortcut while a modal is open unless it belongs to that modal (Shift+F belongs to the rebuild modal), and Shift+Enter on a focused button or link, where Enter is already that control's. The Knowledge editor is a `textarea`, so the editor rule is the textarea rule. Speed is kept in the browser until M5 and survives Reset, as Seed's did. *M5 (D-48):* speed is kept by the server's build engine, still survives Reset, and acts within 50 ms, as do both skips; none of them emits an event. *M10 (D-70):* Shift+F fills the open rebuild modal (marked `data-modal="rebuild"`) with the demo feedback the server serves; it does nothing without the modal and types an F in the modal's text area.
+*As built (M4, D-47):* the map is `frontend/src/demo/shortcuts.ts`. Also ignored: any shortcut with Ctrl, Alt or Meta, key repeats, anything under `[data-no-shortcuts]`, every shortcut while a modal is open unless it belongs to that modal (Shift+F belongs to the rebuild modal), and Shift+Enter on a focused button or link, where Enter is already that control's. The Knowledge editor is a `textarea`, so the editor rule is the textarea rule. ~~Speed is kept in the browser until M5 and survives Reset, as Seed's did.~~ (superseded by the M5 note that follows) *M5 (D-48):* speed is kept by the server's build engine, still survives Reset, and acts within 50 ms, as do both skips; none of them emits an event. *M10 (D-70):* Shift+F fills the open rebuild modal (marked `data-modal="rebuild"`) with the demo feedback the server serves; it does nothing without the modal and types an F in the modal's text area.
 
 ### 6.3 Demo script and rehearsal
 
@@ -500,6 +500,8 @@ Further practices worth keeping:
 - **Timing tests flake under load.** Seed ruled its marginal 200 ms test noise. Our timing tests should measure the simulated clock, not wall time, wherever possible.
 - **Audit before renaming** anything load-bearing (Seed M12), and list "silent failure" references (CSS selectors on values, ids matched across the boundary) that no test catches.
 
+*As built (M13):* kept: the isolated copy is `npm run rehearse` (D-77); the status table in `implementation-plan.md` §1 gained each milestone's commit in M13; the as-built reconciliation is `decisions.md` §4, after Seed's §8. Build log entries end their hand checks with what the stakeholder should still check in a browser. Timing checks use the simulated clock wherever they can; the rehearsal's wall-clock checks run in a real browser outside `python run.py test`, and R-10 records the one load-related flake.
+
 ---
 
 ## 8. Stack and delivery (OQ-1)
@@ -509,15 +511,15 @@ Further practices worth keeping:
 | Item | Seed v0.1 | SeedFoundry (D-2) |
 |---|---|---|
 | Python | 3.12 or newer | 3.12.10 on the target machine |
-| Node | 20 or newer | 24 on the target machine |
+| Node | 20 or newer | 24 on the target machine; 22.18 or newer needed (vitest 5, and `node` running the `.ts` scripts, D-79) |
 | Backend | FastAPI under uvicorn, every route under `/api` | same |
 | Frontend | Vue 3 + TypeScript + Pinia + Vite; Vite proxies `/api` | same |
 | Charts | Apache ECharts, colours from tokens at runtime (D-5) | same, bundled from npm: ECharts 6, tree-shaken, in its own chunk (M7, D-59) |
 | Transport | SSE | same |
 | Frontend tests | none (typecheck and build only) | vitest (D-2) |
 | Python env | uv (`uv.lock`), with `run.ps1` for machines where uv is blocked; requirements files exported from the lock | same (D-25) |
-| Launcher | `run.py` (waits for both servers, prints a ready line) and `run.ps1` | same (D-23) |
-| Ports | 8000 and 5173 | 8100 and 5273 (OQ-8 assumption) |
+| Launcher | `run.py` (waits for both servers, prints a ready line) and `run.ps1` | same (D-23); on Windows its children also end when it is ended from outside (D-78) |
+| Ports | 8000 and 5173 | 8100 and 5273 (OQ-8, closed as assumed) |
 | Data | pandas | not needed: plain Python over 13,050 rows (M7, D-55) |
 
 Seed's Vite bound to `localhost` only, so `127.0.0.1:5173` did not answer and the guide had to warn about it. SeedFoundry binds Vite to `127.0.0.1` and prints that address (D-23).
@@ -548,7 +550,7 @@ Confirmed against the Seed docs (requirements §9, right column):
 | 6 | `build-simulation.md` §5 panels: by department, utilisation distribution, status table, vendor table | No such panels; nearest real panels in §5.8 | Resolved: map, add none (D-28) |
 | 7 | N-3 "current spend minus optimised spend" | Seed shows recoverable cost directly, not current and optimised spend | Recast as KPI against the cost panel (§5.8) |
 | 8 | Console "API (info)" colour | No info token | Resolved: `--console-api` (D-37) |
-| 9 | Dashboard scope (FR-D) is silent on interaction | Seed's dashboard is fully interactive: cross-filter, drill to seat, evidence panel, collection step | Resolved: drill-down in (D-29, A-2); evidence panel open (OQ-15) |
+| 9 | Dashboard scope (FR-D) is silent on interaction | Seed's dashboard is fully interactive: cross-filter, drill to seat, evidence panel, collection step | Resolved: drill-down in (D-29, A-2); ~~evidence panel open (OQ-15)~~ no evidence panel (OQ-15, closed) |
 | 10 | `requirements.md` §9 "contrast test" | Seed's test is Python over `tokens.css` | Resolved: rules ported to vitest (D-38) |
 | 11 | `implementation-plan.md` M2 "port tokens.css" | `tokens.css` is not in the Seed docs; only its values in tables, some missing | Resolved: rebuilt from §1.3 in M2, gaps filled (D-37) |
 | 12 | `implementation-plan.md` M7 "License Optimization data" | No data or generator in the docs; only headline figures | Resolved: data is SeedFoundry's own; methodology and layout match (D-30, §5.7). M7 authors the generator and an alternate dataset. *Done in M7 (D-55)* |

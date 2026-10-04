@@ -34,7 +34,7 @@ function look(phase: PhaseView): { mark: string; tone: ChipTone; chip: string | 
     case 'failed':
       return { mark: 'failed', tone: 'negative', chip: phase.failedTests.length ? `Failed: ${phase.failedTests.join(', ')}` : 'Failed' }
     case 'incomplete':
-      // A test not run yet (D-51): neither a pass nor a fault, so neutral, and it says why.
+      // A test that did not run (D-51): neither a pass nor a fault, so neutral, and it says why.
       return { mark: 'incomplete', tone: 'neutral', chip: `Incomplete: ${phase.notRun} of ${phase.tests} not run` }
     default:
       return { mark: 'unknown', tone: 'neutral', chip: 'Result not kept' }

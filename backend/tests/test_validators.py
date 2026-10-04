@@ -1,5 +1,5 @@
-"""The minimal validators of M7 (D-57): numeric reconciliation (T-16) and visual QA (T-17 to T-20)
-pass on the polished dashboard, and each rule catches a break of the kind M8 will plant. The
+"""The validators (D-57, D-60): numeric reconciliation (T-16) and visual QA (T-17 to T-20) pass on
+the polished dashboard, and each rule catches a break of the kind iteration 1's overlay plants. The
 structure check behind T-08 (D-58) is here too."""
 
 from __future__ import annotations

@@ -4,22 +4,24 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 
 ## 1. Milestones at a glance
 
-| Phase | Milestone | Title | Status |
-|---|---|---|---|
-| A. Foundations | M0 | Read, reuse notes, scaffold | Done (2026-10-03) |
-| | M1 | Backend core: state, persistence, events, SSE | Done (2026-10-03) |
-| | M2 | Frontend shell and design system | Done (2026-10-03) |
-| B. Knowledge | M3 | Intake page | Done (2026-10-03) |
-| | M4 | Demo controller and sample Seed | Done (2026-10-03) |
-| C. Build | M5 | Beat engine, phase catalogue, simulated clients | Done (2026-10-03) |
-| | M6 | Build page: stepper and console | Done (2026-10-03) |
-| D. Output | M7 | Polished License Optimization dashboard | Done (2026-10-03) |
-| | M8 | Defect overlay (iteration 1 dashboard) | Done (2026-10-03) |
-| | M9 | Validators and build report | Done (2026-10-04) |
-| E. Loop | M10 | Rebuild modal and iteration 2 | Done (2026-10-04) |
-| | M11 | Seed file generation and final page | Done (2026-10-04) |
-| F. Ship | M12 | Hardening, operator guide, rehearsal | Done (2026-10-04) |
-| | M13 | As-built reconciliation | Not started |
+| Phase | Milestone | Title | Status | Commit |
+|---|---|---|---|---|
+| A. Foundations | M0 | Read, reuse notes, scaffold | Done (2026-10-03) | `ec42517` |
+| | M1 | Backend core: state, persistence, events, SSE | Done (2026-10-03) | `de1b8e1` (D-36's docs: `0503049`) |
+| | M2 | Frontend shell and design system | Done (2026-10-03) | `6b7cc90` |
+| B. Knowledge | M3 | Intake page | Done (2026-10-03) | `63de277` |
+| | M4 | Demo controller and sample Seed | Done (2026-10-03) | `8468cdc` |
+| C. Build | M5 | Beat engine, phase catalogue, simulated clients | Done (2026-10-03) | `3657602` |
+| | M6 | Build page: stepper and console | Done (2026-10-03) | `7eece3f` |
+| D. Output | M7 | Polished License Optimization dashboard | Done (2026-10-03) | `51c8f7c` |
+| | M8 | Defect overlay (iteration 1 dashboard) | Done (2026-10-03) | `5543754` |
+| | M9 | Validators and build report | Done (2026-10-04) | `6169080` |
+| E. Loop | M10 | Rebuild modal and iteration 2 | Done (2026-10-04) | `7dd8136` |
+| | M11 | Seed file generation and final page | Done (2026-10-04) | `37155f5` |
+| F. Ship | M12 | Hardening, operator guide, rehearsal | Done (2026-10-04) | `351a1c7` |
+| | M13 | As-built reconciliation | Done (2026-10-04) | "M13: as-built reconciliation", the commit after `351a1c7` |
+
+*As built (M13):* the Commit column was added in M13, as Seed v0.1's status table had one (`seed-reuse-notes.md` §7).
 
 Critical path: M0 → M1 → M5 → M7 → M8 → M9 → M10 → M11 → M12. M2, M3, M4 and M6 can proceed in parallel with the backend chain once M1 lands.
 
@@ -61,7 +63,7 @@ seedfoundry/
   var/                       # runtime data (gitignored)
 ```
 
-*As built (M0):* the repository root is the `seedfoundry/` folder above, so there is no extra wrapper directory. There is no Makefile or justfile: `run.py` launches both processes and `run.py test` runs both suites (D-23). Also at the root: `.gitignore`. In `backend/`: `uv.lock`, `requirements.txt` and `requirements-dev.txt` (D-25), and `seedfoundry/config.py` holding the two ports. In `frontend/`: `index.html`, `vite.config.ts`, `tsconfig.json`, `src/main.ts`, `src/App.vue` (placeholder), `src/env.d.ts`.
+*As built (M0):* the repository root is the `seedfoundry/` folder above, so there is no extra wrapper directory. There is no Makefile or justfile: `run.py` launches both processes and `run.py test` runs both suites (D-23). Also at the root: `.gitignore`. In `backend/`: `uv.lock`, `requirements.txt` and `requirements-dev.txt` (D-25), and `seedfoundry/config.py` holding the two ports. In `frontend/`: `index.html`, `vite.config.ts`, `tsconfig.json`, `src/main.ts`, `src/App.vue` ~~(placeholder)~~ (the shell since M2, D-39), `src/env.d.ts`.
 
 *As built (M1):* intake rules live in `backend/seedfoundry/intake/files.py`. `config.py` also gives `var_dir()`, which `SEEDFOUNDRY_VAR_DIR` overrides (tests use it). `main.py` builds the app with `create_app()`, which loads the state when the app starts. `backend/tests/conftest.py` can start a real uvicorn process over a temporary `var/` for restart and SSE tests.
 
@@ -71,11 +73,11 @@ seedfoundry/
 
 *As built (M4):* `backend/seedfoundry/demo.py` holds the demo controller's server actions (Load sample Seed, Clear intake, Reset to start, D-46), under `/api/demo/`. `backend/seedfoundry/sample/` holds the five sample files and `sample_files()`. `frontend/src/demo/` holds `DemoController.vue` (the panel, mounted in `App.vue`), `shortcuts.ts` (the map and the ignore rules, D-47) and `api.ts`; its store is `frontend/src/stores/demo.ts`, beside the others. Start Build's M3 action moved from `KnowledgeView.vue` into `stores/intake.ts` (`startBuild`, `buildNote`) so Shift+Enter shares it.
 
-*As built (M5):* `backend/seedfoundry/engine/` holds `catalogue.py`, `script.py`, `runner.py` and `clock.py` (D-48). `clients/` holds `llm.py` and `seed.py` (D-22). `intake/` gained `assay.py` (inventory, coverage, statements, Seed name, fingerprint), `boundary.py` (D-50) and `feedback.py` (the feedback file and its segments). `generate/outline.py` drafts the layer outlines and the manifest until M11 (D-51). `validators/` is still empty: the stubbed tests are in `engine/script.py` until M9. Builds are `POST /api/builds` and `GET /api/builds/{id}/events`; speed and skip are `GET`/`POST /api/demo/speed` and `POST /api/demo/skip` (D-49). Frontend: `src/builds.ts` (build API); `events.ts` exports `BUILD_EVENT_TYPES`; the lab store reduces build events (D-53). New tests: `backend/tests/test_assay.py`, `test_boundary.py`, `test_engine.py`, `test_build_api.py`; `frontend/tests/build-view.spec.ts`.
+*As built (M5):* `backend/seedfoundry/engine/` holds `catalogue.py`, `script.py`, `runner.py` and `clock.py` (D-48). `clients/` holds `llm.py` and `seed.py` (D-22). `intake/` gained `assay.py` (inventory, coverage, statements, Seed name, fingerprint), `boundary.py` (D-50) and `feedback.py` (the feedback file and its segments). ~~`generate/outline.py` drafts the layer outlines and the manifest until M11 (D-51). `validators/` is still empty: the stubbed tests are in `engine/script.py` until M9.~~ (superseded: `validators/` from M7, `generate/layers.py` in M11) Builds are `POST /api/builds` and `GET /api/builds/{id}/events`; speed and skip are `GET`/`POST /api/demo/speed` and `POST /api/demo/skip` (D-49). Frontend: `src/builds.ts` (build API); `events.ts` exports `BUILD_EVENT_TYPES`; the lab store reduces build events (D-53). New tests: `backend/tests/test_assay.py`, `test_boundary.py`, `test_engine.py`, `test_build_api.py`; `frontend/tests/build-view.spec.ts`.
 
 *As built (M6):* the Build page is `frontend/src/views/BuildView.vue` with `components/build/` (`PhaseStepper.vue`, `BuildConsole.vue`, `BuildSummary.vue`), so the plan's Stepper and Console components live there. `src/stepper.ts` derives phases, sub-steps, times and console lines from events (pure functions). `src/stores/buildLog.ts` holds the shown build's events (D-54). The lab store gained `onEvent` and `refreshes`. `builds.ts` gained `buildsApi.events`. The build record gained `sim_seconds` (`state.py`, set in `engine/script.py`). New tests: `frontend/tests/stepper.spec.ts`, and `build-view.spec.ts` rewritten for the page, with `tests/build-script.ts` generating a build's events.
 
-*As built (M7):* `backend/seedfoundry/data/` holds `model.py` (the seat record and methodology), `estates.py` (the primary and alternate estate specs) and `generate.py` (the seeded generator, D-55). `dashboard/` holds `descriptor.py`, `query.py` (the drill path and aggregations) and `payload.py` (D-56); there is no separate defect overlay file until M8. `validators/` holds `numeric.py`, `visual.py`, `structure.py`, `tokens.py` and `problems.py` (D-57, D-58). Routes: `GET /api/dashboards/license-optimization` (and `/descriptor`), `GET /api/datasets`, `GET /api/datasets/{name}`. Frontend: `src/dashboard/` (types, API, drill path, formats, tokens, ECharts setup and options) and `components/dashboard/` (`DashboardFrame`, `DashboardView`, `DashboardRenderer`, `DrillBar`, `KpiPanel`, `ChartPanel`, `TablePanel`), so the dashboard is a component, not a view: `views/ReviewView.vue` shows the frame over the review route (D-59). New tests: `backend/tests/test_data.py`, `test_dashboard.py`, `test_validators.py`, with `dashboard_fixtures.py` writing `frontend/tests/fixtures/dashboard/`; `frontend/tests/dashboard.spec.ts`, `dashboard-units.spec.ts`, `fake-echarts.ts`.
+*As built (M7):* `backend/seedfoundry/data/` holds `model.py` (the seat record and methodology), `estates.py` (the primary and alternate estate specs) and `generate.py` (the seeded generator, D-55). `dashboard/` holds `descriptor.py`, `query.py` (the drill path and aggregations) and `payload.py` (D-56)~~; there is no separate defect overlay file until M8~~ (`overlay.py` since M8). `validators/` holds `numeric.py`, `visual.py`, `structure.py`, `tokens.py` and `problems.py` (D-57, D-58). Routes: `GET /api/dashboards/license-optimization` (and `/descriptor`), `GET /api/datasets`, `GET /api/datasets/{name}`. Frontend: `src/dashboard/` (types, API, drill path, formats, tokens, ECharts setup and options) and `components/dashboard/` (`DashboardFrame`, `DashboardView`, `DashboardRenderer`, `DrillBar`, `KpiPanel`, `ChartPanel`, `TablePanel`), so the dashboard is a component, not a view: `views/ReviewView.vue` shows the frame over the review route (D-59). New tests: `backend/tests/test_data.py`, `test_dashboard.py`, `test_validators.py`, with `dashboard_fixtures.py` writing `frontend/tests/fixtures/dashboard/`; `frontend/tests/dashboard.spec.ts`, `dashboard-units.spec.ts`, `fake-echarts.ts`.
 
 *As built (M8):* `backend/seedfoundry/dashboard/overlay.py` holds the defect overlay (D-60): fourteen patches in descriptor, payload and styles layers; `descriptor(1)` and `build()` apply it, and `GET /api/dashboards/license-optimization/overlay` serves it. `validators/` gained `styles.py` (reads the stylesheet a descriptor names) and `latency.py` (T-15). Frontend: `src/styles/defects.css` (scoped under `.defects-overlay`), `src/dashboard/stylesheets.ts` (loads a descriptor's named sheet on demand) and `src/dashboard/latency.ts` (a panel's declared wait). The dashboard fixtures are now `frontend/tests/fixtures/dashboard/iteration-1/` and `iteration-2/`. New tests: `backend/tests/test_overlay.py`.
 
@@ -86,6 +88,59 @@ seedfoundry/
 *As built (M11):* `backend/seedfoundry/generate/` holds `layers.py` (the three files' templates, the manifest; the M5 `outline.py` renamed, D-72); the zip, Approve and the Seed page's data are `backend/seedfoundry/package.py` (D-73, D-74), served at `POST /api/seed/approve`, `GET /api/seed`, `GET /api/seed/files/{name}` and `GET /api/seed/zip`. `state.py`'s `Approval` gained `build_id` and `approved_at`; `events.py` gained `seed.approved`. Frontend: `src/seed.ts` (types, API), `stores/seed.ts`, `views/SeedView.vue` and `components/seed/` (`SeedHistory.vue`, `SeedFiles.vue`); `BuildReport.vue`'s Approve is real and the journey indicator links Seed once approved (D-75). `components/ScreenPlaceholder.vue` is removed: `/seed` was the last screen using it. New tests: `backend/tests/test_seed.py`, with `seed_fixtures.py` writing the golden files (`backend/tests/golden/seed/`) and `frontend/tests/fixtures/seed/`; `frontend/tests/seed.spec.ts`.
 
 *As built (M12, D-77):* `docs/operator-guide.md` is the operator guide. `frontend/scripts/rehearse.ts` (`npm run rehearse`) is the rehearsal: the whole demo in headless Chrome against an isolated copy of the app, offline, with screenshots and `results.json`. `backend/tests/offline.py` is the offline guard, `backend/tests/offline_guard/sitecustomize.py` loads it into a server process, and `backend/tests/test_offline.py` runs the demo under it. `frontend/vite.config.ts` reads `SEEDFOUNDRY_API_URL` for its proxy target (the rehearsal's copy; `run.py` leaves the default).
+
+*As built (M13, D-78, D-79):* `backend/tests/test_launcher.py` tests `run.py`'s job object. `docs/ensemble_context.md`, a duplicate, is removed.
+
+*As built (summary, M13):* the repository as it is at M13, top levels, with what each folder holds. Files listed by name where a folder's purpose is the file.
+
+```
+SeedFoundry/                       # the repository root; no wrapper folder
+  CLAUDE.md                        # one line: @docs/CLAUDE.md
+  run.py                           # launch both processes, or `run.py test` for both suites (D-23, D-78)
+  run.ps1                          # Windows, where uv is blocked: pip into backend/.venv, then run.py (D-25)
+  .gitignore
+  backend/                         # Python 3.12+, FastAPI under uvicorn; a uv project
+    pyproject.toml  uv.lock        # dependencies; the lock is the source of truth (D-25)
+    requirements.txt  requirements-dev.txt   # exported from the lock, for pip
+    seedfoundry/
+      main.py                      # create_app(): every /api route
+      config.py                    # ports 8100 and 5273, var_dir()
+      state.py                     # the state model; every change on a copy, saved, then published (D-32)
+      store.py                     # JSON under var/, written atomically (D-3)
+      events.py                    # event types, the event log, SSE with snapshot then replay (D-31)
+      demo.py                      # Load sample, Clear, Reset, as state changes (D-46)
+      package.py                   # Approve, Known issues, the Seed page's data, downloads, the zip (D-73, D-74)
+      intake/                      # files and categories, Assay, boundary lint, feedback segments, routing
+      engine/                      # the beat engine: catalogue, script, runner, clock (D-48)
+      clients/                     # LLMClient and SeedClient, simulated only (D-22)
+      data/                        # the seat record, two estates, the seeded generator (D-55)
+      dashboard/                   # descriptor, query engine, payload, the defect overlay (D-56, D-60)
+      validators/                  # numeric, visual, styles, tokens, structure, latency, protection, records, findings
+      report/                      # the report, assembled from a build's kept log (D-64, D-69)
+      generate/                    # the three Seed files' templates, layers.py (D-72)
+      sample/                      # the sample Seed's five files; rebuild/ holds the demo feedback
+    tests/                         # pytest, one file per area; offline.py (the guard); the fixture writers
+      golden/seed/                 # the Seed files for both approval paths
+      offline_guard/               # sitecustomize.py: the guard inside a server process (D-77)
+  frontend/                        # Vue 3, TypeScript, Pinia, Vite, ECharts; vitest
+    package.json  package-lock.json  tsconfig.json  vite.config.ts  index.html
+    scripts/                       # check-network.ts (postbuild, D-38), rehearse.ts (npm run rehearse, D-77)
+    src/
+      main.ts  App.vue  router.ts  theme.ts  api.ts  events.ts   # start-up, shell, routes, theme, API and event types
+      intake.ts  builds.ts  report.ts  seed.ts  markdown.ts  stepper.ts   # each area's API calls, types and pure helpers
+      styles/                      # tokens.css (Seed v0.1's values, D-37), base.css, defects.css (iteration 1 only)
+      components/                  # base/, shell/, intake/, build/, report/, dashboard/, rebuild/, seed/
+      views/                       # KnowledgeView, BuildView, ReviewView, SeedView
+      dashboard/                   # types, API, drill path, formats, tokens, ECharts set-up and options, latency, stylesheets
+      stores/                      # lab (live state), intake, buildLog, reports, rebuild, seed, demo
+      demo/                        # DemoController.vue, shortcuts.ts, api.ts
+    tests/                         # vitest specs; fake-server.ts, fake-echarts.ts, build-script.ts, helpers.ts
+      fixtures/                    # sample and hostile files; dashboard/, reports/, seed/ written by the backend's scripts
+  docs/                            # every project doc; ensemble/ the Ensemble text; seed_docs/ Seed v0.1's, read only
+  var/                             # runtime data, state.json (gitignored, but for .gitkeep)
+```
+
+Fonts are the `@fontsource-variable` packages, imported in `main.ts` and bundled. Not in git: `backend/.venv`, `frontend/node_modules`, `frontend/dist` and `var/state.json`.
 
 ## 3. Milestones
 

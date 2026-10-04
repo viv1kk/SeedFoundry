@@ -1,12 +1,12 @@
 # SeedFoundry: Operator guide
 
-For whoever sets up the demo and presents it. Written 2026-10-04 for the build at M12. The audience never sees the controls below: the demo controller is hidden until asked for (D-15).
+For whoever sets up the demo and presents it. Written 2026-10-04 for the build at M12, and checked against the build at M13 (the same day): every command, shortcut, label and time below is what the app does. The audience never sees the controls below: the demo controller is hidden until asked for (D-15).
 
 ---
 
 ## 1. Set up, once per machine
 
-You need **Python 3.12 or newer** and **Node.js 20 or newer** on the path. Both install per user, without admin rights. The first launch needs the network, to install packages. Nothing after that does (NFR-2, AC-9).
+You need **Python 3.12 or newer** and **Node.js 22.18 or newer** on the path (the target machine has Node 24; the test runner and the rehearsal need 22.18). Both install per user, without admin rights. The first launch needs the network, to install packages. Nothing after that does (NFR-2, AC-9).
 
 **On Windows**, where Windows Application Control may block uv, use `run.ps1` (D-25):
 
@@ -30,7 +30,7 @@ python run.py
 
 It prints `SeedFoundry ready at http://127.0.0.1:5273/` once both processes answer. Open **that address**, as printed, in Chrome at 100% zoom, 1440 to 1920 px wide. `localhost` may resolve to an address Vite does not listen on.
 
-`Ctrl+C` in the launcher's window stops both processes.
+`Ctrl+C` in the launcher's window stops both processes. On Windows, closing that window or ending the launcher in any other way also stops both (D-78). Elsewhere, use Ctrl+C: see section 8.
 
 The launcher refuses to start if something already answers on port 8100 or 5273: stop the earlier server first (section 8).
 
@@ -67,7 +67,7 @@ There is no shortcut for **Rebuild** or **Approve**: press them on the report, w
 
 ## 4. Giving the demo
 
-The narrative runs **8 to 10 minutes at 1x**. The two builds take 75 seconds each (the 1x rehearsal on 2026-10-04 measured 75.5 s and 75.7 s by the wall clock); the rest is your pace. Times below are from the start, at a steady pace with little talk; slow down where the audience is interested.
+The narrative runs **8 to 10 minutes at 1x**. The two builds take 75 seconds each (the 1x rehearsals on 2026-10-04 measured 75.5 s and 75.7 s by the wall clock in M12, and 75.5 s for both in M13); the rest is your pace. Times below are from the start, at a steady pace with little talk; slow down where the audience is interested.
 
 | When | On screen | What you do |
 |---|---|---|
@@ -103,7 +103,7 @@ The narrative runs **8 to 10 minutes at 1x**. The two builds take 75 seconds eac
 ```
 cd frontend
 npm run rehearse -- --speed 4          (about 2.5 minutes)
-npm run rehearse                       (1x, timed, 4 to 5 minutes)
+npm run rehearse                       (1x, timed, about 3.5 minutes)
 npm run rehearse -- --out ..\rehearsal (keep the screenshots somewhere you choose)
 ```
 
@@ -115,7 +115,7 @@ It cuts the network off (Chrome resolves no host but this machine; the backend r
 
 ## 7. Checks before a demo
 
-1. `python run.py test` (or `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Dev test`): the backend and frontend suites should both report pass.
+1. `python run.py test` (or `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Dev test`): the backend and frontend suites should both report pass. Run it with nothing else heavy running, the rehearsal included: on a loaded machine a slow frontend test can time out (R-10). If one does, run it again alone; a test that fails alone is a real fault.
 2. `npm run rehearse -- --speed 4` from `frontend/`: every check should pass.
 3. To be sure it is offline: turn the machine's network off, launch, and run through to the Seed page. Nothing changes.
 4. Launch with `python run.py`, open the printed address in Chrome, set the zoom to 100%, choose the theme (Shift+D), and close every other tab on the app.
@@ -129,6 +129,7 @@ It cuts the network off (Chrome resolves no host but this machine; the backend r
 |---|---|
 | "Something already answers at http://127.0.0.1:8100" (or 5273) | An earlier server is still running. Stop it (close its window, or end its process tree), check nothing listens on 8100 or 5273, and launch again |
 | The app behaves like an older version | A stale server on the port from before an update. Stop everything and launch again |
+| Not on Windows: the ports stay taken after the launcher was ended from outside | Only Ctrl+C stops both processes there. End the uvicorn and Vite processes (they hold 8100 and 5273), then launch again. On Windows the launcher's children end with it (D-78) |
 | `uv` or the venv's `python.exe` is blocked by Windows | Application Control. Use `run.ps1` (section 1) |
 | `localhost:5273` does not load | Use the printed address, `http://127.0.0.1:5273/` |
 | The treemap shows a spinner for 4.5 s on iteration 1 | Planted (L-1). Every other panel draws at once |

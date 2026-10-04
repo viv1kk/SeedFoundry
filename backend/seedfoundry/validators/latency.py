@@ -2,8 +2,8 @@
 latency in the descriptor, and the probe compares the declared value with the 1.0 s budget. The
 value is read, not timed, so the result is the same on any machine (NFR-1).
 
-Minimal in M8 (D-60). From M9 it runs in Stress & Probe, and findings.py maps its problems to a
-finding (L-1).
+It runs in Stress & Probe's Panel latency measurement (T-15), and findings.py maps its problems
+to a finding (L-1).
 """
 
 from __future__ import annotations

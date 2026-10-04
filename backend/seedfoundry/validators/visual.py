@@ -18,8 +18,7 @@ styles.py) are checked too: a card moved off the grid or its gutter, an element 
 card, clipped table text (T-19), a font family that is not a font token (T-19), and text colours
 against the panel surface (T-20).
 
-Minimal in M7 (the polished descriptor passes) and extended in M8 to what the overlay applies
-(D-60). From M9 it runs in the build (T-17 to T-20), and findings.py groups its problems into
+It runs in the build (T-17 to T-20), and findings.py groups its problems into
 findings (V-1 to V-8) by test and check. Every message starts with the panel's title, and a
 format problem shows the panel's own figure in both formats.
 """

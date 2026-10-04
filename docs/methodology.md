@@ -37,6 +37,8 @@ How work on SeedFoundry is planned, done, checked and recorded. Adapted from See
 | T-nn | Build test (inside the simulated build) | build-simulation.md |
 | N-n, V-n, L-n, B-xxx | Findings: numeric, visual, latency, boundary | build-simulation.md |
 
+*As built (M13):* a boundary advisory's id is its rule and a count, such as `B-DATA-1` (D-50); a problem no catalogue entry owns becomes `N-X1`, `V-X1` or `L-X1` (D-63). Protection rules derived from the intake are `P-n` and the fixed probes `PB-1` to `PB-10` (D-62). Builds are `b-n` and files `f-n`, from saved counters (D-32, D-49).
+
 ## 4. Build log entry format
 
 Add to `project-notes.md` §Build log at the end of each milestone. Modelled on Seed v0.1's `project-notes.md` §84.5.

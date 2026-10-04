@@ -3,8 +3,8 @@
 One generic renderer draws the dashboard from this. A panel names its mark, its data binding,
 its layout (band, span on the twelve-column grid, height) and its colours as chart roles, never
 hex (D-5, D-37). Number formats are named per measure. The descriptor holds no data: the payload
-is built from the seat rows (payload.py), so M8's overlay can patch this descriptor and M9's
-validators can recompute every figure from the rows.
+is built from the seat rows (payload.py), so the defect overlay (overlay.py) can patch this
+descriptor and the validators can recompute every figure from the rows.
 
 This is the polished variant, iteration 2's. Iteration 1's is this plus the defect overlay
 (overlay.py, D-13, D-60).
