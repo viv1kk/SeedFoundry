@@ -481,6 +481,8 @@ Shortcuts are ignored while focus is in an `input`, `textarea`, `select`, a `con
 
 Copy the operator guide's structure for `docs/operator-guide.md` in M12: set up once per machine, start and stop, controls, a timed demo table (when, on screen, what you do), rehearsing, checks before a demo, troubleshooting (stale server on a port, Application Control blocking uv, use the printed address).
 
+*As built (M12, D-77):* `docs/operator-guide.md` follows that structure, adding "If something goes wrong on stage". Seed v0.1's in-app rehearsal tools are replaced by `npm run rehearse`, which plays the whole demo in headless Chrome against an isolated copy of the app on spare ports (Seed's lesson that live checks must not share the presenter's state, §7).
+
 ---
 
 ## 7. Process

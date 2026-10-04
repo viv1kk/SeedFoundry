@@ -20,6 +20,7 @@ SeedFoundry is a lab that generates, tests and refines Seeds. A Seed is an Ensem
 | `docs/implementation-plan.md` | Milestones, repo layout, critical path |
 | `docs/methodology.md` | How work is done, logged and gated |
 | `docs/project-notes.md` | Vision, history, and the build log |
+| `docs/operator-guide.md` | Set up, controls, the timed demo script, rehearsal, checks before a demo (M12) |
 | `docs/seed-reuse-notes.md` | What is reused from Seed v0.1, where it lives, the dashboard spec and defect mapping (M0) |
 | `docs/ensemble/` | Ensemble architecture context |
 | `docs/seed_docs/` | Seed v0.1 reference docs (prior project, read-only) |
@@ -57,6 +58,7 @@ npm install
 npm test                         # vitest
 npm run typecheck                # vue-tsc
 npm run build                    # typecheck, vite build, then postbuild: no external URL in dist/ (D-38)
+npm run rehearse                 # the whole demo in headless Chrome against an isolated copy, offline; --speed 4 for a quick run (D-77, operator-guide.md section 6)
 
 # all tests (from the repo root)
 python run.py test

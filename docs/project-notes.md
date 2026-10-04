@@ -908,3 +908,73 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
   - The demo script's end: Approve on iteration 2's report, then the Seed page and Download all (.zip). Reset clears the approval for the next rehearsal.
   - The offline check should cover the downloads: they are same-origin `/api` links.
   - Approve has no shortcut; the operator presses it on the report.
+
+### M12: Hardening, operator guide, rehearsal (2026-10-04)
+
+**What changed**
+- `docs/operator-guide.md` covers set up once per machine, start and stop, the controls, a timed demo script (8 to 10 minutes at 1x), what to do if something goes wrong on stage, rehearsing, checks before a demo, and troubleshooting. It follows Seed v0.1's guide (seed-reuse-notes §6.3).
+- The rehearsal, `npm run rehearse` (D-77), plays the whole demo in headless Chrome through the UI and the operator's shortcuts:
+  - It runs against an isolated copy of the app on spare ports with a throwaway `var/`, so the presenting app and its state are never touched.
+  - The network is cut off: Chrome resolves no host but 127.0.0.1, and the backend runs under a guard that refuses any other connection.
+  - It checks AC-1 to AC-10 and NFR-1, NFR-3 and NFR-6 in a real browser, saves screenshots of every page in both themes, and exits non-zero on a failed check.
+- The offline guard and `test_offline.py`: the whole demo runs in-process with every lookup or connection outside loopback refused, and nothing is attempted (NFR-2, AC-9).
+- `vite.config.ts` reads `SEEDFOUNDRY_API_URL` for its proxy target. Only the rehearsal sets it; `python run.py` is unchanged.
+- No product code changed: the rehearsal found nothing in the app to fix.
+
+**Files**
+- NEW docs/operator-guide.md
+- NEW frontend/scripts/rehearse.ts; CHANGE frontend/package.json (`rehearse`), frontend/vite.config.ts (`SEEDFOUNDRY_API_URL`)
+- NEW backend/tests/offline.py, offline_guard/sitecustomize.py, test_offline.py
+- CHANGE docs/decisions.md (D-77), docs/implementation-plan.md (M12 status, as-built note), docs/seed-reuse-notes.md (§6.3 as built), docs/README.md and docs/CLAUDE.md (the guide, the rehearse command), docs/project-notes.md (this entry)
+
+**Gates**
+- backend: 564 passed, frontend: 443 passed (through `python run.py test`)
+- `npm run build`: typecheck (the rehearsal script included), build and `postbuild` network check pass
+- One earlier run of the frontend suite, right after a rehearsal ended, had 6 failures, 2 of them in `dashboard.spec.ts`, which took 47 s. They did not come back in three later runs, the full gate above included. I read them as timeouts under load and did not find their cause. Watch for them; vitest's default timeout is 5 s per test.
+- The rehearsal at 1x: 30 of 30 checks passed. At 4x: 30 of 30.
+- Checked that the rehearsal's checks can fail. Each fault below was planted, the matching check failed, and it was reverted:
+  - focus rings removed (`base.css`): every page's keyboard check failed;
+  - a stylesheet from another host in `index.html`: AC-9 failed, naming the URL;
+  - a 150 ms stall on each keystroke in the editor: the 1 MB check failed (192 ms).
+  - The first versions of two checks were too weak and were fixed before these runs. The keyboard walk now starts at the top of the page. The keystroke timer now starts at the key's own timestamp, so the app's handlers fall inside it.
+- determinism: pass | no-em-dash: pass (the guide and the script included) | network: pass (and AC-9 below) | contrast: pass (no new token)
+- Assertions edited: none.
+
+**Acceptance criteria** (AC-1 to AC-10, the M12 exit criterion)
+
+| AC | Verified by | Result |
+|---|---|---|
+| AC-1 | `test_engine.py` (75 s simulated, the 14 findings), `test_findings.py` (D-14); rehearsal at 1x | Iteration 1 in **75.5 s** by the wall clock; N-1 to L-1 exactly; 168 console lines |
+| AC-2 | `test_overlay.py`, `report.spec.ts`, `dashboard.spec.ts`; rehearsal screenshots | Every finding has expected and shown. The iteration 1 dashboard shows every defect at a glance: three number formats, the off-palette treemap overflowing its card, legend shares over 100%, the red line, the serif title, the twelve-slice pie, the doubled total without $, faint text, clipped columns, the 4.5 s spinner |
+| AC-3 | `test_rebuild.py`, `rebuild-modal.spec.ts`; rehearsal | Rebuild with Shift+F's text; iteration 2 in 75.7 s, Passed, 0 findings, "14 of 14 iteration 1 findings resolved.", the feedback quoted; the polished dashboard |
+| AC-4 | `test_seed.py`, `seed.spec.ts`; rehearsal | The Seed page with its four sections; core.md 10,216 B, adaptation.md 8,218 B, protection.md 2,918 B, the zip 21,668 B, none with an em dash |
+| AC-5 | `test_seed.py`, `seed.spec.ts`; rehearsal | Approve on iteration 1: 14 known issues on the page and in each file |
+| AC-6 | `knowledge.spec.ts` (gating, import dialog, category pre-selection); rehearsal | Start Build disabled with "Missing: Person, Instrument Awareness, Environment, Music", enabled with the four |
+| AC-7 | `build-view.spec.ts` (refresh), `test_persistence.py`, `test_rebuild.py` and `test_seed.py` (restart); rehearsal | A reload mid-build showed the full log so far (52 lines, 52 events held); a backend restart kept Knowledge and the same zip bytes |
+| AC-8 | `test_engine.py` (two runs at different speeds and with skips), `test_rebuild.py` and `test_seed.py` (the same flow twice); rehearsal | Identical streams, reports, files and zip. Reset then Load sample gave the same Knowledge byte for byte |
+| AC-9 | `test_offline.py`, `network.spec.ts`, the `postbuild` check; rehearsal | Chrome with no host resolving but 127.0.0.1: 586 requests, all to 127.0.0.1. The backend under the guard attempted nothing outside loopback |
+| AC-10 | `demo.spec.ts`, `shortcuts.spec.ts`; rehearsal | Shift+O toggles; Shift+P, Shift+Enter, Shift+F and Shift+R work; a shortcut in the editor does nothing; speed 4x used for the second path |
+
+**NFR-3 and NFR-6, measured in the real browser** (the 1x rehearsal)
+- Dashboard first render, from View Dashboard to every panel drawn: iteration 1 **258 ms** (the treemap's planted wait aside), iteration 2 **183 ms**. Under 1 s.
+- The console over a whole build: no task over 50 ms after the reload (Chrome's long-task threshold), so no jank.
+- A 1 MB file in the editor: 22 keystrokes, the slowest **40 ms** from key to frame.
+- Keyboard: Tab from the top reaches every visible control, each with a focus ring, on Knowledge (17), the Build page with the report (39), the iteration 1 dashboard (38) and the Seed page (16).
+
+**Hand checks**
+- The rehearsal ran at 4x and 1x in headless Chrome, isolated, offline. I read its screenshots: Knowledge, both reports, both dashboards, the rebuild modal, both Seed pages, and a Preview, in both themes.
+- Not done, for the stakeholder:
+  - **The full rehearsal with the demo script, timed, by hand** (the milestone's hand check): operator guide §4 at 1x, with a stopwatch, in your Chrome.
+  - **AC-9 with the network actually off**: turn Wi-Fi or Ethernet off, launch, and run to the Seed page (operator guide §7, step 3).
+  - The browser checks still open from M9 to M11 (the report's finding links, the rebuild modal's views, the Seed page). The rehearsal covers them mechanically, but a person's eye is still the test of "reads well".
+- During M11's hand check I stopped the launcher, but its two children (uvicorn on 8100, Vite on 5273) kept running. That app was then used at 16:33 (iteration 2 built again as `b-9`, then approved; your browser was connected to it), so `var/state.json` now holds that state rather than the M11 backup. I left both, as they are someone's session. `run.py` should stop its children when it is ended from outside; see the notes below.
+
+**Decisions and questions**
+- New: D-77 (the offline guard, the rehearsal, the thresholds where the NFRs give none)
+- Opened: none. OQ-19 to OQ-30 and OQ-34 are unanswered, so their assumptions stand.
+
+**Notes for next milestone**
+- M13 (as-built reconciliation):
+  - `docs/requirements.md` NFR-3 gives no numbers for "responsive" and "without jank"; D-77 chose 100 ms and 200 ms. Record them as built or amend.
+  - `run.py`: when the launcher is killed rather than sent Ctrl+C (as a tool's stop does), its children survive. Ctrl+C, the documented way, stops both. Consider a job object on Windows, or say so in the guide's troubleshooting.
+  - The six transient frontend failures above, if they come back.

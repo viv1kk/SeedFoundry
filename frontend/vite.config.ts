@@ -2,8 +2,10 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
-// Fixed ports (OQ-8). Vite proxies /api to the backend, so the browser sees one origin.
-const BACKEND = 'http://127.0.0.1:8100'
+// Fixed ports (OQ-8). Vite proxies /api to the backend, so the browser sees one origin. The
+// rehearsal (scripts/rehearse.ts, D-77) runs an isolated copy on spare ports: it passes `--port`
+// and points the proxy at its own backend with SEEDFOUNDRY_API_URL. `python run.py` sets neither.
+const BACKEND = process.env.SEEDFOUNDRY_API_URL ?? 'http://127.0.0.1:8100'
 
 export default defineConfig({
   plugins: [vue()],

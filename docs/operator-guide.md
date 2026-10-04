@@ -1,0 +1,138 @@
+# SeedFoundry: Operator guide
+
+For whoever sets up the demo and presents it. Written 2026-10-04 for the build at M12. The audience never sees the controls below: the demo controller is hidden until asked for (D-15).
+
+---
+
+## 1. Set up, once per machine
+
+You need **Python 3.12 or newer** and **Node.js 20 or newer** on the path. Both install per user, without admin rights. The first launch needs the network, to install packages. Nothing after that does (NFR-2, AC-9).
+
+**On Windows**, where Windows Application Control may block uv, use `run.ps1` (D-25):
+
+```
+powershell -ExecutionPolicy Bypass -File .\run.ps1
+```
+
+It makes `backend\.venv` with pip, installs the Python packages, installs the frontend's packages on the first run, and starts the app. Run the same command every time; it installs again only when `requirements.txt` changes. Add `-Dev` to install the test packages as well.
+
+**Elsewhere, or where uv works:** `python run.py` (it makes `backend/.venv` with uv on the first run).
+
+For the rehearsal (section 6) you also need **Google Chrome** (or Edge; set `CHROME` to its path if it is somewhere unusual).
+
+---
+
+## 2. Start and stop
+
+```
+python run.py
+```
+
+It prints `SeedFoundry ready at http://127.0.0.1:5273/` once both processes answer. Open **that address**, as printed, in Chrome at 100% zoom, 1440 to 1920 px wide. `localhost` may resolve to an address Vite does not listen on.
+
+`Ctrl+C` in the launcher's window stops both processes.
+
+The launcher refuses to start if something already answers on port 8100 or 5273: stop the earlier server first (section 8).
+
+Every browser tab on the app shares one lab. Close other tabs on it before presenting, or a click there changes what is on screen.
+
+Knowledge, builds and the approval are kept in `var/state.json` and survive a restart. **Reset to start** (Shift+R) clears them.
+
+---
+
+## 3. Controls
+
+All shortcuts are on **Shift**, and none fires while the caret is in a text field (the Knowledge editor, a name field, the rebuild modal's text), so typing a capital letter is always safe (D-47). Digits match the key's position, so Shift+1, Shift+2 and Shift+4 work on any keyboard layout.
+
+| Keys | Does |
+|---|---|
+| **Shift+O** | Show or hide the demo controller (bottom right) |
+| **Shift+P** | Load sample Seed: the four License Optimization files and the vendor notes. Asks first if Knowledge has files |
+| **Shift+Enter** | Start Build, once the four core files are in; opens the Build page |
+| **Shift+1** / **Shift+2** / **Shift+4** | Build speed 1x (the presentation pace), 2x, 4x |
+| **Shift+S** | Skip to the end of the current phase |
+| **Shift+E** | Skip to the end of the build |
+| **Shift+F** | Prefill the rebuild feedback with the demo text, when the rebuild modal is open (not with the caret in its text) |
+| **Shift+C** | Clear Knowledge (asks first) |
+| **Shift+R** | Reset to start: no files, no builds, no approval (asks first) |
+| **Shift+D** | Switch between the light and dark themes |
+
+The **demo controller** (Shift+O) has a button for every shortcut and a status line that says what the last action did, or why it could not run. Escape or Shift+O closes it.
+
+Speed and skip change only the pacing, never what a build does or says (FR-DC-4); they act within a twentieth of a second. Speed survives Reset.
+
+There is no shortcut for **Rebuild** or **Approve**: press them on the report, where the audience sees them.
+
+---
+
+## 4. Giving the demo
+
+The narrative runs **8 to 10 minutes at 1x**. The two builds take 75 seconds each (the 1x rehearsal on 2026-10-04 measured 75.5 s and 75.7 s by the wall clock); the rest is your pace. Times below are from the start, at a steady pace with little talk; slow down where the audience is interested.
+
+| When | On screen | What you do |
+|---|---|---|
+| Before | Knowledge, empty: the four Ensemble files explained, one line each | Reset (Shift+R) if anything is there. Speed 1x (Shift+1). Hide the controller |
+| 0:00 | Knowledge | Say what a Seed is built from. Press **Shift+P**: the four core files and the vendor notes load, the core checklist turns complete, Start Build lights up. Open `music.md`, switch to **Preview**: purpose, principles, value logic, decision logic. Point out the mic (voice input, shown only) |
+| 1:30 | Knowledge | **Start Build** (or Shift+Enter). The Build page opens |
+| 1:30 to 2:45 | Build, iteration 1: the stepper on the left, the console on the right | Narrate as phases pass: Assay counts sections and runs the boundary check; Distillation and Synthesis write `core.md`, `adaptation.md`, `protection.md`; Containment uploads them to a sandbox; Planting and Seeding & Life run the simulated Seed v0.1, its three human gates auto-resolved from the knowledge files; Stress & Probe and Harvest Validation find problems (amber, then red FAIL lines). Use the console's filter to show only FAIL |
+| 2:45 | The **Build Report**: Completed with findings, 14 findings | Walk the groups: Numeric (high), Visual, Latency; each with expected and shown. "Every one of these was recomputed from the data, not typed in" |
+| 3:30 | **View Dashboard**: iteration 1, plainly unfinished | Let it sink in: mixed number formats, a twelve-slice pie, a red line, a serif title, the treemap waiting 4.5 s. Back to report, then click **N-1**: the dashboard opens with the panel outlined and the finding named |
+| 4:30 | Back to report, **Rebuild** | The modal: switch to **Feedback + Dashboard** to write while looking at it. Click a tab (not the text) and press **Shift+F** to prefill. Read a line or two of the feedback |
+| 5:00 | **Start Rebuild**: Build, iteration 2 | Phase 1 opens with **Apply observer feedback**: the console says where each segment went, and each core file is updated (open Knowledge in passing if you want to show the new "Observer feedback (iteration 1)" sections; it is read-only while the build runs) |
+| 6:15 | Iteration 2's report: **Passed**, 0 findings | **Changes since iteration 1**: 14 of 14 resolved, the feedback quoted, the files it updated |
+| 6:45 | **View Dashboard**: iteration 2, polished | Drill: click a treemap cell, then a product, a class, down to the seats; the breadcrumb and Back step out again |
+| 7:45 | Back to report, **Approve** | The Seed page: the Seed's name, Approved, the date; what it does; the tests by phase; the iteration history (open **Show the feedback**); the three files |
+| 8:30 | The Seed files | **Preview** `protection.md` and scroll to **Learned rules**: one rule per class of finding, learned from iteration 1. **Download all (.zip)** |
+| 9:00 | End | Optional second ending: Reset, Shift+P, Shift+4, Start Build, and **Approve iteration 1** instead: the Seed page lists the 14 open findings as known issues, and so does each file |
+
+---
+
+## 5. If something goes wrong on stage
+
+- **A build seems slow:** Shift+2 or Shift+4 speeds it up; Shift+S finishes the current phase. Nothing it shows changes.
+- **Shift+F types an F:** the caret is in the feedback text. Click a view tab, then press it again.
+- **Start Build says the Seed is approved:** it was approved earlier. Reset (Shift+R).
+- **The page looks stale after a server restart:** reload the browser tab; a build that was running when the server stopped is marked as stopped, and Start Build runs it again from Knowledge.
+
+---
+
+## 6. Rehearsing
+
+**The automated rehearsal** runs the whole demo in a hidden Chrome, against its own copy of the app on spare ports with a throwaway `var/`, so the app you present and its state are never touched:
+
+```
+cd frontend
+npm run rehearse -- --speed 4          (about 2.5 minutes)
+npm run rehearse                       (1x, timed, 4 to 5 minutes)
+npm run rehearse -- --out ..\rehearsal (keep the screenshots somewhere you choose)
+```
+
+It cuts the network off (Chrome resolves no host but this machine; the backend runs under a guard that refuses any connection outside it), then plays the demo through the UI with the shortcuts above, and checks: Start Build gating, the shortcuts and the text-field rule, a reload mid-build, the 14 findings, both dashboards rendering in under a second, the rebuild with Prefill, iteration 2 passing with 14 of 14 resolved, Approve and the downloads, a server restart, Reset, the iteration 1 approval with its known issues, every control reachable by Tab with a visible focus ring, typing in a 1 MB file, and that nothing was requested outside 127.0.0.1. It prints one line per check, saves screenshots of every page in both themes and a `results.json`, and exits non-zero if anything failed. Close the presenting app first only if your machine is short of memory; the two do not interfere.
+
+**By hand:** 4x and skip run the narrative quickly; Reset puts everything back. The dashboard opens directly at `http://127.0.0.1:5273/review/1?dashboard=license-optimization` once iteration 1 has built.
+
+---
+
+## 7. Checks before a demo
+
+1. `python run.py test` (or `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Dev test`): the backend and frontend suites should both report pass.
+2. `npm run rehearse -- --speed 4` from `frontend/`: every check should pass.
+3. To be sure it is offline: turn the machine's network off, launch, and run through to the Seed page. Nothing changes.
+4. Launch with `python run.py`, open the printed address in Chrome, set the zoom to 100%, choose the theme (Shift+D), and close every other tab on the app.
+5. Reset (Shift+R), speed 1x (Shift+1), demo controller hidden.
+
+---
+
+## 8. Troubleshooting
+
+| Symptom | Cause, and what to do |
+|---|---|
+| "Something already answers at http://127.0.0.1:8100" (or 5273) | An earlier server is still running. Stop it (close its window, or end its process tree), check nothing listens on 8100 or 5273, and launch again |
+| The app behaves like an older version | A stale server on the port from before an update. Stop everything and launch again |
+| `uv` or the venv's `python.exe` is blocked by Windows | Application Control. Use `run.ps1` (section 1) |
+| `localhost:5273` does not load | Use the printed address, `http://127.0.0.1:5273/` |
+| The treemap shows a spinner for 4.5 s on iteration 1 | Planted (L-1). Every other panel draws at once |
+| Start Build is refused: "This Seed is approved" | Reset to start (Shift+R) |
+| A build reads "This build stopped before it finished" | The server stopped mid-build. Start Build again from Knowledge |
+| The rehearsal says "No Chrome found" | Set `CHROME` to Chrome's or Edge's `.exe` and run it again |
+| The rehearsal fails a check | Its line says what it saw; the screenshots in the out folder show the page. `stopped-here.png` is the page where it stopped |
