@@ -4,7 +4,8 @@
 // by level with red only for FAIL. It follows new lines unless paused; scrolling up pauses it,
 // and Resume jumps back to the latest line. The filter keeps one level (TEST includes PASS).
 // A full build is a few hundred lines, so the list is plain (Seed v0.1 needed no
-// virtualisation for its log either, seed-reuse-notes.md 2.2).
+// virtualisation for its log either, seed-reuse-notes.md 2.2). A tiny note under the bar says the
+// language is capped to English; it sits outside the scrolling log, so it is always in view (D-89).
 import { computed, nextTick, ref, watch } from 'vue'
 import { FILTERS, filterLines, type ConsoleLine, type FilterId } from '../../stepper'
 
@@ -89,6 +90,9 @@ const EMPTY: Record<FilterId, string> = {
       </button>
       <button v-if="collapsible" type="button" class="console__button" data-test="console-hide" @click="emit('collapse')">Hide</button>
     </header>
+    <p class="console__note" data-test="console-note">
+      Language on the terminal and .md file capped to English Language. Actual messages may be unreadable.
+    </p>
     <p v-if="paused" class="console__paused" role="status" data-test="console-paused">
       Paused<template v-if="unseen">: {{ unseen }} new {{ unseen === 1 ? 'line' : 'lines' }} below</template>
     </p>
@@ -173,6 +177,16 @@ const EMPTY: Record<FilterId, string> = {
 .console__button:focus-visible {
   outline-color: var(--console-llm);
   outline-offset: -2px;
+}
+
+.console__note {
+  flex: none;
+  padding: var(--space-1) var(--space-4);
+  border-bottom: 1px solid var(--console-border);
+  color: var(--console-text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  line-height: 1.4;
 }
 
 .console__paused {

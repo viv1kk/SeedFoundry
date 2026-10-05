@@ -24,7 +24,7 @@ export function role(read: TokenReader, name: string): string {
 }
 
 /** A class's colour on a panel: its role's token, unless the panel's descriptor gives the class a
- * colour value of its own (iteration 1's V-3, D-60), which is drawn as given. SeedFoundry's code
+ * colour value of its own (iteration 1's V-3, D-60), which is drawn as given. SeedFactory's code
  * writes no colour; such a value only ever comes from the descriptor. */
 export function classColour(read: TokenReader, panel: Panel, cls: ClassInfo): string {
   return panel.class_colours?.[cls.id]?.colour ?? role(read, cls.role)

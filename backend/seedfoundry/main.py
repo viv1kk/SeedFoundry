@@ -26,6 +26,8 @@ from seedfoundry.sample import demo_feedback
 from seedfoundry.state import (
     CATEGORY_DESCRIPTIONS,
     CATEGORY_LABELS,
+    CATEGORY_SEED_FILES,
+    CORE_FILE_NAMES,
     CORE_CATEGORIES,
     Category,
     IntakeFile,
@@ -83,7 +85,7 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
         # interrupted at the next start (D-33).
         await app.state.engine.stop()
 
-    app = FastAPI(title="SeedFoundry", lifespan=lifespan)
+    app = FastAPI(title="SeedFactory", lifespan=lifespan)
 
     @app.exception_handler(files.IntakeError)
     async def intake_error(request: Request, error: files.IntakeError) -> JSONResponse:
@@ -105,7 +107,7 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
     @app.get("/api/health")
     async def health() -> dict[str, str]:
         """Readiness, which run.py polls before announcing the app."""
-        return {"status": "ok", "app": "SeedFoundry"}
+        return {"status": "ok", "app": "SeedFactory"}
 
     @app.get("/api/state")
     async def state(request: Request) -> dict[str, Any]:
@@ -131,17 +133,21 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
 
     @app.get("/api/intake/categories")
     async def categories() -> dict[str, Any]:
-        """Categories in Ensemble order with their screen labels and one-line descriptions,
-        and the filename hints import uses (FR-IN-7)."""
+        """Categories in Ensemble order with their screen labels, one-line descriptions, the name a
+        file gets when added (D-85) and the Seed file shown beside it (D-86), and the filename
+        hints import uses (FR-IN-7)."""
         return {
+            # The four initiation files only: Misc Context is not offered on screen (D-84).
             "categories": [
                 {
                     "id": c.value,
                     "label": CATEGORY_LABELS[c],
-                    "core": c in CORE_CATEGORIES,
+                    "core": True,
                     "description": CATEGORY_DESCRIPTIONS[c],
+                    "file_name": CORE_FILE_NAMES[c],
+                    "seed_file": CATEGORY_SEED_FILES[c],
                 }
-                for c in Category
+                for c in CORE_CATEGORIES
             ],
             "filename_hints": {name: c.value for name, c in files.FILENAME_HINTS.items()},
             "max_file_bytes": files.MAX_FILE_BYTES,
@@ -161,11 +167,13 @@ def create_app(data_dir: Path | None = None, clock: Clock | None = None) -> Fast
         filename: str = Query(..., min_length=1),
         category: Category | None = Query(None),
         replace: bool = Query(False),
+        name: str | None = Query(None, min_length=1),
     ) -> IntakeFile:
         """Import one file. The body is the file's raw bytes, so the UTF-8 check
-        sees exactly what is on disk. Category defaults to the filename hint."""
+        sees exactly what is on disk. Category defaults to the filename hint. `name`, when given,
+        is the name the file takes in Knowledge (D-85); the checks read `filename`."""
         raw = await request.body()
-        return lab(request).apply(files.import_upload(filename, raw, category, replace))
+        return lab(request).apply(files.import_upload(filename, raw, category, replace, name))
 
     @app.get("/api/intake/files/{file_id}")
     async def read_file(request: Request, file_id: str) -> IntakeFile:

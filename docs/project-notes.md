@@ -1,8 +1,8 @@
-# SeedFoundry: Project notes
+# SeedFactory: Project notes
 
-## 1. What SeedFoundry is
+## 1. What SeedFactory is
 
-SeedFoundry is a lab where Seeds are formed. A person brings domain knowledge as four Ensemble files (Person, Instrument Awareness, Environment, Music) plus any extra context. SeedFoundry then:
+SeedFactory is a lab where Seeds are formed. A person brings domain knowledge as four Ensemble files (Person, Instrument Awareness, Environment, Music) plus any extra context. SeedFactory then:
 
 1. **Generates** a Seed: distils the knowledge (simulated LLM), synthesises the Seed v0.1 deployment files (core, adaptation, protection), and cross-checks them.
 2. **Tests** the Seed: plants it in an isolated sandbox through a simulated Seed v0.1 API, runs its full lifecycle with every human gate auto-resolved, then probes and validates the output.
@@ -10,13 +10,15 @@ SeedFoundry is a lab where Seeds are formed. A person brings domain knowledge as
 
 The point of the demo is the improvement loop. Iteration 1 is visibly flawed and the report catches the flaws. Iteration 2, after human feedback, is clean.
 
+*Change request CR-2 (2026-10-05):* the project is renamed SeedFactory (D-87). The person brings exactly four initiation files, named on screen Identity.md, Tools_and_Skills.md, Environment.md and Value.md; there is no Misc Context on screen, and the files' names step with each iteration that changes them (Environment_01.md, then Environment_02.md) (D-84, D-85).
+
 *Change request CR-1 (2026-10-04):* the observer can reject any iteration, passed or not, and the loop goes on: rejecting iteration n starts iteration n + 1 from its feedback, and no iteration total is shown (D-80, D-81). The demo shows two; iteration 3 on replays iteration 2's outcome.
 
 *As built (M13):* a rebuild first routes the observer's feedback into the four Ensemble files, really and deterministically, then replays every phase from the updated files (A-4, D-68); what iteration 2 fixes is still scripted (D-5). The observer can also approve iteration 1, and its open findings then ship as known issues on the Seed page and in each file (D-10, A-5).
 
 ## 2. Why it exists
 
-Seed v0.1 showed what a methodology-driven analytical system looks like once it is running. It did not show where a Seed comes from or how one gets better. SeedFoundry fills that gap: knowledge in, Seed out, with testing and a human in the loop. Like Seed v0.1, it is a simulation built to communicate the idea convincingly and reliably, with seams left in place so real components could replace the simulated ones later.
+Seed v0.1 showed what a methodology-driven analytical system looks like once it is running. It did not show where a Seed comes from or how one gets better. SeedFactory fills that gap: knowledge in, Seed out, with testing and a human in the loop. Like Seed v0.1, it is a simulation built to communicate the idea convincingly and reliably, with seams left in place so real components could replace the simulated ones later.
 
 ## 3. The Ensemble model (short form)
 
@@ -31,7 +33,7 @@ Full text: `docs/ensemble/ensemble_context.md`.
 
 Plus **current data**, supplied at run time, never inside the four files.
 
-SeedFoundry also accepts any number of **Misc Context** files.
+SeedFactory also accepts any number of **Misc Context** files.
 
 ## 4. From Ensemble to Seed v0.1 (internal mapping, never shown in the UI)
 
@@ -59,6 +61,8 @@ This mapping drives generation but the UI never states it (D-9).
 | Demo controller | Hidden operator panel toggled by a Shift shortcut |
 | Sandbox | The simulated isolated environment where the Seed is planted |
 
+*CR-2 (2026-10-05):* **Initiation files:** the four Ensemble files on screen: Identity.md (Person), Tools_and_Skills.md (Instrument Awareness), Environment.md (Environment), Value.md (Music) (D-84). **Human:** the tag on every iteration rebuilt from a person's rejection (D-90). **Iteration:** no longer "exactly two" since D-81.
+
 *As built (M13):* terms the build added. **Advisory:** a boundary finding (B-DATA-1 and so on), reported apart and never counted against the verdict (D-12). **Known issue:** an open finding of the approved build, listed on the Seed page and in each file (A-5). **Learned rule:** a rule in iteration 2's `protection.md`, one per class of finding iteration 1 raised (D-72). **Knowledge:** intake, on screen (requirements §5). **Verdict:** Passed, Completed with findings, Failed or Incomplete (D-64).
 
 ## 6. Build log
@@ -68,7 +72,7 @@ One entry per milestone, newest last. Format in `docs/methodology.md` §4.
 ### M0: Read, reuse notes, scaffold (2026-10-03)
 
 **What changed**
-- Every SeedFoundry doc and every file in `docs/seed_docs/` was read. What we take from Seed v0.1 is recorded in `docs/seed-reuse-notes.md`: design tokens with values, architecture patterns, the Planting, Life and Cleanup lifecycle, the three human gates, shortcuts, process, stack.
+- Every SeedFactory doc and every file in `docs/seed_docs/` was read. What we take from Seed v0.1 is recorded in `docs/seed-reuse-notes.md`: design tokens with values, architecture patterns, the Planting, Life and Cleanup lifecycle, the three human gates, shortcuts, process, stack.
 - The Licence Utilisation dashboard is pinned down in `seed-reuse-notes.md` §5: five KPIs, a treemap, three charts, two tables, the headline figures (13,620 entitled, 13,002 assigned, 9,496 active, 3,171 unused or underused, $390k recoverable), and all 14 planted defects mapped to real panels with the rule that derives each shown value.
 - Open questions: OQ-1, OQ-4, OQ-5, OQ-6 and OQ-10 closed from the Seed docs. OQ-11 to OQ-14 opened.
 - Repo scaffolded: backend package tree with empty modules and a health route, frontend Vue 3 + Vite + Pinia placeholder, `run.py` launcher and `run.ps1` Windows fallback. No features.
@@ -94,7 +98,7 @@ One entry per milestone, newest last. Format in `docs/methodology.md` §4.
 - assertions edited: none
 
 **Hand checks**
-- `python run.py` started both processes and printed the ready line. `http://127.0.0.1:8100/api/health` and `http://127.0.0.1:5273/api/health` (through the Vite proxy) both answered `{"status":"ok","app":"SeedFoundry"}`. `http://127.0.0.1:5273/` served the placeholder page. These were checked over HTTP from the terminal, not in a browser window.
+- `python run.py` started both processes and printed the ready line. `http://127.0.0.1:8100/api/health` and `http://127.0.0.1:5273/api/health` (through the Vite proxy) both answered `{"status":"ok","app":"SeedFactory"}`. `http://127.0.0.1:5273/` served the placeholder page. These were checked over HTTP from the terminal, not in a browser window.
 - Ports 8100 and 5273 were free again after stopping.
 
 **Decisions and questions**
@@ -206,9 +210,9 @@ One entry per milestone, newest last. Format in `docs/methodology.md` §4.
 ### M2: Frontend shell and design system (2026-10-03)
 
 **What changed**
-- SeedFoundry now looks like Seed v0.1: its colour, type, radius and motion tokens are in `tokens.css`, unchanged, with light on `:root` and dark under `[data-theme='dark']`. Inter and JetBrains Mono are bundled from npm and served with the app.
+- SeedFactory now looks like Seed v0.1: its colour, type, radius and motion tokens are in `tokens.css`, unchanged, with light on `:root` and dark under `[data-theme='dark']`. Inter and JetBrains Mono are bundled from npm and served with the app.
 - The values the Seed docs leave out (shadows, easing, chart grid and brush, scrollbar, font stacks, space steps) are filled from the existing palette, and the build console has its own dark tokens in both themes, including `--console-api` for API lines (D-37).
-- The app shell: the SeedFoundry wordmark on the left, the journey indicator (Knowledge, Build, Review, Seed) held at the centre by a three-column grid, and on the right the "Iteration 1 of 2" badge once a build exists, then the theme toggle. Knowledge is a link; Build, Review and Seed show the current step but are not links yet.
+- The app shell: the SeedFactory wordmark on the left, the journey indicator (Knowledge, Build, Review, Seed) held at the centre by a three-column grid, and on the right the "Iteration 1 of 2" badge once a build exists, then the theme toggle. Knowledge is a link; Build, Review and Seed show the current step but are not links yet.
 - Routes `/knowledge` (`/` goes there), `/build/1|2`, `/review/1|2`, `/seed`, each with a placeholder inside the shell. Any other path goes to `/knowledge`. The dashboard stays a query string on the review route (OQ-4).
 - Theme: a first visit follows the OS; the toggle switches and remembers under `seedfoundry.theme`; it still works where storage is blocked. A small inline script in `index.html` sets the theme before the first paint.
 - Base components: button (primary, secondary), chip (five tones), card, modal (focus moves in and is trapped, Escape closes, focus goes back to the opener, a backdrop click does not close it), tooltip (hover and keyboard focus, linked by `aria-describedby`).
@@ -473,7 +477,7 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
 
 **What changed**
 - The License Optimization dashboard exists. View Dashboard on a completed build opens it at `/review/<n>?dashboard=license-optimization`, in a thin frame with "Back to report" and the iteration badge. It has five KPIs, the full-width treemap with its class legend, the three charts, Optimisation candidates and the paginated Seats table, titled License Optimization, in Seed v0.1's design system (D-59).
-- Data: SeedFoundry's own estate from a seeded generator (D-55). The primary estate is the sample's professional services firm: 13,050 seats, 17 products from 10 vendors, 5 of them unpriced, so the grade is PARTIAL. The alternate is a software company: 5,620 seats, 11 products, 8 vendors, no names in common. Every class is derived from twelve months of generated usage by music.md's rules; the seed is a fixed string per estate, never the clock.
+- Data: SeedFactory's own estate from a seeded generator (D-55). The primary estate is the sample's professional services firm: 13,050 seats, 17 products from 10 vendors, 5 of them unpriced, so the grade is PARTIAL. The alternate is a software company: 5,620 seats, 11 products, 8 vendors, no names in common. Every class is derived from twelve months of generated usage by music.md's rules; the seed is a fixed string per estate, never the clock.
 - Query engine on the server (D-56): every figure is aggregated from the seat rows for the current drill path, which every panel follows. Drill from a treemap cell (a leaf drills vendor, product and class in one step, with one crumb naming all three), a bar, or a product in the candidates table, down to a product's class, where the Seats table lists those seats. The path is in the URL, so reload keeps it and the browser's Back pops one step. The drill bar has Back and the breadcrumb.
 - Keyboard: Back, crumbs, product cells, sort headers and First/Previous/Next/Last are buttons. Each chart takes focus; the arrow keys choose a drill target, a line under the chart reads it out, and Enter drills.
 - Charts are ECharts 6 from npm, in their own chunk. Every colour is read from the tokens when a chart paints, so a theme switch repaints them, and they repaint once the fonts load.
@@ -573,7 +577,7 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
   - Payload rules (N-1 to N-5): fixed rules over the true figures and the rows, so every wrong figure is derived from the data at any drill level. N-1 bars x 1.2, N-2 shares x 1.12, N-3 the KPI over Unused and Underused, N-4 the footer total set to the assigned count, N-5 the largest row counted twice.
   - Styles (V-6 to V-8): `defects.css`, every rule under `.defects-overlay`, which only the iteration 1 dashboard's root carries. The sheet is loaded on demand when a descriptor names it. It holds no colour value: V-8's grey is a border token used as text.
 - `GET /api/dashboards/license-optimization/overlay` serves the list, so the descriptor, the overlay and the payload are each inspectable.
-- V-3's hex is the only raw colour. It lives in the overlay's descriptor patch, and the renderer draws a descriptor's class colour as given, so SeedFoundry's own source still writes none.
+- V-3's hex is the only raw colour. It lives in the overlay's descriptor patch, and the renderer draws a descriptor's class colour as given, so SeedFactory's own source still writes none.
 - L-1: the browser waits the declared latency before drawing the treemap, behind a spinner, while every other panel draws at once (NFR-3). It waits on first draw, reload and each drill, not on paging, sorting or a theme switch (OQ-25). The server answers the whole dashboard in one request, so a server-side wait would have held every panel.
 - ECharts gains the pie chart; the pie keeps the bar's data shape, so T-08 passes on both iterations.
 - The frame's line "Iteration 1's defect overlay arrives in M8, ..." is gone (OQ-23).
@@ -652,7 +656,7 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
   - Find each of the 14 defects on screen, with seed-reuse-notes §5.8's as-built table beside you.
   - Drill on iteration 1 and check the overlay holds; check iteration 2 is still clean.
   - Watch the treemap spinner, and check whether the rest of the page is usable meanwhile. Time iteration 2's first render (under 1 s).
-  - Check both themes: the SeedFoundry shell around the rough dashboard stays on the design system.
+  - Check both themes: the SeedFactory shell around the rough dashboard stays on the design system.
   - Use drill and pagination on iteration 1 by keyboard only.
 
 **Decisions and questions**
@@ -990,7 +994,7 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
 ### M13: As-built reconciliation (2026-10-04)
 
 **What changed**
-- Every SeedFoundry doc was read against the code. The 31 differences found are the as-built reconciliation table in `decisions.md` §4; each was fixed in the doc, fixed in the code, amended, or left as history with a reason. Older as-built notes that described a stub a later milestone replaced have that clause struck through, with a pointer to what replaced it, and the busiest sections gained an "As built (summary, M13)" note.
+- Every SeedFactory doc was read against the code. The 31 differences found are the as-built reconciliation table in `decisions.md` §4; each was fixed in the doc, fixed in the code, amended, or left as history with a reason. Older as-built notes that described a stub a later milestone replaced have that clause struck through, with a pointer to what replaced it, and the busiest sections gained an "As built (summary, M13)" note.
 - Every open question (OQ-16, OQ-19 to OQ-30, OQ-34) was put to the stakeholder in four groups and closed. Every answer kept the product as built, so no answer changed behaviour. Two amendments: A-5 (FR-F-4: known issues are the approved build's open findings, whichever iteration) and A-6 (NFR-3: 100 ms, 200 ms and 1 s). `requirements.md` gained §11, which records where the code meets a requirement in a way its wording does not say.
 - `run.py`: on Windows, uvicorn and Vite now end with the launcher however it ends, through a job object (D-78). Tested, and checked by hand with the real launcher.
 - Code comments and docstrings that described the product before a later milestone now describe it as built. The build script's dead `arrives_in` argument is gone, and the launchers ask for Node.js 22.18 or newer, which the test runner and the rehearsal need (D-79). The duplicate `docs/ensemble_context.md` is removed (stakeholder).
@@ -1107,8 +1111,50 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
 **Notes**
 - Still for the stakeholder, in a browser: the routing panel at 1x (it fills in over about 4.5 s of Assay), the context footprint in both themes, and a Reject of iteration 2 through to an iteration 3 Seed.
 
+### Change request CR-2: demo feedback (2026-10-05)
+
+**What changed**
+- **SeedFactory (D-87).** Every visible text and doc says SeedFactory: the wordmark, the page title, the launcher's ready line, "Generated by SeedFactory" in each Seed file. Code names (`seedfoundry`, `SEEDFOUNDRY_*`, the repository folder) stay.
+- **Initiation files (D-84, D-86).** Knowledge's first section is INITIATION FILES: Identity.md, Tools_and_Skills.md, Environment.md and Value.md (the categories renamed everywhere they are named: pickers, groups, checklist, Start Build's missing line, sub-steps, test names, routing tiles, boundary homes), each with the Seed file it maps to at a high level right-aligned and muted (protection.md, adaptation.md, core.md). Misc Context is not offered anywhere; the observer feedback is still saved and routed but kept with the builds, not listed; the sample has no vendor notes.
+- **Versioned names (D-85).** A file added to a category takes its name (Identity.md, Tools_and_Skills.md, Environment_01.md, Value_0001.md), from New file, Import, Change category and Load sample. Each iteration whose feedback changes Environment_01.md or Value_0001.md steps it to Environment_02.md or Value_0002.md, shown in the console, on the routing panel's tile and in Knowledge.
+- **Human tag (D-90).** Every iteration after the first carries a "Human" chip wherever the screen names it: the top bar, the Build header, the report's Iteration fact, the Review heading, the dashboard frame, the Seed hero and history.
+- **Report and console (D-89, D-91, D-92, D-94).** View Dashboard reads View Agentic Solution; after Approve, Initiate QUAD SI Review Protocol (shown only) and "* Assuming default 10 cycles"; the footprint's note adds "(assuming limited one thread build for demonstration purposes)"; under the console's bar, always in view, "Language on the terminal and .md file capped to English Language. Actual messages may be unreadable."
+- **Seed page (D-93).** Download all (.zip) is now "Secure and Lock in Secure Repository" (shown only), with a "download" link beside it that saves the zip.
+
+**Files**
+- CHANGE backend/seedfoundry/state.py (labels, `CORE_FILE_NAMES`, `CATEGORY_SEED_FILES`, `next_version`), intake/files.py (hints; import's `as_name`), intake/boundary.py (homes by category), intake/routing.py (versioned names), engine/catalogue.py and engine/script.py (step and test names, the rename line, "initiation files"), engine/runner.py (the file's new name; the missing line), generate/layers.py (category names rewritten; SeedFactory), main.py (four categories with `file_name` and `seed_file`; import's `name`), sample/__init__.py and sample/environment.md, validators/records.py; SeedFoundry to SeedFactory in comments, run.py, run.ps1, pyproject.toml
+- MOVE backend/seedfoundry/sample/vendor-notes.md removed
+- NEW frontend/src/components/base/HumanTag.vue
+- CHANGE frontend/src/intake.ts, builds.ts (`isHuman`), stepper.ts, stores/intake.ts, stores/demo.ts, components/intake/FilePanel.vue, NewFileDialog.vue, ImportDialog.vue, EmptyState.vue, components/build/BuildConsole.vue, FeedbackRouting.vue, components/report/BuildReport.vue, components/rebuild/RebuildModal.vue, components/seed/SeedFiles.vue, SeedHistory.vue, components/shell/IterationBadge.vue, TopBar.vue, components/dashboard/DashboardFrame.vue, views/BuildView.vue, ReviewView.vue, KnowledgeView.vue, SeedView.vue, demo/DemoController.vue, index.html, api.ts; scripts/rehearse.ts (the checks follow, three added)
+- CHANGE backend tests and frontend specs listed in D-88; fixtures rewritten by the three scripts
+- CHANGE docs: requirements.md (A-9 to A-12), decisions.md (D-84 to D-94; notes on D-9, D-16), ui-spec.md, build-simulation.md, operator-guide.md, implementation-plan.md (CR-2), project-notes.md; SeedFoundry to SeedFactory throughout
+
+**Gates**
+- backend: 578 passed (575 + 3 new), frontend: 460 passed (455 + 5 new), through the suites as `python run.py test` runs them
+- `npm run build`: typecheck, build and `postbuild` network check pass
+- `npm run rehearse -- --speed 4`: 33 of 33 checks (two new: the four initiation files and their names after Shift+P; D-89 to D-93 on screen)
+- determinism: pass | no-em-dash: pass | network: pass | contrast: pass (no new token: the tag is a neutral chip, the notes use the muted text tokens)
+- Assertions edited: D-88 lists every one
+
+**Hand checks**
+- Rehearsal screenshots, both themes: the Initiation files checklist with the Seed files right-aligned and muted; iteration 2's Build page with the Human chips, the console note under the bar and the report's footer; the Seed page with Secure and Lock and the download link. The Seed hero's tag first sat apart from its comma (the line is a flex row); the sentence is now one item.
+
+**Decisions and questions**
+- New: D-84 to D-94; A-9 to A-12. Notes on D-9 and D-16.
+- Asked and answered (stakeholder, 2026-10-05): the rename covers visible text and docs, not code names; the feedback file is kept but not listed, and the vendor notes are dropped; the category names and the two numbered names as given (_01, _0001); QUAD SI does nothing.
+- Chosen without asking: the Human tag on every iteration from 2 (each exists only by a rejection) beside the iteration labels named in D-90; Rename stays available after a file takes its name; an import with no hint takes the next open initiation file; the import keeps checking the file's own name, so a .txt file is still refused when it would take an .md name.
+- Noted for the stakeholder: the Seed file shown beside each initiation file is the requested picture, not how generation maps them (D-86).
+
+**Notes**
+- `misc_context` stays a code category for the observer feedback; the API accepts it, only the screen does not offer it.
+
+**Follow-up: the Build page scrolled away (D-95)**
+- Reported by the stakeholder: scrolling the Build page moved the whole page up and left it empty. Measured in headless Chrome: the document was 2,830 px tall in a 1,000 px window, made so by the report's screen-reader-only text, absolutely positioned with the page as its containing block. CHANGE frontend/src/views/BuildView.vue (`.build__main` positioned), frontend/scripts/rehearse.ts (a check: the page fits the window, the report column scrolls). Gates: frontend 460 passed, `npm run build` passes, rehearsal 34 of 34 at 4x (page 1,000 px, window 1,000 px, report column 4,847 px). Review and the dashboard scroll as pages, as before.
+
 ### State of the project (2026-10-04)
 
-SeedFoundry is complete as specified. It is a deterministic, offline lab with no LLM that turns four Ensemble knowledge files (plus any Misc Context) into a Seed v0.1 deployment. It assays the files and lints their boundaries, distils and synthesises `core.md`, `adaptation.md` and `protection.md` from them, plants and runs the Seed in a simulated sandbox with Seed v0.1's three human gates auto-resolved, and validates the result. Iteration 1's License Optimization dashboard carries fourteen planted defects, and real validators find all fourteen by recomputing from the data. An observer writes feedback beside the report or the dashboard; the rebuild routes that feedback into the four files, visibly, and iteration 2 passes with every finding resolved. Approve on either iteration gives the Seed page and the three files, singly or as one zip, with known issues listed when the approved build still has findings. Every simulated call is labelled as simulated and goes through the `LLMClient` and `SeedClient` seams, so real ones can replace them. To run it: `python run.py` (or `run.ps1` where uv is blocked), then open `http://127.0.0.1:5273/`. To present it: `docs/operator-guide.md`, a demo of 8 to 10 minutes at 1x, driven by the hidden demo controller (Shift+O), after `python run.py test` and `npm run rehearse -- --speed 4` as the checks before a demo. What remains is the stakeholder's own pass in a browser, listed under Hand checks above: the timed demo by hand, the network switched off, and a person's reading of the report links, the rebuild modal and the Seed page. No requirement, open question or known defect is outstanding.
+SeedFactory is complete as specified. It is a deterministic, offline lab with no LLM that turns four Ensemble knowledge files (plus any Misc Context) into a Seed v0.1 deployment. It assays the files and lints their boundaries, distils and synthesises `core.md`, `adaptation.md` and `protection.md` from them, plants and runs the Seed in a simulated sandbox with Seed v0.1's three human gates auto-resolved, and validates the result. Iteration 1's License Optimization dashboard carries fourteen planted defects, and real validators find all fourteen by recomputing from the data. An observer writes feedback beside the report or the dashboard; the rebuild routes that feedback into the four files, visibly, and iteration 2 passes with every finding resolved. Approve on either iteration gives the Seed page and the three files, singly or as one zip, with known issues listed when the approved build still has findings. Every simulated call is labelled as simulated and goes through the `LLMClient` and `SeedClient` seams, so real ones can replace them. To run it: `python run.py` (or `run.ps1` where uv is blocked), then open `http://127.0.0.1:5273/`. To present it: `docs/operator-guide.md`, a demo of 8 to 10 minutes at 1x, driven by the hidden demo controller (Shift+O), after `python run.py test` and `npm run rehearse -- --speed 4` as the checks before a demo. What remains is the stakeholder's own pass in a browser, listed under Hand checks above: the timed demo by hand, the network switched off, and a person's reading of the report links, the rebuild modal and the Seed page. No requirement, open question or known defect is outstanding.
 
 *After CR-1 (2026-10-04):* the loop is open-ended on screen. There is no iteration total; every report has Reject and Approve; rejecting any iteration routes the new feedback into the four files, visibly on the Build page, and runs the next iteration, which from iteration 3 replays iteration 2's outcome. Every report shows the Seed files' share of the context window against a 20% budget. The demo is still written for two iterations (`operator-guide.md` §4, with an optional third).
+
+*After CR-2 (2026-10-05):* the product is SeedFactory. Knowledge holds the four initiation files, whose names step with each iteration that changes them; iterations after the first are tagged Human; the report offers View Agentic Solution, Reject, Approve and Initiate QUAD SI Review Protocol; the Seed page offers Secure and Lock in Secure Repository and a download link for the zip.

@@ -21,7 +21,9 @@ from seedfoundry.sample import demo_feedback, sample_files
 from test_no_em_dash import em_dashes
 
 CATALOGUE = ["N-1", "N-2", "N-3", "N-4", "N-5", "V-1", "V-2", "V-3", "V-4", "V-5", "V-6", "V-7", "V-8", "L-1"]
-CORE = ("person.md", "instrument-awareness.md", "environment.md", "music.md")
+CORE = ("Identity.md", "Tools_and_Skills.md", "Environment_01.md", "Value_0001.md")
+# Each core file's name once the feedback has changed it: a versioned name steps up (D-85).
+AFTER = dict(zip(CORE, ("Identity.md", "Tools_and_Skills.md", "Environment_02.md", "Value_0002.md")))
 
 
 @pytest.fixture
@@ -67,7 +69,7 @@ def test_the_full_two_iteration_flow(api, clock):
     state = api.get("/api/state").json()
     assert state["iteration"] == 2
     assert [(b["id"], b["iteration"], b["status"]) for b in state["builds"]] == [("b-1", 1, "completed"), ("b-2", 2, "completed")]
-    # The feedback is a Misc Context file in the Knowledge list (FR-RB-4).
+    # The feedback is a Misc Context file, kept in intake but not listed on Knowledge (FR-RB-4, D-84).
     feedback = files_by_name(api)[FEEDBACK_NAME]
     assert feedback["category"] == "misc_context" and feedback["content"] == demo_feedback()
     # Iteration 2 completes with zero findings (AC-3).
@@ -97,17 +99,17 @@ def test_the_log_lines_match_the_edits_actually_made(api, clock):
         assert re.fullmatch(rf"{re.escape(name)}: \+{added} lines? in {re.escape(section)} \(segments? [\d, ]+\)", line["message"])
         claimed[name] = claimed.get(name, 0) + added
         # Each segment the line names is in that section of the file now, verbatim.
-        section_text = now[name]["content"].split(f"\n## {section}\n", 1)[1].split("\n## ", 1)[0]
+        section_text = now[AFTER[name]]["content"].split(f"\n## {section}\n", 1)[1].split("\n## ", 1)[0]
         route = {e["data"]["segment"]: e for e in events if e["step"] == "assay.feedback-route" and "segment" in e["data"]}
         for number in numbers:
             assert route[number]["data"]["section"] == section and route[number]["data"]["file"] == name
             assert f"### Observer feedback (iteration 1)" in section_text
     for name in CORE:
-        before, after = kept[name].split("\n"), now[name]["content"].split("\n")
+        before, after = kept[name].split("\n"), now[AFTER[name]]["content"].split("\n")
         ops = difflib.SequenceMatcher(a=before, b=after, autojunk=False).get_opcodes()
         assert {op for op, *_ in ops} == {"equal", "insert"}
         assert sum(j2 - j1 for op, _, _, j1, j2 in ops if op == "insert") == claimed[name]
-    assert claimed == {"person.md": 4, "instrument-awareness.md": 4, "environment.md": 18, "music.md": 4}
+    assert claimed == {"Identity.md": 4, "Tools_and_Skills.md": 4, "Environment_01.md": 18, "Value_0001.md": 4}
 
 
 def test_iteration_1s_file_versions_are_kept_with_build_1(api, clock):
@@ -133,7 +135,7 @@ def test_the_files_change_as_their_update_sub_steps_play(api, clock):
     intake = [e for e in log.after(since) if e.type.startswith("intake.")]
     assert [(e.type, e.data["file"]["name"], e.data["source"]) for e in intake] == [
         ("intake.file_created", FEEDBACK_NAME, "rebuild"),
-        *[("intake.file_updated", name, "feedback") for name in CORE],
+        *[("intake.file_updated", AFTER[name], "feedback") for name in CORE],
     ]
     assert all(e.build_id is None and e.sim_t is None for e in intake)  # the intake shape (D-32)
     assert not [e for e in api.get("/api/builds/b-2/events").json()["events"] if e["type"].startswith("intake.")]
@@ -141,7 +143,8 @@ def test_the_files_change_as_their_update_sub_steps_play(api, clock):
     stream = list(log.after(since))
     for event in intake[1:]:
         before = stream[stream.index(event) - 1]
-        assert before.step.startswith("assay.feedback-") and before.data["file"] == event.data["file"]["name"]
+        # A renamed file's last line is the one naming its next version (D-85).
+        assert before.step.startswith("assay.feedback-") and before.data.get("renamed", before.data["file"]) == event.data["file"]["name"]
 
 
 def test_start_rebuild_needs_feedback_and_a_refusal_leaves_nothing(api, clock):

@@ -1,4 +1,4 @@
-"""Fixed addresses for the two processes (OQ-8: 8100 and 5273 so SeedFoundry can run beside Seed v0.1),
+"""Fixed addresses for the two processes (OQ-8: 8100 and 5273 so SeedFactory can run beside Seed v0.1),
 and where runtime data lives (D-3)."""
 
 import os

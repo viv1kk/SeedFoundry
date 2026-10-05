@@ -161,7 +161,7 @@ describe('the Seed page, iteration 2 approved (AC-4, ui-spec.md section 7)', () 
   it('hero: the Seed name, Approved, the iteration and the date', () => {
     expect(text('[data-test="seed-name"]')).toBe('License Optimization')
     expect($('[data-test="seed-approved"]')?.className).toContain('chip--positive')
-    expect(text('[data-test="seed-approval"]')).toBe(`Approved at iteration 2, on 4 October 2026. Intake fingerprint ${TWO.fingerprint}`)
+    expect(text('[data-test="seed-approval"]')).toBe(`Approved at iteration 2, Human, on 4 October 2026. Intake fingerprint ${TWO.fingerprint}`)
   })
 
   it('what this Seed does: the Purpose, rendered', () => {
@@ -204,7 +204,7 @@ describe('the Seed page, iteration 2 approved (AC-4, ui-spec.md section 7)', () 
     expect($('[data-test="seed-known-issues"]')).toBeNull()
   })
 
-  it('Seed files: three cards with a description, size, Preview and Download, then Download all (.zip)', () => {
+  it('Seed files: three cards with a description, size, Preview and Download, then Secure and Lock, shown only, and a "download" link to the zip (D-93)', async () => {
     const cards = $$('[data-test="seed-file"]')
     expect(cards.map((c) => c.dataset.file)).toEqual(['core.md', 'adaptation.md', 'protection.md'])
     expect(cards.map((c) => text($('[data-test="seed-file-description"]', c)))).toEqual(TWO.files.map((f) => f.description))
@@ -216,7 +216,14 @@ describe('the Seed page, iteration 2 approved (AC-4, ui-spec.md section 7)', () 
       expect([download.getAttribute('href'), download.getAttribute('download')]).toEqual([`/api/seed/files/${name}`, name])
     }
     const zip = $('a[data-action="download-zip"]')!
-    expect([text(zip), zip.getAttribute('href'), zip.getAttribute('download')]).toEqual(['Download all (.zip)', '/api/seed/zip', 'license-optimization-seed.zip'])
+    expect([text(zip), zip.getAttribute('href'), zip.getAttribute('download')]).toEqual(['download', '/api/seed/zip', 'license-optimization-seed.zip'])
+    const lock = $('button[data-action="secure-lock"]')!
+    expect(text(lock)).toBe('Secure and Lock in Secure Repository')
+    expect(lock.nextElementSibling).toBe(zip) // the link sits just beside the button
+    const before = server.calls.length
+    await click(lock)
+    expect(server.calls.length).toBe(before) // it does nothing
+    expect($('[role="dialog"]')).toBeNull()
   })
 
   it('Preview opens the file in a modal; Escape closes it and puts focus back', async () => {

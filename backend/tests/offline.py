@@ -29,7 +29,7 @@ def _refuse(what: str, host: Any, log: str | None) -> None:
     if log:
         with open(log, "a", encoding="utf-8") as out:
             out.write(entry + "\n")
-    raise OSError(f"SeedFoundry offline guard: {entry} refused, the app must not reach the network")
+    raise OSError(f"SeedFactory offline guard: {entry} refused, the app must not reach the network")
 
 
 def install(log: str | None = None) -> Callable[[], None]:

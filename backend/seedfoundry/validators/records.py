@@ -97,7 +97,7 @@ def check(row: dict[str, Any], data: Dataset) -> list[str]:
     elif usage is not None:
         derived = classify(row["assignee"], row["assignee_status"], tuple(usage))
         if derived != row["utilisation_class"]:
-            problems.append(f"class {row['utilisation_class']} does not follow from the record ({derived} by music.md's rules)")
+            problems.append(f"class {row['utilisation_class']} does not follow from the record ({derived} by Value.md's rules)")
     return problems
 
 

@@ -8,6 +8,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DashboardFrame from '../components/dashboard/DashboardFrame.vue'
 import BuildReport from '../components/report/BuildReport.vue'
+import HumanTag from '../components/base/HumanTag.vue'
 import { DASHBOARD_ID } from '../dashboard/api'
 import { useLabStore } from '../stores/lab'
 
@@ -28,7 +29,7 @@ const dashboardOpen = computed(() => route.query.dashboard === DASHBOARD_ID && c
   <div class="review" data-test="review">
     <DashboardFrame v-if="dashboardOpen && build" :iteration="iteration" :build="build" />
     <section v-else class="review__report" data-test="review-report">
-      <h1>Review, iteration {{ iteration }}</h1>
+      <h1>Review, iteration {{ iteration }}<HumanTag :iteration="iteration" /></h1>
       <p v-if="!lab.snapshot" class="review__note">Loading the review</p>
       <template v-else-if="!build">
         <p class="review__note" data-test="review-state">No build for iteration {{ iteration }} yet, so there is nothing to review.</p>

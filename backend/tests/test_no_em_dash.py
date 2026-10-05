@@ -1,5 +1,5 @@
 """No em dashes (D-20, NFR-8), from M3 on: in frontend source (templates and strings),
-backend source, the tests, the launchers and SeedFoundry's own docs.
+backend source, the tests, the launchers and SeedFactory's own docs.
 
 docs/seed_docs/ is Seed v0.1's reference material, kept as it was written, so it is not
 scanned (docs/CLAUDE.md rule 4). From M11 generated output is scanned too (D-44): the golden Seed

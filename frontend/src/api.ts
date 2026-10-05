@@ -52,7 +52,7 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   try {
     response = await fetch(path, init)
   } catch {
-    throw new ApiError(0, 'offline', 'Cannot reach the SeedFoundry server.')
+    throw new ApiError(0, 'offline', 'Cannot reach the SeedFactory server.')
   }
   if (!response.ok) throw await failure(response)
   if (response.status === 204) return undefined as T

@@ -40,10 +40,10 @@ def ensemble_sections() -> dict[str, list[str]]:
         return [re.sub(r"^\d+\.\d+ ", "", h) for h in headings(doc_part(number), 4)]
 
     return {
-        "person.md": person,
-        "instrument-awareness.md": numbered(3),
-        "environment.md": numbered(4),
-        "music.md": numbered(5),
+        "Identity.md": person,
+        "Tools_and_Skills.md": numbered(3),
+        "Environment_01.md": numbered(4),
+        "Value_0001.md": numbered(5),
     }
 
 
@@ -68,8 +68,8 @@ def test_every_sample_file_is_in_the_package():
 
 def test_each_core_file_has_every_ensemble_section():
     sections = ensemble_sections()
-    assert sections["person.md"][:3] == ["Domain expertise", "Subject matter knowledge", "Reasoning methods"]
-    assert sections["environment.md"] == ["Data Layer", "User Experience", "Styling", "Adaptation Layer", "Protection Layer"]
+    assert sections["Identity.md"][:3] == ["Domain expertise", "Subject matter knowledge", "Reasoning methods"]
+    assert sections["Environment_01.md"] == ["Data Layer", "User Experience", "Styling", "Adaptation Layer", "Protection Layer"]
     for name, expected in sections.items():
         found = [h.lower() for h in headings(content(name), 2)]
         assert found == [s.lower() for s in expected], name
@@ -78,10 +78,10 @@ def test_each_core_file_has_every_ensemble_section():
 def test_routing_targets_exist():
     # D-36: feedback is appended under named sections (D-68). These are the ones the
     # demo's prefilled feedback is written to reach (build-simulation.md §9).
-    assert {"Styling", "User Experience", "Data Layer", "Protection Layer"} <= set(headings(content("environment.md"), 2))
-    assert "Decision Logic" in headings(content("music.md"), 2)
-    assert "Reasoning methods" in headings(content("person.md"), 2)
-    assert "Hallucination risks" in headings(content("instrument-awareness.md"), 3)
+    assert {"Styling", "User Experience", "Data Layer", "Protection Layer"} <= set(headings(content("Environment_01.md"), 2))
+    assert "Decision Logic" in headings(content("Value_0001.md"), 2)
+    assert "Reasoning methods" in headings(content("Identity.md"), 2)
+    assert "Hallucination risks" in headings(content("Tools_and_Skills.md"), 3)
 
 
 def test_files_are_one_to_two_screens():
@@ -111,7 +111,7 @@ def test_reloading_changes_only_the_ids(client):
     first = client.get("/api/intake/files").json()
     client.post("/api/demo/sample", json={"replace": True})
     second = client.get("/api/intake/files").json()
-    assert [f["id"] for f in second] == ["f-6", "f-7", "f-8", "f-9", "f-10"]
+    assert [f["id"] for f in second] == ["f-5", "f-6", "f-7", "f-8"]
     strip = lambda files: [{k: v for k, v in f.items() if k != "id"} for f in files]  # noqa: E731
     assert strip(first) == strip(second)
 

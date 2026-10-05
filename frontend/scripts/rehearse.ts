@@ -12,7 +12,7 @@
 // - The demo through the UI, with the operator's shortcuts: Load sample, Start Build, a reload mid-build,
 //   the report, the dashboard, Reject with Prefill, iteration 2, Approve, the Seed page and its
 //   downloads, a server restart, Reset (AC-1 to AC-10). Builds are timed by the wall clock (FR-B-6 at 1x),
-//   dashboards from View Dashboard to every panel drawn (NFR-3), long tasks while the console streams,
+//   dashboards from View Agentic Solution to every panel drawn (NFR-3), long tasks while the console streams,
 //   and keystrokes in a 1 MB file.
 // - Keyboard: on each page, Tab walks every control, and each shows a visible focus ring (NFR-6).
 // - Screenshots of each page in both themes, and results.json, go to the out folder.
@@ -336,7 +336,7 @@ async function keyboard(id: string, where: string): Promise<void> {
   check(id, `${where}: Tab reaches every control, each with a visible focus ring`, !result.missed.length && !result.unringed.length, `${result.reached} reached${result.missed.length ? `; missed ${result.missed.join(' | ')}` : ''}${result.unringed.length ? `; no ring on ${result.unringed.join(' | ')}` : ''}`)
 }
 
-/** From View Dashboard to every panel drawn, in the page's own clock (NFR-3). The waiting treemap of
+/** From View Agentic Solution to every panel drawn, in the page's own clock (NFR-3). The waiting treemap of
  * iteration 1 (L-1) is the planted exception and is reported, not counted. */
 async function dashboardRender(): Promise<{ ms: number; waiting: string[] }> {
   return page.eval(`new Promise((done) => {
@@ -413,7 +413,7 @@ async function rehearse(): Promise<void> {
 
   // Knowledge, empty (AC-6, AC-10)
   await goto('/knowledge')
-  check('AC-6', 'Start Build is disabled until the four core files exist, and says what is missing', (await page.eval(`document.querySelector('[data-test="start-build"]').getAttribute('aria-disabled') === 'true'`)) && (await page.eval<string>(`document.body.textContent`)).includes('Missing: Person, Instrument Awareness, Environment, Music'))
+  check('AC-6', 'Start Build is disabled until the four initiation files exist, and says what is missing', (await page.eval(`document.querySelector('[data-test="start-build"]').getAttribute('aria-disabled') === 'true'`)) && (await page.eval<string>(`document.body.textContent`)).includes('Missing: Identity.md, Tools_and_Skills.md, Environment.md, Value.md'))
   await shortcut('O')
   const shown = await page.eval<boolean>(`!!document.querySelector('[data-test="demo-panel"]')`)
   await shortcut('O')
@@ -421,14 +421,14 @@ async function rehearse(): Promise<void> {
   check('AC-10', 'Shift+O shows and hides the demo controller', shown && hidden)
   if (SPEED !== 1) await shortcut(String(SPEED))
   await shortcut('P')
-  await waitFor('the sample files', `document.querySelectorAll('[data-test="file-panel"] button.file').length === 5`, 15)
-  check('AC-10', 'Shift+P loads the sample Seed', true, '5 files')
+  await waitFor('the sample files', `document.querySelectorAll('[data-test="file-panel"] button.file').length === 4`, 15)
+  check('AC-10', 'Shift+P loads the sample Seed: the four initiation files, named as Knowledge names them (D-84, D-85)', await page.eval<boolean>(`JSON.stringify([...document.querySelectorAll('[data-test="file-panel"] .file__name')].map((n) => n.textContent)) === JSON.stringify(['Identity.md', 'Tools_and_Skills.md', 'Environment_01.md', 'Value_0001.md'])`), '4 files')
   const sample = await api<any[]>('/api/intake/files').then((files) => files.map((f) => [f.name, f.category, f.content]))
   // A shortcut in a text field does nothing (AC-10): Shift+O with the caret in the editor.
   await page.eval(`document.querySelector('[data-test="text"]').focus()`)
   await shortcut('O', true)
   check('AC-10', 'A shortcut in the editor does nothing', await page.eval<boolean>(`!document.querySelector('[data-test="demo-panel"]')`))
-  check('AC-6', 'With the four core files, Start Build is enabled', await page.eval<boolean>(`document.querySelector('[data-test="start-build"]').getAttribute('aria-disabled') !== 'true' && !document.querySelector('[data-test="start-build"]').disabled`))
+  check('AC-6', 'With the four initiation files, Start Build is enabled', await page.eval<boolean>(`document.querySelector('[data-test="start-build"]').getAttribute('aria-disabled') !== 'true' && !document.querySelector('[data-test="start-build"]').disabled`))
   await keyboard('NFR-6', 'Knowledge')
   await bothThemes('01-knowledge')
 
@@ -466,6 +466,14 @@ async function rehearse(): Promise<void> {
   check('AC-1', 'Iteration 1 finds exactly the 14 catalogued defects', JSON.stringify(ids1) === JSON.stringify(CATALOGUE), `${ids1.join(', ')}; ${lines1} console lines`)
   const rowsWithValues = await page.eval<boolean>(`[...document.querySelectorAll('[data-test="finding"]')].every((r) => r.querySelector('[data-test="finding-expected"]').textContent.trim() && r.querySelector('[data-test="finding-shown"]').textContent.trim())`)
   check('AC-2', 'The report lists each finding with expected and shown', rowsWithValues)
+  // The Build page is one screen tall and scrolls inside its columns; the window itself must not
+  // scroll, or the page slides away and leaves the screen empty (D-95).
+  const fit = await page.eval<{ page: number; window: number; column: number }>(`({
+    page: document.scrollingElement.scrollHeight,
+    window: innerHeight,
+    column: document.querySelector('.build__main').scrollHeight,
+  })`)
+  check('D-95', 'The Build page with the report fits the window, and only its columns scroll', fit.page <= fit.window && fit.column > fit.window, `page ${fit.page} px, window ${fit.window} px, report column ${fit.column} px`)
   await keyboard('NFR-6', 'Build page with the report')
   await bothThemes('02-build-1-report')
 
@@ -496,17 +504,26 @@ async function rehearse(): Promise<void> {
   check('AC-3', 'The report shows all 14 iteration 1 findings resolved and quotes the feedback', (await text('[data-test="changes-summary"]')) === '14 of 14 iteration 1 findings resolved.' && !!(await text('[data-test="changes-feedback"]')))
   // The stakeholder's feedback after M13 (D-80 to D-83): no iteration total, Reject on a passed
   // iteration 2, the context footprint within its budget, and the feedback shown going into the files.
-  const feedbackLook = await page.eval<{ badge: string; reject: string | null; context: string; files: number }>(`({
+  const feedbackLook = await page.eval<{ badge: string; reject: string | null; context: string; files: number; human: string; renamed: number; quad: string; note: string }>(`({
     badge: document.querySelector('[data-test="iteration-badge"]')?.textContent.trim() ?? '',
     reject: (() => { const b = document.querySelector('[data-test="report-actions"] [data-action="rebuild"]'); return b ? b.getAttribute('aria-disabled') : 'absent' })(),
     context: document.querySelector('[data-test="context-verdict"]')?.textContent.trim() ?? '',
     files: [...document.querySelectorAll('[data-test="routing-file"] [data-test="routing-state"]')].filter((c) => c.textContent.trim() === 'Updated').length,
+    human: document.querySelector('header [data-test="human-tag"] .chip')?.textContent.trim() ?? '',
+    renamed: [...document.querySelectorAll('[data-test="routing-renamed"]')].length,
+    quad: document.querySelector('[data-test="report-actions"] [data-action="quad-si"]')?.textContent.trim() ?? '',
+    note: document.querySelector('[data-test="console-note"]')?.textContent.trim() ?? '',
   })`)
   check(
     'D-81',
     'Iteration 2 reads "Iteration 2", offers Reject, shows the context footprint within budget and the feedback in all four files',
     feedbackLook.badge === 'Iteration 2' && feedbackLook.reject === null && feedbackLook.context === 'Within budget' && feedbackLook.files === 4,
     JSON.stringify(feedbackLook),
+  )
+  check(
+    'D-89 to D-92',
+    'Iteration 2 is tagged Human, two files step to their next version, the report offers QUAD SI and the console shows its note',
+    feedbackLook.human === 'Human' && feedbackLook.renamed === 2 && feedbackLook.quad === 'Initiate QUAD SI Review Protocol' && feedbackLook.note.startsWith('Language on the terminal'),
   )
   await bothThemes('05-build-2-report')
   const render2 = await dashboardRender()
@@ -526,6 +543,9 @@ async function rehearse(): Promise<void> {
     const body = new Uint8Array(await r.arrayBuffer())
     return { name: a.getAttribute('download'), bytes: body.length, dash: new TextDecoder().decode(body).includes(${JSON.stringify(EM_DASH)}), status: r.status }
   }))`)
+  const lock = await page.eval<string>(`document.querySelector('[data-test="seed"] [data-action="secure-lock"]')?.textContent.trim() ?? ''`)
+  const zipLink = await page.eval<string>(`document.querySelector('[data-test="seed"] [data-action="download-zip"]')?.textContent.trim() ?? ''`)
+  check('D-93', 'The Seed page has Secure and Lock in Secure Repository, and the "download" link beside it', lock === 'Secure and Lock in Secure Repository' && zipLink === 'download')
   check('AC-4', 'The three files and the zip download, with no em dash', downloads.length === 4 && downloads.every((d) => d.status === 200 && d.bytes > 0 && !d.dash), downloads.map((d) => `${d.name} ${d.bytes} B`).join(', '))
   await click('[data-test="feedback-toggle"]')
   await keyboard('NFR-6', 'Seed page')
@@ -535,11 +555,13 @@ async function rehearse(): Promise<void> {
   await screenshot('08-seed-preview')
   await press('Escape')
 
-  // A 1 MB file in the editor (NFR-3). Knowledge is still editable after approval.
-  const big = await api(`/api/intake/files`, {
-    method: 'POST',
+  // A 1 MB file in the editor (NFR-3). Knowledge is still editable after approval. Knowledge holds the
+  // four initiation files only (D-84), so Identity.md takes the 1 MB for this check and is put back after.
+  const identity = (await api<any[]>('/api/intake/files')).find((f) => f.category === 'person')
+  const big = await api(`/api/intake/files/${identity.id}`, {
+    method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: 'large-notes.md', category: 'misc_context', content: '# Large notes\n\n' + NOTE.repeat(Math.floor(1_000_000 / NOTE.length)) }),
+    body: JSON.stringify({ content: '# Large notes\n\n' + NOTE.repeat(Math.floor(1_000_000 / NOTE.length)) }),
   })
   await goto(`/knowledge?file=${big.id}`)
   await waitFor('the 1 MB file', `document.querySelector('[data-test="text"]')?.value.length > 900000`, 15)
@@ -567,7 +589,7 @@ async function rehearse(): Promise<void> {
   timings['slowest keystroke in a 1 MB file (ms)'] = slowest
   check('NFR-3', 'The editor stays responsive with a 1 MB file (each keystroke drawn within 100 ms)', typed.inputs >= 20 && typed.keys.length >= 20 && slowest < 100, `${typed.inputs} keystrokes, the slowest ${slowest} ms to its frame; size ${big.size} bytes`)
   await sleep(1500) // autosave
-  await api(`/api/intake/files/${big.id}`, { method: 'DELETE' }).catch(() => undefined)
+  await api(`/api/intake/files/${big.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content: identity.content }) })
 
   // A server restart keeps intake (AC-7) and the approved Seed.
   const before = await api<any[]>('/api/intake/files')
@@ -588,7 +610,7 @@ async function rehearse(): Promise<void> {
   const reset = await api('/api/state')
   check('AC-10', 'Shift+R resets to start, the approval included', reset.builds.length === 0 && reset.approval === null && reset.intake.files.length === 0)
   await shortcut('P')
-  await waitFor('the sample files', `document.querySelectorAll('[data-test="file-panel"] button.file').length === 5`, 15)
+  await waitFor('the sample files', `document.querySelectorAll('[data-test="file-panel"] button.file').length === 4`, 15)
   const again = await api<any[]>('/api/intake/files').then((files) => files.map((f) => [f.name, f.category, f.content]))
   const differs = again.filter((f, n) => JSON.stringify(f) !== JSON.stringify(sample[n])).map((f) => f[0])
   check('NFR-1', 'Reset then Load sample gives the same Knowledge, byte for byte', again.length === sample.length && !differs.length, differs.length ? `differs: ${differs.join(', ')}` : `${again.length} files`)

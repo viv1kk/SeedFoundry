@@ -1,4 +1,4 @@
-# SeedFoundry launcher for Windows, for machines where uv is blocked.
+# SeedFactory launcher for Windows, for machines where uv is blocked.
 #
 #   powershell -ExecutionPolicy Bypass -File .\run.ps1          start both processes
 #   powershell -ExecutionPolicy Bypass -File .\run.ps1 -Dev     also install test packages

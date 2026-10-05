@@ -217,6 +217,6 @@ describe('FR-IN-8: core checklist', () => {
     expect(complete().music).toBe(true)
     lab.snapshot!.intake.files.push({ id: 'f-2', name: 'person.md', category: 'person', content: '\n\n', size: 2 })
     expect(complete().person).toBe(false)
-    expect(intake.missing).toEqual(['Person', 'Instrument Awareness', 'Environment'])
+    expect(intake.missing).toEqual(['Identity.md', 'Tools_and_Skills.md', 'Environment.md'])
   })
 })

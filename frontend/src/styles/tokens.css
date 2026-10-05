@@ -2,7 +2,7 @@
  * Design tokens (D-21, D-37). Colour, type, radius and motion values are Seed v0.1's,
  * copied from docs/seed-reuse-notes.md section 1.3 and 1.4. Values the Seed docs leave
  * out (shadows, easing, chart grid and brush, scrollbar, font stacks, space steps) and
- * the console tokens are SeedFoundry's choices, recorded in D-37.
+ * the console tokens are SeedFactory's choices, recorded in D-37.
  *
  * Light on :root, dark under [data-theme='dark'] on <html>. No component knows the theme.
  * tests/contrast.spec.ts reads this file: every colour pair it checks must pass.

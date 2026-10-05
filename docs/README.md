@@ -1,6 +1,6 @@
-# SeedFoundry docs
+# SeedFactory docs
 
-SeedFoundry is a deterministic, offline, no-LLM simulation of a lab that takes Ensemble knowledge files, builds them into a Seed, runs and validates the Seed in a simulated sandbox, and improves it through one round of human feedback.
+SeedFactory is a deterministic, offline, no-LLM simulation of a lab that takes Ensemble knowledge files, builds them into a Seed, runs and validates the Seed in a simulated sandbox, and improves it through one round of human feedback.
 
 ## Document table
 
@@ -25,6 +25,6 @@ SeedFoundry is a deterministic, offline, no-LLM simulation of a lab that takes E
 1. The code > as-built notes in any doc.
 2. `requirements.md` (with amendments) > `ui-spec.md` and `build-simulation.md` > `project-notes.md`.
 3. `decisions.md` > `implementation-plan.md`.
-4. Any SeedFoundry doc > `seed_docs/` for SeedFoundry behaviour. `seed_docs/` wins only on what Seed v0.1 itself was (its data, its dashboard, its lifecycle, its visual language).
+4. Any SeedFactory doc > `seed_docs/` for SeedFactory behaviour. `seed_docs/` wins only on what Seed v0.1 itself was (its data, its dashboard, its lifecycle, its visual language).
 
 Struck-through text is superseded and kept for history.

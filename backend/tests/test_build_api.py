@@ -84,7 +84,7 @@ def test_start_refuses_missing_or_blank_core_files(api):
     assert response.status_code == 409
     assert response.json()["detail"] == {
         "code": "core_files_missing",
-        "message": "Start Build needs every core file. Missing: Person, Instrument Awareness, Environment, Music.",
+        "message": "Start Build needs every initiation file. Missing: Identity.md, Tools_and_Skills.md, Environment.md, Value.md.",
         "missing": CORE,
     }
     for category in CORE:
@@ -181,7 +181,7 @@ def test_reset_cancels_the_running_build_before_removing_it(api, clock):
     load(api)
     start(api)
     advance(api, clock, 6)
-    assert api.post("/api/demo/reset").json() == {"files_removed": 5, "builds_removed": 1}
+    assert api.post("/api/demo/reset").json() == {"files_removed": 4, "builds_removed": 1}
     after = state(api)
     assert after["builds"] == [] and after["intake"]["files"] == [] and after["iteration"] == 1
     assert not api.app.state.engine.running
@@ -249,10 +249,10 @@ def test_iteration_2_starts_by_api_after_a_completed_iteration_1(api, clock):
     plan = second.json()["plan"][0]["steps"]
     assert [s["name"] for s in plan[:5]] == [
         "Route feedback to Ensemble files",
-        "Update person.md",
-        "Update instrument-awareness.md",
-        "Update environment.md",
-        "Update music.md",
+        "Update Identity.md",
+        "Update Tools_and_Skills.md",
+        "Update Environment.md",
+        "Update Value.md",
     ]
     finish(api, clock)
     assert state(api)["iteration"] == 2

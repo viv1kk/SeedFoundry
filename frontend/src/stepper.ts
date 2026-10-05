@@ -125,12 +125,12 @@ export function derivePhases(build: Build, events: readonly LabEvent[]): PhaseVi
 
 // Feedback routing (FR-RB-8, D-83)
 
-/** The Ensemble files, by their Update sub-step, in plan order, with their screen category. */
+/** The Ensemble files, by their Update sub-step, in plan order, with their screen category (D-84). */
 const FEEDBACK_FILES = [
-  { step: 'assay.feedback-person', id: 'person', category: 'Person' },
-  { step: 'assay.feedback-instrument', id: 'instrument_awareness', category: 'Instrument Awareness' },
-  { step: 'assay.feedback-environment', id: 'environment', category: 'Environment' },
-  { step: 'assay.feedback-music', id: 'music', category: 'Music' },
+  { step: 'assay.feedback-person', id: 'person', category: 'Identity.md' },
+  { step: 'assay.feedback-instrument', id: 'instrument_awareness', category: 'Tools_and_Skills.md' },
+  { step: 'assay.feedback-environment', id: 'environment', category: 'Environment.md' },
+  { step: 'assay.feedback-music', id: 'music', category: 'Value.md' },
 ] as const
 
 export interface RoutedSection {
@@ -144,8 +144,10 @@ export interface RoutedFile {
   step: string
   /** The intake category id (`person`, `instrument_awareness`, ...). */
   id: string
-  /** The file's name as the build logged it, else from its sub-step ("Update person.md"). */
+  /** The file's name as the build logged it, else from its sub-step ("Update Identity.md"). */
   name: string
+  /** Its next version's name, once its Update sub-step has stepped it (Environment_02.md, D-85). */
+  renamed: string | null
   category: string
   /** pending until the routing names a segment for it; then its Update sub-step's state. */
   state: StepState
@@ -188,6 +190,7 @@ export function feedbackRouting(build: Build, events: readonly LabEvent[]): Feed
       id,
       name: steps.find((s) => s.id === step)?.name.replace(/^Update /, '') ?? category,
       category,
+      renamed: null,
       state: 'pending' as StepState,
       segments: [],
       sections: [],
@@ -227,6 +230,7 @@ export function feedbackRouting(build: Build, events: readonly LabEvent[]): Feed
     const file = byStep.get(step)
     if (!file) continue
     if (typeof data.file === 'string') file.name = data.file
+    if (typeof data.renamed === 'string') file.renamed = data.renamed
     const added = numbers(data.segments)
     if (typeof data.section === 'string' && added.length && typeof data.lines_added === 'number' && data.lines_added > 0) {
       file.sections.push({ section: data.section, segments: added, lines: data.lines_added, created: Boolean(data.created) })

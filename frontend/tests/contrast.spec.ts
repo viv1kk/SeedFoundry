@@ -76,7 +76,7 @@ const BOTH: ThemeName[] = ['light', 'dark']
 const SURFACES = ['--surface-base', '--surface-raised', '--surface-sunken', '--surface-overlay']
 const SELECTED_ROW = '--accent-subtle'
 const TEXT = ['--text-primary', '--text-secondary', '--text-muted']
-// SeedFoundry also sets status and accent colours as text (chips, links, the iteration badge).
+// SeedFactory also sets status and accent colours as text (chips, links, the iteration badge).
 const COLOURED_TEXT = ['--accent', '--status-positive', '--status-warning', '--status-negative', '--status-neutral']
 const FILLED_ROLES = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `--chart-series-${n}`).concat(
   ['positive', 'warning', 'negative', 'anomaly'].map((role) => `--chart-${role}`),

@@ -15,24 +15,24 @@ type Row = [id: string, name: string, weight: number, steps: [string, string, nu
 const CATALOGUE: Row[] = [
   ['assay', 'Assay', 6, [
     ['feedback-route', 'Route feedback to Ensemble files', 2],
-    ['feedback-person', 'Update person.md', 2],
-    ['feedback-instrument', 'Update instrument-awareness.md', 2],
-    ['feedback-environment', 'Update environment.md', 2],
-    ['feedback-music', 'Update music.md', 2],
+    ['feedback-person', 'Update Identity.md', 2],
+    ['feedback-instrument', 'Update Tools_and_Skills.md', 2],
+    ['feedback-environment', 'Update Environment.md', 2],
+    ['feedback-music', 'Update Value.md', 2],
     ['inventory', 'Inventory files'],
     ['coverage', 'Measure Ensemble coverage per file'],
     ['boundary', 'Ensemble boundary check'],
     ['fingerprint', 'Fingerprint intake'],
   ], [['T-01', 'Core files present'], ['T-02', 'Ensemble coverage'], ['T-03', 'Ensemble boundary check']]],
   ['distill', 'Distillation', 12, [
-    ['profile', 'Load model profile from Instrument Awareness'],
+    ['profile', 'Load model profile from Tools_and_Skills.md'],
     ['budget', 'Plan context budget'],
-    ['music', 'Distil Music'],
-    ['person', 'Distil Person'],
-    ['environment', 'Distil Environment layers'],
-    ['context', 'Merge Misc Context'],
+    ['music', 'Distil Value.md'],
+    ['person', 'Distil Identity.md'],
+    ['environment', 'Distil Environment.md layers'],
+    ['context', 'Merge context notes'],
     ['feedback', 'Ingest observer feedback and prior findings', 2],
-  ], [['T-04', 'All Music sections extracted']]],
+  ], [['T-04', 'All Value.md sections extracted']]],
   ['synth', 'Synthesis', 10, [['core', 'Draft core.md'], ['adaptation', 'Draft adaptation.md'], ['protection', 'Draft protection.md'], ['manifest', 'Assemble Seed manifest']], [['T-05', 'Manifest schema valid']]],
   ['xexam', 'Cross-Examination', 8, [['core', 'Reviewer pass on core'], ['layers', 'Reviewer pass on adaptation and protection'], ['resolve', 'Resolve contradictions'], ['signoff', 'Sign off drafts']], [['T-06', 'No contradictions between files']]],
   ['germ', 'Germination Trial', 8, [['dry-run', 'Dry run on micro dataset'], ['data-swap', 'Data-swap test on alternate dataset'], ['shape', 'Output shape check']], [['T-07', 'Dry run completes'], ['T-08', 'Data-swap logic unchanged']]],
@@ -96,6 +96,8 @@ export interface ScriptOptions {
 type Data = Record<string, unknown>
 const placed = (segment: number, file: string, category: string, section: string, matched: string[]): Data => ({ segment, file, category, section, matched })
 const updated = (file: string, section: string, segments: number[], lines_added: number): Data => ({ file, section, segments, lines_added, created: false })
+/** A versioned name stepping to its next version (D-85). */
+const renamed = (file: string, category: string, next: string): Data => ({ file, category, renamed: next })
 
 /**
  * The routing log lines of the demo's feedback, by sub-step, with the data the backend gives them
@@ -104,26 +106,30 @@ const updated = (file: string, section: string, segments: number[], lines_added:
 export const DEMO_ROUTING: Record<string, [message: string, data: Data][]> = {
   'assay.feedback-route': [
     ['Read observer-feedback-iteration-1.md: 10 segments, 1,812 bytes', { segments: 10, bytes: 1812 }],
-    ['Segment 1 to environment.md, Data Layer: totals', placed(1, 'environment.md', 'environment', 'Data Layer', ['totals'])],
-    ['Segment 2 to environment.md, Styling: pie, slices', placed(2, 'environment.md', 'environment', 'Styling', ['pie', 'slices'])],
-    ['Segment 3 to environment.md, Styling: red', placed(3, 'environment.md', 'environment', 'Styling', ['red'])],
-    ['Segment 4 to environment.md, Styling: number formats', placed(4, 'environment.md', 'environment', 'Styling', ['number formats'])],
-    ['Segment 5 to environment.md, Styling: misaligned', placed(5, 'environment.md', 'environment', 'Styling', ['misaligned'])],
-    ['Segment 6 to environment.md, User Experience: spinner', placed(6, 'environment.md', 'environment', 'User Experience', ['spinner'])],
-    ['Segment 7 to instrument-awareness.md, Model Behaviour: language model', placed(7, 'instrument-awareness.md', 'instrument_awareness', 'Model Behaviour', ['language model'])],
-    ['Segment 8 to person.md, Reasoning methods: reasoning', placed(8, 'person.md', 'person', 'Reasoning methods', ['reasoning'])],
-    ['Segment 9 to music.md, Value Logic: value', placed(9, 'music.md', 'music', 'Value Logic', ['value'])],
+    ['Segment 1 to Environment_01.md, Data Layer: totals', placed(1, 'Environment_01.md', 'environment', 'Data Layer', ['totals'])],
+    ['Segment 2 to Environment_01.md, Styling: pie, slices', placed(2, 'Environment_01.md', 'environment', 'Styling', ['pie', 'slices'])],
+    ['Segment 3 to Environment_01.md, Styling: red', placed(3, 'Environment_01.md', 'environment', 'Styling', ['red'])],
+    ['Segment 4 to Environment_01.md, Styling: number formats', placed(4, 'Environment_01.md', 'environment', 'Styling', ['number formats'])],
+    ['Segment 5 to Environment_01.md, Styling: misaligned', placed(5, 'Environment_01.md', 'environment', 'Styling', ['misaligned'])],
+    ['Segment 6 to Environment_01.md, User Experience: spinner', placed(6, 'Environment_01.md', 'environment', 'User Experience', ['spinner'])],
+    ['Segment 7 to Tools_and_Skills.md, Model Behaviour: language model', placed(7, 'Tools_and_Skills.md', 'instrument_awareness', 'Model Behaviour', ['language model'])],
+    ['Segment 8 to Identity.md, Reasoning methods: reasoning', placed(8, 'Identity.md', 'person', 'Reasoning methods', ['reasoning'])],
+    ['Segment 9 to Value_0001.md, Value Logic: value', placed(9, 'Value_0001.md', 'music', 'Value Logic', ['value'])],
     ['Segment 10 kept in observer-feedback-iteration-1.md only: it fits no Ensemble file', { segment: 10, kept: true }],
     ['Routed 9 of 10 segments to 4 files; 1 kept in observer-feedback-iteration-1.md only', { routed: 9, kept: [10], files: 4 }],
   ],
-  'assay.feedback-person': [['person.md: +4 lines in Reasoning methods (segment 8)', updated('person.md', 'Reasoning methods', [8], 4)]],
-  'assay.feedback-instrument': [['instrument-awareness.md: +4 lines in Model Behaviour (segment 7)', updated('instrument-awareness.md', 'Model Behaviour', [7], 4)]],
+  'assay.feedback-person': [['Identity.md: +4 lines in Reasoning methods (segment 8)', updated('Identity.md', 'Reasoning methods', [8], 4)]],
+  'assay.feedback-instrument': [['Tools_and_Skills.md: +4 lines in Model Behaviour (segment 7)', updated('Tools_and_Skills.md', 'Model Behaviour', [7], 4)]],
   'assay.feedback-environment': [
-    ['environment.md: +10 lines in Styling (segments 2, 3, 4, 5)', updated('environment.md', 'Styling', [2, 3, 4, 5], 10)],
-    ['environment.md: +4 lines in User Experience (segment 6)', updated('environment.md', 'User Experience', [6], 4)],
-    ['environment.md: +4 lines in Data Layer (segment 1)', updated('environment.md', 'Data Layer', [1], 4)],
+    ['Environment_01.md: +10 lines in Styling (segments 2, 3, 4, 5)', updated('Environment_01.md', 'Styling', [2, 3, 4, 5], 10)],
+    ['Environment_01.md: +4 lines in User Experience (segment 6)', updated('Environment_01.md', 'User Experience', [6], 4)],
+    ['Environment_01.md: +4 lines in Data Layer (segment 1)', updated('Environment_01.md', 'Data Layer', [1], 4)],
+    ['Environment_01.md is now Environment_02.md: the next version of the file', renamed('Environment_01.md', 'environment', 'Environment_02.md')],
   ],
-  'assay.feedback-music': [['music.md: +4 lines in Value Logic (segment 9)', updated('music.md', 'Value Logic', [9], 4)]],
+  'assay.feedback-music': [
+    ['Value_0001.md: +4 lines in Value Logic (segment 9)', updated('Value_0001.md', 'Value Logic', [9], 4)],
+    ['Value_0001.md is now Value_0002.md: the next version of the file', renamed('Value_0001.md', 'music', 'Value_0002.md')],
+  ],
 }
 
 /** The sample's findings by phase, and the tests that find them (D-63). */
@@ -214,7 +220,7 @@ export function script(options: ScriptOptions = {}): LabEvent[] {
       if (i === phase.steps.length - 1) {
         const findings = result === 'findings' ? (SAMPLE_FINDINGS[phase.id] ?? [['N-1', phase.tests[0]?.id ?? '']]) : []
         if (options.advisoryIn === phase.id) {
-          emit('finding.raised', 'B-UI-1 music.md line 69: "pie chart" belongs in environment.md, Styling (advisory)', { ...inStep, level: 'WARN', code: 'B-UI-1', sim_t: t(), data: { id: 'B-UI-1', advisory: true } })
+          emit('finding.raised', 'B-UI-1 Value_0001.md line 69: "pie chart" belongs in Environment.md, Styling (advisory)', { ...inStep, level: 'WARN', code: 'B-UI-1', sim_t: t(), data: { id: 'B-UI-1', advisory: true } })
         }
         for (const test of phase.tests) {
           for (const [id, by] of findings.filter(([, t]) => t === test.id)) {

@@ -136,7 +136,7 @@ describe('route (D-54 (g), closes OQ-18)', () => {
   it('says when iteration 1 has no build, and points to Knowledge', async () => {
     await open('/build/1')
     expect(text('[data-test="no-build"]')).toBe(
-      'Build, iteration 1 No build for iteration 1 yet. Start Build is on the Knowledge page once the four core files are in. Go to Knowledge',
+      'Build, iteration 1 No build for iteration 1 yet. Start Build is on the Knowledge page once the four initiation files are in. Go to Knowledge',
     )
     expect($('[data-test="no-build"] a')?.getAttribute('href')).toBe('/knowledge')
   })
@@ -316,12 +316,12 @@ describe('stepper (FR-B-3)', () => {
     expect(text('[data-test="phase"]:first-child [data-test="phase-chip"]')).toBe('Passed')
     expect(distill.dataset.state).toBe('active')
     expect(Array.from(distill.querySelectorAll<HTMLElement>('[data-test="step"]')).map((s) => [s.querySelector('.step__name')?.textContent, s.dataset.state, s.querySelector('[data-test="step-state"]')?.textContent])).toEqual([
-      ['Load model profile from Instrument Awareness', 'done', 'load model profile from instrument awareness done'],
+      ['Load model profile from Tools_and_Skills.md', 'done', 'load model profile from tools_and_skills.md done'],
       ['Plan context budget', 'done', 'plan context budget done'],
-      ['Distil Music', 'active', 'active'],
-      ['Distil Person', 'pending', 'pending'],
-      ['Distil Environment layers', 'pending', 'pending'],
-      ['Merge Misc Context', 'pending', 'pending'],
+      ['Distil Value.md', 'active', 'active'],
+      ['Distil Identity.md', 'pending', 'pending'],
+      ['Distil Environment.md layers', 'pending', 'pending'],
+      ['Merge context notes', 'pending', 'pending'],
     ])
     expect(synth.dataset.state).toBe('pending')
     expect(synth.querySelector('[data-test="phase-chip"]')).toBeNull()
@@ -364,10 +364,10 @@ describe('stepper (FR-B-3)', () => {
     expect(grouped.map((s) => [s.querySelector('.step__name')?.textContent, s.querySelector('[data-test="step-state"]')?.textContent])).toEqual([
       // D-71: the real routing's summaries (D-68), where D-52's stub said "no change".
       ['Route feedback to Ensemble files', '9 of 10 segments to 4 files'],
-      ['Update person.md', '+4 lines in Reasoning methods'],
-      ['Update instrument-awareness.md', '+4 lines in Model Behaviour'],
-      ['Update environment.md', '+10 lines in Styling; +4 lines in User Experience; +4 lines in Data Layer'],
-      ['Update music.md', 'active'],
+      ['Update Identity.md', '+4 lines in Reasoning methods'],
+      ['Update Tools_and_Skills.md', '+4 lines in Model Behaviour'],
+      ['Update Environment.md', '+10 lines in Styling; +4 lines in User Experience; +4 lines in Data Layer'],
+      ['Update Value.md', 'active'],
     ])
     expect(assay.querySelectorAll('[data-test="step"]')).toHaveLength(9)
   })
@@ -399,12 +399,13 @@ describe('observer feedback into Knowledge (D-83)', () => {
     expect(text('[data-test="feedback-routing"] h2')).toBe('Observer feedback into Knowledge')
     expect(text('[data-test="routing-lead"]')).toBe('observer-feedback-iteration-1.md: 10 segments. 9 routed to 4 Ensemble files, 1 kept in the feedback file.')
     expect(tiles()).toEqual([
-      ['person.md', 'Updated', 'Segment 8 routed here.'],
-      ['instrument-awareness.md', 'Updated', 'Segment 7 routed here.'],
-      ['environment.md', 'Updating', 'Segments 1, 2, 3, 4, 5, 6 routed here.'],
-      ['music.md', 'Waiting', 'Segment 9 routed here.'],
+      ['Identity.md', 'Updated', 'Segment 8 routed here.'],
+      ['Tools_and_Skills.md', 'Updated', 'Segment 7 routed here.'],
+      ['Environment_01.md', 'Updating', 'Segments 1, 2, 3, 4, 5, 6 routed here.'],
+      ['Value_0001.md', 'Waiting', 'Segment 9 routed here.'],
     ])
-    expect($$('[data-test="routing-file"]').map((t) => t.querySelector('.caps-label')?.textContent)).toEqual(['Person', 'Instrument Awareness', 'Environment', 'Music'])
+    // The category's screen name shows where the file's own name differs (D-84).
+    expect($$('[data-test="routing-file"]').map((t) => t.querySelector('.caps-label')?.textContent)).toEqual([undefined, undefined, 'Environment.md', 'Value.md'])
     expect(text('[data-test="routing-file"][data-category="person"] [data-test="routing-sections"]')).toBe('+4 lines in Reasoning methods')
     expect(text('[data-test="routing-kept"] .tile__note')).toBe('Segment 10: fits no Ensemble file.')
   })
@@ -415,8 +416,28 @@ describe('observer feedback into Knowledge (D-83)', () => {
     expect(text('[data-test="routing-file"][data-category="environment"] [data-test="routing-sections"]')).toBe(
       '+10 lines in Styling +4 lines in User Experience +4 lines in Data Layer',
     )
+    // A versioned name steps to its next version as its Update sub-step plays (D-85).
+    expect($$('[data-test="routing-renamed"]').map((el) => el.textContent?.replace(/\s+/g, ' ').trim())).toEqual([
+      'Now Environment_02.md, its next version.',
+      'Now Value_0002.md, its next version.',
+    ])
     const report = $('[data-test="build-report"]')!
     expect(report.compareDocumentPosition($('[data-test="feedback-routing"]')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+})
+
+describe('console note (D-89)', () => {
+  it('says under the bar that the language is capped to English, outside the scrolling log, paused or not', async () => {
+    const build = buildRecord({ id: 'b-1', iteration: 1, status: 'completed' })
+    serverAt(script({ build }), build)
+    await open('/build/1')
+    const note = $('[data-test="console-note"]')!
+    expect(note.textContent?.trim()).toBe('Language on the terminal and .md file capped to English Language. Actual messages may be unreadable.')
+    expect(note.previousElementSibling?.matches('.console__bar')).toBe(true)
+    expect($('[data-test="console-body"]')!.contains(note)).toBe(false)
+    await click($('[data-test="console-pause"]'))
+    expect($('[data-test="console-note"]')).toBe(note)
+    expect(note.nextElementSibling?.getAttribute('data-test')).toBe('console-paused')
   })
 })
 
@@ -555,9 +576,10 @@ describe('completion hand-off (FR-B-9, D-54 (f), D-65)', () => {
     await openCompleted()
     const actions = $$('[data-test="report-actions"] button')
     expect(actions.map((b) => [b.textContent?.trim(), b.getAttribute('aria-disabled')])).toEqual([
-      ['View Dashboard', null],
+      ['View Agentic Solution', null],
       ['Reject', null],
       ['Approve', null],
+      ['Initiate QUAD SI Review Protocol', null],
     ])
     expect(actions[2].hasAttribute('disabled')).toBe(false)
     await click(actions[1])
@@ -574,9 +596,10 @@ describe('completion hand-off (FR-B-9, D-54 (f), D-65)', () => {
     await openCompleted(2)
     const actions = $$('[data-test="report-actions"] button')
     expect(actions.map((b) => [b.textContent?.trim(), b.getAttribute('aria-disabled')])).toEqual([
-      ['View Dashboard', null],
+      ['View Agentic Solution', null],
       ['Reject', null],
       ['Approve', null],
+      ['Initiate QUAD SI Review Protocol', null],
     ])
     expect(text('[data-test="report-verdict"]')).toBe('Passed')
     await click(actions[1])

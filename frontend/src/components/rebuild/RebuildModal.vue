@@ -109,9 +109,7 @@ async function start(): Promise<void> {
         <div class="rebuild__meta">
           <span class="caps-label">Name</span>
           <span class="rebuild__name" data-test="feedback-name">{{ rebuild.name }}</span>
-          <span class="caps-label">Category</span>
-          <span class="rebuild__category">Misc Context</span>
-          <span class="rebuild__hint">Saved to Knowledge when the rebuild starts.</span>
+          <span class="rebuild__hint">Kept with the build when the rebuild starts, and routed into the initiation files.</span>
         </div>
         <MarkdownEditor :text="rebuild.draft" :label="`Content of ${rebuild.name}`" :placeholder="placeholder" @input="rebuild.draft = $event" />
       </section>
@@ -217,10 +215,6 @@ async function start(): Promise<void> {
 
 .rebuild__name {
   font-family: var(--font-mono);
-  font-size: var(--text-sm);
-}
-
-.rebuild__category {
   font-size: var(--text-sm);
 }
 

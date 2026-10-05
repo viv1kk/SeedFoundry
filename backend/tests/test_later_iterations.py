@@ -18,7 +18,10 @@ from seedfoundry.intake.routing import heading
 from seedfoundry.main import create_app
 from seedfoundry.sample import demo_feedback
 from test_no_em_dash import em_dashes
-from test_rebuild import CORE, files_by_name, finish, two_iterations
+from test_rebuild import AFTER, files_by_name, finish, two_iterations
+
+# The core files after iteration 3: each versioned name has stepped twice (D-85).
+THIRD = ("Identity.md", "Tools_and_Skills.md", "Environment_03.md", "Value_0003.md")
 
 
 @pytest.fixture
@@ -52,15 +55,17 @@ def test_rejecting_iteration_2_starts_iteration_3_from_its_feedback(api, clock):
     plan = state["builds"][2]["plan"]
     assert len(plan) == 11 and [s["name"] for s in plan[0]["steps"][:5]] == [
         "Route feedback to Ensemble files",
-        "Update person.md",
-        "Update instrument-awareness.md",
-        "Update environment.md",
-        "Update music.md",
+        "Update Identity.md",
+        "Update Tools_and_Skills.md",
+        "Update Environment.md",
+        "Update Value.md",
     ]
     files = files_by_name(api)
     assert files[feedback_name(2)]["content"] == demo_feedback(2) and files[feedback_name(2)]["category"] == "misc_context"
     assert files[feedback_name(1)]["content"] == demo_feedback(1)  # the first feedback stays as it was
-    for name in CORE:  # the demo's refinements reach every core file, after the iteration 1 feedback
+    # Each versioned name stepped once per iteration whose feedback changed the file (D-85).
+    assert [n for n in files if n != feedback_name(1) and n != feedback_name(2)] == list(THIRD)
+    for name in THIRD:  # the demo's refinements reach every core file, after the iteration 1 feedback
         content = files[name]["content"]
         assert f"### {heading(1)}" in content and f"### {heading(2)}" in content
 
@@ -73,7 +78,7 @@ def test_iteration_3_replays_iteration_2s_outcome(api, clock):
     changes = third["changes"]
     assert changes["prior_build_id"] == "b-2" and changes["findings"] == [] and changes["resolved"] == changes["open"] == 0
     assert changes["feedback"]["name"] == feedback_name(2) and changes["feedback"]["content"] == demo_feedback(2)
-    assert {u["file"] for u in changes["updates"]} == set(CORE)
+    assert {u["file"] for u in changes["updates"]} == set(AFTER.values())  # the names iteration 3 started from
     events = api.get("/api/builds/b-3/events").json()["events"]
     messages = [e["message"] for e in events]
     assert f"Read {feedback_name(2)}: 6 segments, {len(demo_feedback(2).encode())} bytes" in messages

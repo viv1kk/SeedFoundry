@@ -23,7 +23,7 @@ One record per entitled seat.
 | `assignee_status` | `employed` or `left` | LMS, synced from the staff directory |
 | `last_used` | Date of the last recorded use | LMS |
 | `days_idle` | Days from `last_used` to the snapshot date | derived |
-| `utilisation_class` | Active, Underused, Unused, Leaver or Unassigned, as music.md defines them | derived |
+| `utilisation_class` | Active, Underused, Unused, Leaver or Unassigned, as Value.md defines them | derived |
 | `unit_cost` | Price per seat-month in USD; empty when the contract states none | SAP |
 
 ### Usage
@@ -112,7 +112,7 @@ Four bands, in this order:
 
 ### Situation
 
-- The analysis runs ahead of each vendor renewal, so that seats can be returned within the renewal window (see vendor-notes.md).
+- The analysis runs ahead of each vendor renewal, so that seats can be returned within the renewal window.
 - Readers are budget holders and the procurement team, not license specialists: plain words, no internal codes.
 
 ## Protection Layer

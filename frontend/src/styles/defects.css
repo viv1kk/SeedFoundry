@@ -1,7 +1,7 @@
 /* Iteration 1 defect overlay, styles layer (D-13, D-60, seed-reuse-notes.md section 5.8).
    Loaded only when a dashboard's descriptor names this sheet, which only iteration 1's rough
    descriptor does, and every rule sits under .defects-overlay, the class only that dashboard's
-   root element carries. Nothing here can reach SeedFoundry's own UI (R-1, a test). The rules
+   root element carries. Nothing here can reach SeedFactory's own UI (R-1, a test). The rules
    break the design system on purpose, and each names its defect. No colour value is written
    here: V-8's grey is a border token used as text. */
 

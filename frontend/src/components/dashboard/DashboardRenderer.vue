@@ -3,7 +3,7 @@
 // twelve-column grid with one gutter, each panel drawn by its mark at its span. Nothing here is
 // specific to License Optimization; the descriptor says what to draw and the payload what with.
 // A highlighted panel (a finding opened from the report, D-65) is outlined in the accent, the
-// selection colour: SeedFoundry's own style, outside the defect overlay's sheet, on the panel's
+// selection colour: SeedFactory's own style, outside the defect overlay's sheet, on the panel's
 // own `[data-panel]` element so the outline follows a card the overlay moved.
 import { computed } from 'vue'
 import type { Descriptor, Payload, SortDirection, Step } from '../../dashboard/types'

@@ -1,4 +1,4 @@
-# SeedFoundry: Implementation plan
+# SeedFactory: Implementation plan
 
 Status values: Not started, In progress, Done, Blocked. Update the table and add a build log entry at the end of every milestone.
 
@@ -21,6 +21,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | F. Ship | M12 | Hardening, operator guide, rehearsal | Done (2026-10-04) | `351a1c7` |
 | | M13 | As-built reconciliation | Done (2026-10-04) | "M13: as-built reconciliation", the commit after `351a1c7` |
 | G. Feedback | CR-1 | Stakeholder feedback after M13: open-ended iterations, Reject everywhere, context footprint, feedback routing panel | Done (2026-10-04) | the commit after `a50bd81` |
+| | CR-2 | Demo feedback: SeedFactory, initiation files and versioned names, Human tag, console note, View Agentic Solution, QUAD SI, Secure and Lock | Done (2026-10-05) | the commit after `b363cd3` |
 
 *As built (M13):* the Commit column was added in M13, as Seed v0.1's status table had one (`seed-reuse-notes.md` §7).
 
@@ -95,7 +96,7 @@ seedfoundry/
 *As built (summary, M13):* the repository as it is at M13, top levels, with what each folder holds. Files listed by name where a folder's purpose is the file.
 
 ```
-SeedFoundry/                       # the repository root; no wrapper folder
+SeedFoundry/                       # the repository root (the folder keeps its first name, D-87); no wrapper folder
   CLAUDE.md                        # one line: @docs/CLAUDE.md
   run.py                           # launch both processes, or `run.py test` for both suites (D-23, D-78)
   run.ps1                          # Windows, where uv is blocked: pip into backend/.venv, then run.py (D-25)
@@ -183,13 +184,13 @@ Each milestone lists scope, exit criteria and hand checks. Tag changes in the bu
 - **Hand check:** run a build at 1x end to end; nothing jumps or flickers.
 
 ### M7: Polished dashboard
-- **Scope:** License Optimization data (primary and alternate for data-swap), descriptor, all panels as in reuse notes, polished per Seed v0.1, "Back to report" frame. *Added by D-29 and D-30:* ~~a data generator that reproduces the headline figures in `seed-reuse-notes.md` §5.5 exactly~~ a seeded data generator for SeedFoundry's own estate that follows the methodology and meets the constraints in `seed-reuse-notes.md` §5.7; the drill hierarchy as data; one filter context and a query engine that aggregates from seat rows; drill bar with breadcrumb and Back; drill path in the URL; the Seats table paginated at the deepest level.
+- **Scope:** License Optimization data (primary and alternate for data-swap), descriptor, all panels as in reuse notes, polished per Seed v0.1, "Back to report" frame. *Added by D-29 and D-30:* ~~a data generator that reproduces the headline figures in `seed-reuse-notes.md` §5.5 exactly~~ a seeded data generator for SeedFactory's own estate that follows the methodology and meets the constraints in `seed-reuse-notes.md` §5.7; the drill hierarchy as data; one filter context and a query engine that aggregates from seat rows; drill bar with breadcrumb and Back; drill path in the URL; the Seats table paginated at the deepest level.
 - **Exit:** numeric reconciliation on polished payload passes; visual QA rules pass (validators can be minimal here and completed in M9). *Added by D-29:* query engine matches row-level ground truth at every hierarchy level (test); reload keeps the drill path; browser Back pops one step.
 - **Hand check:** side by side with Seed v0.1 screenshots or descriptions; reads as the same dashboard. Drill from the treemap to one product's Unused seats and back.
 
 ### M8: Defect overlay
 - **Scope:** descriptor patches and scoped `defects.css` implementing N-1..N-5, V-1..V-8, L-1, figures derived from data.
-- **Exit:** overlay applies only to iteration 1 dashboard (test); SeedFoundry UI contrast test still passes. *Added by D-29:* the overlay stays applied at a sample of drill levels (test, R-9).
+- **Exit:** overlay applies only to iteration 1 dashboard (test); SeedFactory UI contrast test still passes. *Added by D-29:* the overlay stays applied at a sample of drill levels (test, R-9).
 - **Hand check:** a first-time viewer would call it unfinished within five seconds.
 
 ### M9: Validators and report
@@ -219,6 +220,10 @@ Each milestone lists scope, exit criteria and hand checks. Tag changes in the bu
 ### CR-1: Stakeholder feedback after M13
 - **Scope:** no iteration total on screen (D-80); Reject (Rebuild renamed) and Approve on every report, and iteration n + 1 from a rejected iteration n, iteration 3 on replaying iteration 2's outcome (D-81, A-7); the Seed files' context footprint in the report against a 20% budget (D-82, A-8); a Build page panel showing the feedback going into the four files (D-83).
 - **Exit:** both suites and the rehearsal pass; iterations 1 and 2 give the same files and reports as at M13; the docs say what the code does.
+
+### CR-2: Demo feedback
+- **Scope:** rename to SeedFactory in visible text and docs (D-87); the four initiation files only, renamed Identity.md, Tools_and_Skills.md, Environment.md and Value.md everywhere, with no Misc Context on screen and no vendor notes in the sample (D-84); files named by their category on add and versioned by each iteration that changes them (D-85); the Seed file beside each initiation file (D-86); the console's language note (D-89); the Human tag (D-90); View Agentic Solution (D-91); Initiate QUAD SI Review Protocol (D-92); Secure and Lock in Secure Repository with a download link (D-93); the footprint note's wording (D-94).
+- **Exit:** both suites, `npm run build` and the rehearsal pass; the docs say what the code does.
 
 ## 4. Safety gates (every milestone)
 

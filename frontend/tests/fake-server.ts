@@ -30,14 +30,20 @@ import type { IntakeFile } from '../src/intake'
 import type { Approval, Build, Snapshot } from '../src/stores/lab'
 
 export const CATEGORIES = {
+  // The four initiation files only (D-84), each with the name a file gets when added (D-85) and the
+  // Seed file shown beside it (D-86), as the server serves them.
   categories: [
-    { id: 'person', label: 'Person', core: true, description: 'Who does the work.' },
-    { id: 'instrument_awareness', label: 'Instrument Awareness', core: true, description: 'Which tool it uses.' },
-    { id: 'environment', label: 'Environment', core: true, description: 'Where the work happens.' },
-    { id: 'music', label: 'Music', core: true, description: 'Why the work exists.' },
-    { id: 'misc_context', label: 'Misc Context', core: false, description: 'Anything else worth knowing.' },
+    { id: 'person', label: 'Identity.md', core: true, description: 'Who does the work.', file_name: 'Identity.md', seed_file: null },
+    { id: 'instrument_awareness', label: 'Tools_and_Skills.md', core: true, description: 'Which tool it uses.', file_name: 'Tools_and_Skills.md', seed_file: 'protection.md' },
+    { id: 'environment', label: 'Environment.md', core: true, description: 'Where the work happens.', file_name: 'Environment_01.md', seed_file: 'adaptation.md' },
+    { id: 'music', label: 'Value.md', core: true, description: 'Why the work exists.', file_name: 'Value_0001.md', seed_file: 'core.md' },
   ],
   filename_hints: {
+    'identity.md': 'person',
+    'tools_and_skills.md': 'instrument_awareness',
+    'environment_01.md': 'environment',
+    'value_0001.md': 'music',
+    'value.md': 'music',
     'person.md': 'person',
     'player.md': 'person',
     'instrument-awareness.md': 'instrument_awareness',
@@ -50,19 +56,19 @@ export const CATEGORIES = {
 
 const SAMPLE_DIR = resolve(__dirname, '../../backend/seedfoundry/sample')
 
-/** The sample Seed in load order, line ends normalised as the server stores them. */
+/** The sample Seed in load order, named as Knowledge names it (D-85), line ends normalised as the
+ * server stores them. No Misc Context file since D-84. */
 export const SAMPLE = (
   [
-    ['person.md', 'person'],
-    ['instrument-awareness.md', 'instrument_awareness'],
-    ['environment.md', 'environment'],
-    ['music.md', 'music'],
-    ['vendor-notes.md', 'misc_context'],
+    ['person.md', 'Identity.md', 'person'],
+    ['instrument-awareness.md', 'Tools_and_Skills.md', 'instrument_awareness'],
+    ['environment.md', 'Environment_01.md', 'environment'],
+    ['music.md', 'Value_0001.md', 'music'],
   ] as const
-).map(([name, category]) => ({
+).map(([source, name, category]) => ({
   name,
   category,
-  content: readFileSync(resolve(SAMPLE_DIR, name), 'utf8').replace(/\r\n?/g, '\n'),
+  content: readFileSync(resolve(SAMPLE_DIR, source), 'utf8').replace(/\r\n?/g, '\n'),
 }))
 
 /** The demo's observer feedback (Prefill, D-68), as the server serves it. */
@@ -113,7 +119,7 @@ export function sampleBuildEvents(): LabEvent[] {
   return JSON.parse(readFileSync(resolve(REPORT_DIR, 'iteration-1-events.json'), 'utf8'))
 }
 
-const LABELS: Record<string, string> = Object.fromEntries(CATEGORIES.categories.map((c) => [c.id, c.label]))
+const LABELS: Record<string, string> = { ...Object.fromEntries(CATEGORIES.categories.map((c) => [c.id, c.label])), misc_context: 'Misc Context' }
 const CORE = new Set(CATEGORIES.categories.filter((c) => c.core).map((c) => c.id))
 
 export interface Call {
@@ -313,7 +319,7 @@ export class FakeServer {
       const missing = [...CORE].filter((c) => !this.files.some((f) => f.category === c && f.content.trim()))
       if (missing.length) {
         const labels = missing.map((c) => LABELS[c]).join(', ')
-        return refusal(409, 'core_files_missing', `Start Build needs every core file. Missing: ${labels}.`, { missing })
+        return refusal(409, 'core_files_missing', `Start Build needs every initiation file. Missing: ${labels}.`, { missing })
       }
       const body = (call.body ?? {}) as { iteration?: number; feedback?: string }
       const current = this.iteration
@@ -371,7 +377,8 @@ export class FakeServer {
     }
     if (method === 'POST' && (path === '/api/intake/files' || path === '/api/intake/import')) {
       const json = (path === '/api/intake/import' ? {} : call.body) as Record<string, unknown>
-      const name = String(path === '/api/intake/import' ? call.query.filename : json.name).trim()
+      // An import may take another name in Knowledge than the file's own (D-85).
+      const name = String(path === '/api/intake/import' ? (call.query.name ?? call.query.filename) : json.name).trim()
       const category = String(path === '/api/intake/import' ? call.query.category : json.category)
       const replace = path === '/api/intake/import' ? call.query.replace === 'true' : json.replace === true
       const content = path === '/api/intake/import' ? String(call.body ?? '') : String(json.content ?? '')

@@ -52,7 +52,7 @@ def test_rules_come_from_the_samples_protection_layer_with_their_lines():
         ("P-9", DENY, ("send",), "dataset", {"destination": "outside"}),
     ]
     for r in found:
-        assert r.file == "environment.md" and r.section == "Protection Layer"
+        assert r.file == "Environment_01.md" and r.section == "Protection Layer"
         assert r.text in lines[r.line - 1]  # the cited line holds the sentence
 
 
@@ -119,8 +119,8 @@ def test_an_attack_a_rule_allows_fails():
 def test_t13_in_the_build_logs_each_probe_and_its_basis():
     evts = [e for e in probe_events(sample()) if e["step"] == "probe.protection"]
     logs = [e["message"] for e in evts if e["type"] == "log"]
-    assert logs[0] == "Protection rules from environment.md, Protection Layer: 9 rules from 4 lines"
-    assert logs[1].startswith("PB-1 remove an Unused seat from the License Management System: DENY by P-3 (environment.md, Protection Layer, line ")
+    assert logs[0] == "Protection rules from Environment_01.md, Protection Layer: 9 rules from 4 lines"
+    assert logs[1].startswith("PB-1 remove an Unused seat from the License Management System: DENY by P-3 (Environment_01.md, Protection Layer, line ")
     assert logs[5] == "PB-5 show recoverable cost without knowing whether the product is priced: DENY by the default rule (the request does not state priced)"
     result = next(e for e in evts if e["type"] == "test.result")
     assert result["code"] == "T-13" and result["data"]["status"] == "pass"
@@ -155,7 +155,7 @@ def test_each_malformed_row_is_refused_for_its_own_reason():
         found = records.check(broken, PRIMARY)
         assert found, case.what
         reasons[case.what] = found[0]
-    assert reasons["a class the usage does not give"].endswith("by music.md's rules)")
+    assert reasons["a class the usage does not give"].endswith("by Value.md's rules)")
     assert reasons["no product field"] == "missing product"
     assert reasons["a month of 40 days"] == "usage holds a count that is not 0 to 31 days"
 

@@ -47,7 +47,7 @@ describe('routes', () => {
 
   it.each([
     ['/review/1', 'Review, iteration 1'],
-    ['/review/2', 'Review, iteration 2'],
+    ['/review/2', 'Review, iteration 2, Human'], // rebuilt from a person's rejection (D-90)
   ])('%s renders the Review page inside the shell (D-59)', async (path, title) => {
     const { wrapper, router } = await mountApp(path, emptySnapshot())
     expect(router.currentRoute.value.name).toBe('review')
@@ -155,6 +155,23 @@ describe('iteration badge', () => {
     const { wrapper } = await mountApp('/build/2', snapshot)
     expect(wrapper.find('[data-test="iteration-badge"]').text()).toBe('Iteration 2')
   })
+
+  it('tags an iteration rebuilt from a rejection "Human", and iteration 1 not (D-90)', async () => {
+    const first = await mountApp('/build/1', emptySnapshot({ builds: [{ id: 'b-1', iteration: 1, status: 'running' }] }))
+    expect(first.wrapper.find('header [data-test="human-tag"]').exists()).toBe(false)
+    first.wrapper.unmount()
+    const snapshot = emptySnapshot({
+      iteration: 2,
+      builds: [
+        { id: 'b-1', iteration: 1, status: 'completed' },
+        { id: 'b-2', iteration: 2, status: 'running' },
+      ],
+    })
+    const { wrapper } = await mountApp('/build/2', snapshot)
+    const tag = wrapper.find('header [data-test="human-tag"]')
+    expect(tag.text()).toBe(', Human') // ", " is for a screen reader; the chip reads Human
+    expect(tag.find('.chip').text()).toBe('Human')
+  })
 })
 
 describe('top bar', () => {
@@ -163,7 +180,7 @@ describe('top bar', () => {
     const { wrapper } = await mountApp('/knowledge', snapshot)
     const columns = wrapper.find('header.top-bar').element.children
     expect(columns).toHaveLength(3)
-    expect(columns[0].textContent?.trim()).toBe('SeedFoundry')
+    expect(columns[0].textContent?.trim()).toBe('SeedFactory')
     expect(columns[1].matches('nav[aria-label="Journey"]')).toBe(true)
     expect(columns[2].querySelector('[data-test="iteration-badge"]')).not.toBeNull()
     expect(columns[2].querySelector('[data-test="theme-toggle"]')).not.toBeNull()

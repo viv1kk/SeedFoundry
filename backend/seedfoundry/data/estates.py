@@ -7,7 +7,7 @@ how the people holding the others behave: the share whose use has stopped or nev
 Classes are never set here: the generator derives them from the seats it makes, by music.md's
 rules. Who has left comes from the directory, so one leaver's seats are Leaver on every product.
 
-Names follow Seed v0.1's style: realistic software products. The figures are SeedFoundry's own
+Names follow Seed v0.1's style: realistic software products. The figures are SeedFactory's own
 and Seed v0.1's are not targets (§5.5).
 """
 

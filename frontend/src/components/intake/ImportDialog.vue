@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // Import (FR-IN-7, FR-IN-11, ui-spec.md section 2): one row per chosen file with its
-// category pre-selected from the server's filename hints, and "Replaces existing person.md"
-// when the file would take a core slot that has one. Two rows set to the same core category
+// category pre-selected from the server's filename hints (else the first open initiation file,
+// D-84), the name it will take (D-85), and "Replaces existing Identity.md" when the file would
+// take a core slot that has one. Two rows set to the same core category
 // block Import until one changes (D-42). Import sends one request per file, its raw bytes as
 // the body (D-34), in row order; the server's refusals (413 file_too_large, 415 not_utf8_text,
 // 415 not_markdown) show on their row as written.
@@ -32,13 +33,14 @@ watch(
   () => [props.open, props.files] as const,
   ([open, files]) => {
     if (!open) return
-    rows.value = files.map((file, key) => ({
-      key,
-      file,
-      category: intake.hintFor(file.name),
-      status: 'pending',
-      error: null,
-    }))
+    // A file with no hint takes the next initiation file that is neither added nor hinted by another
+    // row, so it does not clash with them.
+    const taken = files.filter((file) => intake.hasHint(file.name)).map((file) => intake.hintFor(file.name))
+    rows.value = files.map((file, key) => {
+      const category = intake.hintFor(file.name, taken)
+      if (!intake.hasHint(file.name)) taken.push(category)
+      return { key, file, category, status: 'pending' as const, error: null }
+    })
   },
   { immediate: true },
 )
@@ -90,7 +92,7 @@ async function runImport(): Promise<void> {
 
 <template>
   <BaseModal :open="open" title="Import files" size="md" @close="emit('close')">
-    <p class="intro">Choose a category for each file. Core categories hold one file each.</p>
+    <p class="intro">Choose an initiation file for each file. Each holds one file, and takes its name.</p>
     <ul class="rows" data-test="import-rows">
       <li v-for="row in rows" :key="row.key" class="row" :data-row="row.file.name">
         <div class="row__main">
@@ -108,6 +110,7 @@ async function runImport(): Promise<void> {
             <option v-for="c in intake.categories" :key="c.id" :value="c.id">{{ c.label }}</option>
           </select>
         </div>
+        <p v-if="row.status !== 'done'" class="row__note" data-test="row-takes">Becomes {{ intake.suggestedName(row.category) }}</p>
         <p v-if="clash(row)" class="row__note row__note--warning" data-test="row-clash">
           Only one {{ intake.labelOf(row.category) }} file: {{ clash(row)?.file.name }} is also set to it.
         </p>

@@ -30,3 +30,9 @@ export const buildsApi = {
   /** The kept log of a finished build, or what a running build has emitted so far. 404 if gone. */
   events: (id: string) => api<BuildEvents>(`/api/builds/${encodeURIComponent(id)}/events`),
 }
+
+/** An iteration rebuilt from a person's rejection and feedback: every iteration after the first
+ * (D-81), which the screen tags "Human" (D-90). */
+export function isHuman(iteration: number): boolean {
+  return iteration > 1
+}

@@ -1,5 +1,5 @@
-"""The sample Seed (FR-DC-3, build-simulation.md §8): four License Optimization
-files and one Misc Context file, written for SeedFoundry and Ensemble-clean.
+"""The sample Seed (FR-DC-3, build-simulation.md §8): the four License Optimization
+initiation files, written for SeedFactory and Ensemble-clean.
 Load sample Seed puts exactly these into intake, in this order (D-46).
 
 Line ends are normalised on reading, so the content is the same bytes on any
@@ -11,17 +11,18 @@ from __future__ import annotations
 from pathlib import Path
 
 from seedfoundry.intake.files import normalise
-from seedfoundry.state import Category
+from seedfoundry.state import CORE_FILE_NAMES, Category
 
 SAMPLE_DIR = Path(__file__).parent
 
-# Ensemble order, then the Misc Context file.
+# Ensemble order: the four initiation files, each under the name a file gets when it is added to
+# its category (D-85). The source files keep their Ensemble names in this folder. There is no Misc
+# Context file since D-84.
 SAMPLE_FILES = (
     ("person.md", Category.PERSON),
     ("instrument-awareness.md", Category.INSTRUMENT_AWARENESS),
     ("environment.md", Category.ENVIRONMENT),
     ("music.md", Category.MUSIC),
-    ("vendor-notes.md", Category.MISC_CONTEXT),
 )
 
 
@@ -39,5 +40,8 @@ def demo_feedback(rejected: int = 1) -> str:
 
 
 def sample_files() -> list[tuple[str, Category, str]]:
-    """(name, category, content) for each sample file, in load order."""
-    return [(name, category, normalise((SAMPLE_DIR / name).read_text(encoding="utf-8"))) for name, category in SAMPLE_FILES]
+    """(name, category, content) for each sample file, in load order, named as Knowledge names it."""
+    return [
+        (CORE_FILE_NAMES[category], category, normalise((SAMPLE_DIR / source).read_text(encoding="utf-8")))
+        for source, category in SAMPLE_FILES
+    ]

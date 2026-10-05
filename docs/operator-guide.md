@@ -1,4 +1,4 @@
-# SeedFoundry: Operator guide
+# SeedFactory: Operator guide
 
 For whoever sets up the demo and presents it. Written 2026-10-04 for the build at M12, and checked against the build at M13 (the same day): every command, shortcut, label and time below is what the app does. The audience never sees the controls below: the demo controller is hidden until asked for (D-15).
 
@@ -28,7 +28,7 @@ For the rehearsal (section 6) you also need **Google Chrome** (or Edge; set `CHR
 python run.py
 ```
 
-It prints `SeedFoundry ready at http://127.0.0.1:5273/` once both processes answer. Open **that address**, as printed, in Chrome at 100% zoom, 1440 to 1920 px wide. `localhost` may resolve to an address Vite does not listen on.
+It prints `SeedFactory ready at http://127.0.0.1:5273/` once both processes answer. Open **that address**, as printed, in Chrome at 100% zoom, 1440 to 1920 px wide. `localhost` may resolve to an address Vite does not listen on.
 
 `Ctrl+C` in the launcher's window stops both processes. On Windows, closing that window or ending the launcher in any other way also stops both (D-78). Elsewhere, use Ctrl+C: see section 8.
 
@@ -47,8 +47,8 @@ All shortcuts are on **Shift**, and none fires while the caret is in a text fiel
 | Keys | Does |
 |---|---|
 | **Shift+O** | Show or hide the demo controller (bottom right) |
-| **Shift+P** | Load sample Seed: the four License Optimization files and the vendor notes. Asks first if Knowledge has files |
-| **Shift+Enter** | Start Build, once the four core files are in; opens the Build page |
+| **Shift+P** | Load sample Seed: the four License Optimization initiation files (Identity.md, Tools_and_Skills.md, Environment_01.md, Value_0001.md). Asks first if Knowledge has files |
+| **Shift+Enter** | Start Build, once the four initiation files are in; opens the Build page |
 | **Shift+1** / **Shift+2** / **Shift+4** | Build speed 1x (the presentation pace), 2x, 4x |
 | **Shift+S** | Skip to the end of the current phase |
 | **Shift+E** | Skip to the end of the build |
@@ -72,17 +72,17 @@ The narrative runs **8 to 10 minutes at 1x**. The two builds take 75 seconds eac
 | When | On screen | What you do |
 |---|---|---|
 | Before | Knowledge, empty: the four Ensemble files explained, one line each | Reset (Shift+R) if anything is there. Speed 1x (Shift+1). Hide the controller |
-| 0:00 | Knowledge | Say what a Seed is built from. Press **Shift+P**: the four core files and the vendor notes load, the core checklist turns complete, Start Build lights up. Open `music.md`, switch to **Preview**: purpose, principles, value logic, decision logic. Point out the mic (voice input, shown only) |
+| 0:00 | Knowledge | Say what a Seed is built from. Press **Shift+P**: the four initiation files load, the Initiation files checklist turns complete (each with the Seed file it maps to, muted, on the right), Start Build lights up. Open `Value_0001.md`, switch to **Preview**: purpose, principles, value logic, decision logic. Point out the mic (voice input, shown only) |
 | 1:30 | Knowledge | **Start Build** (or Shift+Enter). The Build page opens |
 | 1:30 to 2:45 | Build, iteration 1: the stepper on the left, the console on the right | Narrate as phases pass: Assay counts sections and runs the boundary check; Distillation and Synthesis write `core.md`, `adaptation.md`, `protection.md`; Containment uploads them to a sandbox; Planting and Seeding & Life run the simulated Seed v0.1, its three human gates auto-resolved from the knowledge files; Stress & Probe and Harvest Validation find problems (amber, then red FAIL lines). Use the console's filter to show only FAIL |
 | 2:45 | The **Build Report**: Completed with findings, 14 findings | Walk the groups: Numeric (high), Visual, Latency; each with expected and shown. "Every one of these was recomputed from the data, not typed in" |
-| 3:30 | **View Dashboard**: iteration 1, plainly unfinished | Let it sink in: mixed number formats, a twelve-slice pie, a red line, a serif title, the treemap waiting 4.5 s. Back to report, then click **N-1**: the dashboard opens with the panel outlined and the finding named |
+| 3:30 | **View Agentic Solution**: iteration 1, plainly unfinished | Let it sink in: mixed number formats, a twelve-slice pie, a red line, a serif title, the treemap waiting 4.5 s. Back to report, then click **N-1**: the dashboard opens with the panel outlined and the finding named |
 | 4:30 | Back to report, **Reject** | The modal: switch to **Feedback + Dashboard** to write while looking at it. Click a tab (not the text) and press **Shift+F** to prefill. Read a line or two of the feedback |
-| 5:00 | **Start Rebuild**: Build, iteration 2 | Phase 1 opens with **Apply observer feedback**, and the **Observer feedback into Knowledge** panel above the stepper shows each segment going into person.md, instrument-awareness.md, environment.md and music.md as the console says where it went; each core file is updated (open Knowledge in passing if you want to show the new "Observer feedback (iteration 1)" sections; it is read-only while the build runs) |
-| 6:15 | Iteration 2's report: **Passed**, 0 findings | **Changes since iteration 1**: 14 of 14 resolved, the feedback quoted, the files it updated. **Context footprint when planted**: the three Seed files take 16.7% of the context window, under the 20% budget. Point out that iteration 2 also has **Reject**: the loop goes on until the observer approves |
-| 6:45 | **View Dashboard**: iteration 2, polished | Drill: click a treemap cell, then a product, a class, down to the seats; the breadcrumb and Back step out again |
+| 5:00 | **Start Rebuild**: Build, iteration 2 | Phase 1 opens with **Apply observer feedback**, and the **Observer feedback into Knowledge** panel above the stepper shows each segment going into Identity.md, Tools_and_Skills.md, Environment_01.md and Value_0001.md as the console says where it went; each file is updated, and Environment_01.md and Value_0001.md step to Environment_02.md and Value_0002.md, their next versions (open Knowledge in passing if you want to show the new names and the "Observer feedback (iteration 1)" sections; it is read-only while the build runs). Point out the Human tag beside "Iteration 2": this iteration exists because a person rejected the last one |
+| 6:15 | Iteration 2's report: **Passed**, 0 findings | **Changes since iteration 1**: 14 of 14 resolved, the feedback quoted, the files it updated. **Context footprint when planted**: the three Seed files take 15.8% of the context window, under the 20% budget. Point out that iteration 2 also has **Reject**: the loop goes on until the observer approves. **Initiate QUAD SI Review Protocol** beside Approve is shown only: it does nothing |
+| 6:45 | **View Agentic Solution**: iteration 2, polished | Drill: click a treemap cell, then a product, a class, down to the seats; the breadcrumb and Back step out again |
 | 7:45 | Back to report, **Approve** | The Seed page: the Seed's name, Approved, the date; what it does; the tests by phase; the iteration history (open **Show the feedback**); the three files |
-| 8:30 | The Seed files | **Preview** `protection.md` and scroll to **Learned rules**: one rule per class of finding, learned from iteration 1. **Download all (.zip)** |
+| 8:30 | The Seed files | **Preview** `protection.md` and scroll to **Learned rules**: one rule per class of finding, learned from iteration 1. **Secure and Lock in Secure Repository** is shown only; the **download** link beside it saves the zip |
 | 9:00 | End | Optional: before Approve, **Reject** iteration 2 instead, Shift+F (refinements), Start Rebuild: iteration 3 runs the 11 phases again, the panel shows the new feedback going into the four files, and the report reads Passed with "Changes since iteration 2"; then Approve it. Optional second ending: Reset, Shift+P, Shift+4, Start Build, and **Approve iteration 1** instead: the Seed page lists the 14 open findings as known issues, and so does each file |
 
 ---
@@ -137,3 +137,7 @@ It cuts the network off (Chrome resolves no host but this machine; the backend r
 | A build reads "This build stopped before it finished" | The server stopped mid-build. Start Build again from Knowledge |
 | The rehearsal says "No Chrome found" | Set `CHROME` to Chrome's or Edge's `.exe` and run it again |
 | The rehearsal fails a check | Its line says what it saw; the screenshots in the out folder show the page. `stopped-here.png` is the page where it stopped |
+
+---
+
+*Change request CR-2 (2026-10-05):* the product is SeedFactory (D-87). Knowledge offers the four initiation files only (D-84); the console's small note under its bar about English is always there (D-89). The rehearsal (section 6) checks these and passes 34 of 34, including that the Build page never scrolls the window away (D-95).

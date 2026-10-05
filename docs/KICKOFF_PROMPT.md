@@ -1,10 +1,10 @@
-# SeedFoundry: Kickoff Prompt
+# SeedFactory: Kickoff Prompt
 
 Paste everything below the line into the first Claude Code session, run from the repo root.
 
 ---
 
-You are starting a new project called **SeedFoundry**: a lab that generates, tests and refines Seeds. Everything in it is simulated, deterministic and offline. There is no LLM connection and no real network call anywhere in the product.
+You are starting a new project called **SeedFactory**: a lab that generates, tests and refines Seeds. Everything in it is simulated, deterministic and offline. There is no LLM connection and no real network call anywhere in the product.
 
 ## Read before you write anything
 
@@ -12,14 +12,14 @@ Read these in order. Do not skim the first five.
 
 1. `docs/CLAUDE.md` (standing rules for every session)
 2. `docs/README.md` (index and precedence rules)
-3. `docs/project-notes.md` (what SeedFoundry is and why)
+3. `docs/project-notes.md` (what SeedFactory is and why)
 4. `docs/requirements.md` (the binding spec)
 5. `docs/ui-spec.md` and `docs/build-simulation.md` (screens, phases, logs, planted defects)
 6. `docs/decisions.md`, `docs/implementation-plan.md`, `docs/methodology.md`
 7. `docs/ensemble/ensemble_context.md` (what a Seed's four knowledge files mean)
 8. `docs/seed_docs/README.md`, then every other file in `docs/seed_docs/`
 
-`docs/seed_docs/` describes **Seed v0.1**, a finished prior project. It is reference material for patterns, conventions, data and visual language. It is not the spec for SeedFoundry. Follow its own precedence rules and keep its two vocabularies (code terms vs screen terms) straight.
+`docs/seed_docs/` describes **Seed v0.1**, a finished prior project. It is reference material for patterns, conventions, data and visual language. It is not the spec for SeedFactory. Follow its own precedence rules and keep its two vocabularies (code terms vs screen terms) straight.
 
 ## Your task for this session: milestone M0 only
 

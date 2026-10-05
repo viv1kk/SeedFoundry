@@ -50,10 +50,10 @@ describe('phases and sub-steps from events (FR-B-3)', () => {
     expect(assay.steps.filter((s) => s.feedback).map((s) => [s.name, s.state, s.summary])).toEqual([
       // D-71: the real routing's summaries (D-68), where D-52's stub said "no change".
       ['Route feedback to Ensemble files', 'done', '9 of 10 segments to 4 files'],
-      ['Update person.md', 'done', '+4 lines in Reasoning methods'],
-      ['Update instrument-awareness.md', 'done', '+4 lines in Model Behaviour'],
-      ['Update environment.md', 'active', null],
-      ['Update music.md', 'pending', null],
+      ['Update Identity.md', 'done', '+4 lines in Reasoning methods'],
+      ['Update Tools_and_Skills.md', 'done', '+4 lines in Model Behaviour'],
+      ['Update Environment.md', 'active', null],
+      ['Update Value.md', 'pending', null],
     ])
     expect(assay.steps.slice(0, 5).every((s) => s.feedback)).toBe(true)
     expect(derivePhases(buildRecord(), [])[0].steps.some((s) => s.feedback)).toBe(false)
@@ -87,20 +87,20 @@ describe('feedback routing into the four files (D-83)', () => {
     const routed = feedbackRouting(build, upTo(events, (e) => e.type === 'step.completed' && e.step === 'assay.feedback-route'))!
     expect([routed.state, routed.total, routed.kept, routed.placements.length]).toEqual(['done', 10, [10], 10])
     expect(tiles(routed)).toEqual([
-      ['person.md', 'Person', 'pending', [8], []],
-      ['instrument-awareness.md', 'Instrument Awareness', 'pending', [7], []],
-      ['environment.md', 'Environment', 'pending', [1, 2, 3, 4, 5, 6], []],
-      ['music.md', 'Music', 'pending', [9], []],
+      ['Identity.md', 'Identity.md', 'pending', [8], []],
+      ['Tools_and_Skills.md', 'Tools_and_Skills.md', 'pending', [7], []],
+      ['Environment_01.md', 'Environment.md', 'pending', [1, 2, 3, 4, 5, 6], []],
+      ['Value_0001.md', 'Value.md', 'pending', [9], []],
     ])
   })
 
   it("adds each file's sections and lines as its Update sub-step plays", () => {
     const midway = feedbackRouting(build, upTo(events, (e) => e.type === 'step.started' && e.step === 'assay.feedback-environment'))!
     expect(tiles(midway).map(([name, , state, , sections]) => [name, state, sections])).toEqual([
-      ['person.md', 'done', ['+4 Reasoning methods']],
-      ['instrument-awareness.md', 'done', ['+4 Model Behaviour']],
-      ['environment.md', 'active', []],
-      ['music.md', 'pending', []],
+      ['Identity.md', 'done', ['+4 Reasoning methods']],
+      ['Tools_and_Skills.md', 'done', ['+4 Model Behaviour']],
+      ['Environment_01.md', 'active', []],
+      ['Value_0001.md', 'pending', []],
     ])
     const all = feedbackRouting(build, events)!
     expect(all.files.find((f) => f.id === 'environment')!.sections.map((s) => [s.section, s.lines, s.segments])).toEqual([
@@ -109,10 +109,13 @@ describe('feedback routing into the four files (D-83)', () => {
       ['Data Layer', 4, [1]],
     ])
     expect(all.files.every((f) => f.state === 'done')).toBe(true)
+    // Each versioned name steps to its next version as its Update sub-step plays (D-85).
+    expect(all.files.map((f) => f.renamed)).toEqual([null, null, 'Environment_02.md', 'Value_0002.md'])
+    expect(midway.files.map((f) => f.renamed)).toEqual([null, null, null, null])
   })
 
   it('follows the category, so a core file with its own name gets its segments', () => {
-    const renamed = events.map((e) => (e.data.file === 'person.md' ? { ...e, data: { ...e.data, file: 'player.md' } } : e))
+    const renamed = events.map((e) => (e.data.file === 'Identity.md' ? { ...e, data: { ...e.data, file: 'player.md' } } : e))
     const person = feedbackRouting(build, renamed)!.files[0]
     expect([person.name, person.segments, person.sections.length]).toEqual(['player.md', [8], 1])
   })

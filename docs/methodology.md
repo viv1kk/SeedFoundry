@@ -1,6 +1,6 @@
-# SeedFoundry: Methodology
+# SeedFactory: Methodology
 
-How work on SeedFoundry is planned, done, checked and recorded. Adapted from Seed v0.1's process (requirements, decision record, milestone plan, build log, amendments).
+How work on SeedFactory is planned, done, checked and recorded. Adapted from Seed v0.1's process (requirements, decision record, milestone plan, build log, amendments).
 
 ## 1. Principles
 

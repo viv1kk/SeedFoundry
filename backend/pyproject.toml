@@ -1,7 +1,7 @@
 [project]
 name = "seedfoundry"
 version = "0.1.0"
-description = "SeedFoundry: a deterministic, offline lab that generates, tests and refines Seeds"
+description = "SeedFactory: a deterministic, offline lab that generates, tests and refines Seeds"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",

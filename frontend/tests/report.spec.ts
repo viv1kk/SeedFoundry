@@ -194,7 +194,7 @@ describe('the report (FR-R-1, ui-spec.md section 4)', () => {
     expect([text(verdict), verdict.className.match(/chip--(\w+)/)?.[1]]).toEqual(['Passed', 'positive'])
     expect($$('[data-test="group-none"]')).toHaveLength(4)
     expect($$('[data-test="test-row"] [data-test="test-result"]').every((c) => text(c) === 'Passed')).toBe(true)
-    expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Dashboard', 'Reject', 'Approve'])
+    expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Agentic Solution', 'Reject', 'Approve', 'Initiate QUAD SI Review Protocol'])
     expect(TWO.counts.findings).toBe(0)
     // D-71: from M10 it also has "Changes since iteration 1" (FR-R-3, AC-3, D-69).
     expect($('[data-test="report-changes"]')).not.toBeNull()
@@ -216,12 +216,12 @@ describe('the report (FR-R-1, ui-spec.md section 4)', () => {
     expect(text(quote)).toContain('N-1 to N-5: the totals do not add up.')
     expect(text(quote)).toContain('Otherwise the build was easy to follow.')
     expect($$('[data-test="changes-updates"] li').map((li) => text(li))).toEqual([
-      'person.md, Reasoning methods: +4 lines (segment 8)',
-      'instrument-awareness.md, Model Behaviour: +4 lines (segment 7)',
-      'environment.md, Styling: +10 lines (segments 2, 3, 4, 5)',
-      'environment.md, User Experience: +4 lines (segment 6)',
-      'environment.md, Data Layer: +4 lines (segment 1)',
-      'music.md, Value Logic: +4 lines (segment 9)',
+      'Identity.md, Reasoning methods: +4 lines (segment 8)',
+      'Tools_and_Skills.md, Model Behaviour: +4 lines (segment 7)',
+      'Environment_01.md, Styling: +10 lines (segments 2, 3, 4, 5)',
+      'Environment_01.md, User Experience: +4 lines (segment 6)',
+      'Environment_01.md, Data Layer: +4 lines (segment 1)',
+      'Value_0001.md, Value Logic: +4 lines (segment 9)',
       'Segment 10 stayed in observer-feedback-iteration-1.md only: it fits no Ensemble file.',
     ])
   })
@@ -246,8 +246,8 @@ describe('the report (FR-R-1, ui-spec.md section 4)', () => {
     expect(text('[data-test="changes-summary"]')).toBe('Iteration 2 had no findings, so there were none to resolve.')
     expect($$('[data-test="change"]')).toEqual([])
     expect(text('[data-test="changes-feedback"]')).toBe('Sort by saving.')
-    expect($$('[data-test="report-fact"]')[0].textContent).toBe('3')
-    expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Dashboard', 'Reject', 'Approve'])
+    expect($$('[data-test="report-fact"]')[0].textContent).toBe('3, Human') // rebuilt from a person's rejection (D-90)
+    expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Agentic Solution', 'Reject', 'Approve', 'Initiate QUAD SI Review Protocol'])
   })
 
   it('iteration 1 has no changes section', async () => {
@@ -274,6 +274,31 @@ describe('the report (FR-R-1, ui-spec.md section 4)', () => {
   })
 })
 
+describe('Initiate QUAD SI Review Protocol (D-92)', () => {
+  it('sits beside Approve with its footnote, and does nothing when pressed', async () => {
+    await open('/review/1')
+    const quad = $('[data-action="quad-si"]')!
+    expect(text(quad)).toBe('Initiate QUAD SI Review Protocol')
+    expect(quad.previousElementSibling?.getAttribute('data-action')).toBe('approve')
+    const note = $('[data-test="quad-si-note"]')!
+    expect(text(note)).toBe('* Assuming default 10 cycles')
+    expect(quad.nextElementSibling).toBe(note)
+    const before = server.calls.length
+    await click(quad)
+    expect(server.calls.length).toBe(before)
+    expect(router.currentRoute.value.fullPath).toBe('/review/1')
+    expect($('[role="dialog"]')).toBeNull()
+  })
+
+  it('View Agentic Solution opens the dashboard (D-91)', async () => {
+    await open('/review/1')
+    const view = $('[data-action="dashboard"]')!
+    expect(text(view)).toBe('View Agentic Solution')
+    await click(view)
+    expect(router.currentRoute.value.query.dashboard).toBe('license-optimization')
+  })
+})
+
 describe('the context footprint (D-82)', () => {
   it("shows each Seed file's share of the context window against the 20% budget", async () => {
     await open('/review/2')
@@ -296,7 +321,9 @@ describe('the context footprint (D-82)', () => {
     expect(parts.map((el) => el.style.width)).toEqual(c.layers.map((l) => `${l.share}%`))
     expect($('[data-test="context-bar"] .context__budget')!.style.left).toBe('20%')
     expect($('[data-test="context-bar"]')!.getAttribute('aria-label')).toContain(`${c.share.toFixed(1)}% in all, against a 20% budget`)
-    expect(text('[data-test="context-note"]')).toBe('Simulated: a 32,000-token context window, at about four bytes a token.')
+    expect(text('[data-test="context-note"]')).toBe(
+      'Simulated: a 32,000-token context window (assuming limited one thread build for demonstration purposes), at about four bytes a token.',
+    )
   })
 
   it('says when a Seed is over the budget, as a caution', async () => {
@@ -387,7 +414,7 @@ describe('finding links and the highlight (ui-spec.md sections 4 and 5, D-65)', 
     expect(text('[data-test="finding-note"]')).toBe("No finding V-99 in this build's report, so nothing is highlighted.")
   })
 
-  it('the outline is SeedFoundry\'s own accent, outside the defect overlay\'s sheet (NFR-5, R-1)', () => {
+  it('the outline is SeedFactory\'s own accent, outside the defect overlay\'s sheet (NFR-5, R-1)', () => {
     const renderer = readFileSync(resolve(ROOT, 'src/components/dashboard/DashboardRenderer.vue'), 'utf8')
     expect(renderer).toMatch(/\.renderer__cell--finding > \[data-panel\] \{\s*outline: 2px solid var\(--accent\);/)
     const defects = readFileSync(resolve(ROOT, 'src/styles/defects.css'), 'utf8')

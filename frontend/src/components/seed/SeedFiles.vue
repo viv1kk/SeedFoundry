@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // The Seed's files (FR-F-3, AC-4, ui-spec.md section 7, D-74, D-75): a card each for core.md,
 // adaptation.md and protection.md with what the layer holds (never which Knowledge file fed it, D-9),
-// its size, Preview and Download, then Download all (.zip). Preview opens the file in a modal through
+// its size, Preview and Download, then Secure and Lock in Secure Repository, shown only (D-93), and
+// beside it a "download" link to the zip. Preview opens the file in a modal through
 // the Knowledge Preview's sanitiser (D-40); downloads are links to the server's relative /api URLs,
 // which send each file and the zip as attachments, so nothing is fetched from anywhere else (NFR-2).
 import { computed, ref } from 'vue'
@@ -30,7 +31,9 @@ const shown = computed<SeedFile | null>(() => props.seed.files.find((f) => f.nam
       </li>
     </ul>
     <p class="files__all">
-      <a class="files__download files__download--primary" :href="seed.zip.url" :download="seed.zip.name" data-action="download-zip">Download all (.zip)</a>
+      <!-- Shown only: pressing it does nothing (D-93). The link beside it saves the zip. -->
+      <BaseButton variant="primary" data-action="secure-lock">Secure and Lock in Secure Repository</BaseButton>
+      <a class="files__link" :href="seed.zip.url" :download="seed.zip.name" data-action="download-zip" :aria-label="`download ${seed.zip.name}`">download</a>
       <span class="files__size">{{ seed.zip.name }}, {{ size(seed.zip.bytes) }}</span>
     </p>
 
@@ -112,15 +115,12 @@ const shown = computed<SeedFile | null>(() => props.seed.files.find((f) => f.nam
   background: var(--surface-sunken);
 }
 
-.files__download--primary {
-  border-color: transparent;
-  background: var(--accent);
-  color: var(--text-inverse);
-}
-
-.files__download--primary:hover {
-  border-color: transparent;
-  background: var(--accent);
-  box-shadow: var(--shadow-md);
+/* The zip's link: a plain hyperlink, beside the button (D-93). */
+.files__link {
+  color: var(--accent);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 </style>

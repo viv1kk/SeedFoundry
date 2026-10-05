@@ -1,8 +1,8 @@
 <script setup lang="ts">
-// New file (FR-IN-6): a name and a category. The name starts as the category's first
-// filename hint from the server (person.md for Person), and follows the category until the
-// user types one. A taken core slot asks "Replace it?" in the same dialog, naming the file
-// it replaces (FR-IN-3); the server's 409 core_slot_taken is the backstop (D-35).
+// New file (FR-IN-6): a category, one of the four initiation files (D-84). The name is the
+// category's own (Environment_01.md for Environment.md, D-85), shown and not typed: it follows
+// the category. A taken core slot asks "Replace it?" in the same dialog, naming the file it
+// replaces (FR-IN-3); the server's 409 core_slot_taken is the backstop (D-35).
 import { computed, ref, useId, watch } from 'vue'
 import { ApiError, messageOf } from '../../api'
 import { useIntakeStore } from '../../stores/intake'
@@ -13,17 +13,15 @@ const props = defineProps<{ open: boolean; initialCategory: string | null }>()
 const emit = defineEmits<{ close: []; created: [id: string] }>()
 
 const intake = useIntakeStore()
-const nameId = useId()
 const categoryId = useId()
 
 const name = ref('')
 const category = ref('')
-const nameTouched = ref(false)
 const error = ref<string | null>(null)
 const busy = ref(false)
 const confirming = ref<{ holder: string; message: string } | null>(null)
 
-/** The first core slot without a file, else the default (Misc Context). */
+/** The first core slot without a file, else the first category. */
 function firstOpenCategory(): string {
   return intake.coreCategories.find((c) => !intake.slotHolder(c.id))?.id ?? intake.defaultCategory
 }
@@ -34,7 +32,6 @@ watch(
     if (!open) return
     category.value = props.initialCategory ?? firstOpenCategory()
     name.value = intake.suggestedName(category.value)
-    nameTouched.value = false
     error.value = null
     confirming.value = null
   },
@@ -42,18 +39,12 @@ watch(
 )
 
 watch(category, (value) => {
-  if (!nameTouched.value) name.value = intake.suggestedName(value)
+  name.value = intake.suggestedName(value)
   error.value = null
 })
 
 const holder = computed(() => intake.slotHolder(category.value))
 const canCreate = computed(() => name.value.trim() !== '' && category.value !== '' && !busy.value)
-
-function onNameInput(event: Event): void {
-  nameTouched.value = true
-  name.value = (event.target as HTMLInputElement).value
-  error.value = null
-}
 
 async function create(replace: boolean): Promise<void> {
   if (!canCreate.value) return
@@ -93,26 +84,13 @@ function onSubmit(): void {
     <form id="new-file-form" class="form" data-test="new-file-dialog" @submit.prevent="onSubmit">
       <template v-if="!confirming">
         <div class="form__field">
-          <label :for="nameId" class="form__label">Name</label>
-          <input
-            :id="nameId"
-            class="form__input form__input--mono"
-            :value="name"
-            maxlength="120"
-            spellcheck="false"
-            autocomplete="off"
-            :aria-invalid="error ? 'true' : undefined"
-            data-test="new-name"
-            @input="onNameInput"
-          />
-        </div>
-        <div class="form__field">
           <label :for="categoryId" class="form__label">Category</label>
           <select :id="categoryId" v-model="category" class="form__input" data-test="new-category">
             <option v-for="c in intake.categories" :key="c.id" :value="c.id">{{ c.label }}</option>
           </select>
           <p v-if="holder" class="form__warning" data-test="new-replace-warning">Replaces existing {{ holder.name }}</p>
         </div>
+        <p class="form__name">Name <span class="form__mono" data-test="new-name">{{ name }}</span></p>
       </template>
       <div v-else class="form__confirm" data-test="new-confirm">
         <p>{{ confirming.message }}</p>
@@ -157,7 +135,14 @@ function onSubmit(): void {
   font-size: var(--text-sm);
 }
 
-.form__input--mono {
+.form__name {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.form__mono {
+  margin-left: var(--space-2);
+  color: var(--text-primary);
   font-family: var(--font-mono);
 }
 

@@ -9,6 +9,7 @@
 // Knowledge files as the routing and Update sub-steps play (D-83).
 import { computed, ref, watch } from 'vue'
 import BaseChip from '../components/base/BaseChip.vue'
+import HumanTag from '../components/base/HumanTag.vue'
 import BuildConsole from '../components/build/BuildConsole.vue'
 import FeedbackRouting from '../components/build/FeedbackRouting.vue'
 import PhaseStepper from '../components/build/PhaseStepper.vue'
@@ -73,7 +74,7 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
     <section v-else-if="!build" class="build__empty" data-test="no-build">
       <h1>Build, iteration {{ iteration }}</h1>
       <template v-if="iteration === 1">
-        <p>No build for iteration 1 yet. Start Build is on the Knowledge page once the four core files are in.</p>
+        <p>No build for iteration 1 yet. Start Build is on the Knowledge page once the four initiation files are in.</p>
         <RouterLink to="/knowledge" class="build__link">Go to Knowledge</RouterLink>
       </template>
       <template v-else>
@@ -97,6 +98,7 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
           <header class="build__header" data-test="build-header">
             <div class="build__heading">
               <BaseChip tone="accent" class="build__iteration" data-test="build-iteration">Iteration {{ iteration }}</BaseChip>
+              <HumanTag :iteration="iteration" />
               <h1 class="build__title">{{ build.seed_name || 'Untitled Seed' }}</h1>
               <span class="build__elapsed">
                 <span class="caps-label">Elapsed</span>
@@ -190,7 +192,11 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* The page is one screen tall and this column scrolls on its own. It is positioned so that the
+   report's screen-reader-only text (absolutely positioned) stays inside it; with the page as its
+   containing block that text sat far below the screen and made the whole window scroll away. */
 .build__main {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);

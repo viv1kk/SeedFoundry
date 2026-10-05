@@ -8,7 +8,7 @@ from __future__ import annotations
 from seedfoundry.sample import SAMPLE_FILES, sample_files
 from seedfoundry.state import Approval, Build
 
-SAMPLE_NAMES = [name for name, _ in SAMPLE_FILES]
+SAMPLE_NAMES = [name for name, _, _ in sample_files()]  # as Knowledge names them (D-85)
 CORE = ["person", "instrument_awareness", "environment", "music"]
 
 
@@ -40,11 +40,10 @@ def test_load_sample_fills_the_four_core_slots(client):
     assert response.status_code == 201
     files = client.get("/api/intake/files").json()
     assert [(f["name"], f["category"]) for f in files] == [
-        ("person.md", "person"),
-        ("instrument-awareness.md", "instrument_awareness"),
-        ("environment.md", "environment"),
-        ("music.md", "music"),
-        ("vendor-notes.md", "misc_context"),
+        ("Identity.md", "person"),
+        ("Tools_and_Skills.md", "instrument_awareness"),
+        ("Environment_01.md", "environment"),
+        ("Value_0001.md", "music"),
     ]
     # A slot is complete when its file holds something other than whitespace (D-42 (a)).
     for category in CORE:
@@ -54,7 +53,7 @@ def test_load_sample_fills_the_four_core_slots(client):
 
 def test_load_sample_returns_the_files_with_content(client):
     body = load(client).json()
-    assert [f["id"] for f in body] == ["f-1", "f-2", "f-3", "f-4", "f-5"]
+    assert [f["id"] for f in body] == ["f-1", "f-2", "f-3", "f-4"]
     assert body == client.get("/api/intake/files").json()
 
 
@@ -62,7 +61,7 @@ def test_load_sample_emits_one_create_per_file(client):
     load(client)
     seen = [(e.type, e.data["file"]["name"], e.data["source"]) for e in events(client)]
     assert seen == [("intake.file_created", name, "sample") for name in SAMPLE_NAMES]
-    assert events(client)[0].message == "Loaded person.md (Person)"
+    assert events(client)[0].message == "Loaded Identity.md (Identity.md)"
 
 
 def test_the_seed_name_is_music_md_first_heading(client):
@@ -122,7 +121,7 @@ def test_clear_deletes_every_file(client):
     after = seq(client)
     response = client.post("/api/demo/clear")
     assert response.status_code == 200
-    assert response.json() == {"deleted": 5}
+    assert response.json() == {"deleted": 4}
     assert client.get("/api/intake/files").json() == []
     assert [(e.type, e.data["file"]["name"]) for e in events(client, after)] == [
         ("intake.file_deleted", name) for name in SAMPLE_NAMES
@@ -156,14 +155,14 @@ def test_reset_returns_to_a_fresh_start(client):
     after = seq(client)
     response = client.post("/api/demo/reset")
     assert response.status_code == 200
-    assert response.json() == {"files_removed": 5, "builds_removed": 2}
+    assert response.json() == {"files_removed": 4, "builds_removed": 2}
     state = client.get("/api/state").json()
     assert (state["intake"]["files"], state["builds"], state["approval"], state["iteration"]) == ([], [], None, 1)
     seen = [e.type for e in events(client, after)]
-    assert seen == ["intake.file_deleted"] * 5 + ["demo.reset"]
+    assert seen == ["intake.file_deleted"] * 4 + ["demo.reset"]
     last = events(client, after)[-1]
-    assert last.message == "Reset to start: 5 files and 2 builds removed"
-    assert last.data == {"files_removed": 5, "builds_removed": 2}
+    assert last.message == "Reset to start: 4 files and 2 builds removed"
+    assert last.data == {"files_removed": 4, "builds_removed": 2}
 
 
 def test_reset_works_while_a_build_runs(client):
@@ -180,7 +179,7 @@ def test_reset_keeps_the_seq_and_the_file_id_counter(client):
     client.post("/api/demo/reset")
     before = seq(client)
     assert before > 0
-    assert create(client).json()["id"] == "f-6"
+    assert create(client).json()["id"] == "f-5"
     assert seq(client) == before + 1
 
 

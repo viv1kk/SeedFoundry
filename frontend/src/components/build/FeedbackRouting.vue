@@ -1,10 +1,10 @@
 <script setup lang="ts">
 // Observer feedback into Knowledge (FR-RB-8, ui-spec.md section 3, D-83): on the Build page of
-// iteration 2 on, where each segment of the feedback goes. One tile per Ensemble file (Person,
-// Instrument Awareness, Environment, Music) and one for the segments kept in the feedback file. A
-// tile lists its segments as soon as the routing decides, then the sections and lines its Update
-// sub-step adds as it plays, so the panel fills in with the build and reads the same after a
-// refresh. State shows by weight and colour, not motion (seed-reuse-notes.md 1.1).
+// iteration 2 on, where each segment of the feedback goes. One tile per initiation file (Identity.md,
+// Tools_and_Skills.md, Environment.md, Value.md, D-84) and one for the segments kept in the feedback
+// file. A tile lists its segments as soon as the routing decides, then the sections and lines its
+// Update sub-step adds as it plays, and the file's next version when its name steps (D-85), so the
+// panel fills in with the build and reads the same after a refresh. State shows by weight and colour, not motion (seed-reuse-notes.md 1.1).
 import { computed, useId } from 'vue'
 import type { FeedbackRouting, RoutedFile } from '../../stepper'
 import BaseChip, { type ChipTone } from '../base/BaseChip.vue'
@@ -70,13 +70,16 @@ const lines = (n: number) => plural(n, 'line')
           <span class="tile__name">{{ file.name }}</span>
           <BaseChip :tone="look(file).tone" data-test="routing-state">{{ look(file).label }}</BaseChip>
         </div>
-        <span class="caps-label">{{ file.category }}</span>
+        <span v-if="file.category !== file.name" class="caps-label">{{ file.category }}</span>
         <p class="tile__note" data-test="routing-segments">{{ note(file) }}</p>
         <ul v-if="file.sections.length" class="tile__sections" data-test="routing-sections">
           <li v-for="section in file.sections" :key="section.section">
             <span class="tile__lines">+{{ lines(section.lines) }}</span> in {{ section.section }}<template v-if="section.created"> (a new section)</template>
           </li>
         </ul>
+        <p v-if="file.renamed" class="tile__note" data-test="routing-renamed">
+          Now <span class="tile__version">{{ file.renamed }}</span>, its next version.
+        </p>
       </li>
       <li class="tile tile--kept" :class="{ 'tile--fed': routing.kept.length }" data-test="routing-kept">
         <div class="tile__head">
@@ -110,6 +113,11 @@ const lines = (n: number) => plural(n, 'line')
 
 .routing__title {
   margin: 0;
+}
+
+.tile__version {
+  font-family: var(--font-mono);
+  font-weight: 600;
 }
 
 .routing__lead {

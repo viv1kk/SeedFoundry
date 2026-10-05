@@ -18,8 +18,15 @@ from seedfoundry.state import CATEGORY_LABELS, Category, Emit, IntakeFile, State
 MAX_FILE_BYTES = 1024 * 1024
 MAX_NAME_LENGTH = 120
 
-# FR-IN-7: filename to pre-selected category on import. Anything else is Misc Context.
+# FR-IN-7: filename to pre-selected category on import. Anything else is Misc Context here; the
+# Knowledge page offers only the four initiation files, so it pre-selects an open core slot (D-84).
+# The initiation file names (D-85) are hints too, lower case like every key.
 FILENAME_HINTS = {
+    "identity.md": Category.PERSON,
+    "tools_and_skills.md": Category.INSTRUMENT_AWARENESS,
+    "environment_01.md": Category.ENVIRONMENT,
+    "value_0001.md": Category.MUSIC,
+    "value.md": Category.MUSIC,
     "person.md": Category.PERSON,
     "player.md": Category.PERSON,
     "instrument-awareness.md": Category.INSTRUMENT_AWARENESS,
@@ -158,13 +165,15 @@ def create(name: str, category: Category, content: str = "", replace: bool = Fal
     return change
 
 
-def import_upload(filename: str, raw: bytes, category: Category | None = None, replace: bool = False):
-    """A change that imports one uploaded .md file (FR-IN-7, FR-IN-11)."""
+def import_upload(filename: str, raw: bytes, category: Category | None = None, replace: bool = False, as_name: str | None = None):
+    """A change that imports one uploaded .md file (FR-IN-7, FR-IN-11). The file is checked under
+    its own name; `as_name` is the name it takes in Knowledge, when the page gives it the
+    category's name (D-85)."""
     name = check_name(PurePath(filename.replace("\\", "/")).name)
     if not name.lower().endswith(".md"):
         raise IntakeError(415, "not_markdown", f"{name} is not a .md file. Import accepts markdown files only.")
     text = decode_upload(name, raw)
-    return create(name, category or suggest_category(name), text, replace, source="import")
+    return create(check_name(as_name) if as_name else name, category or suggest_category(name), text, replace, source="import")
 
 
 def update(file_id: str, name: str | None = None, category: Category | None = None, content: str | None = None, replace: bool = False):

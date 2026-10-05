@@ -228,14 +228,18 @@ def test_import_accepts_md_only(client):
 
 def test_categories_endpoint_serves_labels_and_hints(client):
     body = client.get("/api/intake/categories").json()
+    # The four initiation files only (D-84), with the name a file gets when added (D-85) and the
+    # Seed file shown beside each (D-86).
     assert [c["label"] for c in body["categories"]] == [
-        "Person",
-        "Instrument Awareness",
-        "Environment",
-        "Music",
-        "Misc Context",
+        "Identity.md",
+        "Tools_and_Skills.md",
+        "Environment.md",
+        "Value.md",
     ]
-    assert [c["core"] for c in body["categories"]] == [True, True, True, True, False]
+    assert [c["core"] for c in body["categories"]] == [True, True, True, True]
+    assert [c["file_name"] for c in body["categories"]] == ["Identity.md", "Tools_and_Skills.md", "Environment_01.md", "Value_0001.md"]
+    assert [c["seed_file"] for c in body["categories"]] == [None, "protection.md", "adaptation.md", "core.md"]
+    assert body["filename_hints"]["environment_01.md"] == "environment"
     assert body["filename_hints"]["player.md"] == "person"
     assert body["max_file_bytes"] == 1024 * 1024
 
@@ -338,3 +342,13 @@ def test_reads_still_work_while_a_build_runs(client):
     start_fake_build(client)
     assert client.get("/api/intake/files").status_code == 200
     assert client.get("/api/state").json()["builds"][0]["status"] == "running"
+
+
+def test_import_can_give_the_file_its_category_name(client):
+    # D-85: the Knowledge page imports a file under its category's name; the checks read the
+    # file's own name, so a .txt file is still refused.
+    response = client.post("/api/intake/import", params={"filename": "my-env.md", "category": "environment", "name": "Environment_01.md"}, content=b"# Env\n")
+    assert response.status_code == 201
+    assert (response.json()["name"], response.json()["category"]) == ("Environment_01.md", "environment")
+    refused = client.post("/api/intake/import", params={"filename": "notes.txt", "category": "person", "name": "Identity.md"}, content=b"x")
+    assert refused.status_code == 415 and refused.json()["detail"]["code"] == "not_markdown"

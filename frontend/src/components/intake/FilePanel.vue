@@ -1,7 +1,8 @@
 <script setup lang="ts">
-// The file panel (ui-spec.md section 2): the core checklist and Start Build (FR-IN-8,
-// FR-IN-9), then the files grouped by category in Ensemble order, with the unsaved dot
-// (FR-IN-6) and a muted "Add file" link in each empty category.
+// The file panel (ui-spec.md section 2): the initiation files checklist, each with the Seed file
+// it maps to at a high level on the right, muted (D-86), and Start Build (FR-IN-8, FR-IN-9), then
+// the files grouped by category in Ensemble order, with the unsaved dot (FR-IN-6) and a muted
+// "Add file" link in each empty category. Only the four initiation files are offered (D-84).
 import { computed } from 'vue'
 import { useIntakeStore } from '../../stores/intake'
 import { useLabStore } from '../../stores/lab'
@@ -27,7 +28,7 @@ const groups = computed(() =>
 <template>
   <aside class="panel" aria-label="Knowledge files" data-test="file-panel">
     <section class="panel__section" aria-labelledby="core-heading">
-      <h2 id="core-heading" class="caps-label">Core files</h2>
+      <h2 id="core-heading" class="caps-label">Initiation files</h2>
       <ul class="checklist" data-test="checklist">
         <li
           v-for="slot in intake.coreSlots"
@@ -44,6 +45,9 @@ const groups = computed(() =>
           </span>
           <span>{{ slot.category.label }}</span>
           <span class="visually-hidden">{{ slot.complete ? ', complete' : ', missing' }}</span>
+          <span v-if="slot.category.seed_file" class="checklist__seed" data-test="seed-file"
+            ><span class="visually-hidden">, Seed file </span>{{ slot.category.seed_file }}</span
+          >
         </li>
       </ul>
       <BaseTooltip v-if="!intake.ready" :text="missingText" class="start-build">
@@ -158,6 +162,16 @@ const groups = computed(() =>
 .checklist__item--complete {
   color: var(--text-primary);
   font-weight: 600;
+}
+
+/* The Seed file beside an initiation file: a high-level picture, so muted and small (D-86) */
+.checklist__seed {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  text-align: right;
 }
 
 .checklist__box {

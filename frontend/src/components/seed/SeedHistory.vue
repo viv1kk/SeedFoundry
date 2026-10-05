@@ -7,6 +7,7 @@
 import { computed, ref, useId } from 'vue'
 import type { HistoryItem } from '../../seed'
 import BaseChip from '../base/BaseChip.vue'
+import HumanTag from '../base/HumanTag.vue'
 import MarkdownPreview from '../intake/MarkdownPreview.vue'
 
 const props = defineProps<{ items: HistoryItem[] }>()
@@ -42,6 +43,7 @@ const entries = computed(() =>
       <div class="history__body">
         <p class="history__head">
           <strong class="history__title">{{ entry.title }}</strong>
+          <HumanTag v-if="entry.item.kind === 'iteration'" :iteration="entry.item.iteration" />
           <template v-if="entry.item.kind === 'iteration'">
             <BaseChip :tone="entry.item.verdict.tone" data-test="history-verdict">{{ entry.item.verdict.label }}</BaseChip>
             <BaseChip v-if="entry.item.approved" tone="positive" data-test="history-approved">Approved</BaseChip>

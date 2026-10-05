@@ -8,6 +8,7 @@ leaves the live state and the log as they were.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from enum import StrEnum
 from pathlib import Path
@@ -33,12 +34,46 @@ class Category(StrEnum):
 
 
 CATEGORY_LABELS = {
-    Category.PERSON: "Person",
-    Category.INSTRUMENT_AWARENESS: "Instrument Awareness",
-    Category.ENVIRONMENT: "Environment",
-    Category.MUSIC: "Music",
+    Category.PERSON: "Identity.md",
+    Category.INSTRUMENT_AWARENESS: "Tools_and_Skills.md",
+    Category.ENVIRONMENT: "Environment.md",
+    Category.MUSIC: "Value.md",
     Category.MISC_CONTEXT: "Misc Context",
 }
+
+# The four initiation files are the only files the Knowledge page offers (D-84). Misc Context
+# stays as a code term for the observer feedback file, which is kept with the builds and never
+# listed on Knowledge.
+
+# The name a file gets when it is added to a core category on screen (D-85). A name ending in
+# "_<digits>.md" is versioned: each iteration whose feedback changes the file steps the number up
+# (Environment_01.md, then Environment_02.md), keeping its width.
+CORE_FILE_NAMES = {
+    Category.PERSON: "Identity.md",
+    Category.INSTRUMENT_AWARENESS: "Tools_and_Skills.md",
+    Category.ENVIRONMENT: "Environment_01.md",
+    Category.MUSIC: "Value_0001.md",
+}
+
+# The Seed file shown beside each initiation file on the Knowledge page: a high-level picture
+# only, stated by the stakeholder (D-86), not the generation mapping (build-simulation.md §7).
+CATEGORY_SEED_FILES = {
+    Category.PERSON: None,
+    Category.INSTRUMENT_AWARENESS: "protection.md",
+    Category.ENVIRONMENT: "adaptation.md",
+    Category.MUSIC: "core.md",
+}
+
+_VERSIONED = re.compile(r"^(.*_)(\d+)(\.md)$", re.IGNORECASE)
+
+
+def next_version(name: str) -> str:
+    """The name of a versioned file's next version, or the name as it is when it has no number."""
+    found = _VERSIONED.match(name)
+    if found is None:
+        return name
+    digits = found.group(2)
+    return f"{found.group(1)}{int(digits) + 1:0{len(digits)}d}{found.group(3)}"
 
 # One line each, for the Knowledge page's empty state (ui-spec.md §2), from the Ensemble
 # one-line summaries in docs/ensemble/ensemble_context.md.
@@ -50,7 +85,7 @@ CATEGORY_DESCRIPTIONS = {
     Category.MISC_CONTEXT: "Anything else worth knowing. Optional, and any number of files.",
 }
 
-# One file each (FR-IN-3, D-4). Misc Context is unlimited.
+# One file each (FR-IN-3, D-4). Misc Context, the observer feedback only since D-84, is unlimited.
 CORE_CATEGORIES = (Category.PERSON, Category.INSTRUMENT_AWARENESS, Category.ENVIRONMENT, Category.MUSIC)
 
 

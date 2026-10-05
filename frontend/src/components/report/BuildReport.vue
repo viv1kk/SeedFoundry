@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // The build report (FR-R-1, FR-R-2, FR-R-4, ui-spec.md section 4, D-64, D-65): verdict and counts,
 // findings grouped Numeric, Visual, Latency and Boundary, every test, the auto-resolved gates and
-// the simulated usage, with View Dashboard, Reject and Approve. Everything comes from the report
+// the simulated usage, with View Agentic Solution (the dashboard, D-91), Reject, Approve and Initiate
+// QUAD SI Review Protocol (shown only, D-92). Everything comes from the report
 // the server assembles from the build's kept events. Embeddable: the Build page, the Review page
 // and the rebuild modal's "Feedback + Report" view each place it, with their own heading level, and
 // may leave the actions out. A dashboard finding's id links to the dashboard at All products with
@@ -15,7 +16,8 @@
 // to the Seed page instead.
 // From iteration 2 on the report adds "Changes since iteration n - 1" (FR-R-3, D-69, D-81), the
 // feedback quoted through the Preview's sanitising renderer (D-40). Every report shows the Seed files'
-// context footprint when planted, against the 20% budget (D-82).
+// context footprint when planted, against the 20% budget (D-82). An iteration after the first carries
+// the Human tag beside its Iteration fact (D-90).
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { DASHBOARD_ID } from '../../dashboard/api'
@@ -27,6 +29,7 @@ import { useSeedStore } from '../../stores/seed'
 import { useLabStore, type Build } from '../../stores/lab'
 import BaseButton from '../base/BaseButton.vue'
 import BaseChip, { type ChipTone } from '../base/BaseChip.vue'
+import HumanTag from '../base/HumanTag.vue'
 import MarkdownPreview from '../intake/MarkdownPreview.vue'
 
 const props = withDefaults(defineProps<{ build: Build; headingLevel?: 1 | 2 | 3; actions?: boolean; findingLinks?: 'route' | 'event' }>(), {
@@ -212,7 +215,7 @@ const ids = computed(() => `report-${props.build.id}`)
       <dl class="report__facts" data-test="report-facts">
         <div v-for="fact in facts" :key="fact.label" class="report__fact">
           <dt>{{ fact.label }}</dt>
-          <dd data-test="report-fact">{{ fact.value }}</dd>
+          <dd data-test="report-fact">{{ fact.value }}<HumanTag v-if="fact.label === 'Iteration'" :iteration="build.iteration" /></dd>
         </div>
       </dl>
 
@@ -252,7 +255,7 @@ const ids = computed(() => `report-${props.build.id}`)
           <blockquote class="report__quote" data-test="changes-feedback">
             <MarkdownPreview compact :text="changes.feedback.content" :label="`Observer feedback, ${changes.feedback.name}`" />
           </blockquote>
-          <p class="report__aside">From {{ changes.feedback.name }}, saved to Knowledge as Misc Context.</p>
+          <p class="report__aside">From {{ changes.feedback.name }}, kept with the build.</p>
         </template>
         <template v-if="changes.updates.length || changes.kept.length">
           <component :is="h(2)" class="report__group-title">Knowledge files updated from the feedback</component>
@@ -315,7 +318,7 @@ const ids = computed(() => `report-${props.build.id}`)
           </table>
         </div>
         <p class="report__small" data-test="context-note">
-          Simulated: a {{ count(context.window) }}-token context window, at about four bytes a token.
+          Simulated: a {{ count(context.window) }}-token context window (assuming limited one thread build for demonstration purposes), at about four bytes a token.
         </p>
       </section>
 
@@ -438,7 +441,7 @@ const ids = computed(() => `report-${props.build.id}`)
     </template>
 
     <footer v-if="actions" class="report__actions" data-test="report-actions">
-      <BaseButton data-action="dashboard" @click="viewDashboard">View Dashboard</BaseButton>
+      <BaseButton data-action="dashboard" @click="viewDashboard">View Agentic Solution</BaseButton>
       <BaseButton
         :aria-disabled="rebuildWhy ? 'true' : undefined"
         :aria-describedby="rebuildWhy ? `${ids}-why-rebuild` : undefined"
@@ -457,6 +460,9 @@ const ids = computed(() => `report-${props.build.id}`)
       >
         Approve
       </BaseButton>
+      <!-- Shown only: pressing it does nothing (D-92). -->
+      <BaseButton data-action="quad-si">Initiate QUAD SI Review Protocol</BaseButton>
+      <span class="report__footnote" data-test="quad-si-note">* Assuming default 10 cycles</span>
       <span v-if="rebuildWhy" :id="`${ids}-why-rebuild`" class="visually-hidden">{{ rebuildWhy }}</span>
       <span v-if="approveWhy" :id="`${ids}-why-approve`" class="visually-hidden">{{ approveWhy }}</span>
       <p v-if="approval" class="report__rebuilt" data-test="report-approved">
@@ -635,6 +641,11 @@ const ids = computed(() => `report-${props.build.id}`)
 .report__small {
   color: var(--text-muted);
   font-size: var(--text-xs);
+}
+
+.report__footnote {
+  color: var(--text-muted);
+  font-size: calc(var(--text-xs) - 1px);
 }
 
 .report__actions {

@@ -242,13 +242,13 @@ def test_three_gates_are_auto_resolved_in_seeding_and_life(first):
         ("close-seeding", "seeding", "seeding.cleanup"),
     ]
     assert [(e.data["basis"]["file"], e.data["basis"]["section"]) for e in gates] == [
-        ("environment.md", "Protection Layer"),
-        ("music.md", "Decision Logic"),
-        ("environment.md", "Protection Layer"),
+        ("Environment_01.md", "Protection Layer"),
+        ("Value_0001.md", "Decision Logic"),
+        ("Environment_01.md", "Protection Layer"),
     ]
     assert [e.data["kind"] for e in gates] == ["credentials", "approval", "confirmation"]
     assert gates[1].message == (
-        "Gate solution-approval (approval) auto-resolved: approve License Optimization at potential PARTIAL. Basis: music.md, Decision Logic"
+        "Gate solution-approval (approval) auto-resolved: approve License Optimization at potential PARTIAL. Basis: Value_0001.md, Decision Logic"
     )
     t11 = next(e for e in build_events(first[0]) if e.code == "T-11")
     assert t11.data["status"] == "pass"
@@ -263,7 +263,7 @@ def test_a_gate_without_its_section_resolves_on_default():
     gates = [e for b in beats for e in b.events if e["type"] == "gate.auto_resolved"]
     assert gates[0]["data"]["basis"] is None
     assert gates[0]["message"].endswith("No matching section in Knowledge, so it resolved on default")
-    assert gates[2]["data"]["basis"]["file"] == "music.md"  # close-seeding falls back to Decision Logic
+    assert gates[2]["data"]["basis"]["file"] == "Value_0001.md"  # close-seeding falls back to Decision Logic
 
 
 # Every test runs (D-51, D-62, D-63) and boundary advisories (D-12)
@@ -344,9 +344,9 @@ def test_boundary_advisories_are_raised_with_file_line_and_home():
     assert {k: finding["data"][k] for k in ("id", "category", "file", "line", "suggested_home", "severity", "advisory", "phase")} == {
         "id": "B-UI-1",
         "category": "Boundary",
-        "file": "music.md",
+        "file": "Value_0001.md",
         "line": line,
-        "suggested_home": "environment.md, Styling",
+        "suggested_home": "Environment.md, Styling",
         "severity": "advisory",
         "advisory": True,
         "phase": "assay",
@@ -432,7 +432,7 @@ def test_a_speed_change_takes_effect_at_once(tmp_path):
         await clock.advance(1.0)  # 1 s at 1x, then 1 s at 4x: 5 simulated seconds
         played = build_events(manager)[-1].sim_t
         assert played <= 5.0 < engine._beats[engine._next].sim_t
-        assert played > 4.5
+        assert played >= 4.5  # the end of Assay; at 1x it would be 2.0 (D-88)
         await engine.stop()
 
     asyncio.run(go())
@@ -491,30 +491,31 @@ def test_iteration_2_routes_the_feedback_and_says_what_it_changed(second):
     assert lines[0] == f"Read {FEEDBACK_NAME}: 3 segments, {len(FEEDBACK)} bytes"
     assert re.fullmatch(r"route observer feedback: [\d,]+ tokens in, \d+ out \(simulated\)", lines[1])
     assert lines[2:] == [
-        "Segment 1 to environment.md, Data Layer: totals, add up",
-        "Segment 2 to environment.md, Styling: pie",
-        "Segment 3 to environment.md, Styling: axis",
+        "Segment 1 to Environment_01.md, Data Layer: totals, add up",
+        "Segment 2 to Environment_01.md, Styling: pie",
+        "Segment 3 to Environment_01.md, Styling: axis",
         "Routed 3 of 3 segments to 1 file",
     ]
     assert [e for e in route if e.type == "llm.call"][0].data["simulated"] is True
     updates = [e.message for e in events if e.type == "log" and e.step.startswith("assay.feedback-") and e.step != "assay.feedback-route"]
-    environment = next(f for f in second.state.intake.files if f.name == "environment.md")
+    environment = next(f for f in second.state.intake.files if f.name == "Environment_02.md")  # its next version (D-85)
     assert updates[:3] == [
-        "person.md: no change, no feedback was routed to it",
-        "instrument-awareness.md: no change, no feedback was routed to it",
-        "environment.md: +6 lines in Styling (segments 2, 3)",
+        "Identity.md: no change, no feedback was routed to it",
+        "Tools_and_Skills.md: no change, no feedback was routed to it",
+        "Environment_01.md: +6 lines in Styling (segments 2, 3)",
     ]
-    assert updates[3] == "environment.md: +4 lines in Data Layer (segment 1)"
-    assert updates[4] == "music.md: no change, no feedback was routed to it"
-    assert re.fullmatch(r"Intake updated: 1 file changed, fingerprint [0-9a-f]{6} \(was [0-9a-f]{6}\)", updates[5])
+    assert updates[3] == "Environment_01.md: +4 lines in Data Layer (segment 1)"
+    assert updates[4] == "Environment_01.md is now Environment_02.md: the next version of the file"
+    assert updates[5] == "Value_0001.md: no change, no feedback was routed to it"
+    assert re.fullmatch(r"Intake updated: 1 file changed, fingerprint [0-9a-f]{6} \(was [0-9a-f]{6}\)", updates[6])
     completed = {e.step: e.data["summary"] for e in events if e.type == "step.completed" and e.step.startswith("assay.feedback-")}
     assert completed["assay.feedback-environment"] == "+6 lines in Styling; +4 lines in Data Layer"
     assert completed["assay.feedback-person"] == completed["assay.feedback-music"] == "no change"
-    # The files really changed, exactly as the lines say, and only environment.md.
+    # The files really changed, exactly as the lines say, and only Environment_01.md, now Environment_02.md.
     sample_text = {name: text for name, c, text in sample_files() if c != Category.MISC_CONTEXT}
     core = {f.name: f.content for f in second.state.intake.files if f.category != Category.MISC_CONTEXT}
-    assert {n: t for n, t in core.items() if n != "environment.md"} == {n: t for n, t in sample_text.items() if n != "environment.md"}
-    assert len(environment.content.split("\n")) - len(sample_text["environment.md"].split("\n")) == 10
+    assert {n: t for n, t in core.items() if n != "Environment_02.md"} == {n: t for n, t in sample_text.items() if n != "Environment_01.md"}
+    assert len(environment.content.split("\n")) - len(sample_text["Environment_01.md"].split("\n")) == 10
     assert "### Observer feedback (iteration 1)\n\n- Use bars, not a pie.\n\n- Label every axis.\n" in environment.content
     assert "### Observer feedback (iteration 1)\n\nThe totals do not add up.\n" in environment.content
     prior = [e.message for e in events if e.step == "distill.feedback" and e.type == "log"]

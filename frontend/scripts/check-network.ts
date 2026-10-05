@@ -34,7 +34,7 @@ export interface ScanOptions {
    * Accept a URL whose host is wholly a template interpolation, as in `http://${text}`: it
    * names no host. Only the dist/ scan sets this, for markdown-it's linkify code, which
    * prefixes text the user typed and is switched off (D-40, D-45). The src/ scan leaves it
-   * off, so SeedFoundry's own code cannot build an absolute URL from a variable.
+   * off, so SeedFactory's own code cannot build an absolute URL from a variable.
    */
   allowTemplatedHosts?: boolean
 }

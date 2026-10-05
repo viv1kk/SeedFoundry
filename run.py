@@ -1,4 +1,4 @@
-"""Start SeedFoundry's backend and frontend together, or run both test suites.
+"""Start SeedFactory's backend and frontend together, or run both test suites.
 
     python run.py          start both processes; Ctrl+C stops both
     python run.py test     run the backend and frontend test suites
@@ -151,7 +151,7 @@ def launch() -> int:
         frontend = subprocess.Popen([npm(), "run", "dev"], cwd=FRONTEND)
         processes.append(frontend)
         wait_for(FRONTEND_URL, "frontend", frontend)
-        print(f"\nSeedFoundry ready at {FRONTEND_URL}  (Ctrl+C stops both)\n", flush=True)
+        print(f"\nSeedFactory ready at {FRONTEND_URL}  (Ctrl+C stops both)\n", flush=True)
         while all(p.poll() is None for p in processes):
             time.sleep(0.5)
         return 1

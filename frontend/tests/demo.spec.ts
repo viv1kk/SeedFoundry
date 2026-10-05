@@ -151,7 +151,7 @@ describe('Shift+P: Load sample Seed (FR-DC-2, FR-DC-3)', () => {
     expect($$('[data-test="checklist"] [data-complete="true"]').length).toBe(4)
     expect(startBuildEnabled()).toBe(true)
     // The editor opens the first file in Ensemble order, with the sample's text.
-    expect($<HTMLInputElement>('[data-test="name"]')?.value).toBe('person.md')
+    expect($<HTMLInputElement>('[data-test="name"]')?.value).toBe('Identity.md')
     expect($<HTMLTextAreaElement>('[data-test="editor"] textarea')?.value).toBe(SAMPLE[0].content)
   })
 
@@ -160,17 +160,15 @@ describe('Shift+P: Load sample Seed (FR-DC-2, FR-DC-3)', () => {
     await letter('O')
     await click('[data-action="sample"]')
     expect(names()).toEqual(SAMPLE.map((f) => f.name))
-    expect(status()).toBe('Sample Seed loaded: 5 files.')
+    expect(status()).toBe('Sample Seed loaded: 4 files.')
   })
 
-  it('asks before replacing files, Misc Context included (OQ-17)', async () => {
+  it('asks before replacing files (OQ-17)', async () => {
     server.add('person.md', 'person', 'mine')
-    server.add('my-notes.md', 'misc_context', 'notes')
+    server.add('my-notes.md', 'environment', 'notes')
     await open()
     await letter('P')
-    expect(confirmText()).toBe(
-      'This replaces all 2 knowledge files, Misc Context included, with the sample Seed. Unsaved changes are lost.',
-    )
+    expect(confirmText()).toBe('This replaces all 2 knowledge files with the sample Seed. Unsaved changes are lost.')
     expect(demoWrites()).toEqual([])
     await click('[data-test="confirm-ok"]')
     expect(demoWrites()).toEqual([expect.objectContaining({ path: '/api/demo/sample', body: { replace: true } })])
@@ -178,7 +176,7 @@ describe('Shift+P: Load sample Seed (FR-DC-2, FR-DC-3)', () => {
   })
 
   it('Cancel keeps the files as they are', async () => {
-    server.add('my-notes.md', 'misc_context', 'notes')
+    server.add('my-notes.md', 'environment', 'notes')
     await open()
     await letter('P')
     await click('[data-test="confirm-cancel"]')
@@ -238,7 +236,7 @@ describe('Shift+C: Clear Knowledge', () => {
   })
 
   it('Cancel deletes nothing', async () => {
-    server.add('notes.md', 'misc_context', 'n')
+    server.add('notes.md', 'environment', 'n')
     await open()
     await letter('C')
     await click('[data-test="confirm-cancel"]')
@@ -292,7 +290,7 @@ describe('Shift+Enter: Start Build (FR-B-1)', () => {
     await open()
     await letter('O')
     await shift('Enter', 'Enter', document.body)
-    expect(status()).toBe('Start Build needs every core file. Missing: Person, Instrument Awareness, Environment.')
+    expect(status()).toBe('Start Build needs every initiation file. Missing: Identity.md, Tools_and_Skills.md, Environment.md.')
     expect(server.writes()).toEqual([])
   })
 

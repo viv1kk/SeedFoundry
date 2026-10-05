@@ -56,7 +56,7 @@ let purifier: ReturnType<typeof DOMPurify> | null = null
 function purify(): ReturnType<typeof DOMPurify> {
   if (purifier) return purifier
   purifier = DOMPurify(window)
-  // Keep only SeedFoundry's md- class names, so a file cannot borrow the app's classes.
+  // Keep only SeedFactory's md- class names, so a file cannot borrow the app's classes.
   purifier.addHook('uponSanitizeAttribute', (_node, data) => {
     if (data.attrName !== 'class') return
     const kept = data.attrValue.split(/\s+/).filter((name) => /^md-[\w-]+$/.test(name))

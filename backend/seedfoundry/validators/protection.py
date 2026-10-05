@@ -11,7 +11,7 @@ Each probe is a request, as in Seed v0.1's policy evaluation: an action, a resou
 never a rule. Every covering rule whose facts hold matches; the strictest effect wins (DENY over
 ESCALATE over ALLOW) and the most specific rule of that effect is cited. A request missing a fact
 some covering rule depends on is denied under the default rule, and so is a request no rule
-allows. The rule ids are SeedFoundry's (P-1, P-2, ...), never Seed v0.1's (requirements §9).
+allows. The rule ids are SeedFactory's (P-1, P-2, ...), never Seed v0.1's (requirements §9).
 
 T-13 passes when every probe gets its expected effect from a rule of the Protection layer (one
 probe expects the default rule: a missing fact). It warns when a probe is decided by the default

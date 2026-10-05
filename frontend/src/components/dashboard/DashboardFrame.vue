@@ -1,11 +1,11 @@
 <script setup lang="ts">
-// The thin SeedFoundry frame around the dashboard (FR-D-5, ui-spec.md section 5): Back to report,
+// The thin SeedFactory frame around the dashboard (FR-D-5, ui-spec.md section 5): Back to report,
 // the iteration badge, iteration 1's "N findings" link back to the report, and the dashboard. The
 // drill path lives in the URL (FR-D-6, D-29), so a reload keeps it and the browser's Back pops one
 // step: each drill is one history entry. The drill bar's Back goes back in history when the entry
 // before is the parent level, and otherwise (after a reload, or a crumb) opens the parent as a new
 // entry. Iteration 1's dashboard carries the defect overlay (D-60); the frame around it is
-// SeedFoundry's own and stays outside it.
+// SeedFactory's own and stays outside it.
 //
 // A finding opened from the report is in the URL too (`finding=<id>`, D-65): every panel it names
 // is outlined, the frame says which, and focus moves to that line. A reload keeps it; a drill, a
@@ -18,6 +18,7 @@ import { dashboardFindings } from '../../report'
 import type { Build } from '../../stores/lab'
 import { useReportsStore } from '../../stores/reports'
 import BaseChip from '../base/BaseChip.vue'
+import HumanTag from '../base/HumanTag.vue'
 import DashboardView from './DashboardView.vue'
 
 const props = defineProps<{ iteration: number; build: Build }>()
@@ -90,6 +91,7 @@ function clearHighlight(): void {
           {{ findingCount }} {{ findingCount === 1 ? 'finding' : 'findings' }}
         </RouterLink>
         <BaseChip tone="accent" class="frame__badge" data-test="frame-iteration">Iteration {{ iteration }}</BaseChip>
+        <HumanTag :iteration="iteration" />
       </div>
     </div>
     <p v-if="notice" class="frame__note" role="status" data-test="drill-notice">{{ notice }}</p>

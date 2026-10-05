@@ -199,7 +199,7 @@ def test_the_alternate_is_a_different_estate_with_the_same_schema():
 
 
 def test_the_primary_departments_are_the_sample_accounts():
-    environment = next(content for name, _, content in sample_files() if name == "environment.md")
+    environment = next(content for name, _, content in sample_files() if name == "Environment_01.md")
     named = re.search(r"Departments are named as the firm names them: (.+)\.", environment).group(1)
     assert list(dataset("primary").departments) == [d.strip() for d in named.replace(" and ", ", ").split(",")]
 

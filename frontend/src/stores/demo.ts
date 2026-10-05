@@ -48,7 +48,7 @@ export const useDemoStore = defineStore('demo', () => {
         return lab.runningBuild ? LOCKED : null
       case 'start':
         if (lab.runningBuild) return 'A build is running.'
-        return intake.ready ? null : `Start Build needs every core file. Missing: ${intake.missing.join(', ')}.`
+        return intake.ready ? null : `Start Build needs every initiation file. Missing: ${intake.missing.join(', ')}.`
       case 'skipPhase':
       case 'skipEnd':
         return lab.runningBuild ? null : NO_BUILD

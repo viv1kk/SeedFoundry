@@ -14,7 +14,7 @@ from seedfoundry.intake import boundary
 from seedfoundry.intake.feedback import FEEDBACK_NAME
 from seedfoundry.intake.routing import HEADING, TARGETS, place, route
 from seedfoundry.sample import demo_feedback, sample_files
-from seedfoundry.state import CORE_CATEGORIES, Category, IntakeFile
+from seedfoundry.state import CORE_CATEGORIES, Category, IntakeFile, next_version
 from test_no_em_dash import em_dashes
 
 
@@ -30,17 +30,18 @@ def by_name(files: list[IntakeFile]) -> dict[str, str]:
     return {f.name: f.content for f in files}
 
 
-# One segment per rule set, each in its own words: (segment, file, section)
+# One segment per rule set, each in its own words: (segment, file after routing, section). A routed
+# file with a versioned name steps to its next version (D-85).
 PLANTED = [
-    ("The pie has too many slices and the colours are off the palette.", "environment.md", "Styling"),
-    ("The spinner keeps the panel waiting for seconds.", "environment.md", "User Experience"),
-    ("The totals do not add up to the seat records.", "environment.md", "Data Layer"),
-    ("Assignee names need privacy: check every export before it leaves the sandbox.", "environment.md", "Protection Layer"),
-    ("The language model can hallucinate a number.", "instrument-awareness.md", "Model Behaviour"),
-    ("State each assumption and the evidence behind the reasoning.", "person.md", "Reasoning methods"),
-    ("Prioritise by recoverable cost and rank products by score.", "music.md", "Core Principles"),
-    ("Decide between choices by the decision rules.", "music.md", "Decision Logic"),
-    ("Success is the value of the savings, not their size.", "music.md", "Value Logic"),
+    ("The pie has too many slices and the colours are off the palette.", "Environment_02.md", "Styling"),
+    ("The spinner keeps the panel waiting for seconds.", "Environment_02.md", "User Experience"),
+    ("The totals do not add up to the seat records.", "Environment_02.md", "Data Layer"),
+    ("Assignee names need privacy: check every export before it leaves the sandbox.", "Environment_02.md", "Protection Layer"),
+    ("The language model can hallucinate a number.", "Tools_and_Skills.md", "Model Behaviour"),
+    ("State each assumption and the evidence behind the reasoning.", "Identity.md", "Reasoning methods"),
+    ("Prioritise by recoverable cost and rank products by score.", "Value_0002.md", "Core Principles"),
+    ("Decide between choices by the decision rules.", "Value_0002.md", "Decision Logic"),
+    ("Success is the value of the savings, not their size.", "Value_0002.md", "Value Logic"),
 ]
 
 
@@ -134,11 +135,11 @@ def test_the_same_feedback_gives_the_same_edits():
 
 def test_segments_are_appended_verbatim_at_the_end_of_their_section():
     routed = route(with_feedback("- Use a bar chart, not a pie.\n\nThe colours\nare off the palette.\n"))
-    environment = by_name(routed.files)["environment.md"]
+    environment = by_name(routed.files)["Environment_02.md"]
     styling = environment.split("\n## Styling\n", 1)[1].split("\n## Adaptation Layer\n", 1)[0]
     assert styling.endswith(f"### {HEADING}\n\n- Use a bar chart, not a pie.\n\nThe colours\nare off the palette.\n")
     # Everything that was there stays, in order: the edit only inserts.
-    original = by_name(sample())["environment.md"].split("\n")
+    original = by_name(sample())["Environment_01.md"].split("\n")
     ops = difflib.SequenceMatcher(a=original, b=environment.split("\n"), autojunk=False).get_opcodes()
     assert {op for op, *_ in ops} == {"equal", "insert"}
 
@@ -177,3 +178,37 @@ def test_the_demo_feedback_reaches_all_four_files_and_raises_no_advisory():
     # It cites the finding ids, so the observer's words point at the report.
     for finding in ("N-1", "N-5", "V-1", "V-8", "L-1"):
         assert finding in text
+
+
+# Versioned names (D-85)
+
+
+def test_a_versioned_name_steps_up_when_the_feedback_changes_the_file():
+    assert [next_version(n) for n in ("Environment_01.md", "Value_0001.md", "Environment_09.md", "Value_9999.md")] == [
+        "Environment_02.md",
+        "Value_0002.md",
+        "Environment_10.md",
+        "Value_10000.md",
+    ]
+    assert [next_version(n) for n in ("Identity.md", "Tools_and_Skills.md", "environment.md")] == [
+        "Identity.md",
+        "Tools_and_Skills.md",
+        "environment.md",
+    ]
+    routed = route(with_feedback("The totals do not add up to the seat records."))
+    names = {c: change.after.name for c, change in routed.changes.items()}
+    assert names == {
+        Category.PERSON: "Identity.md",
+        Category.INSTRUMENT_AWARENESS: "Tools_and_Skills.md",
+        Category.ENVIRONMENT: "Environment_02.md",  # changed, so its next version
+        Category.MUSIC: "Value_0001.md",  # unchanged, so the same version
+    }
+    # Routed again over its own result (a rerun), nothing changes, so no name steps.
+    again = route(routed.files)
+    assert {c: change.after.name for c, change in again.changes.items()} == names
+
+
+def test_a_name_without_a_number_is_kept_when_the_file_changes():
+    files = [f.model_copy(update={"name": "environment.md"}) if f.category == Category.ENVIRONMENT else f for f in sample()]
+    routed = route(with_feedback("The totals do not add up to the seat records.", files))
+    assert routed.changes[Category.ENVIRONMENT].changed and routed.changes[Category.ENVIRONMENT].after.name == "environment.md"

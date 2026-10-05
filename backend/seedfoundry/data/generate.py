@@ -1,4 +1,4 @@
-"""The seeded generator for SeedFoundry's License Optimization estates (D-30, D-55).
+"""The seeded generator for SeedFactory's License Optimization estates (D-30, D-55).
 
 Seed rule: each estate's RNG is `random.Random(n)`, where n is the first eight bytes, big-endian,
 of sha256("seedfoundry/license-optimization/<estate>/v1"). The seed is a fixed constant per

@@ -9,10 +9,10 @@ from seedfoundry.state import CORE_CATEGORIES, Category, IntakeFile
 from test_sample import ensemble_sections
 
 NAMES = {
-    Category.PERSON: "person.md",
-    Category.INSTRUMENT_AWARENESS: "instrument-awareness.md",
-    Category.ENVIRONMENT: "environment.md",
-    Category.MUSIC: "music.md",
+    Category.PERSON: "Identity.md",
+    Category.INSTRUMENT_AWARENESS: "Tools_and_Skills.md",
+    Category.ENVIRONMENT: "Environment_01.md",
+    Category.MUSIC: "Value_0001.md",
 }
 
 
@@ -92,6 +92,6 @@ def test_a_whitespace_only_core_file_counts_as_missing():
 def test_inventory_of_the_sample():
     inventory = assay.inventory(sample())
     assert [f.name for f in inventory.core] == list(NAMES.values())
-    assert [f.name for f in inventory.context] == ["vendor-notes.md"]
+    assert [f.name for f in inventory.context] == []  # no Misc Context since D-84
     assert inventory.missing == []
     assert inventory.total_bytes == sum(len(text.encode("utf-8")) for _, _, text in sample_files())

@@ -27,7 +27,7 @@ from dataclasses import dataclass, field
 
 from seedfoundry.intake import assay, boundary
 from seedfoundry.intake.feedback import feedback_file, segments
-from seedfoundry.state import CORE_CATEGORIES, Category, IntakeFile
+from seedfoundry.state import CORE_CATEGORIES, Category, IntakeFile, next_version
 
 
 def heading(rejected: int = 1) -> str:
@@ -188,6 +188,10 @@ class FileChange:
     def changed(self) -> bool:
         return self.after.content != self.before.content
 
+    @property
+    def renamed(self) -> bool:
+        return self.after.name != self.before.name
+
 
 @dataclass
 class Routing:
@@ -303,6 +307,8 @@ def route(files: list[IntakeFile], rejected: int = 1) -> Routing:
             if texts:
                 content, change = _append(content, target.section, texts, heading(rejected))
                 sections.append(change)
-        changes[category] = FileChange(before, before.model_copy(update={"content": content}), sections)
+        # A versioned name (Environment_01.md) steps up when the feedback changes the file (D-85).
+        name = next_version(before.name) if content != before.content else before.name
+        changes[category] = FileChange(before, before.model_copy(update={"content": content, "name": name}), sections)
     after = {change.after.id: change.after for change in changes.values()}
     return Routing(feedback, placements, changes, [after.get(f.id, f) for f in files])

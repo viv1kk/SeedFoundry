@@ -53,8 +53,11 @@ export const useIntakeStore = defineStore('intake', () => {
   }
 
   const coreCategories = computed(() => categories.value.filter((c) => c.core))
-  /** Where a file goes when nothing else says: the first category that is not core. */
-  const defaultCategory = computed(() => categories.value.find((c) => !c.core)?.id ?? '')
+  /** Where a file goes when nothing else says: the first initiation file not yet added, else the
+   * first category. Knowledge offers no other category (D-84). */
+  const defaultCategory = computed(
+    () => categories.value.find((c) => !lab.files.some((f) => f.category === c.id))?.id ?? categories.value[0]?.id ?? '',
+  )
 
   function category(id: string): CategoryInfo | undefined {
     return categories.value.find((c) => c.id === id)
@@ -68,11 +71,13 @@ export const useIntakeStore = defineStore('intake', () => {
     return category(id)?.label ?? id
   }
 
-  /** Files in Ensemble order (category order, then creation order). */
+  /** Files in Ensemble order (category order, then creation order). Only the categories Knowledge
+   * offers: the observer feedback is kept with the builds, not listed (D-84). */
   const orderedFiles = computed<IntakeFile[]>(() => {
     const order = new Map(categories.value.map((c, index) => [c.id, index]))
     return lab.files
       .map((file, index) => ({ file, index }))
+      .filter(({ file }) => order.has(file.category))
       .sort((a, b) => (order.get(a.file.category) ?? 99) - (order.get(b.file.category) ?? 99) || a.index - b.index)
       .map(({ file }) => file)
   })
@@ -83,12 +88,22 @@ export const useIntakeStore = defineStore('intake', () => {
     return lab.files.find((f) => f.category === categoryId && f.id !== except)
   }
 
-  function hintFor(filename: string): string {
-    return hintedCategory(filename, filenameHints.value, defaultCategory.value)
+  /** A file's category from its name; with no hint, the first initiation file neither added nor
+   * in `taken` (the rows before it in one import), else the default (D-84). */
+  function hasHint(filename: string): boolean {
+    return hintedCategory(filename, filenameHints.value, '') !== ''
   }
 
-  /** A suggested name for a new file in a category: its first filename hint. */
+  function hintFor(filename: string, taken: readonly string[] = []): string {
+    const open = categories.value.find((c) => !taken.includes(c.id) && !lab.files.some((f) => f.category === c.id))
+    return hintedCategory(filename, filenameHints.value, open?.id ?? defaultCategory.value)
+  }
+
+  /** The name a file gets when it is added to a category (D-85): Environment_01.md for
+   * Environment.md. A category the server did not name falls back to its first filename hint. */
   function suggestedName(categoryId: string): string {
+    const named = category(categoryId)?.file_name
+    if (named) return named
     const hinted = Object.entries(filenameHints.value).find(([, c]) => c === categoryId)
     return hinted ? hinted[0] : 'notes.md'
   }
@@ -293,8 +308,9 @@ export const useIntakeStore = defineStore('intake', () => {
     return file
   }
 
+  /** Import a file into a category. It takes the category's name (D-85), whatever it was called. */
   async function importFile(upload: Blob, filename: string, categoryId: string, replace: boolean): Promise<IntakeFile> {
-    const file = await intakeApi.import(filename, upload, categoryId, replace)
+    const file = await intakeApi.import(filename, upload, categoryId, replace, isCore(categoryId) ? suggestedName(categoryId) : undefined)
     if (replace) applyReplaced(file)
     lab.upsertFile(file)
     return file
@@ -313,8 +329,10 @@ export const useIntakeStore = defineStore('intake', () => {
     return file
   }
 
+  /** Move a file to another category. It takes that category's name, as an added file does (D-85). */
   async function recategorise(id: string, categoryId: string, replace: boolean): Promise<IntakeFile> {
-    const file = await intakeApi.update(id, { category: categoryId, replace })
+    const changes = isCore(categoryId) ? { category: categoryId, name: suggestedName(categoryId), replace } : { category: categoryId, replace }
+    const file = await intakeApi.update(id, changes)
     if (replace) applyReplaced(file)
     applyMeta(file)
     return file
@@ -339,6 +357,7 @@ export const useIntakeStore = defineStore('intake', () => {
     orderedFiles,
     slotHolder,
     hintFor,
+    hasHint,
     suggestedName,
     text,
     isDirty,

@@ -122,6 +122,12 @@ class BuildContext:
         found = self.core.get(category)
         return found.name if found else assay.CATEGORY_LABELS[category]
 
+    def given_name(self, category: Category) -> str:
+        """The core file's name as the build was started with it, before routing stepped its
+        version (D-85)."""
+        found = next((f for f in self.given if f.category == category), None)
+        return found.name if found else assay.CATEGORY_LABELS[category]
+
     def text(self, *categories: Category) -> str:
         return "\n".join(self.core[c].content for c in categories if c in self.core)
 
@@ -220,7 +226,7 @@ def feedback_route(ctx: BuildContext) -> Step:
                 kept=True,
             )
         else:
-            name = ctx.name(p.target.category)
+            name = ctx.given_name(p.target.category)
             yield log(
                 f"Segment {p.number} to {name}, {p.target.section}: {', '.join(p.matched)}",
                 weight=0.5,
@@ -246,7 +252,7 @@ def feedback_update(category: Category, last: bool = False) -> Callable[[BuildCo
     (iteration 1)` in their sections (D-36). The file in Knowledge changes when this step plays."""
 
     def step(ctx: BuildContext) -> Step:
-        name = ctx.name(category)
+        name = ctx.given_name(category)
         change = ctx.routing.changes.get(category) if ctx.routing else None
         added = [s for s in change.sections if s.segments] if change else []
         if not added and not (change and any(s.present for s in change.sections)):
@@ -277,6 +283,16 @@ def feedback_update(category: Category, last: bool = False) -> Callable[[BuildCo
                         lines_added=0,
                     )
                 )
+        if beats and change is not None and change.renamed:
+            beats.append(
+                log(
+                    f"{name} is now {change.after.name}: the next version of the file",
+                    file=name,
+                    file_id=change.after.id,
+                    category=category.value,
+                    renamed=change.after.name,
+                )
+            )
         if beats and change is not None and change.changed:
             beats[-1].intake = [change.after.model_copy()]
         yield from beats
@@ -301,7 +317,7 @@ def feedback_update(category: Category, last: bool = False) -> Callable[[BuildCo
 def inventory(ctx: BuildContext) -> Step:
     inv = ctx.inventory
     yield log(
-        f"Inventory: {plural(len(inv.core), 'core file')}, {plural(len(inv.context), 'context file')}, {assay.kilobytes(inv.total_bytes)}",
+        f"Inventory: {plural(len(inv.core), 'initiation file')}, {plural(len(inv.context), 'context file')}, {assay.kilobytes(inv.total_bytes)}",
         files=[f.summary() for f in inv.core + inv.context],
         bytes=inv.total_bytes,
     )
@@ -337,7 +353,7 @@ def coverage(ctx: BuildContext) -> Step:
 
 
 def boundary_check(ctx: BuildContext) -> Step:
-    yield log(f"Boundary check: {len(boundary.RULES)} rules over {plural(len(ctx.inventory.core), 'core file')}")
+    yield log(f"Boundary check: {len(boundary.RULES)} rules over {plural(len(ctx.inventory.core), 'initiation file')}")
     counts: dict[str, int] = {}
     advisories = boundary.lint(ctx.inventory.core)
     for advisory in advisories:
@@ -443,9 +459,9 @@ def merge_context(ctx: BuildContext) -> Step:
     # From iteration 2 on, the feedback files are routed into the core files, not merged (D-81).
     context = [f for f in ctx.inventory.context if not is_feedback(f) or ctx.iteration == 1]
     if not context:
-        yield log("No Misc Context files to merge")
+        yield log("No context notes to merge")
         return "none"
-    yield llm(ctx.llm.call("merge Misc Context", "\n".join(f.content for f in context), (200, 480)))
+    yield llm(ctx.llm.call("merge context notes", "\n".join(f.content for f in context), (200, 480)))
     notes = sum(assay.statements(f.content.split("\n")) for f in context)
     yield log(f"Merged {plural(len(context), 'context file')}: {', '.join(f.name for f in context)} ({plural(notes, 'note')})", files=[f.name for f in context])
     return plural(len(context), "file")

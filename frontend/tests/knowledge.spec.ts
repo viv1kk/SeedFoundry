@@ -116,41 +116,41 @@ describe('FR-IN-1: layout', () => {
     const parts = Array.from(editor.children).map((el) => el.className)
     expect(parts.indexOf('editor__meta')).toBeLessThan(parts.indexOf('editor__toolbar'))
     expect($<HTMLInputElement>('[data-test="name"]')?.value).toBe('music.md')
-    expect(text('[data-test="category"] .menu-trigger')).toBe('Music')
+    expect(text('[data-test="category"] .menu-trigger')).toBe('Value.md')
   })
 })
 
 describe('FR-IN-2: every file has a name and one category', () => {
-  it('groups files under their category in Ensemble order, from the server', async () => {
-    server.add('vendor-notes.md', 'misc_context', 'v')
+  it('groups files under their category in Ensemble order, from the server; no Misc Context (D-84)', async () => {
+    server.add('observer-feedback-iteration-1.md', 'misc_context', 'v') // kept with the builds, never listed
     server.add('music.md', 'music', 'm')
     server.add('person.md', 'person', 'p')
     await open()
     expect($$('[data-test="file-panel"] .group__title').map((el) => el.textContent)).toEqual([
-      'Person',
-      'Instrument Awareness',
-      'Environment',
-      'Music',
-      'Misc Context',
+      'Identity.md',
+      'Tools_and_Skills.md',
+      'Environment.md',
+      'Value.md',
     ])
     expect(groupNames('person')).toEqual(['person.md'])
     expect(groupNames('music')).toEqual(['music.md'])
-    expect(groupNames('misc_context')).toEqual(['vendor-notes.md'])
+    expect($$('[data-category="misc_context"]')).toEqual([])
+    expect(fileButton('observer-feedback-iteration-1.md')).toBeUndefined()
   })
 
-  it('offers exactly the five categories in the picker, with the current one checked', async () => {
+  it('offers exactly the four initiation files in the picker, with the current one checked (D-84)', async () => {
     server.add('music.md', 'music', 'm')
     await open()
     await click('[data-test="category"] .menu-trigger')
     const items = $$('[role="menuitemradio"]')
-    expect(items.map((i) => i.textContent?.trim())).toEqual(['Person', 'Instrument Awareness', 'Environment', 'Music', 'Misc Context'])
-    expect(items.filter((i) => i.getAttribute('aria-checked') === 'true').map((i) => i.textContent?.trim())).toEqual(['Music'])
+    expect(items.map((i) => i.textContent?.trim())).toEqual(['Identity.md', 'Tools_and_Skills.md', 'Environment.md', 'Value.md'])
+    expect(items.filter((i) => i.getAttribute('aria-checked') === 'true').map((i) => i.textContent?.trim())).toEqual(['Value.md'])
   })
 
   it('shows a muted "Add file" link in each empty category', async () => {
     server.add('music.md', 'music', 'm')
     await open()
-    expect($$('[data-add]').map((el) => el.getAttribute('data-add'))).toEqual(['person', 'instrument_awareness', 'environment', 'misc_context'])
+    expect($$('[data-add]').map((el) => el.getAttribute('data-add'))).toEqual(['person', 'instrument_awareness', 'environment'])
   })
 })
 
@@ -161,34 +161,34 @@ describe('FR-IN-3: one file per core category', () => {
     await click('[data-test="new-file"]')
     await choose('[data-test="new-category"]', 'person')
     expect(text('[data-test="new-replace-warning"]')).toBe('Replaces existing person.md')
-    await type('[data-test="new-name"]', 'player.md')
+    expect(text('[data-test="new-name"]')).toBe('Identity.md') // the category's name, not typed (D-85)
     await click('[data-test="new-create"]')
     expect(text('.modal__title')).toBe('Replace it?')
-    expect(text('[data-test="new-confirm"]')).toBe('Person already has person.md. Replace it with player.md? person.md will be deleted.')
+    expect(text('[data-test="new-confirm"]')).toBe('Identity.md already has person.md. Replace it with Identity.md? person.md will be deleted.')
     expect(server.writes()).toEqual([])
     await click('[data-test="new-create"]')
-    expect(server.writes().map((c) => c.body)).toEqual([{ name: 'player.md', category: 'person', content: '', replace: true }])
-    expect(groupNames('person')).toEqual(['player.md'])
+    expect(server.writes().map((c) => c.body)).toEqual([{ name: 'Identity.md', category: 'person', content: '', replace: true }])
+    expect(groupNames('person')).toEqual(['Identity.md'])
     expect(router.currentRoute.value.query.file).toBe('f-2')
   })
 
-  it('a category change into a filled core slot asks first, then sends replace', async () => {
+  it('a category change into a filled core slot asks first, then sends replace, and the file takes the name (D-85)', async () => {
     server.add('person.md', 'person', 'p')
-    server.add('draft.md', 'misc_context', 'd')
+    server.add('draft.md', 'environment', 'd')
     await open('/knowledge?file=f-2')
     await click('[data-test="category"] .menu-trigger')
     await click('[data-item="person"]')
     expect(text('.modal__title')).toBe('Replace it?')
-    expect(text('[data-test="confirm-body"]')).toBe('Person already has person.md. Replace it with draft.md? person.md will be deleted.')
+    expect(text('[data-test="confirm-body"]')).toBe('Identity.md already has person.md. Replace it with draft.md? person.md will be deleted.')
     await click('[data-test="confirm-ok"]')
-    expect(server.writes().map((c) => c.body)).toEqual([{ category: 'person', replace: true }])
-    expect(groupNames('person')).toEqual(['draft.md'])
-    expect(groupNames('misc_context')).toEqual([])
+    expect(server.writes().map((c) => c.body)).toEqual([{ category: 'person', name: 'Identity.md', replace: true }])
+    expect(groupNames('person')).toEqual(['Identity.md'])
+    expect(groupNames('environment')).toEqual([])
   })
 
   it("cancelling the question changes nothing", async () => {
     server.add('person.md', 'person', 'p')
-    server.add('draft.md', 'misc_context', 'd')
+    server.add('draft.md', 'environment', 'd')
     await open('/knowledge?file=f-2')
     await click('[data-test="category"] .menu-trigger')
     await click('[data-item="person"]')
@@ -204,20 +204,18 @@ describe('FR-IN-3: one file per core category', () => {
     await choose('[data-test="new-category"]', 'music')
     await click('[data-test="new-create"]')
     expect(server.writes()).toHaveLength(1)
-    expect(text('[data-test="new-confirm"]')).toBe('Music already has music.md. Replace it with music.md? music.md will be deleted.')
+    expect(text('[data-test="new-confirm"]')).toBe('Value.md already has music.md. Replace it with Value_0001.md? music.md will be deleted.')
     await click('[data-test="new-create"]')
     expect(server.writes()[1].body).toMatchObject({ category: 'music', replace: true })
   })
 
-  it('Misc Context takes any number of files without asking', async () => {
-    server.add('a.md', 'misc_context', 'a')
+  it('offers only the four initiation files to add: no Misc Context (D-84)', async () => {
     await open()
     await click('[data-test="new-file"]')
-    await choose('[data-test="new-category"]', 'misc_context')
-    await type('[data-test="new-name"]', 'b.md')
-    await click('[data-test="new-create"]')
-    expect(server.writes().map((c) => c.body)).toEqual([{ name: 'b.md', category: 'misc_context', content: '', replace: false }])
-    expect(groupNames('misc_context')).toEqual(['a.md', 'b.md'])
+    expect(($$('[data-test="new-category"] option') as HTMLOptionElement[]).map((o) => o.value)).toEqual(['person', 'instrument_awareness', 'environment', 'music'])
+    await click('[data-test="new-cancel"]')
+    await pick([{ name: 'readme.md', content: 'x' }])
+    expect(($$('[data-test="row-category"] option') as HTMLOptionElement[]).map((o) => o.value)).toEqual(['person', 'instrument_awareness', 'environment', 'music'])
   })
 })
 
@@ -283,19 +281,21 @@ describe('FR-IN-6: new, rename, change category, delete, unsaved dot, autosave',
   it('creates a new file and opens it', async () => {
     await open()
     await click('[data-test="empty-new"]')
-    expect($<HTMLInputElement>('[data-test="new-name"]')?.value).toBe('person.md')
+    expect(text('[data-test="new-name"]')).toBe('Identity.md')
     await click('[data-test="new-create"]')
-    expect(server.writes().map((c) => c.body)).toEqual([{ name: 'person.md', category: 'person', content: '', replace: false }])
+    expect(server.writes().map((c) => c.body)).toEqual([{ name: 'Identity.md', category: 'person', content: '', replace: false }])
     expect(router.currentRoute.value.query.file).toBe('f-1')
-    expect($<HTMLInputElement>('[data-test="name"]')?.value).toBe('person.md')
+    expect($<HTMLInputElement>('[data-test="name"]')?.value).toBe('Identity.md')
   })
 
-  it('"Add file" opens New file on that category with its suggested name', async () => {
+  it('"Add file" opens New file on that category with its name (D-85)', async () => {
     server.add('person.md', 'person', 'p')
     await open()
     await click('[data-add="environment"]')
     expect($<HTMLSelectElement>('[data-test="new-category"]')?.value).toBe('environment')
-    expect($<HTMLInputElement>('[data-test="new-name"]')?.value).toBe('environment.md')
+    expect(text('[data-test="new-name"]')).toBe('Environment_01.md')
+    await choose('[data-test="new-category"]', 'music')
+    expect(text('[data-test="new-name"]')).toBe('Value_0001.md') // the name follows the category
   })
 
   it('shows the server message for a bad name', async () => {
@@ -327,21 +327,21 @@ describe('FR-IN-6: new, rename, change category, delete, unsaved dot, autosave',
     expect(document.activeElement).toBe($('[data-test="name"]'))
   })
 
-  it('changes category through the picker', async () => {
-    server.add('notes.md', 'misc_context', 'n')
+  it('changes category through the picker, and the file takes that category name (D-85)', async () => {
+    server.add('notes.md', 'music', 'n')
     await open()
     await click('[data-test="overflow"] .menu-trigger')
     await click('[data-item="category"]')
-    expect(document.activeElement?.getAttribute('data-item')).toBe('misc_context')
+    expect(document.activeElement?.getAttribute('data-item')).toBe('music')
     await click('[data-item="environment"]')
-    expect(server.writes().map((c) => c.body)).toEqual([{ category: 'environment', replace: false }])
-    expect(groupNames('environment')).toEqual(['notes.md'])
+    expect(server.writes().map((c) => c.body)).toEqual([{ category: 'environment', name: 'Environment_01.md', replace: false }])
+    expect(groupNames('environment')).toEqual(['Environment_01.md'])
   })
 
   it('deletes only after confirmation', async () => {
     server.add('music.md', 'music', 'm')
-    server.add('notes.md', 'misc_context', 'n')
-    await open()
+    server.add('notes.md', 'environment', 'n')
+    await open('/knowledge?file=f-1')
     await click('[data-test="overflow"] .menu-trigger')
     await click('[data-item="delete"]')
     expect(text('.modal__title')).toBe('Delete music.md?')
@@ -375,8 +375,8 @@ describe('FR-IN-6: new, rename, change category, delete, unsaved dot, autosave',
 
   it('saves at once when switching files', async () => {
     server.add('music.md', 'music', 'm')
-    server.add('notes.md', 'misc_context', 'n')
-    await open()
+    server.add('notes.md', 'environment', 'n')
+    await open('/knowledge?file=f-1')
     await type('[data-test="text"]', 'switching')
     await click(fileButton('notes.md')!)
     expect(server.writes().map((c) => [c.path, c.body])).toEqual([['/api/intake/files/f-1', { content: 'switching' }]])
@@ -415,24 +415,28 @@ describe('FR-IN-6: new, rename, change category, delete, unsaved dot, autosave',
 })
 
 describe('FR-IN-7: import', () => {
-  it('pre-selects each category from the filename and imports one raw request per file', async () => {
+  it('pre-selects each category from the filename and imports one raw request per file, each taking its category name (D-85)', async () => {
     await open()
-    await pick([...CORE_FIXTURES, 'vendor-notes.md'].map((name) => ({ name, content: fixture(name) })))
+    await pick(CORE_FIXTURES.map((name) => ({ name, content: fixture(name) })))
     expect($$('[data-test="row-category"]').map((s) => (s as HTMLSelectElement).value)).toEqual([
       'person',
       'instrument_awareness',
       'environment',
       'music',
-      'misc_context',
+    ])
+    expect($$('[data-test="row-takes"]').map((el) => el.textContent?.trim())).toEqual([
+      'Becomes Identity.md',
+      'Becomes Tools_and_Skills.md',
+      'Becomes Environment_01.md',
+      'Becomes Value_0001.md',
     ])
     await click('[data-test="import-confirm"]')
     const imports = server.writes()
-    expect(imports.map((c) => [c.path, c.query.filename, c.query.category, c.query.replace])).toEqual([
-      ['/api/intake/import', 'person.md', 'person', 'false'],
-      ['/api/intake/import', 'instrument-awareness.md', 'instrument_awareness', 'false'],
-      ['/api/intake/import', 'environment.md', 'environment', 'false'],
-      ['/api/intake/import', 'music.md', 'music', 'false'],
-      ['/api/intake/import', 'vendor-notes.md', 'misc_context', 'false'],
+    expect(imports.map((c) => [c.path, c.query.filename, c.query.name, c.query.category, c.query.replace])).toEqual([
+      ['/api/intake/import', 'person.md', 'Identity.md', 'person', 'false'],
+      ['/api/intake/import', 'instrument-awareness.md', 'Tools_and_Skills.md', 'instrument_awareness', 'false'],
+      ['/api/intake/import', 'environment.md', 'Environment_01.md', 'environment', 'false'],
+      ['/api/intake/import', 'music.md', 'Value_0001.md', 'music', 'false'],
     ])
     expect(imports[0].body).toBe(fixture('person.md'))
     expect($('[data-test="import-rows"]')).toBeNull()
@@ -443,7 +447,7 @@ describe('FR-IN-7: import', () => {
     ['player.md', 'person'],
     ['instrument_awareness.md', 'instrument_awareness'],
     ['Music.md', 'music'],
-    ['readme.md', 'misc_context'],
+    ['readme.md', 'person'], // no hint: the first open initiation file, as there is no Misc Context (D-84)
   ])('pre-selects %s as %s', async (name, category) => {
     await open()
     await pick([{ name, content: 'x' }])
@@ -456,18 +460,18 @@ describe('FR-IN-7: import', () => {
     await pick([{ name: 'player.md', content: 'new' }])
     expect(text('[data-test="row-replace"]')).toBe('Replaces existing person.md')
     await click('[data-test="import-confirm"]')
-    expect(server.writes()[0].query).toMatchObject({ filename: 'player.md', category: 'person', replace: 'true' })
-    expect(groupNames('person')).toEqual(['player.md'])
+    expect(server.writes()[0].query).toMatchObject({ filename: 'player.md', name: 'Identity.md', category: 'person', replace: 'true' })
+    expect(groupNames('person')).toEqual(['Identity.md'])
   })
 
   it('the category can be changed before import, and the warning follows it', async () => {
     server.add('person.md', 'person', 'old')
     await open()
     await pick([{ name: 'player.md', content: 'new' }])
-    await choose('[data-test="row-category"]', 'misc_context')
+    await choose('[data-test="row-category"]', 'music')
     expect($('[data-test="row-replace"]')).toBeNull()
     await click('[data-test="import-confirm"]')
-    expect(server.writes()[0].query).toMatchObject({ category: 'misc_context', replace: 'false' })
+    expect(server.writes()[0].query).toMatchObject({ category: 'music', name: 'Value_0001.md', replace: 'false' })
   })
 
   it('two files for the same core category block Import until one changes (D-42)', async () => {
@@ -477,12 +481,12 @@ describe('FR-IN-7: import', () => {
       { name: 'player.md', content: 'b' },
     ])
     expect($$('[data-test="row-clash"]').map((el) => el.textContent?.trim())).toEqual([
-      'Only one Person file: player.md is also set to it.',
-      'Only one Person file: person.md is also set to it.',
+      'Only one Identity.md file: player.md is also set to it.',
+      'Only one Identity.md file: person.md is also set to it.',
     ])
     expect($<HTMLButtonElement>('[data-test="import-confirm"]')?.disabled).toBe(true)
     const selects = $$('[data-test="row-category"]') as HTMLSelectElement[]
-    selects[1].value = 'misc_context'
+    selects[1].value = 'music'
     selects[1].dispatchEvent(new Event('change', { bubbles: true }))
     await settle()
     expect($$('[data-test="row-clash"]')).toEqual([])
@@ -494,6 +498,21 @@ describe('FR-IN-7: import', () => {
     await pick([{ name: 'music.md', content: 'x' }])
     await click('[data-test="import-cancel"]')
     expect(server.writes()).toEqual([])
+  })
+})
+
+describe('Initiation files (D-84, D-86)', () => {
+  it('lists the four initiation files, with the Seed file each maps to on the right, muted', async () => {
+    await open()
+    expect(text('#core-heading')).toBe('Initiation files')
+    expect($('#core-heading')?.classList.contains('caps-label')).toBe(true) // reads INITIATION FILES
+    expect($$('[data-slot]').map((li) => [li.getAttribute('data-slot'), li.querySelector('[data-test="seed-file"]')?.textContent ?? null])).toEqual([
+      ['person', null],
+      ['instrument_awareness', ', Seed file protection.md'],
+      ['environment', ', Seed file adaptation.md'],
+      ['music', ', Seed file core.md'],
+    ])
+    expect($$('[data-test="seed-file"]').every((el) => el.classList.contains('checklist__seed'))).toBe(true)
   })
 })
 
@@ -512,7 +531,7 @@ describe('FR-IN-8 and FR-IN-9: core checklist and Start Build', () => {
     expect(button.getAttribute('aria-disabled')).toBe('true')
     expect(button.disabled).toBe(false) // focusable, so the tooltip is reachable (D-42)
     const tip = document.getElementById(button.getAttribute('aria-describedby')!)
-    expect(tip?.textContent?.trim()).toBe('Missing: Instrument Awareness, Environment, Music')
+    expect(tip?.textContent?.trim()).toBe('Missing: Tools_and_Skills.md, Environment.md, Value.md')
   })
 
   it('importing the four fixture files completes the checklist and enables Start Build', async () => {
@@ -564,8 +583,8 @@ function useIntakeCategory(name: string): string {
 describe('FR-IN-10: persistence across refresh', () => {
   it('keeps the selected file in the URL, so a refresh opens it again (D-42)', async () => {
     server.add('music.md', 'music', 'm')
-    server.add('notes.md', 'misc_context', 'n')
-    await open()
+    server.add('notes.md', 'environment', 'n')
+    await open('/knowledge?file=f-1')
     expect(router.currentRoute.value.fullPath).toBe('/knowledge?file=f-1')
     await click(fileButton('notes.md')!)
     expect(router.currentRoute.value.fullPath).toBe('/knowledge?file=f-2')
@@ -624,10 +643,11 @@ describe('FR-IN-11: size and encoding errors show inline', () => {
 })
 
 describe('Empty state', () => {
-  it('explains the four Ensemble files, one line each, with New file and Import', async () => {
+  it('explains the four initiation files, one line each, with New file and Import', async () => {
     await open()
     expect(text('[data-test="empty-state"] h1')).toBe('Add your knowledge files')
-    expect($$('[data-test="empty-state"] dt').map((el) => el.textContent)).toEqual(['Person', 'Instrument Awareness', 'Environment', 'Music'])
+    expect(text('[data-test="empty-state"] .empty__lead')).toBe('A Seed is built from four initiation files, one of each:')
+    expect($$('[data-test="empty-state"] dt').map((el) => el.textContent)).toEqual(['Identity.md', 'Tools_and_Skills.md', 'Environment.md', 'Value.md'])
     expect($$('[data-test="empty-state"] dd').map((el) => el.textContent)).toEqual([
       'Who does the work.',
       'Which tool it uses.',
@@ -692,18 +712,18 @@ describe('FR-B-8: read-only while a build runs', () => {
 
 describe('NFR-6: keyboard', () => {
   it('the category menu opens on ArrowDown, moves with arrows, and Escape returns focus', async () => {
-    server.add('notes.md', 'misc_context', 'n')
+    server.add('notes.md', 'music', 'n')
     await open()
     const trigger = $<HTMLButtonElement>('[data-test="category"] .menu-trigger')!
     trigger.focus()
     await press('ArrowDown')
-    expect(document.activeElement?.getAttribute('data-item')).toBe('misc_context')
+    expect(document.activeElement?.getAttribute('data-item')).toBe('music')
     await press('ArrowDown')
     expect(document.activeElement?.getAttribute('data-item')).toBe('person')
     await press('End')
-    expect(document.activeElement?.getAttribute('data-item')).toBe('misc_context')
-    await press('ArrowUp')
     expect(document.activeElement?.getAttribute('data-item')).toBe('music')
+    await press('ArrowUp')
+    expect(document.activeElement?.getAttribute('data-item')).toBe('environment')
     await press('Escape')
     expect($('[role="menu"]')).toBeNull()
     expect(document.activeElement).toBe(trigger)

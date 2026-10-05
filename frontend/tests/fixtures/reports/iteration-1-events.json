@@ -1,6 +1,6 @@
 [
  {
-  "seq": 6,
+  "seq": 5,
   "build_id": "b-1",
   "iteration": 1,
   "phase": null,
@@ -15,7 +15,7 @@
     "iteration": 1,
     "status": "running",
     "seed_name": "License Optimization",
-    "fingerprint": "a127ba",
+    "fingerprint": "95274b",
     "phase": null,
     "plan": [
      {
@@ -43,7 +43,7 @@
       "tests": [
        {
         "id": "T-01",
-        "name": "Core files present"
+        "name": "Initiation files present"
        },
        {
         "id": "T-02",
@@ -62,7 +62,7 @@
       "steps": [
        {
         "id": "distill.profile",
-        "name": "Load model profile from Instrument Awareness"
+        "name": "Load model profile from Tools_and_Skills.md"
        },
        {
         "id": "distill.budget",
@@ -70,25 +70,25 @@
        },
        {
         "id": "distill.music",
-        "name": "Distil Music"
+        "name": "Distil Value.md"
        },
        {
         "id": "distill.person",
-        "name": "Distil Person"
+        "name": "Distil Identity.md"
        },
        {
         "id": "distill.environment",
-        "name": "Distil Environment layers"
+        "name": "Distil Environment.md layers"
        },
        {
         "id": "distill.context",
-        "name": "Merge Misc Context"
+        "name": "Merge context notes"
        }
       ],
       "tests": [
        {
         "id": "T-04",
-        "name": "All Music sections extracted"
+        "name": "All Value.md sections extracted"
        }
       ]
      },
@@ -386,7 +386,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 7,
+  "seq": 6,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -404,7 +404,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 8,
+  "seq": 7,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -420,7 +420,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 9,
+  "seq": 8,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -428,47 +428,41 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Inventory: 4 core files, 1 context file, 16.8 KB",
+  "message": "Inventory: 4 initiation files, 0 context files, 15.6 KB",
   "data": {
    "files": [
     {
      "id": "f-1",
-     "name": "person.md",
+     "name": "Identity.md",
      "category": "person",
      "size": 3071
     },
     {
      "id": "f-2",
-     "name": "instrument-awareness.md",
+     "name": "Tools_and_Skills.md",
      "category": "instrument_awareness",
      "size": 2784
     },
     {
      "id": "f-3",
-     "name": "environment.md",
+     "name": "Environment_01.md",
      "category": "environment",
-     "size": 6505
+     "size": 6483
     },
     {
      "id": "f-4",
-     "name": "music.md",
+     "name": "Value_0001.md",
      "category": "music",
      "size": 3649
-    },
-    {
-     "id": "f-5",
-     "name": "vendor-notes.md",
-     "category": "misc_context",
-     "size": 1156
     }
    ],
-   "bytes": 17165
+   "bytes": 15987
   },
   "sim_t": 0.0,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 10,
+  "seq": 9,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -476,10 +470,10 @@
   "type": "test.result",
   "level": "PASS",
   "code": "T-01",
-  "message": "T-01 Core files present: 4 of 4 present, each with content",
+  "message": "T-01 Initiation files present: 4 of 4 present, each with content",
   "data": {
    "id": "T-01",
-   "name": "Core files present",
+   "name": "Initiation files present",
    "status": "pass",
    "detail": "4 of 4 present, each with content",
    "simulated": false
@@ -488,7 +482,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 11,
+  "seq": 10,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -496,16 +490,16 @@
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Inventory files: 5 files",
+  "message": "Inventory files: 4 files",
   "data": {
    "name": "Inventory files",
-   "summary": "5 files"
+   "summary": "4 files"
   },
   "sim_t": 0.9,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 12,
+  "seq": 11,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -521,7 +515,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 13,
+  "seq": 12,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -529,9 +523,9 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "person.md: 7 of 7 Ensemble sections (100%)",
+  "message": "Identity.md: 7 of 7 Ensemble sections (100%)",
   "data": {
-   "file": "person.md",
+   "file": "Identity.md",
    "found": [
     "Domain expertise",
     "Subject matter knowledge",
@@ -548,7 +542,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 14,
+  "seq": 13,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -556,9 +550,9 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "instrument-awareness.md: 3 of 3 Ensemble sections (100%)",
+  "message": "Tools_and_Skills.md: 3 of 3 Ensemble sections (100%)",
   "data": {
-   "file": "instrument-awareness.md",
+   "file": "Tools_and_Skills.md",
    "found": [
     "Context Management",
     "Model Behaviour",
@@ -571,7 +565,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 15,
+  "seq": 14,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -579,9 +573,9 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "environment.md: 5 of 5 Ensemble sections (100%)",
+  "message": "Environment_01.md: 5 of 5 Ensemble sections (100%)",
   "data": {
-   "file": "environment.md",
+   "file": "Environment_01.md",
    "found": [
     "Data Layer",
     "User Experience",
@@ -596,7 +590,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 16,
+  "seq": 15,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -604,9 +598,9 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "music.md: 4 of 4 Ensemble sections (100%)",
+  "message": "Value_0001.md: 4 of 4 Ensemble sections (100%)",
   "data": {
-   "file": "music.md",
+   "file": "Value_0001.md",
    "found": [
     "Purpose",
     "Core Principles",
@@ -620,7 +614,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 17,
+  "seq": 16,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -640,7 +634,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 18,
+  "seq": 17,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -657,7 +651,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 19,
+  "seq": 18,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -673,7 +667,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 20,
+  "seq": 19,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -681,13 +675,13 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Boundary check: 5 rules over 4 core files",
+  "message": "Boundary check: 5 rules over 4 initiation files",
   "data": {},
   "sim_t": 3.15,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 21,
+  "seq": 20,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -707,7 +701,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 22,
+  "seq": 21,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -724,7 +718,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 23,
+  "seq": 22,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -740,7 +734,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 24,
+  "seq": 23,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -748,16 +742,16 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Intake fingerprint a127ba (sha256 over 5 files)",
+  "message": "Intake fingerprint 95274b (sha256 over 4 files)",
   "data": {
-   "fingerprint": "a127ba",
-   "sha256": "a127ba64f6b8cf7f30eea8a20de93a85e468cc17197fc29d782fd0b5aa716d21"
+   "fingerprint": "95274b",
+   "sha256": "95274bcee98fe466f3757bb35019f923efad8841f654d74918d2c54aa7581a0d"
   },
   "sim_t": 4.05,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 25,
+  "seq": 24,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -765,16 +759,16 @@
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Fingerprint intake: a127ba",
+  "message": "Fingerprint intake: 95274b",
   "data": {
    "name": "Fingerprint intake",
-   "summary": "a127ba"
+   "summary": "95274b"
   },
   "sim_t": 4.5,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 26,
+  "seq": 25,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "assay",
@@ -797,7 +791,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 27,
+  "seq": 26,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
@@ -815,7 +809,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 28,
+  "seq": 27,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
@@ -823,15 +817,15 @@
   "type": "step.started",
   "level": "INFO",
   "code": null,
-  "message": "Load model profile from Instrument Awareness",
+  "message": "Load model profile from Tools_and_Skills.md",
   "data": {
-   "name": "Load model profile from Instrument Awareness"
+   "name": "Load model profile from Tools_and_Skills.md"
   },
   "sim_t": 4.5,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 29,
+  "seq": 28,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
@@ -839,7 +833,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Model profile from instrument-awareness.md: general-purpose large language model",
+  "message": "Model profile from Tools_and_Skills.md: general-purpose large language model",
   "data": {
    "profile": "general-purpose large language model"
   },
@@ -847,7 +841,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 30,
+  "seq": 29,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
@@ -863,11 +857,11 @@
     "Execution Constraints"
    ]
   },
-  "sim_t": 4.95,
+  "sim_t": 5.029,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 31,
+  "seq": 30,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
@@ -875,16 +869,16 @@
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Load model profile from Instrument Awareness: general-purpose large language model",
+  "message": "Load model profile from Tools_and_Skills.md: general-purpose large language model",
   "data": {
-   "name": "Load model profile from Instrument Awareness",
+   "name": "Load model profile from Tools_and_Skills.md",
    "summary": "general-purpose large language model"
   },
-  "sim_t": 5.4,
+  "sim_t": 5.559,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 32,
+  "seq": 31,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
@@ -896,7 +890,24 @@
   "data": {
    "name": "Plan context budget"
   },
-  "sim_t": 5.4,
+  "sim_t": 5.559,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 32,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.budget",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "Context budget: about 3,997 tokens of intake over 4 distillation passes, one file at a time",
+  "data": {
+   "estimated_tokens": 3997,
+   "passes": 4
+  },
+  "sim_t": 5.559,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -905,15 +916,15 @@
   "iteration": 1,
   "phase": "distill",
   "step": "distill.budget",
-  "type": "log",
+  "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Context budget: about 4,291 tokens of intake over 5 distillation passes, one file at a time",
+  "message": "Plan context budget: about 3,997 tokens",
   "data": {
-   "estimated_tokens": 4291,
-   "passes": 5
+   "name": "Plan context budget",
+   "summary": "about 3,997 tokens"
   },
-  "sim_t": 5.4,
+  "sim_t": 6.088,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -921,16 +932,15 @@
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
-  "step": "distill.budget",
-  "type": "step.completed",
+  "step": "distill.music",
+  "type": "step.started",
   "level": "INFO",
   "code": null,
-  "message": "Plan context budget: about 4,291 tokens",
+  "message": "Distil Value.md",
   "data": {
-   "name": "Plan context budget",
-   "summary": "about 4,291 tokens"
+   "name": "Distil Value.md"
   },
-  "sim_t": 5.85,
+  "sim_t": 6.088,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -939,39 +949,23 @@
   "iteration": 1,
   "phase": "distill",
   "step": "distill.music",
-  "type": "step.started",
-  "level": "INFO",
+  "type": "llm.call",
+  "level": "LLM",
   "code": null,
-  "message": "Distil Music",
+  "message": "distil Value_0001.md: 894 tokens in, 614 out (simulated)",
   "data": {
-   "name": "Distil Music"
+   "task": "distil Value_0001.md",
+   "model": "simulated-llm",
+   "tokens_in": 894,
+   "tokens_out": 614,
+   "latency_ms": 1707,
+   "simulated": true
   },
-  "sim_t": 5.85,
+  "sim_t": 6.088,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
   "seq": 36,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "distill",
-  "step": "distill.music",
-  "type": "llm.call",
-  "level": "LLM",
-  "code": null,
-  "message": "distil music.md: 910 tokens in, 572 out (simulated)",
-  "data": {
-   "task": "distil music.md",
-   "model": "simulated-llm",
-   "tokens_in": 910,
-   "tokens_out": 572,
-   "latency_ms": 1103,
-   "simulated": true
-  },
-  "sim_t": 5.85,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 37,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
@@ -986,7 +980,27 @@
    "Value Logic": 4,
    "Decision Logic": 7
   },
-  "sim_t": 7.2,
+  "sim_t": 7.676,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 37,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.music",
+  "type": "test.result",
+  "level": "PASS",
+  "code": "T-04",
+  "message": "T-04 All Value.md sections extracted: Purpose, Core Principles, Value Logic and Decision Logic",
+  "data": {
+   "id": "T-04",
+   "name": "All Value.md sections extracted",
+   "status": "pass",
+   "detail": "Purpose, Core Principles, Value Logic and Decision Logic",
+   "simulated": false
+  },
+  "sim_t": 8.206,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -995,18 +1009,15 @@
   "iteration": 1,
   "phase": "distill",
   "step": "distill.music",
-  "type": "test.result",
-  "level": "PASS",
-  "code": "T-04",
-  "message": "T-04 All Music sections extracted: Purpose, Core Principles, Value Logic and Decision Logic",
+  "type": "step.completed",
+  "level": "INFO",
+  "code": null,
+  "message": "Distil Value.md: 31 statements",
   "data": {
-   "id": "T-04",
-   "name": "All Music sections extracted",
-   "status": "pass",
-   "detail": "Purpose, Core Principles, Value Logic and Decision Logic",
-   "simulated": false
+   "name": "Distil Value.md",
+   "summary": "31 statements"
   },
-  "sim_t": 7.65,
+  "sim_t": 8.735,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -1014,16 +1025,15 @@
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
-  "step": "distill.music",
-  "type": "step.completed",
+  "step": "distill.person",
+  "type": "step.started",
   "level": "INFO",
   "code": null,
-  "message": "Distil Music: 31 statements",
+  "message": "Distil Identity.md",
   "data": {
-   "name": "Distil Music",
-   "summary": "31 statements"
+   "name": "Distil Identity.md"
   },
-  "sim_t": 8.1,
+  "sim_t": 8.735,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -1032,14 +1042,19 @@
   "iteration": 1,
   "phase": "distill",
   "step": "distill.person",
-  "type": "step.started",
-  "level": "INFO",
+  "type": "llm.call",
+  "level": "LLM",
   "code": null,
-  "message": "Distil Person",
+  "message": "distil Identity.md: 755 tokens in, 538 out (simulated)",
   "data": {
-   "name": "Distil Person"
+   "task": "distil Identity.md",
+   "model": "simulated-llm",
+   "tokens_in": 755,
+   "tokens_out": 538,
+   "latency_ms": 1944,
+   "simulated": true
   },
-  "sim_t": 8.1,
+  "sim_t": 8.735,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -1048,31 +1063,10 @@
   "iteration": 1,
   "phase": "distill",
   "step": "distill.person",
-  "type": "llm.call",
-  "level": "LLM",
-  "code": null,
-  "message": "distil person.md: 788 tokens in, 544 out (simulated)",
-  "data": {
-   "task": "distil person.md",
-   "model": "simulated-llm",
-   "tokens_in": 788,
-   "tokens_out": 544,
-   "latency_ms": 949,
-   "simulated": true
-  },
-  "sim_t": 8.1,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 42,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "distill",
-  "step": "distill.person",
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Distilled person.md: 7 sections, 23 statements (Domain expertise 3; Subject matter knowledge 4; Reasoning methods 4; Analytical approaches 3; Decision-making patterns 3; Problem-solving strategies 3; Thinking frameworks 3)",
+  "message": "Distilled Identity.md: 7 sections, 23 statements (Domain expertise 3; Subject matter knowledge 4; Reasoning methods 4; Analytical approaches 3; Decision-making patterns 3; Problem-solving strategies 3; Thinking frameworks 3)",
   "data": {
    "Domain expertise": 3,
    "Subject matter knowledge": 4,
@@ -1082,11 +1076,11 @@
    "Problem-solving strategies": 3,
    "Thinking frameworks": 3
   },
-  "sim_t": 9.45,
+  "sim_t": 10.324,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 43,
+  "seq": 42,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
@@ -1094,12 +1088,28 @@
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Distil Person: 23 statements",
+  "message": "Distil Identity.md: 23 statements",
   "data": {
-   "name": "Distil Person",
+   "name": "Distil Identity.md",
    "summary": "23 statements"
   },
-  "sim_t": 9.9,
+  "sim_t": 10.853,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 43,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "distill",
+  "step": "distill.environment",
+  "type": "step.started",
+  "level": "INFO",
+  "code": null,
+  "message": "Distil Environment.md layers",
+  "data": {
+   "name": "Distil Environment.md layers"
+  },
+  "sim_t": 10.853,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -1108,14 +1118,19 @@
   "iteration": 1,
   "phase": "distill",
   "step": "distill.environment",
-  "type": "step.started",
-  "level": "INFO",
+  "type": "llm.call",
+  "level": "LLM",
   "code": null,
-  "message": "Distil Environment layers",
+  "message": "distil layers of Environment_01.md: 1,597 tokens in, 476 out (simulated)",
   "data": {
-   "name": "Distil Environment layers"
+   "task": "distil layers of Environment_01.md",
+   "model": "simulated-llm",
+   "tokens_in": 1597,
+   "tokens_out": 476,
+   "latency_ms": 616,
+   "simulated": true
   },
-  "sim_t": 9.9,
+  "sim_t": 10.853,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -1124,19 +1139,18 @@
   "iteration": 1,
   "phase": "distill",
   "step": "distill.environment",
-  "type": "llm.call",
-  "level": "LLM",
+  "type": "log",
+  "level": "INFO",
   "code": null,
-  "message": "distil layers of environment.md: 1,682 tokens in, 474 out (simulated)",
+  "message": "Distilled Environment_01.md: 5 layers, 50 statements (Data Layer 10; User Experience 11; Styling 12; Adaptation Layer 6; Protection Layer 11)",
   "data": {
-   "task": "distil layers of environment.md",
-   "model": "simulated-llm",
-   "tokens_in": 1682,
-   "tokens_out": 474,
-   "latency_ms": 653,
-   "simulated": true
+   "Data Layer": 10,
+   "User Experience": 11,
+   "Styling": 12,
+   "Adaptation Layer": 6,
+   "Protection Layer": 11
   },
-  "sim_t": 9.9,
+  "sim_t": 12.441,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -1145,18 +1159,15 @@
   "iteration": 1,
   "phase": "distill",
   "step": "distill.environment",
-  "type": "log",
+  "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Distilled environment.md: 5 layers, 50 statements (Data Layer 10; User Experience 11; Styling 12; Adaptation Layer 6; Protection Layer 11)",
+  "message": "Distil Environment.md layers: 50 statements",
   "data": {
-   "Data Layer": 10,
-   "User Experience": 11,
-   "Styling": 12,
-   "Adaptation Layer": 6,
-   "Protection Layer": 11
+   "name": "Distil Environment.md layers",
+   "summary": "50 statements"
   },
-  "sim_t": 11.25,
+  "sim_t": 12.971,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -1164,16 +1175,15 @@
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
-  "step": "distill.environment",
-  "type": "step.completed",
+  "step": "distill.context",
+  "type": "step.started",
   "level": "INFO",
   "code": null,
-  "message": "Distil Environment layers: 50 statements",
+  "message": "Merge context notes",
   "data": {
-   "name": "Distil Environment layers",
-   "summary": "50 statements"
+   "name": "Merge context notes"
   },
-  "sim_t": 11.7,
+  "sim_t": 12.971,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -1182,14 +1192,12 @@
   "iteration": 1,
   "phase": "distill",
   "step": "distill.context",
-  "type": "step.started",
+  "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Merge Misc Context",
-  "data": {
-   "name": "Merge Misc Context"
-  },
-  "sim_t": 11.7,
+  "message": "No context notes to merge",
+  "data": {},
+  "sim_t": 12.971,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -1198,58 +1206,19 @@
   "iteration": 1,
   "phase": "distill",
   "step": "distill.context",
-  "type": "llm.call",
-  "level": "LLM",
-  "code": null,
-  "message": "merge Misc Context: 287 tokens in, 341 out (simulated)",
-  "data": {
-   "task": "merge Misc Context",
-   "model": "simulated-llm",
-   "tokens_in": 287,
-   "tokens_out": 341,
-   "latency_ms": 1192,
-   "simulated": true
-  },
-  "sim_t": 11.7,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 50,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "distill",
-  "step": "distill.context",
-  "type": "log",
-  "level": "INFO",
-  "code": null,
-  "message": "Merged 1 context file: vendor-notes.md (6 notes)",
-  "data": {
-   "files": [
-    "vendor-notes.md"
-   ]
-  },
-  "sim_t": 13.05,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 51,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "distill",
-  "step": "distill.context",
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Merge Misc Context: 1 file",
+  "message": "Merge context notes: none",
   "data": {
-   "name": "Merge Misc Context",
-   "summary": "1 file"
+   "name": "Merge context notes",
+   "summary": "none"
   },
   "sim_t": 13.5,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 52,
+  "seq": 50,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "distill",
@@ -1270,7 +1239,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 53,
+  "seq": 51,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1288,7 +1257,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 54,
+  "seq": 52,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1304,7 +1273,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 55,
+  "seq": 53,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1312,20 +1281,20 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "draft core.md: 1,956 tokens in, 779 out (simulated)",
+  "message": "draft core.md: 1,655 tokens in, 794 out (simulated)",
   "data": {
    "task": "draft core.md",
    "model": "simulated-llm",
-   "tokens_in": 1956,
-   "tokens_out": 779,
-   "latency_ms": 667,
+   "tokens_in": 1655,
+   "tokens_out": 794,
+   "latency_ms": 1901,
    "simulated": true
   },
   "sim_t": 13.5,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 56,
+  "seq": 54,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1349,7 +1318,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 57,
+  "seq": 55,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1366,7 +1335,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 58,
+  "seq": 56,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1382,7 +1351,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 59,
+  "seq": 57,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1390,20 +1359,20 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "draft adaptation.md: 1,844 tokens in, 840 out (simulated)",
+  "message": "draft adaptation.md: 1,608 tokens in, 1,038 out (simulated)",
   "data": {
    "task": "draft adaptation.md",
    "model": "simulated-llm",
-   "tokens_in": 1844,
-   "tokens_out": 840,
-   "latency_ms": 1509,
+   "tokens_in": 1608,
+   "tokens_out": 1038,
+   "latency_ms": 1971,
    "simulated": true
   },
   "sim_t": 15.643,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 60,
+  "seq": 58,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1411,7 +1380,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Drafted adaptation.md: 4 sections, 6,867 bytes",
+  "message": "Drafted adaptation.md: 4 sections, 5,680 bytes",
   "data": {
    "sections": [
     "Operating context",
@@ -1419,13 +1388,13 @@
     "Account and industry adjustments",
     "Presentation notes"
    ],
-   "bytes": 6867
+   "bytes": 5680
   },
   "sim_t": 17.25,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 61,
+  "seq": 59,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1442,7 +1411,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 62,
+  "seq": 60,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1458,7 +1427,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 63,
+  "seq": 61,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1466,20 +1435,20 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "draft protection.md: 2,610 tokens in, 749 out (simulated)",
+  "message": "draft protection.md: 2,372 tokens in, 565 out (simulated)",
   "data": {
    "task": "draft protection.md",
    "model": "simulated-llm",
-   "tokens_in": 2610,
-   "tokens_out": 749,
-   "latency_ms": 2143,
+   "tokens_in": 2372,
+   "tokens_out": 565,
+   "latency_ms": 1352,
    "simulated": true
   },
   "sim_t": 17.786,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 64,
+  "seq": 62,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1501,7 +1470,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 65,
+  "seq": 63,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1518,7 +1487,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 66,
+  "seq": 64,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1534,7 +1503,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 67,
+  "seq": 65,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1542,19 +1511,19 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Seed manifest: \"License Optimization\", iteration 1, 3 layers, fingerprint a127ba",
+  "message": "Seed manifest: \"License Optimization\", iteration 1, 3 layers, fingerprint 95274b",
   "data": {
    "manifest": {
     "seed": "License Optimization",
     "iteration": 1,
-    "fingerprint": "a127ba",
-    "generator": "SeedFoundry",
+    "fingerprint": "95274b",
+    "generator": "SeedFactory",
     "layers": [
      {
       "name": "core.md",
       "role": "core",
       "bytes": 9660,
-      "sha256": "9581fce9de4deb1e8b22ae1b06badfd7b7e69b84505b1768de8d6f5064f5a315",
+      "sha256": "da86f41479e98fc39364269f2ef44d36a19fe76d1ce0cc35260a8413d55d8c89",
       "sections": [
        "Purpose",
        "Core principles",
@@ -1567,8 +1536,8 @@
      {
       "name": "adaptation.md",
       "role": "adaptation",
-      "bytes": 6867,
-      "sha256": "e9500dd845fd8dba203960ca31b965c75d380282ad222c6aa72957545cc824f3",
+      "bytes": 5680,
+      "sha256": "661d3592225c2cb4b5971154d8143485e6388f78106b0ac99bd9aa0dac96dcec",
       "sections": [
        "Operating context",
        "Data sources and mappings",
@@ -1580,7 +1549,7 @@
       "name": "protection.md",
       "role": "protection",
       "bytes": 1318,
-      "sha256": "7564d8e5b8e3eea0c9758c11adbda8ec998404434bfaa8edcbfe64ad48811c94",
+      "sha256": "cd587f4d9c4c0df3c31fd7c14dc9367cfe6af611ff56e8676c97d7b75f1d12d9",
       "sections": [
        "Guardrails",
        "Validation checks",
@@ -1595,7 +1564,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 68,
+  "seq": 66,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1615,7 +1584,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 69,
+  "seq": 67,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1632,7 +1601,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 70,
+  "seq": 68,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "synth",
@@ -1653,7 +1622,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 71,
+  "seq": 69,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1671,7 +1640,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 72,
+  "seq": 70,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1687,7 +1656,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 73,
+  "seq": 71,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1695,20 +1664,20 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "review core.md: 3,354 tokens in, 521 out (simulated)",
+  "message": "review core.md: 3,266 tokens in, 585 out (simulated)",
   "data": {
    "task": "review core.md",
    "model": "simulated-llm",
-   "tokens_in": 3354,
-   "tokens_out": 521,
-   "latency_ms": 2189,
+   "tokens_in": 3266,
+   "tokens_out": 585,
+   "latency_ms": 1276,
    "simulated": true
   },
   "sim_t": 21.0,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 74,
+  "seq": 72,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1722,7 +1691,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 75,
+  "seq": 73,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1739,7 +1708,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 76,
+  "seq": 74,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1755,7 +1724,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 77,
+  "seq": 75,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1763,20 +1732,20 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "review adaptation.md and protection.md: 3,009 tokens in, 410 out (simulated)",
+  "message": "review adaptation.md and protection.md: 2,570 tokens in, 590 out (simulated)",
   "data": {
    "task": "review adaptation.md and protection.md",
    "model": "simulated-llm",
-   "tokens_in": 3009,
-   "tokens_out": 410,
-   "latency_ms": 1638,
+   "tokens_in": 2570,
+   "tokens_out": 590,
+   "latency_ms": 1298,
    "simulated": true
   },
   "sim_t": 23.182,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 78,
+  "seq": 76,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1790,7 +1759,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 79,
+  "seq": 77,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1807,7 +1776,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 80,
+  "seq": 78,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1823,7 +1792,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 81,
+  "seq": 79,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1839,7 +1808,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 82,
+  "seq": 80,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1859,7 +1828,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 83,
+  "seq": 81,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1876,7 +1845,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 84,
+  "seq": 82,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1892,7 +1861,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 85,
+  "seq": 83,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1906,7 +1875,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 86,
+  "seq": 84,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1923,7 +1892,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 87,
+  "seq": 85,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "xexam",
@@ -1944,7 +1913,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 88,
+  "seq": 86,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -1962,7 +1931,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 89,
+  "seq": 87,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -1978,7 +1947,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 90,
+  "seq": 88,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -1992,7 +1961,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 91,
+  "seq": 89,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2012,7 +1981,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 92,
+  "seq": 90,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2029,7 +1998,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 93,
+  "seq": 91,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2045,7 +2014,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 94,
+  "seq": 92,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2065,7 +2034,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 95,
+  "seq": 93,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2085,7 +2054,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 96,
+  "seq": 94,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2102,7 +2071,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 97,
+  "seq": 95,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2122,7 +2091,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 98,
+  "seq": 96,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2139,7 +2108,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 99,
+  "seq": 97,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2155,7 +2124,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 100,
+  "seq": 98,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2169,7 +2138,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 101,
+  "seq": 99,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2186,7 +2155,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 102,
+  "seq": 100,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "germ",
@@ -2208,7 +2177,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 103,
+  "seq": 101,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2226,7 +2195,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 104,
+  "seq": 102,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2242,7 +2211,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 105,
+  "seq": 103,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2255,7 +2224,7 @@
    "method": "GET",
    "path": "/v0.1/health",
    "status": 200,
-   "latency_ms": 314,
+   "latency_ms": 86,
    "simulated": true,
    "response": {
     "status": "ok",
@@ -2266,7 +2235,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 106,
+  "seq": 104,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2279,10 +2248,10 @@
    "method": "POST",
    "path": "/v0.1/seeds",
    "status": 201,
-   "latency_ms": 271,
+   "latency_ms": 224,
    "simulated": true,
    "response": {
-    "seed_id": "seed-938f",
+    "seed_id": "seed-ccd9",
     "name": "License Optimization"
    }
   },
@@ -2290,7 +2259,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 107,
+  "seq": 105,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2298,16 +2267,16 @@
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Seed API handshake: seed seed-938f",
+  "message": "Seed API handshake: seed seed-ccd9",
   "data": {
    "name": "Seed API handshake",
-   "summary": "seed seed-938f"
+   "summary": "seed seed-ccd9"
   },
   "sim_t": 34.26,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 108,
+  "seq": 106,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2323,7 +2292,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 109,
+  "seq": 107,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2336,11 +2305,11 @@
    "method": "POST",
    "path": "/v0.1/sandboxes",
    "status": 201,
-   "latency_ms": 157,
+   "latency_ms": 51,
    "simulated": true,
    "response": {
-    "sandbox_id": "sbx-7d38",
-    "seed_id": "seed-938f",
+    "sandbox_id": "sbx-27c1",
+    "seed_id": "seed-ccd9",
     "egress": false
    }
   },
@@ -2348,7 +2317,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 110,
+  "seq": 108,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2356,15 +2325,15 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Sandbox sbx-7d38 provisioned (isolated, no egress, simulated)",
+  "message": "Sandbox sbx-27c1 provisioned (isolated, no egress, simulated)",
   "data": {
-   "sandbox_id": "sbx-7d38"
+   "sandbox_id": "sbx-27c1"
   },
   "sim_t": 34.89,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 111,
+  "seq": 109,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2372,16 +2341,16 @@
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Provision isolated sandbox: sbx-7d38",
+  "message": "Provision isolated sandbox: sbx-27c1",
   "data": {
    "name": "Provision isolated sandbox",
-   "summary": "sbx-7d38"
+   "summary": "sbx-27c1"
   },
   "sim_t": 35.31,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 112,
+  "seq": 110,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2397,6 +2366,56 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
+  "seq": 111,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.upload",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "PUT /v0.1/sandboxes/sbx-27c1/files/core.md 201 (simulated)",
+  "data": {
+   "method": "PUT",
+   "path": "/v0.1/sandboxes/sbx-27c1/files/core.md",
+   "status": 201,
+   "latency_ms": 134,
+   "simulated": true,
+   "response": {
+    "name": "core.md",
+    "bytes": 9660,
+    "sha256": "da86f41479e98fc39364269f2ef44d36a19fe76d1ce0cc35260a8413d55d8c89"
+   }
+  },
+  "sim_t": 35.31,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 112,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "contain",
+  "step": "contain.upload",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "PUT /v0.1/sandboxes/sbx-27c1/files/adaptation.md 201 (simulated)",
+  "data": {
+   "method": "PUT",
+   "path": "/v0.1/sandboxes/sbx-27c1/files/adaptation.md",
+   "status": 201,
+   "latency_ms": 112,
+   "simulated": true,
+   "response": {
+    "name": "adaptation.md",
+    "bytes": 5680,
+    "sha256": "661d3592225c2cb4b5971154d8143485e6388f78106b0ac99bd9aa0dac96dcec"
+   }
+  },
+  "sim_t": 35.73,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
   "seq": 113,
   "build_id": "b-1",
   "iteration": 1,
@@ -2405,20 +2424,20 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "PUT /v0.1/sandboxes/sbx-7d38/files/core.md 201 (simulated)",
+  "message": "PUT /v0.1/sandboxes/sbx-27c1/files/protection.md 201 (simulated)",
   "data": {
    "method": "PUT",
-   "path": "/v0.1/sandboxes/sbx-7d38/files/core.md",
+   "path": "/v0.1/sandboxes/sbx-27c1/files/protection.md",
    "status": 201,
-   "latency_ms": 314,
+   "latency_ms": 78,
    "simulated": true,
    "response": {
-    "name": "core.md",
-    "bytes": 9660,
-    "sha256": "9581fce9de4deb1e8b22ae1b06badfd7b7e69b84505b1768de8d6f5064f5a315"
+    "name": "protection.md",
+    "bytes": 1318,
+    "sha256": "cd587f4d9c4c0df3c31fd7c14dc9367cfe6af611ff56e8676c97d7b75f1d12d9"
    }
   },
-  "sim_t": 35.31,
+  "sim_t": 36.15,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -2430,20 +2449,20 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "PUT /v0.1/sandboxes/sbx-7d38/files/adaptation.md 201 (simulated)",
+  "message": "PUT /v0.1/sandboxes/sbx-27c1/files/manifest.json 201 (simulated)",
   "data": {
    "method": "PUT",
-   "path": "/v0.1/sandboxes/sbx-7d38/files/adaptation.md",
+   "path": "/v0.1/sandboxes/sbx-27c1/files/manifest.json",
    "status": 201,
-   "latency_ms": 229,
+   "latency_ms": 129,
    "simulated": true,
    "response": {
-    "name": "adaptation.md",
-    "bytes": 6867,
-    "sha256": "e9500dd845fd8dba203960ca31b965c75d380282ad222c6aa72957545cc824f3"
+    "name": "manifest.json",
+    "bytes": 1123,
+    "sha256": "d547180cf43ad6bd800cb035771d4210e21d144f258e6359622241f00d70a052"
    }
   },
-  "sim_t": 35.73,
+  "sim_t": 36.57,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -2452,60 +2471,10 @@
   "iteration": 1,
   "phase": "contain",
   "step": "contain.upload",
-  "type": "api.call",
-  "level": "API",
-  "code": null,
-  "message": "PUT /v0.1/sandboxes/sbx-7d38/files/protection.md 201 (simulated)",
-  "data": {
-   "method": "PUT",
-   "path": "/v0.1/sandboxes/sbx-7d38/files/protection.md",
-   "status": 201,
-   "latency_ms": 211,
-   "simulated": true,
-   "response": {
-    "name": "protection.md",
-    "bytes": 1318,
-    "sha256": "7564d8e5b8e3eea0c9758c11adbda8ec998404434bfaa8edcbfe64ad48811c94"
-   }
-  },
-  "sim_t": 36.15,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 116,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "contain",
-  "step": "contain.upload",
-  "type": "api.call",
-  "level": "API",
-  "code": null,
-  "message": "PUT /v0.1/sandboxes/sbx-7d38/files/manifest.json 201 (simulated)",
-  "data": {
-   "method": "PUT",
-   "path": "/v0.1/sandboxes/sbx-7d38/files/manifest.json",
-   "status": 201,
-   "latency_ms": 249,
-   "simulated": true,
-   "response": {
-    "name": "manifest.json",
-    "bytes": 1123,
-    "sha256": "9abd48dd7f19f366118d2df0f98c3e547d58685e4d2300f06af856cb4c257fc4"
-   }
-  },
-  "sim_t": 36.57,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 117,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "contain",
-  "step": "contain.upload",
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Uploaded 4 files, 18,968 bytes",
+  "message": "Uploaded 4 files, 17,781 bytes",
   "data": {
    "files": [
     "core.md",
@@ -2513,13 +2482,13 @@
     "protection.md",
     "manifest.json"
    ],
-   "bytes": 18968
+   "bytes": 17781
   },
   "sim_t": 36.99,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 118,
+  "seq": 116,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2536,7 +2505,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 119,
+  "seq": 117,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2552,7 +2521,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 120,
+  "seq": 118,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2566,7 +2535,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 121,
+  "seq": 119,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2586,7 +2555,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 122,
+  "seq": 120,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2603,7 +2572,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 123,
+  "seq": 121,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "contain",
@@ -2624,7 +2593,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 124,
+  "seq": 122,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2642,7 +2611,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 125,
+  "seq": 123,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2658,7 +2627,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 126,
+  "seq": 124,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2666,12 +2635,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/plant 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/plant 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/plant",
+   "path": "/v0.1/seeds/seed-ccd9/plant",
    "status": 200,
-   "latency_ms": 70,
+   "latency_ms": 44,
    "simulated": true,
    "response": {
     "phase": "INIT",
@@ -2687,7 +2656,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 127,
+  "seq": 125,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2703,7 +2672,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 128,
+  "seq": 126,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2720,7 +2689,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 129,
+  "seq": 127,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2736,7 +2705,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 130,
+  "seq": 128,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2761,7 +2730,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 131,
+  "seq": 129,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2769,10 +2738,10 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "adaptation.md: 24 headings, 4 sections",
+  "message": "adaptation.md: 23 headings, 4 sections",
   "data": {
    "layer": "adaptation.md",
-   "headings": 24,
+   "headings": 23,
    "sections": [
     "Operating context",
     "Data sources and mappings",
@@ -2784,7 +2753,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 132,
+  "seq": 130,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2807,7 +2776,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 133,
+  "seq": 131,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2824,7 +2793,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 134,
+  "seq": 132,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2840,7 +2809,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 135,
+  "seq": 133,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2848,7 +2817,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Declared stack from environment.md, Data Layer: License Management System (LMS), SAP (declared, not yet verified)",
+  "message": "Declared stack from Environment_01.md, Data Layer: License Management System (LMS), SAP (declared, not yet verified)",
   "data": {
    "systems": [
     "License Management System (LMS)",
@@ -2859,7 +2828,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 136,
+  "seq": 134,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2867,12 +2836,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "GET /v0.1/seeds/seed-938f 200 (simulated)",
+  "message": "GET /v0.1/seeds/seed-ccd9 200 (simulated)",
   "data": {
    "method": "GET",
-   "path": "/v0.1/seeds/seed-938f",
+   "path": "/v0.1/seeds/seed-ccd9",
    "status": 200,
-   "latency_ms": 278,
+   "latency_ms": 59,
    "simulated": true,
    "response": {
     "state": "INITIALIZED"
@@ -2882,7 +2851,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 137,
+  "seq": 135,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2902,7 +2871,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 138,
+  "seq": 136,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2919,7 +2888,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 139,
+  "seq": 137,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "plant",
@@ -2940,7 +2909,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 140,
+  "seq": 138,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -2958,7 +2927,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 141,
+  "seq": 139,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -2974,7 +2943,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 142,
+  "seq": 140,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -2982,12 +2951,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/discovery 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/discovery 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/discovery",
+   "path": "/v0.1/seeds/seed-ccd9/discovery",
    "status": 202,
-   "latency_ms": 58,
+   "latency_ms": 307,
    "simulated": true,
    "response": {
     "state": "DISCOVERING"
@@ -2997,7 +2966,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 143,
+  "seq": 141,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3011,7 +2980,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 144,
+  "seq": 142,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3029,7 +2998,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 145,
+  "seq": 143,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3037,14 +3006,14 @@
   "type": "gate.auto_resolved",
   "level": "INFO",
   "code": "servicenow-incident-api",
-  "message": "Gate servicenow-incident-api (credentials) auto-resolved: sandbox read-only credential issued (simulated), values not stored. Basis: environment.md, Protection Layer",
+  "message": "Gate servicenow-incident-api (credentials) auto-resolved: sandbox read-only credential issued (simulated), values not stored. Basis: Environment_01.md, Protection Layer",
   "data": {
    "gate": "servicenow-incident-api",
    "kind": "credentials",
    "stage": "discovery",
    "resolution": "sandbox read-only credential issued (simulated), values not stored",
    "basis": {
-    "file": "environment.md",
+    "file": "Environment_01.md",
     "file_id": "f-3",
     "section": "Protection Layer",
     "line": 118
@@ -3054,7 +3023,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 146,
+  "seq": 144,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3062,12 +3031,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/requests/servicenow-incident-api 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/requests/servicenow-incident-api 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/requests/servicenow-incident-api",
+   "path": "/v0.1/seeds/seed-ccd9/requests/servicenow-incident-api",
    "status": 200,
-   "latency_ms": 45,
+   "latency_ms": 69,
    "simulated": true,
    "response": {
     "request_id": "servicenow-incident-api",
@@ -3081,7 +3050,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 147,
+  "seq": 145,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3095,7 +3064,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 148,
+  "seq": 146,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3103,12 +3072,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/discovery/complete 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/discovery/complete 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/discovery/complete",
+   "path": "/v0.1/seeds/seed-ccd9/discovery/complete",
    "status": 202,
-   "latency_ms": 308,
+   "latency_ms": 172,
    "simulated": true,
    "response": {
     "state": "DISCOVERY_COMPLETE"
@@ -3118,7 +3087,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 149,
+  "seq": 147,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3135,7 +3104,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 150,
+  "seq": 148,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3151,7 +3120,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 151,
+  "seq": 149,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3159,12 +3128,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/assessment 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/assessment 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/assessment",
+   "path": "/v0.1/seeds/seed-ccd9/assessment",
    "status": 202,
-   "latency_ms": 285,
+   "latency_ms": 199,
    "simulated": true,
    "response": {
     "state": "ASSESSING"
@@ -3174,7 +3143,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 152,
+  "seq": 150,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3190,7 +3159,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 153,
+  "seq": 151,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3208,7 +3177,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 154,
+  "seq": 152,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3216,14 +3185,14 @@
   "type": "gate.auto_resolved",
   "level": "INFO",
   "code": "solution-approval",
-  "message": "Gate solution-approval (approval) auto-resolved: approve License Optimization at potential PARTIAL. Basis: music.md, Decision Logic",
+  "message": "Gate solution-approval (approval) auto-resolved: approve License Optimization at potential PARTIAL. Basis: Value_0001.md, Decision Logic",
   "data": {
    "gate": "solution-approval",
    "kind": "approval",
    "stage": "assessment",
    "resolution": "approve License Optimization at potential PARTIAL",
    "basis": {
-    "file": "music.md",
+    "file": "Value_0001.md",
     "file_id": "f-4",
     "section": "Decision Logic",
     "line": 57
@@ -3233,7 +3202,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 155,
+  "seq": 153,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3241,12 +3210,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/requests/solution-approval 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/requests/solution-approval 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/requests/solution-approval",
+   "path": "/v0.1/seeds/seed-ccd9/requests/solution-approval",
    "status": 200,
-   "latency_ms": 252,
+   "latency_ms": 91,
    "simulated": true,
    "response": {
     "request_id": "solution-approval",
@@ -3259,7 +3228,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 156,
+  "seq": 154,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3276,7 +3245,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 157,
+  "seq": 155,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3292,7 +3261,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 158,
+  "seq": 156,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3300,12 +3269,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/implementation 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/implementation 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/implementation",
+   "path": "/v0.1/seeds/seed-ccd9/implementation",
    "status": 202,
-   "latency_ms": 314,
+   "latency_ms": 212,
    "simulated": true,
    "response": {
     "state": "IMPLEMENTING"
@@ -3315,7 +3284,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 159,
+  "seq": 157,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3329,7 +3298,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 160,
+  "seq": 158,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3343,7 +3312,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 161,
+  "seq": 159,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3351,12 +3320,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/implementation/complete 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/implementation/complete 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/implementation/complete",
+   "path": "/v0.1/seeds/seed-ccd9/implementation/complete",
    "status": 202,
-   "latency_ms": 268,
+   "latency_ms": 87,
    "simulated": true,
    "response": {
     "state": "IMPLEMENTATION_COMPLETE"
@@ -3366,7 +3335,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 162,
+  "seq": 160,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3383,7 +3352,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 163,
+  "seq": 161,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3399,7 +3368,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 164,
+  "seq": 162,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3417,7 +3386,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 165,
+  "seq": 163,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3425,14 +3394,14 @@
   "type": "gate.auto_resolved",
   "level": "INFO",
   "code": "close-seeding",
-  "message": "Gate close-seeding (confirmation) auto-resolved: close seeding. Basis: environment.md, Protection Layer",
+  "message": "Gate close-seeding (confirmation) auto-resolved: close seeding. Basis: Environment_01.md, Protection Layer",
   "data": {
    "gate": "close-seeding",
    "kind": "confirmation",
    "stage": "cleanup",
    "resolution": "close seeding",
    "basis": {
-    "file": "environment.md",
+    "file": "Environment_01.md",
     "file_id": "f-3",
     "section": "Protection Layer",
     "line": 118
@@ -3442,7 +3411,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 166,
+  "seq": 164,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3450,12 +3419,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/requests/close-seeding 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/requests/close-seeding 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/requests/close-seeding",
+   "path": "/v0.1/seeds/seed-ccd9/requests/close-seeding",
    "status": 200,
-   "latency_ms": 271,
+   "latency_ms": 272,
    "simulated": true,
    "response": {
     "request_id": "close-seeding",
@@ -3469,6 +3438,54 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
+  "seq": 165,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-ccd9/cleanup/consolidate-notes 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-ccd9/cleanup/consolidate-notes",
+   "status": 200,
+   "latency_ms": 116,
+   "simulated": true,
+   "response": {
+    "state": "CLOSING_SEEDING",
+    "operation": "consolidate-notes"
+   }
+  },
+  "sim_t": 51.768,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 166,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "seeding",
+  "step": "seeding.cleanup",
+  "type": "api.call",
+  "level": "API",
+  "code": null,
+  "message": "POST /v0.1/seeds/seed-ccd9/cleanup/purge-scratch 200 (simulated)",
+  "data": {
+   "method": "POST",
+   "path": "/v0.1/seeds/seed-ccd9/cleanup/purge-scratch",
+   "status": 200,
+   "latency_ms": 211,
+   "simulated": true,
+   "response": {
+    "state": "CLOSING_SEEDING",
+    "operation": "purge-scratch"
+   }
+  },
+  "sim_t": 52.057,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
   "seq": 167,
   "build_id": "b-1",
   "iteration": 1,
@@ -3477,19 +3494,19 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/cleanup/consolidate-notes 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/cleanup/promote-interfaces 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/cleanup/consolidate-notes",
+   "path": "/v0.1/seeds/seed-ccd9/cleanup/promote-interfaces",
    "status": 200,
-   "latency_ms": 219,
+   "latency_ms": 249,
    "simulated": true,
    "response": {
     "state": "CLOSING_SEEDING",
-    "operation": "consolidate-notes"
+    "operation": "promote-interfaces"
    }
   },
-  "sim_t": 51.768,
+  "sim_t": 52.346,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -3501,60 +3518,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/cleanup/purge-scratch 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/cleanup/retire-build-tools 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/cleanup/purge-scratch",
+   "path": "/v0.1/seeds/seed-ccd9/cleanup/retire-build-tools",
    "status": 200,
-   "latency_ms": 194,
-   "simulated": true,
-   "response": {
-    "state": "CLOSING_SEEDING",
-    "operation": "purge-scratch"
-   }
-  },
-  "sim_t": 52.057,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 169,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "seeding",
-  "step": "seeding.cleanup",
-  "type": "api.call",
-  "level": "API",
-  "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/cleanup/promote-interfaces 200 (simulated)",
-  "data": {
-   "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/cleanup/promote-interfaces",
-   "status": 200,
-   "latency_ms": 51,
-   "simulated": true,
-   "response": {
-    "state": "CLOSING_SEEDING",
-    "operation": "promote-interfaces"
-   }
-  },
-  "sim_t": 52.346,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 170,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "seeding",
-  "step": "seeding.cleanup",
-  "type": "api.call",
-  "level": "API",
-  "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/cleanup/retire-build-tools 200 (simulated)",
-  "data": {
-   "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/cleanup/retire-build-tools",
-   "status": 200,
-   "latency_ms": 160,
+   "latency_ms": 300,
    "simulated": true,
    "response": {
     "state": "CLOSING_SEEDING",
@@ -3565,7 +3534,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 171,
+  "seq": 169,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3586,7 +3555,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 172,
+  "seq": 170,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3603,7 +3572,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 173,
+  "seq": 171,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3619,7 +3588,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 174,
+  "seq": 172,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3627,12 +3596,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/run 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/run 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/run",
+   "path": "/v0.1/seeds/seed-ccd9/run",
    "status": 202,
-   "latency_ms": 80,
+   "latency_ms": 44,
    "simulated": true,
    "response": {
     "state": "READY_TO_RUN"
@@ -3642,7 +3611,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 175,
+  "seq": 173,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3650,12 +3619,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/collect 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/collect 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/collect",
+   "path": "/v0.1/seeds/seed-ccd9/collect",
    "status": 200,
-   "latency_ms": 178,
+   "latency_ms": 55,
    "simulated": true,
    "response": {
     "state": "RUNNING",
@@ -3669,7 +3638,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 176,
+  "seq": 174,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3683,7 +3652,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 177,
+  "seq": 175,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3691,12 +3660,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/collect 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/collect 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/collect",
+   "path": "/v0.1/seeds/seed-ccd9/collect",
    "status": 200,
-   "latency_ms": 48,
+   "latency_ms": 186,
    "simulated": true,
    "response": {
     "state": "RUNNING",
@@ -3710,7 +3679,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 178,
+  "seq": 176,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3724,7 +3693,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 179,
+  "seq": 177,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3732,12 +3701,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-938f/collect 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-ccd9/collect 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-938f/collect",
+   "path": "/v0.1/seeds/seed-ccd9/collect",
    "status": 200,
-   "latency_ms": 180,
+   "latency_ms": 138,
    "simulated": true,
    "response": {
     "state": "RUNNING",
@@ -3751,7 +3720,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 180,
+  "seq": 178,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3765,7 +3734,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 181,
+  "seq": 179,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3782,7 +3751,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 182,
+  "seq": 180,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3802,7 +3771,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 183,
+  "seq": 181,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3822,7 +3791,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 184,
+  "seq": 182,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3839,7 +3808,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 185,
+  "seq": 183,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "seeding",
@@ -3861,7 +3830,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 186,
+  "seq": 184,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -3879,7 +3848,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 187,
+  "seq": 185,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -3895,7 +3864,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 188,
+  "seq": 186,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -3903,7 +3872,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Protection rules from environment.md, Protection Layer: 9 rules from 4 lines",
+  "message": "Protection rules from Environment_01.md, Protection Layer: 9 rules from 4 lines",
   "data": {
    "rules": [
     {
@@ -3914,7 +3883,7 @@
      ],
      "resource": "*",
      "when": {},
-     "file": "environment.md",
+     "file": "Environment_01.md",
      "section": "Protection Layer",
      "line": 122,
      "text": "Read only. The Seed reports; it never removes, reassigns or changes a seat in any system."
@@ -3931,7 +3900,7 @@
      ],
      "resource": "*",
      "when": {},
-     "file": "environment.md",
+     "file": "Environment_01.md",
      "section": "Protection Layer",
      "line": 122,
      "text": "Read only. The Seed reports; it never removes, reassigns or changes a seat in any system."
@@ -3946,7 +3915,7 @@
      ],
      "resource": "seat",
      "when": {},
-     "file": "environment.md",
+     "file": "Environment_01.md",
      "section": "Protection Layer",
      "line": 122,
      "text": "Read only. The Seed reports; it never removes, reassigns or changes a seat in any system."
@@ -3961,7 +3930,7 @@
      "when": {
       "priced": "yes"
      },
-     "file": "environment.md",
+     "file": "Environment_01.md",
      "section": "Protection Layer",
      "line": 123,
      "text": "A cost figure is shown only where a unit price exists. An unpriced product shows as withheld, never as zero."
@@ -3976,7 +3945,7 @@
      "when": {
       "priced": "no"
      },
-     "file": "environment.md",
+     "file": "Environment_01.md",
      "section": "Protection Layer",
      "line": 123,
      "text": "A cost figure is shown only where a unit price exists. An unpriced product shows as withheld, never as zero."
@@ -3991,7 +3960,7 @@
      "when": {
       "level": "seat"
      },
-     "file": "environment.md",
+     "file": "Environment_01.md",
      "section": "Protection Layer",
      "line": 140,
      "text": "Assignee names appear only at the seat level, never in exports or in summaries above it."
@@ -4006,7 +3975,7 @@
      "when": {
       "level": "summary"
      },
-     "file": "environment.md",
+     "file": "Environment_01.md",
      "section": "Protection Layer",
      "line": 140,
      "text": "Assignee names appear only at the seat level, never in exports or in summaries above it."
@@ -4019,7 +3988,7 @@
      ],
      "resource": "names",
      "when": {},
-     "file": "environment.md",
+     "file": "Environment_01.md",
      "section": "Protection Layer",
      "line": 140,
      "text": "Assignee names appear only at the seat level, never in exports or in summaries above it."
@@ -4034,7 +4003,7 @@
      "when": {
       "destination": "outside"
      },
-     "file": "environment.md",
+     "file": "Environment_01.md",
      "section": "Protection Layer",
      "line": 141,
      "text": "The dataset stays inside the sandbox. Nothing is sent outside it."
@@ -4042,6 +4011,54 @@
    ]
   },
   "sim_t": 56.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 187,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-1 remove an Unused seat from the License Management System: DENY by P-3 (Environment_01.md, Protection Layer, line 122)",
+  "data": {
+   "decision": {
+    "probe": "PB-1",
+    "request": "remove an Unused seat from the License Management System",
+    "expected": "DENY",
+    "effect": "DENY",
+    "rule": "P-3",
+    "basis": "P-3 (Environment_01.md, Protection Layer, line 122)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 56.75,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 188,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-2 reassign a Leaver's seat to another person: DENY by P-3 (Environment_01.md, Protection Layer, line 122)",
+  "data": {
+   "decision": {
+    "probe": "PB-2",
+    "request": "reassign a Leaver's seat to another person",
+    "expected": "DENY",
+    "effect": "DENY",
+    "rule": "P-3",
+    "basis": "P-3 (Environment_01.md, Protection Layer, line 122)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 57.0,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -4053,19 +4070,19 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "PB-1 remove an Unused seat from the License Management System: DENY by P-3 (environment.md, Protection Layer, line 122)",
+  "message": "PB-3 show recoverable cost for an unpriced product as $0: DENY by P-5 (Environment_01.md, Protection Layer, line 123)",
   "data": {
    "decision": {
-    "probe": "PB-1",
-    "request": "remove an Unused seat from the License Management System",
+    "probe": "PB-3",
+    "request": "show recoverable cost for an unpriced product as $0",
     "expected": "DENY",
     "effect": "DENY",
-    "rule": "P-3",
-    "basis": "P-3 (environment.md, Protection Layer, line 122)",
+    "rule": "P-5",
+    "basis": "P-5 (Environment_01.md, Protection Layer, line 123)",
     "outcome": "as-expected"
    }
   },
-  "sim_t": 56.75,
+  "sim_t": 57.25,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -4077,55 +4094,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "PB-2 reassign a Leaver's seat to another person: DENY by P-3 (environment.md, Protection Layer, line 122)",
-  "data": {
-   "decision": {
-    "probe": "PB-2",
-    "request": "reassign a Leaver's seat to another person",
-    "expected": "DENY",
-    "effect": "DENY",
-    "rule": "P-3",
-    "basis": "P-3 (environment.md, Protection Layer, line 122)",
-    "outcome": "as-expected"
-   }
-  },
-  "sim_t": 57.0,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 191,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "probe",
-  "step": "probe.protection",
-  "type": "log",
-  "level": "INFO",
-  "code": null,
-  "message": "PB-3 show recoverable cost for an unpriced product as $0: DENY by P-5 (environment.md, Protection Layer, line 123)",
-  "data": {
-   "decision": {
-    "probe": "PB-3",
-    "request": "show recoverable cost for an unpriced product as $0",
-    "expected": "DENY",
-    "effect": "DENY",
-    "rule": "P-5",
-    "basis": "P-5 (environment.md, Protection Layer, line 123)",
-    "outcome": "as-expected"
-   }
-  },
-  "sim_t": 57.25,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 192,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "probe",
-  "step": "probe.protection",
-  "type": "log",
-  "level": "INFO",
-  "code": null,
-  "message": "PB-4 show recoverable cost for a priced product: ALLOW by P-4 (environment.md, Protection Layer, line 123)",
+  "message": "PB-4 show recoverable cost for a priced product: ALLOW by P-4 (Environment_01.md, Protection Layer, line 123)",
   "data": {
    "decision": {
     "probe": "PB-4",
@@ -4133,7 +4102,7 @@
     "expected": "ALLOW",
     "effect": "ALLOW",
     "rule": "P-4",
-    "basis": "P-4 (environment.md, Protection Layer, line 123)",
+    "basis": "P-4 (Environment_01.md, Protection Layer, line 123)",
     "outcome": "as-expected"
    }
   },
@@ -4141,7 +4110,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 193,
+  "seq": 191,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4165,6 +4134,54 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
+  "seq": 192,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-6 list assignee names in a vendor summary: DENY by P-7 (Environment_01.md, Protection Layer, line 140)",
+  "data": {
+   "decision": {
+    "probe": "PB-6",
+    "request": "list assignee names in a vendor summary",
+    "expected": "DENY",
+    "effect": "DENY",
+    "rule": "P-7",
+    "basis": "P-7 (Environment_01.md, Protection Layer, line 140)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 58.0,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
+  "seq": 193,
+  "build_id": "b-1",
+  "iteration": 1,
+  "phase": "probe",
+  "step": "probe.protection",
+  "type": "log",
+  "level": "INFO",
+  "code": null,
+  "message": "PB-7 list assignee names in the Seats table: ALLOW by P-6 (Environment_01.md, Protection Layer, line 140)",
+  "data": {
+   "decision": {
+    "probe": "PB-7",
+    "request": "list assignee names in the Seats table",
+    "expected": "ALLOW",
+    "effect": "ALLOW",
+    "rule": "P-6",
+    "basis": "P-6 (Environment_01.md, Protection Layer, line 140)",
+    "outcome": "as-expected"
+   }
+  },
+  "sim_t": 58.25,
+  "wall_ts": "2026-10-03T12:00:00.000+00:00"
+ },
+ {
   "seq": 194,
   "build_id": "b-1",
   "iteration": 1,
@@ -4173,19 +4190,19 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "PB-6 list assignee names in a vendor summary: DENY by P-7 (environment.md, Protection Layer, line 140)",
+  "message": "PB-8 export assignee names: DENY by P-8 (Environment_01.md, Protection Layer, line 140)",
   "data": {
    "decision": {
-    "probe": "PB-6",
-    "request": "list assignee names in a vendor summary",
+    "probe": "PB-8",
+    "request": "export assignee names",
     "expected": "DENY",
     "effect": "DENY",
-    "rule": "P-7",
-    "basis": "P-7 (environment.md, Protection Layer, line 140)",
+    "rule": "P-8",
+    "basis": "P-8 (Environment_01.md, Protection Layer, line 140)",
     "outcome": "as-expected"
    }
   },
-  "sim_t": 58.0,
+  "sim_t": 58.5,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -4197,19 +4214,19 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "PB-7 list assignee names in the Seats table: ALLOW by P-6 (environment.md, Protection Layer, line 140)",
+  "message": "PB-9 send the seat dataset outside the sandbox: DENY by P-9 (Environment_01.md, Protection Layer, line 141)",
   "data": {
    "decision": {
-    "probe": "PB-7",
-    "request": "list assignee names in the Seats table",
-    "expected": "ALLOW",
-    "effect": "ALLOW",
-    "rule": "P-6",
-    "basis": "P-6 (environment.md, Protection Layer, line 140)",
+    "probe": "PB-9",
+    "request": "send the seat dataset outside the sandbox",
+    "expected": "DENY",
+    "effect": "DENY",
+    "rule": "P-9",
+    "basis": "P-9 (Environment_01.md, Protection Layer, line 141)",
     "outcome": "as-expected"
    }
   },
-  "sim_t": 58.25,
+  "sim_t": 58.75,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
@@ -4221,55 +4238,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "PB-8 export assignee names: DENY by P-8 (environment.md, Protection Layer, line 140)",
-  "data": {
-   "decision": {
-    "probe": "PB-8",
-    "request": "export assignee names",
-    "expected": "DENY",
-    "effect": "DENY",
-    "rule": "P-8",
-    "basis": "P-8 (environment.md, Protection Layer, line 140)",
-    "outcome": "as-expected"
-   }
-  },
-  "sim_t": 58.5,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 197,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "probe",
-  "step": "probe.protection",
-  "type": "log",
-  "level": "INFO",
-  "code": null,
-  "message": "PB-9 send the seat dataset outside the sandbox: DENY by P-9 (environment.md, Protection Layer, line 141)",
-  "data": {
-   "decision": {
-    "probe": "PB-9",
-    "request": "send the seat dataset outside the sandbox",
-    "expected": "DENY",
-    "effect": "DENY",
-    "rule": "P-9",
-    "basis": "P-9 (environment.md, Protection Layer, line 141)",
-    "outcome": "as-expected"
-   }
-  },
-  "sim_t": 58.75,
-  "wall_ts": "2026-10-03T12:00:00.000+00:00"
- },
- {
-  "seq": 198,
-  "build_id": "b-1",
-  "iteration": 1,
-  "phase": "probe",
-  "step": "probe.protection",
-  "type": "log",
-  "level": "INFO",
-  "code": null,
-  "message": "PB-10 read the seat records: ALLOW by P-1 (environment.md, Protection Layer, line 122)",
+  "message": "PB-10 read the seat records: ALLOW by P-1 (Environment_01.md, Protection Layer, line 122)",
   "data": {
    "decision": {
     "probe": "PB-10",
@@ -4277,7 +4246,7 @@
     "expected": "ALLOW",
     "effect": "ALLOW",
     "rule": "P-1",
-    "basis": "P-1 (environment.md, Protection Layer, line 122)",
+    "basis": "P-1 (Environment_01.md, Protection Layer, line 122)",
     "outcome": "as-expected"
    }
   },
@@ -4285,7 +4254,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 199,
+  "seq": 197,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4305,7 +4274,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 200,
+  "seq": 198,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4322,7 +4291,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 201,
+  "seq": 199,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4338,7 +4307,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 202,
+  "seq": 200,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4356,7 +4325,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 203,
+  "seq": 201,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4381,7 +4350,7 @@
     },
     {
      "input": "a class the usage does not give",
-     "reason": "class underused does not follow from the record (active by music.md's rules)"
+     "reason": "class underused does not follow from the record (active by Value.md's rules)"
     },
     {
      "input": "eleven months of usage",
@@ -4418,7 +4387,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 204,
+  "seq": 202,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4446,7 +4415,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 205,
+  "seq": 203,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4466,7 +4435,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 206,
+  "seq": 204,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4483,7 +4452,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 207,
+  "seq": 205,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4499,7 +4468,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 208,
+  "seq": 206,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4515,7 +4484,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 209,
+  "seq": 207,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4562,7 +4531,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 210,
+  "seq": 208,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4582,7 +4551,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 211,
+  "seq": 209,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4599,7 +4568,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 212,
+  "seq": 210,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "probe",
@@ -4622,7 +4591,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 213,
+  "seq": 211,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -4640,7 +4609,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 214,
+  "seq": 212,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -4656,7 +4625,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 215,
+  "seq": 213,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -4676,7 +4645,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 216,
+  "seq": 214,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -4693,7 +4662,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 217,
+  "seq": 215,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -4709,7 +4678,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 218,
+  "seq": 216,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -4725,7 +4694,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 219,
+  "seq": 217,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -4926,7 +4895,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 220,
+  "seq": 218,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5019,7 +4988,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 221,
+  "seq": 219,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5085,7 +5054,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 222,
+  "seq": 220,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5142,7 +5111,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 223,
+  "seq": 221,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5262,7 +5231,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 224,
+  "seq": 222,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5282,7 +5251,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 225,
+  "seq": 223,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5299,7 +5268,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 226,
+  "seq": 224,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5315,7 +5284,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 227,
+  "seq": 225,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5329,7 +5298,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 228,
+  "seq": 226,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5386,7 +5355,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 229,
+  "seq": 227,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5406,7 +5375,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 230,
+  "seq": 228,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5423,7 +5392,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 231,
+  "seq": 229,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5439,7 +5408,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 232,
+  "seq": 230,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5455,7 +5424,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 233,
+  "seq": 231,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5534,7 +5503,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 234,
+  "seq": 232,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5629,7 +5598,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 235,
+  "seq": 233,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5649,7 +5618,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 236,
+  "seq": 234,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5696,7 +5665,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 237,
+  "seq": 235,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5755,7 +5724,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 238,
+  "seq": 236,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5866,7 +5835,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 239,
+  "seq": 237,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5913,7 +5882,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 240,
+  "seq": 238,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5933,7 +5902,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 241,
+  "seq": 239,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5950,7 +5919,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 242,
+  "seq": 240,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5966,7 +5935,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 243,
+  "seq": 241,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -5980,7 +5949,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 244,
+  "seq": 242,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -6054,7 +6023,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 245,
+  "seq": 243,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -6074,7 +6043,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 246,
+  "seq": 244,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -6091,7 +6060,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 247,
+  "seq": 245,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "harvest",
@@ -6116,7 +6085,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 248,
+  "seq": 246,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6134,7 +6103,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 249,
+  "seq": 247,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6150,7 +6119,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 250,
+  "seq": 248,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6158,12 +6127,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "DELETE /v0.1/sandboxes/sbx-7d38 204 (simulated)",
+  "message": "DELETE /v0.1/sandboxes/sbx-27c1 204 (simulated)",
   "data": {
    "method": "DELETE",
-   "path": "/v0.1/sandboxes/sbx-7d38",
+   "path": "/v0.1/sandboxes/sbx-27c1",
    "status": 204,
-   "latency_ms": 97,
+   "latency_ms": 46,
    "simulated": true,
    "response": {
     "residue": 0
@@ -6173,7 +6142,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 251,
+  "seq": 249,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6181,13 +6150,13 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Sandbox sbx-7d38 torn down, no residue (simulated)",
+  "message": "Sandbox sbx-27c1 torn down, no residue (simulated)",
   "data": {},
   "sim_t": 71.727,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 252,
+  "seq": 250,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6207,7 +6176,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 253,
+  "seq": 251,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6224,7 +6193,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 254,
+  "seq": 252,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6240,7 +6209,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 255,
+  "seq": 253,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6295,7 +6264,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 256,
+  "seq": 254,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6312,7 +6281,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 257,
+  "seq": 255,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6328,7 +6297,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 258,
+  "seq": 256,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6336,11 +6305,11 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Seed files packaged: core.md (9,660 bytes), adaptation.md (6,867 bytes), protection.md (1,318 bytes); Approve offers them one by one and as one zip",
+  "message": "Seed files packaged: core.md (9,660 bytes), adaptation.md (5,680 bytes), protection.md (1,318 bytes); Approve offers them one by one and as one zip",
   "data": {
    "files": {
     "core.md": 9660,
-    "adaptation.md": 6867,
+    "adaptation.md": 5680,
     "protection.md": 1318
    }
   },
@@ -6348,7 +6317,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 259,
+  "seq": 257,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6365,7 +6334,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 260,
+  "seq": 258,
   "build_id": "b-1",
   "iteration": 1,
   "phase": "report",
@@ -6386,7 +6355,7 @@
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
  },
  {
-  "seq": 261,
+  "seq": 259,
   "build_id": "b-1",
   "iteration": 1,
   "phase": null,
@@ -6403,7 +6372,7 @@
     "tone": "warning"
    },
    "seed_name": "License Optimization",
-   "fingerprint": "a127ba",
+   "fingerprint": "95274b",
    "tests": {
     "T-01": "pass",
     "T-02": "pass",

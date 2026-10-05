@@ -25,11 +25,11 @@ def file(category: Category, content: str) -> IntakeFile:
 
 # Rule: (planted line, a file it is wrong in, the concern's home file, suggested home)
 PLANTED = {
-    "B-DATA": ("Read seat_count from the `license_seats` table, column `days_idle`.", Category.MUSIC, Category.ENVIRONMENT, "environment.md, Data Layer"),
-    "B-SEC": ("Only users with admin permissions may see assignee names.", Category.PERSON, Category.ENVIRONMENT, "environment.md, Protection Layer"),
-    "B-UI": ("Show unused seats in an orange colour on the treemap.", Category.MUSIC, Category.ENVIRONMENT, "environment.md, Styling"),
-    "B-MODEL": ("Keep each request under 8,000 tokens.", Category.ENVIRONMENT, Category.INSTRUMENT_AWARENESS, "instrument-awareness.md, Model Behaviour or Execution Constraints"),
-    "B-LOGIC": ("Prioritise products by recoverable cost, largest first.", Category.ENVIRONMENT, Category.MUSIC, "music.md, Core Principles"),
+    "B-DATA": ("Read seat_count from the `license_seats` table, column `days_idle`.", Category.MUSIC, Category.ENVIRONMENT, "Environment.md, Data Layer"),
+    "B-SEC": ("Only users with admin permissions may see assignee names.", Category.PERSON, Category.ENVIRONMENT, "Environment.md, Protection Layer"),
+    "B-UI": ("Show unused seats in an orange colour on the treemap.", Category.MUSIC, Category.ENVIRONMENT, "Environment.md, Styling"),
+    "B-MODEL": ("Keep each request under 8,000 tokens.", Category.ENVIRONMENT, Category.INSTRUMENT_AWARENESS, "Tools_and_Skills.md, Model Behaviour or Execution Constraints"),
+    "B-LOGIC": ("Prioritise products by recoverable cost, largest first.", Category.ENVIRONMENT, Category.MUSIC, "Value.md, Core Principles"),
 }
 
 

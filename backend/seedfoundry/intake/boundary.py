@@ -15,11 +15,13 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-from seedfoundry.state import Category, IntakeFile
+from seedfoundry.state import CATEGORY_LABELS, Category, IntakeFile
 
-ENV = "environment.md"
-IA = "instrument-awareness.md"
-MUSIC = "music.md"
+# Homes are named by the category's screen name (D-84): the file itself may be Environment_02.md.
+ENV = CATEGORY_LABELS[Category.ENVIRONMENT]
+IA = CATEGORY_LABELS[Category.INSTRUMENT_AWARENESS]
+MUSIC = CATEGORY_LABELS[Category.MUSIC]
+PERSON = CATEGORY_LABELS[Category.PERSON]
 
 # Phrases that look like a rule's keyword but are not that concern: Seed v0.1's panel
 # titles, which environment.md's User Experience layer names (M4 self-review).
@@ -57,7 +59,7 @@ DECISIONS = f"{MUSIC}, Decision Logic"
 RULES: tuple[Rule, ...] = (
     Rule(
         "B-DATA",
-        "Data mappings, schemas, columns, file paths or raw records outside environment.md",
+        f"Data mappings, schemas, columns, file paths or raw records outside {ENV}",
         (Category.PERSON, Category.INSTRUMENT_AWARENESS, Category.MUSIC),
         (
             _p(r"\bschemas?\b", DATA),
@@ -74,7 +76,7 @@ RULES: tuple[Rule, ...] = (
     ),
     Rule(
         "B-SEC",
-        "Security, access or guardrail language in person.md or music.md",
+        f"Security, access or guardrail language in {PERSON} or {MUSIC}",
         (Category.PERSON, Category.MUSIC),
         (
             _p(r"\bsecurity\b", PROTECTION),
@@ -94,7 +96,7 @@ RULES: tuple[Rule, ...] = (
     ),
     Rule(
         "B-UI",
-        "Colours, themes, layouts or navigation outside environment.md",
+        f"Colours, themes, layouts or navigation outside {ENV}",
         (Category.PERSON, Category.INSTRUMENT_AWARENESS, Category.MUSIC),
         (
             _p(r"\bcolou?rs?\b", STYLING),
@@ -116,7 +118,7 @@ RULES: tuple[Rule, ...] = (
     ),
     Rule(
         "B-MODEL",
-        "Token, context window or model limitation language outside instrument-awareness.md",
+        f"Token, context window or model limitation language outside {IA}",
         (Category.PERSON, Category.ENVIRONMENT, Category.MUSIC),
         (
             _p(r"\btokens?\b", MODEL),
@@ -130,7 +132,7 @@ RULES: tuple[Rule, ...] = (
     ),
     Rule(
         "B-LOGIC",
-        "Prioritisation, scoring or decision rules inside environment.md",
+        f"Prioritisation, scoring or decision rules inside {ENV}",
         (Category.ENVIRONMENT,),
         (
             _p(r"\bprioriti[sz]\w*|\bpriorit(?:y|ies)\b", PRINCIPLES),

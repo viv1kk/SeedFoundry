@@ -1,4 +1,4 @@
-"""SeedClient and its simulated implementation (D-22): Seed v0.1's API as SeedFoundry
+"""SeedClient and its simulated implementation (D-22): Seed v0.1's API as SeedFactory
 drives it in phases 5 to 8 and 11. Nothing leaves the process. Ids and latencies come
 from the build's seeded RNG; state names are Seed v0.1's (seed-reuse-notes.md §3.1).
 Checksums are real: the simulated server hashes the bytes it is given."""

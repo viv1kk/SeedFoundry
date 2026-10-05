@@ -2,7 +2,7 @@
  "build_id": "b-2",
  "iteration": 2,
  "seed_name": "License Optimization",
- "fingerprint": "49616b",
+ "fingerprint": "18b56d",
  "verdict": {
   "id": "passed",
   "label": "Passed",
@@ -175,7 +175,7 @@
  "tests": [
   {
    "id": "T-01",
-   "name": "Core files present",
+   "name": "Initiation files present",
    "phase": "assay",
    "phase_name": "Assay",
    "status": "pass",
@@ -202,7 +202,7 @@
   },
   {
    "id": "T-04",
-   "name": "All Music sections extracted",
+   "name": "All Value.md sections extracted",
    "phase": "distill",
    "phase_name": "Distillation",
    "status": "pass",
@@ -370,12 +370,12 @@
    "stage": "discovery",
    "resolution": "sandbox read-only credential issued (simulated), values not stored",
    "basis": {
-    "file": "environment.md",
+    "file": "Environment_02.md",
     "file_id": "f-3",
     "section": "Protection Layer",
     "line": 136
    },
-   "message": "Gate servicenow-incident-api (credentials) auto-resolved: sandbox read-only credential issued (simulated), values not stored. Basis: environment.md, Protection Layer"
+   "message": "Gate servicenow-incident-api (credentials) auto-resolved: sandbox read-only credential issued (simulated), values not stored. Basis: Environment_02.md, Protection Layer"
   },
   {
    "id": "solution-approval",
@@ -383,12 +383,12 @@
    "stage": "assessment",
    "resolution": "approve License Optimization at potential PARTIAL",
    "basis": {
-    "file": "music.md",
+    "file": "Value_0002.md",
     "file_id": "f-4",
     "section": "Decision Logic",
     "line": 61
    },
-   "message": "Gate solution-approval (approval) auto-resolved: approve License Optimization at potential PARTIAL. Basis: music.md, Decision Logic"
+   "message": "Gate solution-approval (approval) auto-resolved: approve License Optimization at potential PARTIAL. Basis: Value_0002.md, Decision Logic"
   },
   {
    "id": "close-seeding",
@@ -396,18 +396,18 @@
    "stage": "cleanup",
    "resolution": "close seeding",
    "basis": {
-    "file": "environment.md",
+    "file": "Environment_02.md",
     "file_id": "f-3",
     "section": "Protection Layer",
     "line": 136
    },
-   "message": "Gate close-seeding (confirmation) auto-resolved: close seeding. Basis: environment.md, Protection Layer"
+   "message": "Gate close-seeding (confirmation) auto-resolved: close seeding. Basis: Environment_02.md, Protection Layer"
   }
  ],
  "usage": {
-  "llm_calls": 10,
-  "tokens_in": 20399,
-  "tokens_out": 7450,
+  "llm_calls": 9,
+  "tokens_in": 18531,
+  "tokens_out": 5323,
   "api_calls": 26,
   "sandbox_seconds": 36.2,
   "simulated": true
@@ -426,9 +426,9 @@
    {
     "name": "adaptation.md",
     "role": "adaptation",
-    "bytes": 8218,
-    "tokens": 2054,
-    "share": 6.4
+    "bytes": 7031,
+    "tokens": 1758,
+    "share": 5.5
    },
    {
     "name": "protection.md",
@@ -438,8 +438,8 @@
     "share": 2.3
    }
   ],
-  "tokens": 5338,
-  "share": 16.7,
+  "tokens": 5042,
+  "share": 15.8,
   "within": true,
   "simulated": true
  },
@@ -604,7 +604,7 @@
   },
   "updates": [
    {
-    "file": "person.md",
+    "file": "Identity.md",
     "section": "Reasoning methods",
     "segments": [
      8
@@ -613,7 +613,7 @@
     "created": false
    },
    {
-    "file": "instrument-awareness.md",
+    "file": "Tools_and_Skills.md",
     "section": "Model Behaviour",
     "segments": [
      7
@@ -622,7 +622,7 @@
     "created": false
    },
    {
-    "file": "environment.md",
+    "file": "Environment_01.md",
     "section": "Styling",
     "segments": [
      2,
@@ -634,7 +634,7 @@
     "created": false
    },
    {
-    "file": "environment.md",
+    "file": "Environment_01.md",
     "section": "User Experience",
     "segments": [
      6
@@ -643,7 +643,7 @@
     "created": false
    },
    {
-    "file": "environment.md",
+    "file": "Environment_01.md",
     "section": "Data Layer",
     "segments": [
      1
@@ -652,7 +652,7 @@
     "created": false
    },
    {
-    "file": "music.md",
+    "file": "Value_0001.md",
     "section": "Value Logic",
     "segments": [
      9

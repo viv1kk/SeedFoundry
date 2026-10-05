@@ -1,6 +1,6 @@
-# SeedFoundry: Seed v0.1 reuse notes
+# SeedFactory: Seed v0.1 reuse notes
 
-Written in M0 (2026-10-03) from a full read of `docs/seed_docs/`. For each item in `requirements.md` §9 ("What we take from Seed v0.1") this records where it lives in the Seed docs, exactly what SeedFoundry reuses, and where the Seed docs contradict ours. §5 is the binding description of the dashboard (FR-D-1).
+Written in M0 (2026-10-03) from a full read of `docs/seed_docs/`. For each item in `requirements.md` §9 ("What we take from Seed v0.1") this records where it lives in the Seed docs, exactly what SeedFactory reuses, and where the Seed docs contradict ours. §5 is the binding description of the dashboard (FR-D-1).
 
 **Read this before reusing anything.** Seed v0.1's own precedence applies to its docs: code, then `requirements.md`, then `project-notes.md`; `decisions.md` over `implementation-plan.md`. The as-built references (`architecture.md`, `design-system.md`, `operator-guide.md`) are the most reliable. `project-notes.md` §§1 to 82 are aspiration and are not what was built.
 
@@ -27,7 +27,7 @@ Citations use the form `seed:file §section`, all under `docs/seed_docs/`.
 ### 1.2 Themes
 
 - Light values on `:root`; dark overrides the same names under `[data-theme='dark']` set on `<html>`. No component knows the theme.
-- First visit follows `prefers-color-scheme`. A toggle (Shift+D) is remembered in `localStorage`. Seed's key was `systems-v1.theme`; SeedFoundry uses `seedfoundry.theme`.
+- First visit follows `prefers-color-scheme`. A toggle (Shift+D) is remembered in `localStorage`. Seed's key was `systems-v1.theme`; SeedFactory uses `seedfoundry.theme`.
 - Charts re-resolve their colours on theme change (D-5).
 - *As built (M7, D-59):* the dashboard's ECharts options are built at paint time from `getComputedStyle` (`--chart-<role>` and the label, surface and text tokens), so switching the theme repaints every open chart with the other theme's values.
 
@@ -79,7 +79,7 @@ Chart roles (descriptors name a role, never a hex value; the renderer reads `--c
 | `baseline` | `#8c95a6` | `#5b6777` | Normal or total series |
 | `muted` | `#cbd0d9` | `#2f3742` | Unassigned seats |
 
-Not needed by SeedFoundry: the Potential grade tokens (`--grade-*`) and the growth-tree tokens (`--growth-*`). We do not take the growth tree (requirements §9).
+Not needed by SeedFactory: the Potential grade tokens (`--grade-*`) and the growth-tree tokens (`--growth-*`). We do not take the growth tree (requirements §9).
 
 ### 1.4 Type, space, shape, motion
 
@@ -100,14 +100,14 @@ Seed's `backend/tests/test_design.py` read `tokens.css` and checked, in both the
 - every chart role against the panel surface, at 3:1, except `muted`;
 - every chart label on its fill at 4.5:1 (light text on filled roles, dark text on `baseline` and `muted`).
 
-SeedFoundry ports the same rules (NFR-6) and adds the console surface pairs (see 1.6). Any new or changed token must pass.
+SeedFactory ports the same rules (NFR-6) and adds the console surface pairs (see 1.6). Any new or changed token must pass.
 
 ### 1.6 Gaps and contradictions
 
 - **Missing values.** The docs give no values for `--shadow-sm`, `--shadow-md`, `--ease-out`, `--chart-grid`, `--chart-brush`, `--scrollbar-thumb`, `--scrollbar-thumb-hover`, the font stacks beyond the face names, or the intermediate space steps. M2 picks values consistent with the tokens above and records them (R-4).
 - **No `info` token.** `build-simulation.md` §4 and `ui-spec.md` §3 colour API console lines "info". Seed v0.1 has no info token. Proposal for M2/M6: add `--console-api` (a teal from the `series-3` hue) and test its contrast on the console surface.
 - *As built (M2):* the missing values, the chart label tokens and the console tokens (including `--console-api`) are chosen in D-37 and live in `frontend/src/styles/tokens.css`. The contrast test (`frontend/tests/contrast.spec.ts`, vitest) ports §1.5's rules, adds the console pairs and the accent and status colours used as text, and reads the Seed values from the §1.3 tables to check `tokens.css` still holds them.
-- **Console as a terminal.** `ui-spec.md` §3 asks for a monospace console on a dark surface in both themes. Seed's activity stream was deliberately "an auditable activity stream, not a developer terminal" (`seed:requirements.md` FR-E8). Not a conflict for SeedFoundry (our build page is a lab console by design), but the light theme then needs a dark console surface. Proposal: console tokens that reuse the dark theme's `--surface-sunken`, `--text-*` and status values in both themes, covered by the contrast test.
+- **Console as a terminal.** `ui-spec.md` §3 asks for a monospace console on a dark surface in both themes. Seed's activity stream was deliberately "an auditable activity stream, not a developer terminal" (`seed:requirements.md` FR-E8). Not a conflict for SeedFactory (our build page is a lab console by design), but the light theme then needs a dark console surface. Proposal: console tokens that reuse the dark theme's `--surface-sunken`, `--text-*` and status values in both themes, covered by the contrast test.
 
 ---
 
@@ -120,7 +120,7 @@ SeedFoundry ports the same rules (NFR-6) and adds the console surface pairs (see
 - One in-memory state object is the sole source of truth (Seed FR-L5). Simulated workers record into it and never hold authoritative state.
 - `GET /api/state` returns the full snapshot with the `sequence` it is current as of. The frontend adopts the snapshot, then applies events from that sequence on (Seed FR-E5).
 - Reset is not a lifecycle edge: it rebuilds state from nothing.
-- SeedFoundry difference: our state persists to JSON under `var/` (D-3). Seed v0.1 deliberately persisted nothing (`seed:requirements.md` §4.1).
+- SeedFactory difference: our state persists to JSON under `var/` (D-3). Seed v0.1 deliberately persisted nothing (`seed:requirements.md` §4.1).
 
 ### 2.2 Event log and SSE
 
@@ -130,20 +130,20 @@ SeedFoundry ports the same rules (NFR-6) and adds the console surface pairs (see
 - The log is unbounded within a run (Seed D-9). A Seed v0.1 run had about 140 events and needed no virtualisation; scrolling held 17 ms frames (Seed OQ-4).
 - The frontend subscribes to each type by name, and a backend test fails if the backend emits a type the frontend list lacks (`test_frontend_contract.py`). Worth copying.
 - Presentation is derived from the type by suffix (`.failed`, `.timeout`, `.error` are faults, and so on), in one table mirrored front and back.
-- SeedFoundry's event shape (`build-simulation.md` §3) uses `seq` and `sim_t`; Seed used `sequence` and `timestamp`. Ours stands.
+- SeedFactory's event shape (`build-simulation.md` §3) uses `seq` and `sim_t`; Seed used `sequence` and `timestamp`. Ours stands.
 
 ### 2.3 The replaceability seam
 
 - Seed's API never imported the engine. It depended on an `EventSource` protocol (`status`, `speed`, `start`, `resolve_human`, `set_speed`, `skip_phase`, `reset`, `snapshot`). The engine recorded into state; the SSE route read from state through an event bus. One module (`runtime.py`) named the implementation.
-- SeedFoundry keeps the same shape for its build engine and adds the two narrower seams of D-22: `LLMClient` and `SeedClient`, simulated only.
+- SeedFactory keeps the same shape for its build engine and adds the two narrower seams of D-22: `LLMClient` and `SeedClient`, simulated only.
 
 ### 2.4 Beat engine with weights (timing approach)
 
 - Workflows are Python generators yielding beats. A beat is a relative weight, never a time. The runner sleeps `weight x total_seconds / total_weight` (Seed: 270 s over 105 units), or the beat's floor in seconds if longer. Floors protect meaning-bearing beats from being compressed out of sight.
 - Speed divides every remaining delay; skip drops delays until the phase changes. Both act within 50 ms because each sleep is cut into 50 ms slices.
 - **M22 lesson, copy it:** read beat progress from the event loop's clock, not by adding up requested slices. Counting slices made the 270 s narrative take 297 s under load.
-- **SeedFoundry difference that matters for determinism:** our `sim_t` is simulated seconds computed from the schedule (cumulative weights scaled to 75 s), never from the clock. Speed, skip and machine load then change pacing only (FR-DC-4), and `sim_t` is identical across runs.
-- SeedFoundry's budget: weights sum to 100 over 75 s at 1x (D-7), so one unit is 0.75 s.
+- **SeedFactory difference that matters for determinism:** our `sim_t` is simulated seconds computed from the schedule (cumulative weights scaled to 75 s), never from the clock. Speed, skip and machine load then change pacing only (FR-DC-4), and `sim_t` is identical across runs.
+- SeedFactory's budget: weights sum to 100 over 75 s at 1x (D-7), so one unit is 0.75 s.
 
 ### 2.5 Descriptor-driven dashboards
 
@@ -151,19 +151,19 @@ SeedFoundry ports the same rules (NFR-6) and adds the console surface pairs (see
 - Chart specs carry mark type, data binding, semantic colour role, visual weight and layout: span, height, emphasis, questions, notes, empty states (Seed R-6 final status). Never hex (D-5).
 - Mark vocabulary is deliberately small: `kpi`, `line`, `bar` (vertical or horizontal, optionally stacked), `treemap`, `table` (Seed OQ-1 "What OQ-1 and OQ-2 mean").
 - Every figure is aggregated from rows at request time; the frontend holds no analytical logic (Seed FR-AN5).
-- SeedFoundry fit: the defect overlay (D-13) is a set of descriptor patches plus `defects.css`. Visual QA (T-17 to T-20) runs over the descriptor and resolved token values; the off-palette defect (V-3) is the one place a hex value appears, inside the overlay only.
+- SeedFactory fit: the defect overlay (D-13) is a set of descriptor patches plus `defects.css`. Visual QA (T-17 to T-20) runs over the descriptor and resolved token values; the off-palette defect (V-3) is the one place a hex value appears, inside the overlay only.
 - *As built (M8, D-60):* the overlay also has payload rules for the numeric defects (N-1 to N-5), which rewrite the query engine's figures by fixed rules. V-3's hex (`#5470c6`) lives only in the overlay's descriptor patch, and the renderer draws it as given; `defects.css` holds no colour value (V-8's grey is `var(--border-default)` used as text), and visual QA reads its rules too (`validators/styles.py`).
 
 ### 2.6 Policy evaluation
 
 - `seed:architecture.md` §8: a request states an action, a resource and facts, and never names a rule. Every covering rule whose facts hold matches; the strictest effect wins (DENY over ESCALATE over ALLOW) and the most specific rule of that effect is cited. A request missing a fact some rule depends on is denied under the default rule (PR-000).
-- Reuse for SeedFoundry's Stress & Probe protection probes (T-13): probes are requests against rules derived from the intake's Protection layer, evaluated the same way, so a probe result is computed, not printed.
-- Do not take Seed's rule ids (PR-xxx) as SeedFoundry ids (requirements §9). Seed's ids may appear only inside simulated Seed v0.1 log lines, labelled as the Seed's.
+- Reuse for SeedFactory's Stress & Probe protection probes (T-13): probes are requests against rules derived from the intake's Protection layer, evaluated the same way, so a probe result is computed, not printed.
+- Do not take Seed's rule ids (PR-xxx) as SeedFactory ids (requirements §9). Seed's ids may appear only inside simulated Seed v0.1 log lines, labelled as the Seed's.
 - *As built (M9, D-62):* `backend/seedfoundry/validators/protection.py`. Rules P-1, P-2, ... are derived line by line from environment.md's Protection layer by fixed patterns, each citing its line; ten probes (PB-1 to PB-10) are evaluated as above (strictest effect, most specific rule, default DENY for a missing fact or no allowing rule). The sample gives nine rules from four lines and passes T-13.
 
 ### 2.7 Determinism testing
 
-- Seed's NFR-D4 as amended by A-2: equal modulo timestamps and durations, compared leaf by leaf. The M22 test found that dropping keys that "look like times" would have hidden a difference (`decidedAt` held a sequence number). SeedFoundry's version: exclude exactly `wall_ts` and nothing else.
+- Seed's NFR-D4 as amended by A-2: equal modulo timestamps and durations, compared leaf by leaf. The M22 test found that dropping keys that "look like times" would have hidden a difference (`decidedAt` held a sequence number). SeedFactory's version: exclude exactly `wall_ts` and nothing else.
 - Two cheap guards from `test_rehearsal.py` worth copying early: no URL in the code names a host other than this machine (NFR-2), and no model library is a dependency (D-1).
 
 ---
@@ -189,7 +189,7 @@ Order: **Planting → Discovery → Assessment → Implementation → Cleanup �
 
 Weights in Seed: discovery 54, assessment 25, implementation 20, closing 6 (105 units over 270 s); Life's beats weigh nothing and run on floors (3 s a step, 2 s more per recalibration, about 45 s). Measured at 1x: Planting to Discovery complete 139 s, Assessment 64 s, Implementation 51 s, Cleanup 15 s.
 
-### 3.2 What SeedFoundry reuses
+### 3.2 What SeedFactory reuses
 
 - The names Planting, Life and Cleanup on screen, and `INIT`, `RUNTIME`, `CLOSING_SEEDING` as the simulated Seed API's state values.
 - The order above, inside the simulated sandbox run.
@@ -206,7 +206,7 @@ Our phase catalogue says:
 
 In Seed v0.1 discovery, assessment, approval and implementation are not RUNTIME workflows; they are the Seeding phases before Cleanup. RUNTIME (Life) is post-cleanup collection and raises no human gate. Cleanup (`CLOSING_SEEDING`) precedes Life. So as written our catalogue renames Seed's Seeding stages "Life" and runs Seed's Cleanup after Seed's Life, which contradicts requirements §9 ("Lifecycle names and order for the Planting, Life and Cleanup phases"). FR-B-5 ("every human gate that Seed v0.1 would raise during Life") has the same problem: Seed raises none during Life.
 
-**Resolved (D-26, 2026-10-03).** Eleven phases kept, with count, order, weights and test ids unchanged. Phase 7 Planting is Seed INIT; phase 8 is **Seeding & Life** (`seeding`) with sub-steps Discovery, Assessment, Implementation, Cleanup, Life in Seed's order and all three gates inside it; phase 11 is **Teardown & Report**, SeedFoundry's own sandbox teardown. FR-B-5 is amended by A-1. `build-simulation.md` §2 is updated.
+**Resolved (D-26, 2026-10-03).** Eleven phases kept, with count, order, weights and test ids unchanged. Phase 7 Planting is Seed INIT; phase 8 is **Seeding & Life** (`seeding`) with sub-steps Discovery, Assessment, Implementation, Cleanup, Life in Seed's order and all three gates inside it; phase 11 is **Teardown & Report**, SeedFactory's own sandbox teardown. FR-B-5 is amended by A-1. `build-simulation.md` §2 is updated.
 
 ---
 
@@ -226,9 +226,9 @@ Defined and styled but never raised by the scripted run: `ambiguity`, `missing-i
 
 Related policy decisions in the same run: one DENY (PR-033, reading ServiceNow's security log as a usage signal, an expected refusal the run carries on from) and one ESCALATE (PR-053, deployment). They are not gates, but a faithful simulated log shows them.
 
-### 4.2 How SeedFoundry auto-resolves them (proposal, for M5)
+### 4.2 How SeedFactory auto-resolves them (proposal, for M5)
 
-All three are resolved inside phase 8, Seeding & Life, in Seed's order (D-26). SeedFoundry's Seed carries one methodology (License Optimization), so `solution-approval` is raised once, not three times. The gate ids and kinds are kept exactly.
+All three are resolved inside phase 8, Seeding & Life, in Seed's order (D-26). SeedFactory's Seed carries one methodology (License Optimization), so `solution-approval` is raised once, not three times. The gate ids and kinds are kept exactly.
 
 | Gate | Resolved from | Log wording sketch |
 |---|---|---|
@@ -250,7 +250,7 @@ The cited section is computed: the resolver looks for the named section heading 
 
 **Where:** `seed:decisions.md` §4 "What OQ-1 and OQ-2 mean" (the ruling and its "As built" list); `seed:project-notes.md` §84.5 "M20 · Remaining dashboards" (live figures) and "M21" (treemap crumb); `seed:architecture.md` §6; `seed:design-system.md` §3 chart roles and §6 layout; `seed:operator-guide.md` §6 (unit price completeness).
 
-This section is the spec for the polished iteration 2 dashboard (FR-D-1, FR-D-3) and the baseline iteration 1's defects are planted against (FR-D-2). The methodology and layout are binding; the data is SeedFoundry's own (D-30, 5.7).
+This section is the spec for the polished iteration 2 dashboard (FR-D-1, FR-D-3) and the baseline iteration 1's defects are planted against (FR-D-2). The methodology and layout are binding; the data is SeedFactory's own (D-30, 5.7).
 
 ### 5.1 Identity
 
@@ -258,11 +258,11 @@ This section is the spec for the polished iteration 2 dashboard (FR-D-1, FR-D-3)
 |---|---|
 | Methodology | License Optimization |
 | Seed v0.1 solution id | `license-optimization` |
-| Dashboard title on screen | **License Optimization** (D-27). Seed v0.1's as-built title was "Licence Utilisation"; SeedFoundry does not use it |
+| Dashboard title on screen | **License Optimization** (D-27). Seed v0.1's as-built title was "Licence Utilisation"; SeedFactory does not use it |
 | Systems it draws on | License Management System (entitlements, assignments, usage) and SAP (contract items, unit price) |
 | Period | Twelve months of monthly usage (Seed v0.1: September 2025 to August 2026) |
-| Records | Seed v0.1: 13,620 entitled seats, and 163,440 seat-months of activity (13,620 x 12). SeedFoundry: its own count (D-30) |
-| Products and vendors | Seed v0.1: 20 products from 10 vendors. SeedFoundry: its own (D-30) |
+| Records | Seed v0.1: 13,620 entitled seats, and 163,440 seat-months of activity (13,620 x 12). SeedFactory: its own count (D-30) |
+| Products and vendors | Seed v0.1: 20 products from 10 vendors. SeedFactory: its own (D-30) |
 | Potential | PARTIAL: `sap.contract_item.unit_price` is 64% complete. Raising it to 95% would grade HIGH (`seed:operator-guide.md` §6) |
 | Cost rule | Cost is stated for priced products only; where there is no price it is withheld, never estimated (Seed PR-074). Unpriced products show as withheld, not zero |
 
@@ -291,11 +291,11 @@ Seed's common four bands (`seed:design-system.md` §6), in this order:
 3. A focused table on a subset of columns.
 4. The full record table, paginated and sortable.
 
-Above the bands in Seed: a drill bar with Back, breadcrumb, collection state and an Evidence button. SeedFoundry keeps the drill bar with Back and the breadcrumb (D-29, FR-D-6). It drops the collection state, because the dashboard shows the caught-up dataset, and the Evidence button, unless OQ-15 says otherwise.
+Above the bands in Seed: a drill bar with Back, breadcrumb, collection state and an Evidence button. SeedFactory keeps the drill bar with Back and the breadcrumb (D-29, FR-D-6). It drops the collection state, because the dashboard shows the caught-up dataset, and the Evidence button, unless OQ-15 says otherwise.
 
 ### 5.4 Panels
 
-Panel ids are SeedFoundry's (Seed's descriptor ids for this dashboard are not recorded). Titles marked "as built" are Seed's; the others are SeedFoundry wording for a panel Seed describes but does not title.
+Panel ids are SeedFactory's (Seed's descriptor ids for this dashboard are not recorded). Titles marked "as built" are Seed's; the others are SeedFactory wording for a panel Seed describes but does not title.
 
 | Panel id | Band | Title | Mark | Data | Colour |
 |---|---|---|---|---|---|
@@ -317,7 +317,7 @@ Seed's ruling and its as-built notes give four charts and both tables, "within F
 
 ### 5.5 Seed v0.1's headline figures (reference only, D-30)
 
-SeedFoundry's dashboard shows its own data's figures (5.7). These are Seed v0.1's, recorded live in `seed:project-notes.md` §84.5 "M20" with the full dataset (Life caught up), kept as a reference for scale and proportion:
+SeedFactory's dashboard shows its own data's figures (5.7). These are Seed v0.1's, recorded live in `seed:project-notes.md` §84.5 "M20" with the full dataset (Life caught up), kept as a reference for scale and proportion:
 
 | Figure | Value | Source |
 |---|---|---|
@@ -339,11 +339,11 @@ Derived from the above (arithmetic, to be confirmed when the generator is writte
 | Implied Microsoft 365 E3 price | about $36 a seat-month | $45k over 104 seats over 12 months |
 | Class shares of entitled | Active 69.7%, Unused or underused 23.3%, Leaver 2.5%, Unassigned 4.5% | from the counts above |
 
-Two readings were ambiguous in Seed's record and no longer need settling, because the data is SeedFoundry's own: whether "975 seats withheld" counts recoverable seats on unpriced products (our reading) or every seat on an unpriced product; and the Underused versus Unused split inside 3,171.
+Two readings were ambiguous in Seed's record and no longer need settling, because the data is SeedFactory's own: whether "975 seats withheld" counts recoverable seats on unpriced products (our reading) or every seat on an unpriced product; and the Underused versus Unused split inside 3,171.
 
-*As built (M7), SeedFoundry's own figures (primary estate, D-55), for comparison only:*
+*As built (M7), SeedFactory's own figures (primary estate, D-55), for comparison only:*
 
-| Figure | SeedFoundry | Seed v0.1 |
+| Figure | SeedFactory | Seed v0.1 |
 |---|---|---|
 | Entitled | 13,050 | 13,620 |
 | Assigned | 12,401 | 13,002 |
@@ -356,15 +356,15 @@ Two readings were ambiguous in Seed's record and no longer need settling, becaus
 
 "975 seats withheld" is read as recoverable seats on unpriced products, as above.
 
-### 5.6 Hierarchy and drill (as built, and in scope for SeedFoundry: D-29, FR-D-6)
+### 5.6 Hierarchy and drill (as built, and in scope for SeedFactory: D-29, FR-D-6)
 
 All products → vendor → product → utilisation → seat. A treemap leaf click drills vendor, product and class in one step, and its breadcrumb crumb names all three levels ("Microsoft › Microsoft 365 E3 › Unused", per the M21 fix).
 
 *As built (M7, D-56, D-59):* the drill path is in the URL as steps joined by `/`, a step's level ids joined by `.` (`?dashboard=license-optimization&drill=microsoft.microsoft-365-e3.unused` for one leaf click, `drill=microsoft/microsoft-365-e3/unused` for three clicks), so reload keeps each crumb as it was drilled and the browser's Back pops one step. Clicking a treemap vendor, product or class cell, a bar of either per-product chart, or a product in the candidates table drills; the deepest level is a product's class, where the Seats table lists those seats. The query engine runs on the server (D-56). Each chart also has a keyboard path: it takes focus, the arrow keys choose among the next level's targets, and Enter drills one level.
 
-### 5.7 SeedFoundry's data (D-30)
+### 5.7 SeedFactory's data (D-30)
 
-The underlying data does not need to match Seed v0.1 (stakeholder, 2026-10-03). The **methodology** and the **dashboard layout** must. SeedFoundry writes its own seeded generator in M7, and every figure on the dashboard is that data's true count. The figures in 5.5 are reference, not targets.
+The underlying data does not need to match Seed v0.1 (stakeholder, 2026-10-03). The **methodology** and the **dashboard layout** must. SeedFactory writes its own seeded generator in M7, and every figure on the dashboard is that data's true count. The figures in 5.5 are reference, not targets.
 
 **Must match Seed v0.1 (the methodology):**
 
@@ -377,9 +377,9 @@ The underlying data does not need to match Seed v0.1 (stakeholder, 2026-10-03). 
 
 **Must match Seed v0.1 (the layout):** the four bands, the eleven panels and their marks in 5.4, the colour binding in 5.2, the hierarchy and drill behaviour in 5.6.
 
-**Free for SeedFoundry to choose:** vendor and product names, number of vendors and products, seat count, departments, unit prices, class splits, the monthly series. Seed's scale (about 13,600 seats, 20 products, 10 vendors) is a sensible density for the panels, not a requirement. Names follow Seed's style: realistic software products.
+**Free for SeedFactory to choose:** vendor and product names, number of vendors and products, seat count, departments, unit prices, class splits, the monthly series. Seed's scale (about 13,600 seats, 20 products, 10 vendors) is a sensible density for the panels, not a requirement. Names follow Seed's style: realistic software products.
 
-**Not stated by Seed, so SeedFoundry defines it** (in the sample `music.md` in M4 and the generator in M7): the Underused threshold (days of use in 90), and how a leaver is identified. *Defined in M4:* in the sample `music.md`, classes are tested in the order Unassigned, Leaver, Unused, Underused, Active; Unused is no days active in the last 90, Underused 1 to 11, Active 12 or more; a Leaver is a seat assigned to someone who has left, whatever its usage. The sample `environment.md` reads "the last 90 days" as the three most recent monthly usage records and gives the seat an `assignee_status` (`employed` or `left`) from the LMS. M7's generator follows these.
+**Not stated by Seed, so SeedFactory defines it** (in the sample `music.md` in M4 and the generator in M7): the Underused threshold (days of use in 90), and how a leaver is identified. *Defined in M4:* in the sample `music.md`, classes are tested in the order Unassigned, Leaver, Unused, Underused, Active; Unused is no days active in the last 90, Underused 1 to 11, Active 12 or more; a Leaver is a seat assigned to someone who has left, whatever its usage. The sample `environment.md` reads "the last 90 days" as the three most recent monthly usage records and gives the seat an `assignee_status` (`employed` or `left`) from the LMS. M7's generator follows these.
 
 **Constraints the data must meet so the tests work:**
 
@@ -392,7 +392,7 @@ The underlying data does not need to match Seed v0.1 (stakeholder, 2026-10-03). 
 
 ### 5.8 Defect mapping (iteration 1)
 
-`build-simulation.md` §5's panel names are placeholders. Each defect maps to the closest real panel above. Every shown value is derived from SeedFoundry's data by a fixed rule, so the validators find it by recomputing from source rows, never from a list (D-14). Rows marked **mapping choice** have no exact Seed panel; the mapping was confirmed by the stakeholder (OQ-13, D-28). The D-14 finding count is asserted on the unfiltered dashboard; the overlay rules also apply at every drill level (R-9).
+`build-simulation.md` §5's panel names are placeholders. Each defect maps to the closest real panel above. Every shown value is derived from SeedFactory's data by a fixed rule, so the validators find it by recomputing from source rows, never from a list (D-14). Rows marked **mapping choice** have no exact Seed panel; the mapping was confirmed by the stakeholder (OQ-13, D-28). The D-14 finding count is asserted on the unfiltered dashboard; the overlay rules also apply at every drill level (R-9).
 
 | Id | Placeholder | Panel | Patch (descriptor or `defects.css`) | Derived from data by | Detected by |
 |---|---|---|---|---|---|
@@ -411,7 +411,7 @@ The underlying data does not need to match Seed v0.1 (stakeholder, 2026-10-03). 
 | V-8 | Muted text below AA | `candidates` caption and notes | muted text set to a light grey below 4.5:1 on the card | computed contrast per text and background pair | T-20 |
 | L-1 | Panel waits 4.5 s | `seats-treemap` (the build log then names "Seats by vendor and product", not "Spend by vendor") | declared latency 4.5 s, spinner shown | declared value against the 1.0 s budget | T-15 |
 
-Total 14, as `build-simulation.md` §5 requires. The figures in the N-1 log line are whatever SeedFoundry's data gives; at Seed's scale it would read "KPI shows 13,620, product chart sums to 16,344".
+Total 14, as `build-simulation.md` §5 requires. The figures in the N-1 log line are whatever SeedFactory's data gives; at Seed's scale it would read "KPI shows 13,620, product chart sums to 16,344".
 
 *As built (M8, D-60):* the overlay is `backend/seedfoundry/dashboard/overlay.py`, a named list of fourteen patches in the order above, each tagged with its id and served at `GET /api/dashboards/license-optimization/overlay`. Iteration 2 is M7's dashboard unchanged. Per defect, on the primary estate at All products:
 
@@ -458,7 +458,7 @@ Rules: all on Shift; none fires while focus is in a text field (M22 fixed a defe
 
 Seed read the typed character, so Shift+1 assumed a US layout (it types `!`).
 
-### 6.2 SeedFoundry's map (closes OQ-5)
+### 6.2 SeedFactory's map (closes OQ-5)
 
 | Keys | Does | Note |
 |---|---|---|
@@ -508,7 +508,7 @@ Further practices worth keeping:
 
 **Where:** `seed:requirements.md` NFR-L1 to NFR-L4; `seed:architecture.md` §1; `seed:operator-guide.md` §1; `seed:decisions.md` D-10, D-21.
 
-| Item | Seed v0.1 | SeedFoundry (D-2) |
+| Item | Seed v0.1 | SeedFactory (D-2) |
 |---|---|---|
 | Python | 3.12 or newer | 3.12.10 on the target machine |
 | Node | 20 or newer | 24 on the target machine; 22.18 or newer needed (vitest 5, and `node` running the `.ts` scripts, D-79) |
@@ -522,7 +522,7 @@ Further practices worth keeping:
 | Ports | 8000 and 5173 | 8100 and 5273 (OQ-8, closed as assumed) |
 | Data | pandas | not needed: plain Python over 13,050 rows (M7, D-55) |
 
-Seed's Vite bound to `localhost` only, so `127.0.0.1:5173` did not answer and the guide had to warn about it. SeedFoundry binds Vite to `127.0.0.1` and prints that address (D-23).
+Seed's Vite bound to `localhost` only, so `127.0.0.1:5173` did not answer and the guide had to warn about it. SeedFactory binds Vite to `127.0.0.1` and prints that address (D-23).
 
 ---
 
@@ -531,9 +531,9 @@ Seed's Vite bound to `localhost` only, so `127.0.0.1:5173` did not answer and th
 Confirmed against the Seed docs (requirements §9, right column):
 
 - **ACME specifics** beyond the License Optimization data: the other two methodologies and their dashboards, the environment graph and its coordinates, the five-system narrative as screens (the simulated Seed API may still name the systems in its logs).
-- **Seed v0.1 rule ids** as SeedFoundry ids (PR-xxx stays inside simulated Seed log lines).
+- **Seed v0.1 rule ids** as SeedFactory ids (PR-xxx stays inside simulated Seed log lines).
 - **The growth tree** and its tokens.
-- **Seed and Life naming for SeedFoundry's own screens.** Our screens are Knowledge, Build, Review, Seed. "Seed" is both our final screen's name and the product being formed; Seed v0.1 is always written with its version.
+- **Seed and Life naming for SeedFactory's own screens.** Our screens are Knowledge, Build, Review, Seed. "Seed" is both our final screen's name and the product being formed; Seed v0.1 is always written with its version.
 - Also not taken: Agent One VW and ValueWise naming, Potential's colour scale, the routing-problem flag, the evidence revision tool, the Seeding and Life two-pane layout.
 
 ---
@@ -553,4 +553,4 @@ Confirmed against the Seed docs (requirements §9, right column):
 | 9 | Dashboard scope (FR-D) is silent on interaction | Seed's dashboard is fully interactive: cross-filter, drill to seat, evidence panel, collection step | Resolved: drill-down in (D-29, A-2); ~~evidence panel open (OQ-15)~~ no evidence panel (OQ-15, closed) |
 | 10 | `requirements.md` §9 "contrast test" | Seed's test is Python over `tokens.css` | Resolved: rules ported to vitest (D-38) |
 | 11 | `implementation-plan.md` M2 "port tokens.css" | `tokens.css` is not in the Seed docs; only its values in tables, some missing | Resolved: rebuilt from §1.3 in M2, gaps filled (D-37) |
-| 12 | `implementation-plan.md` M7 "License Optimization data" | No data or generator in the docs; only headline figures | Resolved: data is SeedFoundry's own; methodology and layout match (D-30, §5.7). M7 authors the generator and an alternate dataset. *Done in M7 (D-55)* |
+| 12 | `implementation-plan.md` M7 "License Optimization data" | No data or generator in the docs; only headline figures | Resolved: data is SeedFactory's own; methodology and layout match (D-30, §5.7). M7 authors the generator and an alternate dataset. *Done in M7 (D-55)* |

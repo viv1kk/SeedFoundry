@@ -113,7 +113,7 @@ async function startBuild(): Promise<void> {
     <div class="knowledge__layout">
       <div class="knowledge__editor">
         <FileEditor v-if="selectedId" :file-id="selectedId" :read-only="readOnly" />
-        <EmptyState v-else-if="loaded && !lab.files.length" :read-only="readOnly" @new="openNew()" @import="openImport" />
+        <EmptyState v-else-if="loaded && !intake.orderedFiles.length" :read-only="readOnly" @new="openNew()" @import="openImport" />
         <p v-else-if="!loaded" class="knowledge__loading">Loading knowledge files</p>
       </div>
       <FilePanel

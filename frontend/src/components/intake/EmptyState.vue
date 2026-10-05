@@ -1,7 +1,6 @@
 <script setup lang="ts">
-// No files yet (ui-spec.md section 2): one line on each Ensemble file, from the server's
-// category descriptions, and the two ways to start.
-import { computed } from 'vue'
+// No files yet (ui-spec.md section 2): one line on each initiation file, from the server's
+// category descriptions, and the two ways to start. There is no other category (D-84).
 import { useIntakeStore } from '../../stores/intake'
 import BaseButton from '../base/BaseButton.vue'
 
@@ -9,20 +8,18 @@ defineProps<{ readOnly: boolean }>()
 const emit = defineEmits<{ new: []; import: [] }>()
 
 const intake = useIntakeStore()
-const other = computed(() => intake.categories.filter((c) => !c.core))
 </script>
 
 <template>
   <section class="empty" aria-labelledby="empty-heading" data-test="empty-state">
     <h1 id="empty-heading" class="empty__title">Add your knowledge files</h1>
-    <p class="empty__lead">A Seed is built from four Ensemble files, one of each:</p>
+    <p class="empty__lead">A Seed is built from four initiation files, one of each:</p>
     <dl class="empty__list">
       <div v-for="c in intake.coreCategories" :key="c.id" class="empty__item">
         <dt>{{ c.label }}</dt>
         <dd>{{ c.description }}</dd>
       </div>
     </dl>
-    <p v-for="c in other" :key="c.id" class="empty__other">{{ c.label }}: {{ c.description }}</p>
     <div class="empty__actions">
       <BaseButton variant="primary" :disabled="readOnly" data-test="empty-new" @click="emit('new')">New file</BaseButton>
       <BaseButton :disabled="readOnly" data-test="empty-import" @click="emit('import')">Import</BaseButton>
@@ -45,13 +42,8 @@ const other = computed(() => intake.categories.filter((c) => !c.core))
   line-height: 1.2;
 }
 
-.empty__lead,
-.empty__other {
+.empty__lead {
   color: var(--text-secondary);
-}
-
-.empty__other {
-  font-size: var(--text-sm);
 }
 
 .empty__list {

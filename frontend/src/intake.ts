@@ -20,6 +20,10 @@ export interface CategoryInfo {
   label: string
   core: boolean
   description: string
+  /** The name a file gets when it is added to this category (D-85). */
+  file_name: string
+  /** The Seed file shown beside it on the Knowledge page, a high-level picture only (D-86). */
+  seed_file: string | null
 }
 
 export interface Categories {
@@ -42,8 +46,9 @@ export const intakeApi = {
   ) => api<IntakeFile>(`${FILES}/${encodeURIComponent(id)}`, { method: 'PATCH', json: changes, keepalive }),
   remove: (id: string) => api<void>(`${FILES}/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   /** One file per request, its raw bytes as the body, so the server checks UTF-8 (D-34). */
-  import: (filename: string, raw: BodyInit, category: string, replace: boolean) => {
-    const query = new URLSearchParams({ filename, category, replace: String(replace) })
+  /** `name`, when given, is the name the file takes in Knowledge; the server checks `filename` (D-85). */
+  import: (filename: string, raw: BodyInit, category: string, replace: boolean, name?: string) => {
+    const query = new URLSearchParams({ filename, category, replace: String(replace), ...(name ? { name } : {}) })
     return api<IntakeFile>(`/api/intake/import?${query}`, { method: 'POST', body: raw })
   },
 }

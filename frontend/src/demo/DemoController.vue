@@ -93,7 +93,7 @@ const confirmText = computed(() => {
     case 'sample':
       return {
         title: 'Load sample Seed?',
-        body: `This replaces all ${files}, Misc Context included, with the sample Seed. Unsaved changes are lost.`,
+        body: `This replaces all ${files} with the sample Seed. Unsaved changes are lost.`,
         ok: 'Replace and load',
       }
     case 'clear':

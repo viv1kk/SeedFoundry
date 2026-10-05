@@ -1,10 +1,10 @@
-# CLAUDE.md: Standing rules for SeedFoundry
+# CLAUDE.md: Standing rules for SeedFactory
 
 These rules apply to every session. If a doc and this file disagree, this file wins on process; `docs/requirements.md` wins on behaviour.
 
 ## What this project is
 
-SeedFoundry is a lab that generates, tests and refines Seeds. A Seed is an Ensemble bundle (four knowledge files plus optional context) that SeedFoundry turns into a working Seed v0.1 deployment, runs in a simulated sandbox, validates, and reports on. The whole product is a deterministic, offline simulation. See `docs/project-notes.md`.
+SeedFactory is a lab that generates, tests and refines Seeds. A Seed is an Ensemble bundle (four knowledge files plus optional context) that SeedFactory turns into a working Seed v0.1 deployment, runs in a simulated sandbox, validates, and reports on. The whole product is a deterministic, offline simulation. See `docs/project-notes.md`.
 
 ## Where things are
 

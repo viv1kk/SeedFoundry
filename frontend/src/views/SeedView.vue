@@ -3,11 +3,12 @@
 // says there is no approved Seed yet and points the way. Once a build is approved: the hero (Seed name,
 // Approved, the iteration and the date), what this Seed does (its purpose), the tests conducted by
 // phase, the iteration history, the known issues (only when the approved build has open findings:
-// iteration 1, FR-F-4) and the three files with Preview, Download and Download all (.zip). Everything
-// comes from GET /api/seed, which the server assembles from the approved build; nothing on the page
+// iteration 1, FR-F-4) and the three files with Preview and Download, and the zip (a "download" link
+// beside Secure and Lock in Secure Repository, D-93). Everything comes from GET /api/seed, which the server assembles from the approved build; nothing on the page
 // says which Knowledge file fed which Seed file (D-9).
 import { computed, watch } from 'vue'
 import BaseChip, { type ChipTone } from '../components/base/BaseChip.vue'
+import HumanTag from '../components/base/HumanTag.vue'
 import MarkdownPreview from '../components/intake/MarkdownPreview.vue'
 import SeedFiles from '../components/seed/SeedFiles.vue'
 import SeedHistory from '../components/seed/SeedHistory.vue'
@@ -105,7 +106,7 @@ const issuesLine = computed(() => {
           <BaseChip tone="positive" class="seed__approved" data-test="seed-approved">Approved</BaseChip>
         </div>
         <p class="seed__meta" data-test="seed-approval">
-          Approved at iteration {{ seed.approval.iteration }}<template v-if="date">, on {{ date }}</template>.
+          <span>Approved at iteration {{ seed.approval.iteration }}<HumanTag :iteration="seed.approval.iteration" /><template v-if="date">, on {{ date }}</template>.</span>
           <span class="seed__fingerprint">Intake fingerprint {{ seed.fingerprint }}</span>
         </p>
       </header>

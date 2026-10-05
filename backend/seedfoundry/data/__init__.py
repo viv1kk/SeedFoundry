@@ -1,4 +1,4 @@
-"""License Optimization datasets, primary and alternate (D-30, D-55): SeedFoundry's own estates
+"""License Optimization datasets, primary and alternate (D-30, D-55): SeedFactory's own estates
 from a seeded generator, following Seed v0.1's methodology (seed-reuse-notes.md §5.7)."""
 
 from seedfoundry.data.generate import DATASETS, SEED_RULE, dataset, generate

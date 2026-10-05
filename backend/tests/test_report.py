@@ -88,9 +88,9 @@ def test_the_tests_table_lists_every_test_with_its_phase_and_result(builds, repo
 def test_gates_say_how_each_was_resolved(reports):
     gates = reports[0]["gates"]
     assert [(g["id"], g["kind"], g["basis"]["file"], g["basis"]["section"]) for g in gates] == [
-        ("servicenow-incident-api", "credentials", "environment.md", "Protection Layer"),
-        ("solution-approval", "approval", "music.md", "Decision Logic"),
-        ("close-seeding", "confirmation", "environment.md", "Protection Layer"),
+        ("servicenow-incident-api", "credentials", "Environment_01.md", "Protection Layer"),
+        ("solution-approval", "approval", "Value_0001.md", "Decision Logic"),
+        ("close-seeding", "confirmation", "Environment_01.md", "Protection Layer"),
     ]
     assert gates[1]["resolution"] == "approve License Optimization at potential PARTIAL"
 

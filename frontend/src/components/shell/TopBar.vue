@@ -9,7 +9,7 @@ import ThemeToggle from './ThemeToggle.vue'
 <template>
   <header class="top-bar">
     <div class="top-bar__start">
-      <span class="wordmark" data-test="wordmark">SeedFoundry</span>
+      <span class="wordmark" data-test="wordmark">SeedFactory</span>
     </div>
     <JourneyIndicator />
     <div class="top-bar__end">

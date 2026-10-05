@@ -130,7 +130,9 @@ describe('the modal (FR-RB-1, ui-spec.md section 6)', () => {
     expect(text($('h2', modal))).toBe('Rebuild Seed: observer feedback')
     expect(modal.className).toContain('modal--lg')
     expect(text('[data-modal="rebuild"] [data-test="feedback-name"]')).toBe(FEEDBACK_NAME)
-    expect(text('[data-modal="rebuild"] .rebuild__category')).toBe('Misc Context')
+    // No Misc Context on screen (D-84): the feedback is kept with the build.
+    expect($('[data-modal="rebuild"] .rebuild__category')).toBeNull()
+    expect(text('[data-modal="rebuild"] .rebuild__hint')).toBe('Kept with the build when the rebuild starts, and routed into the initiation files.')
     // The same editor as Knowledge: Edit / Preview and the mic with its tooltip.
     expect($$('[data-modal="rebuild"] .segmented__option').map((b) => text(b))).toEqual(['Edit', 'Preview'])
     expect($('[data-modal="rebuild"] [data-test="mic"]')?.getAttribute('aria-label')).toBe('Voice input')
@@ -156,7 +158,7 @@ describe('the modal (FR-RB-1, ui-spec.md section 6)', () => {
     server.builds = [completed(1), completed(2)]
     server.iteration = 2
     await open('/review/2')
-    expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Dashboard', 'Reject', 'Approve'])
+    expect($$('[data-test="report-actions"] button').map((b) => text(b))).toEqual(['View Agentic Solution', 'Reject', 'Approve', 'Initiate QUAD SI Review Protocol'])
     expect(rebuildButton()?.getAttribute('aria-disabled')).toBeNull()
     await click(rebuildButton())
     expect(text('[data-modal="rebuild"] [data-test="feedback-name"]')).toBe('observer-feedback-iteration-2.md')
@@ -342,7 +344,7 @@ describe('Cancel, Escape and the keyboard (D-38, D-47, NFR-6)', () => {
 })
 
 describe('Knowledge after a rebuild starts (ui-spec.md section 2, FR-RB-4, FR-RB-7, FR-B-8)', () => {
-  it('lists the feedback file in Misc Context, stays read-only, and shows a core file with the section routing added', async () => {
+  it('keeps the feedback file off the list (D-84), stays read-only, and shows a core file with the section routing added', async () => {
     await openModal()
     await type('Use bars, not a pie.')
     await click(startButton())
@@ -351,7 +353,8 @@ describe('Knowledge after a rebuild starts (ui-spec.md section 2, FR-RB-4, FR-RB
     const environment = server.files.find((f) => f.name === 'environment.md')!
     await router.push(`/knowledge?file=${environment.id}`)
     await settle()
-    expect($$('[data-category="misc_context"] .file__name').map((el) => text(el))).toEqual([FEEDBACK_NAME])
+    expect(server.files.some((f) => f.name === FEEDBACK_NAME && f.category === 'misc_context')).toBe(true) // saved, as before
+    expect($$('[data-test="file-panel"] .file__name').map((el) => text(el))).not.toContain(FEEDBACK_NAME)
     expect(text('[data-test="read-only-banner"]')).toContain('Knowledge files are read-only until it finishes.')
     // The Update environment.md sub-step plays: the server writes the file and says so (D-68).
     environment.content += '\n## Styling\n\n### Observer feedback (iteration 1)\n\nUse bars, not a pie.\n'

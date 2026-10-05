@@ -87,7 +87,7 @@ class BuildEngine:
             raise BuildError(
                 409,
                 "core_files_missing",
-                f"Start Build needs every core file. Missing: {missing_labels(missing)}.",
+                f"Start Build needs every initiation file. Missing: {missing_labels(missing)}.",
                 missing=[c.value for c in missing],
             )
         files = list(state.intake.files)
@@ -309,9 +309,12 @@ def _write_routed(state: State, emit: Emit, routed: IntakeFile) -> None:
     file = state.file(routed.id)
     if file is None or file.content == routed.content:
         return
+    was = file.name
     file.content = routed.content
+    file.name = routed.name  # the next version's name, when the name is versioned (D-85)
+    renamed = f", now {file.name}" if file.name != was else ""
     emit(
         type="intake.file_updated",
-        message=f"{file.name}: observer feedback added ({file.size:,} bytes)",
-        data={"file": file.summary(), "changed": ["content"], "source": "feedback"},
+        message=f"{was}: observer feedback added ({file.size:,} bytes){renamed}",
+        data={"file": file.summary(), "changed": ["content", "name"] if renamed else ["content"], "source": "feedback"},
     )
