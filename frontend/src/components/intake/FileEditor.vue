@@ -297,7 +297,7 @@ function onInput(value: string): void {
   border-radius: var(--radius-sm);
   background: var(--surface-raised);
   color: var(--text-primary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
 }
 
@@ -321,7 +321,10 @@ function onInput(value: string): void {
 
 .editor__error {
   padding: 0 var(--space-6);
-  color: var(--status-negative);
+  /* A status in words: tested text colour, marked with the status fill (D-98) */
+  color: var(--status-negative-text);
+  border-left: 3px solid var(--status-negative);
+  padding-left: var(--space-2);
   font-size: var(--text-sm);
 }
 

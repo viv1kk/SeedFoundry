@@ -63,7 +63,7 @@ const emit = defineEmits<{ back: []; go: [path: string] }>()
   padding: 0;
   border: 0;
   background: none;
-  color: var(--accent);
+  color: var(--link);
   font: inherit;
   text-decoration: underline;
   text-underline-offset: 2px;

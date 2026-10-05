@@ -4,6 +4,7 @@ determinism, the API, and the frontend's fixtures."""
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 import re
@@ -86,9 +87,12 @@ def test_the_descriptor_binds_colours_to_roles_never_to_hex():
     }
     roles = {p["id"]: [s["role"] for s in p.get("series", [])] for p in DESC["panels"]}
     assert roles["entitlement"] == ["baseline", "series-1", "positive"]
-    assert roles["trend"] == ["series-1", "positive"]
-    assert roles["recoverable"] == ["anomaly"]
-    assert DESC["panels"][0]["rule_role"] == "anomaly"
+    # ValueWise house style (D-99): In use is a count, not a status; cost is the Value lens, in
+    # gold; the primary KPI is Recoverable a year, with no coloured rule.
+    assert roles["trend"] == ["series-1", "series-2"]
+    assert roles["recoverable"] == ["value"]
+    assert [p["id"] for p in DESC["panels"] if p.get("emphasis") == "primary"] == ["k-recoverable"]
+    assert not any("rule_role" in p for p in DESC["panels"])
 
 
 # Iteration 2 is M7's dashboard; iteration 1 is it plus the overlay (D-13, D-60, D-61)
@@ -109,11 +113,27 @@ def digest(value) -> str:
     return hashlib.sha256(json.dumps(value, sort_keys=True).encode("utf-8")).hexdigest()
 
 
-def test_iteration_2_is_the_m7_dashboard_unchanged():
-    assert digest(descriptor(2)) == M7_DIGESTS["descriptor"]
+def as_m7(desc: dict) -> dict:
+    """The descriptor with CR-3's house-style changes undone (D-99, D-101): figures and ids back in
+    mono, Entitled the primary KPI with its anomaly rule, In use positive, recoverable cost anomaly.
+    These are the only differences from M7's descriptor; no figure, format, layout or panel changed."""
+    d = copy.deepcopy(desc)
+    d["fonts"] = {**d["fonts"], "figure": "mono", "id": "mono"}
+    panels = {p["id"]: p for p in d["panels"]}
+    panels["k-entitled"].update(emphasis="primary", rule_role="anomaly")
+    del panels["k-recoverable"]["emphasis"]
+    next(s for s in panels["trend"]["series"] if s["id"] == "in_use")["role"] = "positive"
+    panels["recoverable"]["series"][0]["role"] = "anomaly"
+    return d
+
+
+def test_iteration_2_is_the_m7_dashboard_in_the_house_style():
+    # D-102: M7's digests are kept; the dashboard is compared with CR-3's style changes undone.
+    assert digest(as_m7(descriptor(2))) == M7_DIGESTS["descriptor"]
     assert descriptor(2)["variant"] == "polished" and "styles" not in descriptor(2)
     for (path, page, sort, direction), expected in ((k, v) for k, v in M7_DIGESTS.items() if k != "descriptor"):
-        assert digest(dashboard(2, drill=path or None, page=page, sort=sort, direction=direction)) == expected, path
+        served = dashboard(2, drill=path or None, page=page, sort=sort, direction=direction)
+        assert digest({**served, "descriptor": as_m7(served["descriptor"])}) == expected, path
 
 
 def test_iteration_1_is_the_polished_descriptor_plus_the_overlay():

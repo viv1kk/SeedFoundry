@@ -526,7 +526,7 @@ const ids = computed(() => `report-${props.build.id}`)
 
 .report__fact dd {
   margin: 0;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
 }
 
@@ -559,7 +559,7 @@ const ids = computed(() => `report-${props.build.id}`)
 }
 
 .report__count {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   color: var(--text-primary);
 }
 
@@ -601,7 +601,7 @@ const ids = computed(() => `report-${props.build.id}`)
 }
 
 .report__id {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -611,7 +611,7 @@ const ids = computed(() => `report-${props.build.id}`)
 }
 
 .report__value {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 
 .report__detail {
@@ -670,7 +670,7 @@ const ids = computed(() => `report-${props.build.id}`)
   padding: 0;
   border: 0;
   background: none;
-  color: var(--accent);
+  color: var(--link);
   font-size: inherit;
   text-align: left;
   text-decoration: underline;
@@ -757,7 +757,7 @@ const ids = computed(() => `report-${props.build.id}`)
   width: 10px;
   height: 10px;
   margin-right: var(--space-2);
-  border-radius: 2px;
+  border-radius: 0;
   vertical-align: baseline;
 }
 

@@ -212,7 +212,7 @@ OVERLAY: tuple[Patch, ...] = (
         ("trend",),
         "descriptor",
         "The In use line drawn in red, a normal series in the fault colour",
-        "series in_use bound to the negative role instead of positive",
+        "series in_use bound to the negative role instead of series-2",
         "holds at every level",
         descriptor=_v2,
     ),

@@ -284,7 +284,7 @@ watch(theme, () => paint())
 .chart-panel__swatch {
   width: 10px;
   height: 10px;
-  border-radius: 2px;
+  border-radius: 0;
 }
 
 .chart-panel__legend-label {
@@ -292,12 +292,12 @@ watch(theme, () => paint())
 }
 
 .chart-panel__legend-figure {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 600;
 }
 
 .chart-panel__legend-count {
   color: var(--text-muted);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 </style>

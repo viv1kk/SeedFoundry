@@ -213,7 +213,7 @@ thead th {
 }
 
 .is-figure {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 
 .is-empty {
@@ -260,7 +260,7 @@ tfoot td {
 .table-panel__swatch {
   width: 10px;
   height: 10px;
-  border-radius: 2px;
+  border-radius: 0;
   flex: none;
 }
 
@@ -268,7 +268,7 @@ tfoot td {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--accent);
+  color: var(--link);
   font: inherit;
   text-align: left;
   text-decoration: underline;
@@ -307,7 +307,7 @@ tfoot td {
 
 .table-panel__figure {
   color: var(--text-primary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 600;
 }
 

@@ -1,7 +1,8 @@
 // Contrast test (NFR-6, D-21), ported from Seed v0.1's backend/tests/test_design.py rules
 // (seed-reuse-notes.md section 1.5) and run over tokens.css in both themes, plus the console
-// pairs (D-37). It also checks that tokens.css still holds Seed v0.1's values exactly, read
-// from the tables in seed-reuse-notes.md section 1.3 (D-38).
+// pairs (D-37). Since CR-3 the values are the ValueWise house style's: it checks that tokens.css
+// holds them, read from the token table in docs/valuewise-style.md (D-96, D-102), and the rules
+// that follow from the guide (D-97, D-98, D-100).
 
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -9,7 +10,7 @@ import { describe, expect, it } from 'vitest'
 
 const ROOT = resolve(__dirname, '..', '..')
 const CSS = readFileSync(resolve(ROOT, 'frontend/src/styles/tokens.css'), 'utf8')
-const NOTES = readFileSync(resolve(ROOT, 'docs/seed-reuse-notes.md'), 'utf8')
+const STYLE = readFileSync(resolve(ROOT, 'docs/valuewise-style.md'), 'utf8')
 
 type Tokens = Record<string, string>
 type ThemeName = 'light' | 'dark'
@@ -76,11 +77,20 @@ const BOTH: ThemeName[] = ['light', 'dark']
 const SURFACES = ['--surface-base', '--surface-raised', '--surface-sunken', '--surface-overlay']
 const SELECTED_ROW = '--accent-subtle'
 const TEXT = ['--text-primary', '--text-secondary', '--text-muted']
-// SeedFactory also sets status and accent colours as text (chips, links, the iteration badge).
-const COLOURED_TEXT = ['--accent', '--status-positive', '--status-warning', '--status-negative', '--status-neutral']
-const FILLED_ROLES = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `--chart-series-${n}`).concat(
-  ['positive', 'warning', 'negative', 'anomaly'].map((role) => `--chart-${role}`),
-)
+// Colours SeedFactory sets as text: the control colour, link blue, and each status's text colour.
+const COLOURED_TEXT = ['--accent', '--link', '--status-positive-text', '--status-warning-text', '--status-negative-text', '--status-neutral']
+const STATUSES = ['positive', 'warning', 'negative']
+const SERIES = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `series-${n}`)
+// Every chart role but muted, which is drawn as a background (Unassigned).
+const MARK_ROLES = [...SERIES, 'positive', 'warning', 'negative', 'anomaly', 'value', 'baseline']
+const BANDS: Record<string, string> = {
+  '--band-under-20': '#036715',
+  '--band-20-50': '#17ae42',
+  '--band-50-70': '#37eb67',
+  '--band-70-100': '#e9973a',
+  '--band-100': '#b50e05',
+  '--band-150': '#7a0a02',
+}
 const CONSOLE_SURFACES = ['--console-surface', '--console-surface-raised']
 const CONSOLE_TEXT = [
   '--console-text',
@@ -97,23 +107,47 @@ function every(fgs: string[], bgs: string[], min: number, themes: ThemeName[] = 
   return themes.flatMap((theme) => fgs.flatMap((fg) => bgs.map((bg) => ({ theme, fg, bg, min }))))
 }
 
-describe("tokens.css holds Seed v0.1's values unchanged", () => {
-  // Rows like: | `--surface-base` | `#f7f8fa` | `#0e1116` | ... and | `series-1` | `#1e61f5` | `#5b8cff` | ...
-  const section = NOTES.slice(NOTES.indexOf('### 1.3 Colour tokens'), NOTES.indexOf('### 1.4'))
-  const rows = [...section.matchAll(/^\| `([\w-]+)` \| `(#[0-9a-f]{6})` \| `(#[0-9a-f]{6})` \|/gim)].map((m) => ({
-    token: m[1].startsWith('--') ? m[1] : `--chart-${m[1]}`,
+/** A role's label token: its own --chart-label-on-<role>, else --chart-label-on-fill (dashboard/tokens.ts labelOn). */
+function labelFor(theme: ThemeName, role: string): string {
+  return THEMES[theme][`--chart-label-on-${role}`] !== undefined ? `--chart-label-on-${role}` : '--chart-label-on-fill'
+}
+
+describe('tokens.css holds the ValueWise values (docs/valuewise-style.md)', () => {
+  // Rows like: | `--surface-base` | `#ffffff` | `#020921` | Background |
+  const section = STYLE.slice(STYLE.indexOf('### Tokens'))
+  const rows = [...section.matchAll(/^\| `(--[\w-]+)` \| `(#[0-9a-f]{6})` \| `(#[0-9a-f]{6})` \|/gim)].map((m) => ({
+    token: m[1],
     light: m[2].toLowerCase(),
     dark: m[3].toLowerCase(),
   }))
 
-  it('reads every Seed token from the reuse notes', () => {
-    // 11 surface, line and text tokens, 6 accent and status, 14 chart roles
+  it('reads every token from the style doc', () => {
+    // 11 surface, line and text tokens; control, selection, link and gold; 3 status fills; 11 chart tokens; 2 console
     expect(rows).toHaveLength(31)
   })
 
   it.each(rows)('$token', ({ token, light, dark }) => {
-    expect(THEMES.light[token]?.toLowerCase()).toBe(light)
-    expect(THEMES.dark[token]?.toLowerCase()).toBe(dark)
+    expect(colour('light', token)).toBe(light)
+    expect(colour('dark', token)).toBe(dark)
+  })
+
+  it("holds the guide's data scale, the same in both themes", () => {
+    for (const [token, hex] of Object.entries(BANDS)) {
+      expect(colour('light', token)).toBe(hex)
+      expect(colour('dark', token)).toBe(hex)
+    }
+  })
+
+  it('is flat and square: no radius, no shadow (guide section 5)', () => {
+    for (const theme of BOTH) {
+      for (const token of ['--radius-sm', '--radius-md', '--radius-lg']) expect(THEMES[theme][token]).toBe('0')
+      for (const token of ['--shadow-sm', '--shadow-md']) expect(THEMES[theme][token]).toBe('none')
+    }
+  })
+
+  it('sets IBM Plex Sans, and IBM Plex Mono for code (D-101)', () => {
+    expect(THEMES.light['--font-sans']).toMatch(/^'IBM Plex Sans Variable'/)
+    expect(THEMES.light['--font-mono']).toMatch(/^'IBM Plex Mono'/)
   })
 })
 
@@ -122,39 +156,50 @@ describe('contrast, both themes (WCAG 2.1)', () => {
     expect(failures(every(TEXT, [...SURFACES, SELECTED_ROW], 4.5))).toEqual([])
   })
 
-  it('accent and status colours used as text, on every surface and the selected-row tint, at 4.5:1', () => {
+  it('control, link and status text colours, on every surface and the selected-row tint, at 4.5:1', () => {
     expect(failures(every(COLOURED_TEXT, [...SURFACES, SELECTED_ROW], 4.5))).toEqual([])
   })
 
-  it('the primary button label on the accent, at 4.5:1', () => {
-    expect(failures(every(['--text-inverse'], ['--accent'], 4.5))).toEqual([])
-  })
-
-  it("the finding highlight's accent outline against every surface around a panel, at 3:1 (D-65)", () => {
-    expect(failures(every(['--accent'], SURFACES, 3))).toEqual([])
-  })
-
-  it('every chart role except muted against the panel surface, at 3:1', () => {
-    expect(failures(every([...FILLED_ROLES, '--chart-baseline'], ['--surface-raised'], 3))).toEqual([])
-  })
-
-  it('every chart label on its fill, at 4.5:1', () => {
-    const pairs = [
-      ...every(['--chart-label-on-fill'], FILLED_ROLES, 4.5),
-      ...every(['--chart-label-on-baseline'], ['--chart-baseline'], 4.5),
-      ...every(['--chart-label-on-muted'], ['--chart-muted'], 4.5),
-    ]
+  it('each status label on its fill, at 4.5:1 (D-98)', () => {
+    const pairs = BOTH.flatMap((theme) => STATUSES.map((s) => ({ theme, fg: `--on-status-${s}`, bg: `--status-${s}`, min: 4.5 })))
     expect(failures(pairs)).toEqual([])
   })
 
-  it('chart labels: light on filled roles in light, dark in dark; the reverse on baseline and muted', () => {
-    const isLight = (theme: ThemeName, token: string) => luminance(colour(theme, token)) > 0.5
-    expect(isLight('light', '--chart-label-on-fill')).toBe(true)
-    expect(isLight('dark', '--chart-label-on-fill')).toBe(false)
-    expect(isLight('light', '--chart-label-on-baseline')).toBe(false)
-    expect(isLight('dark', '--chart-label-on-baseline')).toBe(true)
-    expect(isLight('light', '--chart-label-on-muted')).toBe(false)
-    expect(isLight('dark', '--chart-label-on-muted')).toBe(true)
+  it('the primary button label on the control colour, at 4.5:1', () => {
+    expect(failures(every(['--text-inverse'], ['--accent'], 4.5))).toEqual([])
+  })
+
+  it('the control colour as an outline (focus, the finding highlight) against every surface, at 3:1 (D-65)', () => {
+    expect(failures(every(['--accent'], SURFACES, 3))).toEqual([])
+  })
+
+  it('gold, used only for a large headline figure, on every surface, at 3:1 (D-97)', () => {
+    expect(failures(every(['--gold'], SURFACES, 3))).toEqual([])
+  })
+
+  it('the chart outline against the panel surface, at 3:1 (D-100)', () => {
+    expect(failures(every(['--chart-outline'], ['--surface-raised'], 3))).toEqual([])
+  })
+
+  it('every chart role except muted holds a 3:1 edge on the panel surface: its fill or its outline (D-100)', () => {
+    const weak = BOTH.flatMap((theme) => {
+      const panel = colour(theme, '--surface-raised')
+      const edge = contrast(colour(theme, '--chart-outline'), panel)
+      return MARK_ROLES.filter((r) => Math.max(contrast(colour(theme, `--chart-${r}`), panel), edge) < 3).map((r) => `${theme}: ${r}`)
+    })
+    expect(weak).toEqual([])
+  })
+
+  it('every chart label on its fill, at 4.5:1 (D-100)', () => {
+    const pairs = BOTH.flatMap((theme) => [...MARK_ROLES, 'muted'].map((r) => ({ theme, fg: labelFor(theme, r), bg: `--chart-${r}`, min: 4.5 })))
+    expect(failures(pairs)).toEqual([])
+  })
+
+  it("follows the guide's light-theme tile labels: navy on green and orange, white on red", () => {
+    expect(colour('light', labelFor('light', 'positive'))).toBe('#0b1f3a')
+    expect(colour('light', labelFor('light', 'warning'))).toBe('#0b1f3a')
+    expect(colour('light', labelFor('light', 'anomaly'))).toBe('#ffffff')
+    expect(colour('light', labelFor('light', 'negative'))).toBe('#ffffff')
   })
 })
 
@@ -163,13 +208,20 @@ describe('console (D-37)', () => {
     expect(failures(every(CONSOLE_TEXT, CONSOLE_SURFACES, 4.5))).toEqual([])
   })
 
+  it("a FAIL level's text on its red mark, at 4.5:1 (D-98)", () => {
+    expect(failures(every(['--console-fail'], ['--console-fail-mark'], 4.5))).toEqual([])
+  })
+
   it('is a dark surface in both themes: no console token changes with the theme', () => {
     expect(Object.keys(DARK_OVERRIDES).filter((name) => name.startsWith('--console-'))).toEqual([])
     expect(luminance(colour('light', '--console-surface'))).toBeLessThan(0.05)
   })
 
-  it('has an API line colour', () => {
-    expect(colour('light', '--console-api')).toBe(colour('dark', '--chart-series-3'))
+  it('draws LLM and API lines in white and grey, not a band or link colour (ValueWise section 1)', () => {
+    expect([colour('light', '--console-llm'), colour('light', '--console-api')]).toEqual([
+      colour('dark', '--text-primary'),
+      colour('dark', '--text-secondary'),
+    ])
   })
 })
 

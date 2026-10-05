@@ -238,7 +238,7 @@ h2 {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--accent);
+  color: var(--link);
   font: inherit;
   font-weight: 600;
   text-decoration: underline;
@@ -272,7 +272,7 @@ h2 {
 
 .seed__fingerprint {
   color: var(--text-secondary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
 }
 
@@ -330,7 +330,7 @@ h2 {
 }
 
 .seed__id {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -347,6 +347,6 @@ h2 {
 }
 
 .seed__value {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 </style>

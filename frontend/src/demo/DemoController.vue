@@ -356,10 +356,12 @@ const whyId = (action: DemoAction) => `${uid}-why-${action}`
   background: var(--surface-raised);
 }
 
+/* A pressed control is a neutral inversion, never a band colour (ValueWise section 1) */
 .demo__speed[aria-pressed='true'],
 .demo__speed[aria-pressed='true']:hover {
   border-color: var(--accent);
-  background: var(--accent-subtle);
+  background: var(--accent);
+  color: var(--text-inverse);
   font-weight: 600;
 }
 

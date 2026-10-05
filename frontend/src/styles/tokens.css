@@ -1,105 +1,155 @@
 /*
- * Design tokens (D-21, D-37). Colour, type, radius and motion values are Seed v0.1's,
- * copied from docs/seed-reuse-notes.md section 1.3 and 1.4. Values the Seed docs leave
- * out (shadows, easing, chart grid and brush, scrollbar, font stacks, space steps) and
- * the console tokens are SeedFactory's choices, recorded in D-37.
+ * Design tokens: the ValueWise SI house style, v3 (docs/valuewise-style.md, D-96 to D-101).
+ * Navy, white and two greys carry the interface. Red, amber and green belong to the data: a
+ * status from the data, a verdict, a utilisation class. Gold marks the one figure the room reads
+ * first. Link blue only on things that open or act. Flat: no radius, no shadow, no gradient.
  *
- * Light on :root, dark under [data-theme='dark'] on <html>. No component knows the theme.
- * tests/contrast.spec.ts reads this file: every colour pair it checks must pass.
+ * Light on :root, dark under [data-theme='dark'] on <html>; dark is the default (theme.ts). No
+ * component knows the theme. Three values differ from the guide's hex, because the guide's fail
+ * WCAG AA on its own panel colour (D-97): muted text in both themes and the light gold.
+ * tests/contrast.spec.ts reads this file, and so do the backend's validators (validators/tokens.py).
  */
 
 :root {
   color-scheme: light;
 
-  /* Surfaces, lines and text (Seed v0.1) */
-  --surface-base: #f7f8fa;
-  --surface-raised: #ffffff;
-  --surface-sunken: #eef0f4;
-  --surface-overlay: #ffffff;
-  --border-subtle: #e2e5eb;
-  --border-default: #cbd0d9;
-  --border-strong: #9aa2b1;
-  --text-primary: #12151b;
-  --text-secondary: #4a5261;
-  --text-muted: #666e7a;
-  --text-inverse: #f7f8fa;
-
-  /* Accent and status (Seed v0.1) */
-  --accent: #1e61f5;
-  --accent-subtle: #ebf1fe;
-  --status-positive: #1b7d4a;
-  --status-warning: #9a6100;
-  --status-negative: #c0392f;
-  --status-neutral: #5a6172;
-
-  /* Chart roles (Seed v0.1). Descriptors name a role, never a hex value. */
-  --chart-series-1: #1e61f5;
-  --chart-series-2: #6b4fd8;
-  --chart-series-3: #0c7f7f;
-  --chart-series-4: #a16500;
-  --chart-series-5: #b8437c;
-  --chart-series-6: #5d7c19;
-  --chart-series-7: #8a5a2b;
-  --chart-series-8: #3d6f8f;
-  --chart-positive: #1b7f4b;
-  --chart-warning: #9c671a;
-  --chart-negative: #c0392f;
-  --chart-anomaly: #cc431e;
-  --chart-baseline: #8c95a6;
-  --chart-muted: #cbd0d9;
+  /* Surfaces, lines and text (guide section 4) */
+  --surface-base: #ffffff;
+  --surface-raised: #f2f5fa;
+  --surface-sunken: #ffffff;
+  --surface-overlay: #f2f5fa;
+  --border-subtle: #d5dce8;
+  --border-default: #d5dce8;
+  --border-strong: #44516b;
+  --text-primary: #0b1f3a;
+  --text-secondary: #44516b;
+  --text-muted: #626f84; /* guide #6b778c is 4.14:1 on the panel (D-97) */
+  --text-inverse: #ffffff;
 
   /*
-   * Chart labels on a fill (D-37). Light theme: light text on filled roles, dark on baseline
-   * and muted. Dark theme: the same tokens resolve the other way round (dark text on the
-   * light fills, light text on baseline and muted), so they are not redeclared below.
+   * Controls and selection (guide section 1): neutral. --accent is the control colour, navy here
+   * and white in dark: a primary button is filled with it, the current step and the focus ring
+   * use it. --accent-subtle is the selected row: the ground colour, on a panel.
    */
-  --chart-label-on-fill: var(--text-inverse);
-  --chart-label-on-baseline: var(--text-primary);
-  --chart-label-on-muted: var(--text-primary);
-
-  /* Chart furniture (D-37) */
-  --chart-grid: #e2e5eb;
-  --chart-brush: rgba(30, 97, 245, 0.12);
-
-  /* Scrollbar (D-37) */
-  --scrollbar-thumb: #cbd0d9;
-  --scrollbar-thumb-hover: #9aa2b1;
-
-  /* Depth (D-37). Used sparingly: borders separate surfaces more often. */
-  --shadow-sm: 0 1px 2px rgba(18, 21, 27, 0.06);
-  --shadow-md: 0 4px 12px rgba(18, 21, 27, 0.1);
-  --backdrop: rgba(18, 21, 27, 0.4);
+  --accent: #0b1f3a;
+  --accent-subtle: #ffffff;
+  --link: #0b5fd6;
+  --gold: #a68728; /* guide #b8962e is 2.58:1 on the panel, under the 3:1 for large text (D-97) */
 
   /*
-   * Console (D-37): a dark surface in both themes, so these do not change with the theme.
-   * Values are the dark theme's surface, text and status colours; --console-api is the
-   * dark series-3 teal, for API lines (Seed v0.1 has no info token).
+   * The data scale (guide section 3): green is good, red is bad. The same six values in both
+   * themes. Status fills come from it; a status label on a fill is --on-status-*.
    */
-  --console-surface: #090c10;
-  --console-surface-raised: #161b22;
-  --console-border: #2f3742;
-  --console-text: #e8ebf0;
-  --console-text-secondary: #a8b1bd;
-  --console-text-muted: #808995;
-  --console-llm: #5b8cff;
-  --console-api: #35b8b8;
-  --console-pass: #3fb27a;
-  --console-warn: #d79a3a;
-  --console-fail: #e5705f;
+  --band-under-20: #036715;
+  --band-20-50: #17ae42;
+  --band-50-70: #37eb67;
+  --band-70-100: #e9973a;
+  --band-100: #b50e05;
+  --band-150: #7a0a02;
 
-  /* Type (Seed v0.1 faces and sizes; stacks D-37) */
-  --font-sans: 'Inter Variable', 'Segoe UI', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono Variable', Consolas, ui-monospace, monospace;
-  --text-xs: 11px;
-  --text-sm: 13px;
-  --text-md: 15px;
-  --text-lg: 18px;
-  --text-xl: 24px;
+  --status-positive: var(--band-20-50);
+  --status-warning: var(--band-70-100);
+  --status-negative: var(--band-100);
+  --status-neutral: #626f84;
+  --on-status-positive: #0b1f3a;
+  --on-status-warning: #0b1f3a;
+  --on-status-negative: #ffffff;
+  /*
+   * Status as text, where a band colour cannot be read as text (D-98): the dark green, and navy
+   * for amber, which no amber reaches 4.5:1 on white. Text in a status is always marked with its
+   * fill as well (a chip, a dot or a bar), so the colour is never the only signal.
+   */
+  --status-positive-text: var(--band-under-20);
+  --status-warning-text: #0b1f3a;
+  --status-negative-text: var(--band-100);
+
+  /*
+   * Chart roles. Descriptors name a role, never a hex value. Utilisation classes take the data
+   * scale (D-99): Active positive, Underused warning, Unused anomaly, Leaver negative (the fault,
+   * the deepest red), Unassigned muted. Plain counts take the navy and grey ramp (series-*);
+   * cost, the Value lens, takes gold.
+   */
+  --chart-series-1: #0b1f3a;
+  --chart-series-2: #44516b;
+  --chart-series-3: #626f84;
+  --chart-series-4: #283850;
+  --chart-series-5: #535f78;
+  --chart-series-6: #1a2b45;
+  --chart-series-7: #36435d;
+  --chart-series-8: #4c5872;
+  --chart-positive: var(--band-20-50);
+  --chart-warning: var(--band-70-100);
+  --chart-negative: var(--band-150);
+  --chart-anomaly: var(--band-100);
+  --chart-value: var(--gold);
+  --chart-baseline: #626f84;
+  --chart-muted: #d5dce8;
+
+  /*
+   * Every filled mark (bar, treemap cell, slice, line point) is outlined in --chart-outline, which
+   * gives each mark its 3:1 edge against the card whatever its fill (D-100).
+   */
+  --chart-outline: #0b1f3a;
+
+  /* Chart labels on a fill (D-100): navy on the light fills, white on the dark ones. */
+  --chart-label-on-fill: #ffffff;
+  --chart-label-on-positive: #0b1f3a;
+  --chart-label-on-warning: #0b1f3a;
+  --chart-label-on-value: #0b1f3a;
+  --chart-label-on-anomaly: #ffffff;
+  --chart-label-on-negative: #ffffff;
+  --chart-label-on-baseline: #ffffff;
+  --chart-label-on-muted: #0b1f3a;
+
+  /* Chart furniture: solid, never a transparency (guide section 5) */
+  --chart-grid: #d5dce8;
+  --chart-brush: #d5dce8;
+
+  /* Scrollbar */
+  --scrollbar-thumb: #d5dce8;
+  --scrollbar-thumb-hover: #626f84;
+
+  /* Depth: none (guide section 5). The modal backdrop is the one scrim. */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --backdrop: rgba(11, 31, 58, 0.55);
+
+  /*
+   * Console: the dark theme's navy in both themes, so these do not change with the theme. Line
+   * kinds are neutral; PASS, WARN and FAIL are verdicts and take the data scale. A FAIL line's text
+   * is white, marked by its level on a red fill (--console-fail-mark), since no red reads as text
+   * on navy (D-98).
+   */
+  --console-surface: #020921;
+  --console-surface-raised: #15335c;
+  --console-border: #244a7a;
+  --console-text: #ffffff;
+  --console-text-secondary: #b8c0d4;
+  --console-text-muted: #949db1;
+  --console-llm: #ffffff;
+  --console-api: #b8c0d4;
+  --console-pass: #37eb67;
+  --console-warn: #e9973a;
+  --console-fail: #ffffff;
+  --console-fail-mark: #b50e05;
+
+  /*
+   * Type (guide section 6, screen scale, D-101): IBM Plex Sans everywhere, IBM Plex Mono only for
+   * the console and file contents. Figures use Plex Sans's tabular numerals (base.css).
+   */
+  --font-sans: 'IBM Plex Sans Variable', 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', Consolas, ui-monospace, monospace;
+  --text-xs: 14px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 20px;
+  --text-xl: 28px;
   --text-2xl: 32px;
-  --line-height-body: 1.5;
-  --tracking-caps: 0.07em;
+  --text-figure: 40px;
+  --line-height-body: 1.35;
+  --tracking-caps: 0.08em;
 
-  /* Space: 4 px steps (Seed v0.1; every step named, D-37) */
+  /* Space: 4 px steps */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -113,12 +163,12 @@
   --space-11: 44px;
   --space-12: 48px;
 
-  /* Radius (Seed v0.1) */
-  --radius-sm: 3px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
+  /* Radius: square corners (guide section 5) */
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
 
-  /* Motion (Seed v0.1 durations; easing D-37) */
+  /* Motion */
   --duration-fast: 120ms;
   --duration-base: 220ms;
   --duration-slow: 400ms;
@@ -128,47 +178,56 @@
 [data-theme='dark'] {
   color-scheme: dark;
 
-  --surface-base: #0e1116;
-  --surface-raised: #161b22;
-  --surface-sunken: #090c10;
-  --surface-overlay: #1c222b;
-  --border-subtle: #21272f;
-  --border-default: #2f3742;
-  --border-strong: #4a5461;
-  --text-primary: #e8ebf0;
-  --text-secondary: #a8b1bd;
-  --text-muted: #808995;
-  --text-inverse: #0e1116;
+  /* Guide section 2 */
+  --surface-base: #020921;
+  --surface-raised: #15335c;
+  --surface-sunken: #020921;
+  --surface-overlay: #15335c;
+  --border-subtle: #244a7a;
+  --border-default: #244a7a;
+  --border-strong: #b8c0d4;
+  --text-primary: #ffffff;
+  --text-secondary: #b8c0d4;
+  --text-muted: #949db1; /* guide #8a93a8 is 4.11:1 on the panel (D-97) */
+  --text-inverse: #020921;
 
-  --accent: #5b8cff;
-  --accent-subtle: #15203a;
-  --status-positive: #3fb27a;
-  --status-warning: #d79a3a;
-  --status-negative: #e5705f;
-  --status-neutral: #808995;
+  --accent: #ffffff;
+  --accent-subtle: #020921;
+  --link: #4da3ff;
+  --gold: #f2d27a;
 
-  --chart-series-1: #5b8cff;
-  --chart-series-2: #9a82f0;
-  --chart-series-3: #35b8b8;
-  --chart-series-4: #d79a3a;
-  --chart-series-5: #e06fa8;
-  --chart-series-6: #9cc95a;
-  --chart-series-7: #c49a6c;
-  --chart-series-8: #7fb0d0;
-  --chart-positive: #3fb27a;
-  --chart-warning: #e0a84a;
-  --chart-negative: #e5705f;
-  --chart-anomaly: #ff7a4d;
-  --chart-baseline: #5b6777;
-  --chart-muted: #2f3742;
+  --status-neutral: #949db1;
+  --on-status-positive: #020921;
+  --on-status-warning: #020921;
+  --status-positive-text: var(--band-50-70);
+  --status-warning-text: var(--band-70-100);
+  --status-negative-text: #ffffff;
 
-  --chart-grid: #21272f;
-  --chart-brush: rgba(91, 140, 255, 0.18);
+  --chart-series-1: #ffffff;
+  --chart-series-2: #b8c0d4;
+  --chart-series-3: #8a93a8;
+  --chart-series-4: #dfe3ec;
+  --chart-series-5: #a1a9be;
+  --chart-series-6: #ccd2df;
+  --chart-series-7: #959db1;
+  --chart-series-8: #aeb5c7;
+  --chart-baseline: #8a93a8;
+  --chart-muted: #244a7a;
 
-  --scrollbar-thumb: #2f3742;
-  --scrollbar-thumb-hover: #4a5461;
+  --chart-outline: #ffffff;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-  --backdrop: rgba(0, 0, 0, 0.6);
+  --chart-label-on-fill: #020921;
+  --chart-label-on-positive: #020921;
+  --chart-label-on-warning: #020921;
+  --chart-label-on-value: #020921;
+  --chart-label-on-baseline: #020921;
+  --chart-label-on-muted: #ffffff;
+
+  --chart-grid: #244a7a;
+  --chart-brush: #244a7a;
+
+  --scrollbar-thumb: #244a7a;
+  --scrollbar-thumb-hover: #8a93a8;
+
+  --backdrop: rgba(2, 9, 33, 0.8);
 }

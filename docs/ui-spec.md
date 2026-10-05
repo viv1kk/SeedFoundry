@@ -1,6 +1,8 @@
 # SeedFactory: UI spec
 
-The four screens, the rebuild modal and the demo controller. This describes intent and layout; exact visuals come from Seed v0.1's design system (`seed_docs/design-system.md`) and are recorded in `seed-reuse-notes.md`. Claude Code may improve layout details for cohesion as long as every requirement in `requirements.md` holds.
+The four screens, the rebuild modal and the demo controller. This describes intent and layout; exact visuals come from ~~Seed v0.1's design system (`seed_docs/design-system.md`) and are recorded in `seed-reuse-notes.md`~~ the ValueWise SI house style, `valuewise-style.md` (A-13). Claude Code may improve layout details for cohesion as long as every requirement in `requirements.md` holds.
+
+*As built (CR-3, 2026-10-05, D-96 to D-101):* every screen follows the ValueWise SI house style (`valuewise-style.md`): dark by default, navy panels with a 1 px border and square corners, no shadows; IBM Plex Sans (IBM Plex Mono only in the console and the markdown editor); primary buttons a neutral inversion (white fill, navy label in dark); status chips filled in the data scale; link blue only on links and link-like actions. On the dashboard the utilisation classes take the data scale, counts are white and grey, recoverable cost is gold and Recoverable a year is the one gold headline figure; treemap cells read "Name (count)". Layouts, wording and controls are unchanged.
 
 ## 1. App shell
 

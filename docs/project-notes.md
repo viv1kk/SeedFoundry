@@ -1151,6 +1151,40 @@ Choices made to keep it clean: the classification thresholds and the leaver rule
 **Follow-up: the Build page scrolled away (D-95)**
 - Reported by the stakeholder: scrolling the Build page moved the whole page up and left it empty. Measured in headless Chrome: the document was 2,830 px tall in a 1,000 px window, made so by the report's screen-reader-only text, absolutely positioned with the page as its containing block. CHANGE frontend/src/views/BuildView.vue (`.build__main` positioned), frontend/scripts/rehearse.ts (a check: the page fits the window, the report column scrolls). Gates: frontend 460 passed, `npm run build` passes, rehearsal 34 of 34 at 4x (page 1,000 px, window 1,000 px, report column 4,847 px). Review and the dashboard scroll as pages, as before.
 
+### Change request CR-3: ValueWise SI house style (2026-10-05)
+
+**What changed**
+- **The guide (D-96).** `docs/valuewise-style.md` holds the ValueWise SI house style v3 verbatim, its mood board (`docs/valuewise-mood-board.png`), and how SeedFactory applies it: what carries over, what does not (slide furniture), where it departs and why, and the token table the contrast test reads.
+- **Palette (D-96, D-97).** `tokens.css` is the guide's: navy #020921 ground, #15335C panels with a #244A7A border, white and two greys for text; light theme #FFFFFF, #F2F5FA, #D5DCE8, #0B1F3A. Three values are lifted for WCAG AA, the guide's failing on its own panel: muted text (#949DB1 dark, #626F84 light) and the light gold (#A68728). Radii 0, shadows none. Dark is the default on a first visit.
+- **Controls neutral, status filled (D-98).** The primary button is a neutral inversion; `--accent` is the control colour (white in dark, navy in light) and `--link` is link blue, now only on links, drill crumbs, product drills and disclosure toggles. Chips for a status are filled in the data scale with a tested label; error and warning words get a tested colour and a bar of the status fill. Stepper and history marks are square. The console's line kinds are white and grey; PASS green, WARN orange, FAIL's level on a red mark.
+- **Dashboard (D-99, D-100).** Classes on the data scale (Active green, Underused orange, Unused red, Leaver the deepest red, Unassigned navy); Entitled, Assigned and In use white and greys; recoverable cost gold; Recoverable a year the one gold 40 px headline figure, and Entitled's coloured rule gone. Every filled mark outlined in `--chart-outline`; labels per fill; treemap cells "Name (count)" at 16 px; 14 px chart text; flat tooltips. T-20 counts a mark's outline toward its 3:1 edge.
+- **Type (D-101).** IBM Plex Sans with tabular numerals everywhere, IBM Plex Mono in the console, the markdown editor and code in a preview; a screen scale (14 px minimum, 16 px body, line height 1.35). Inter and JetBrains Mono removed.
+- **Sample.** `environment.md`'s Styling describes the house style, so the generated Seed files do too.
+
+**Files**
+- NEW docs/valuewise-style.md, docs/valuewise-mood-board.png
+- CHANGE frontend/src/styles/tokens.css, base.css; main.ts (fonts); theme.ts, index.html (dark default); dashboard/options.ts, tokens.ts, types.ts; components/base/BaseButton.vue, BaseChip.vue, BaseConfirm.vue; build/BuildConsole.vue, PhaseStepper.vue, FeedbackRouting.vue; dashboard/KpiPanel.vue, ChartPanel.vue, DashboardFrame.vue, DashboardView.vue, DrillBar.vue, TablePanel.vue; intake/FileEditor.vue, FilePanel.vue, ImportDialog.vue, NewFileDialog.vue; rebuild/RebuildModal.vue; report/BuildReport.vue; seed/SeedFiles.vue, SeedHistory.vue; shell/IterationBadge.vue; demo/DemoController.vue; views/BuildView.vue, KnowledgeView.vue, SeedView.vue; package.json (fonts)
+- CHANGE backend/seedfoundry/dashboard/descriptor.py (roles, emphasis, fonts), dashboard/overlay.py (V-2's wording), validators/visual.py (`value` role, the outline in T-20, font names), sample/environment.md (Styling)
+- CHANGE tests listed in D-102; fixtures and golden Seed files rewritten by the three scripts
+- CHANGE docs: decisions.md (D-96 to D-102; D-21 and D-37 superseded in part), requirements.md (NFR-5, A-13), ui-spec.md, seed-reuse-notes.md, implementation-plan.md (CR-3), operator-guide.md, README.md, CLAUDE.md, project-notes.md
+
+**Gates**
+- backend: 578 passed, frontend: 467 passed (460 + 7 new), through `python run.py test`
+- `npm run build`: typecheck, build and `postbuild` network check pass (fonts bundled, no external URL)
+- `npm run rehearse -- --speed 4`: 34 of 34 checks, including focus rings on every control and the page-fit check
+- determinism: pass | no-em-dash: pass | network: pass | contrast: pass (50 checks, rewritten for the new palette)
+- The fourteen planted defects are still found; V-8 now at 1.26:1 light and 1.41:1 dark. Iteration 2's figures are M7's: the digest test passes with the style changes undone
+- Assertions edited: D-102 lists every one
+
+**Hand checks**
+- Rehearsal screenshots, both themes, every page. The larger chart text first pushed the line chart's axis name into its tick labels and the Product axis name into the legend; the value axis's name gap and the grid's top margin now allow for 14 px text.
+
+**Decisions and questions**
+- New: D-96 to D-102; A-13.
+- Asked and answered (stakeholder, 2026-10-05): screen scale, not slide scale; IBM Plex Mono for code only; style only, no ValueWise name on screen.
+- Chosen without asking: dark default (the guide's); the three contrast lifts; status as fill with a tested label; marks outlined; the light theme's label rule in both themes; utilisation classes mapped to the bands by severity; recoverable cost as the Value lens in gold, and Recoverable a year as the headline figure.
+- Noted for the stakeholder: the guide's muted greys and light gold fail WCAG AA on the guide's own panel colour, and white tile labels fail on green and orange; the guide could take the lifted values.
+
 ### State of the project (2026-10-04)
 
 SeedFactory is complete as specified. It is a deterministic, offline lab with no LLM that turns four Ensemble knowledge files (plus any Misc Context) into a Seed v0.1 deployment. It assays the files and lints their boundaries, distils and synthesises `core.md`, `adaptation.md` and `protection.md` from them, plants and runs the Seed in a simulated sandbox with Seed v0.1's three human gates auto-resolved, and validates the result. Iteration 1's License Optimization dashboard carries fourteen planted defects, and real validators find all fourteen by recomputing from the data. An observer writes feedback beside the report or the dashboard; the rebuild routes that feedback into the four files, visibly, and iteration 2 passes with every finding resolved. Approve on either iteration gives the Seed page and the three files, singly or as one zip, with known issues listed when the approved build still has findings. Every simulated call is labelled as simulated and goes through the `LLMClient` and `SeedClient` seams, so real ones can replace them. To run it: `python run.py` (or `run.ps1` where uv is blocked), then open `http://127.0.0.1:5273/`. To present it: `docs/operator-guide.md`, a demo of 8 to 10 minutes at 1x, driven by the hidden demo controller (Shift+O), after `python run.py test` and `npm run rehearse -- --speed 4` as the checks before a demo. What remains is the stakeholder's own pass in a browser, listed under Hand checks above: the timed demo by hand, the network switched off, and a person's reading of the report links, the rebuild modal and the Seed page. No requirement, open question or known defect is outstanding.
@@ -1158,3 +1192,5 @@ SeedFactory is complete as specified. It is a deterministic, offline lab with no
 *After CR-1 (2026-10-04):* the loop is open-ended on screen. There is no iteration total; every report has Reject and Approve; rejecting any iteration routes the new feedback into the four files, visibly on the Build page, and runs the next iteration, which from iteration 3 replays iteration 2's outcome. Every report shows the Seed files' share of the context window against a 20% budget. The demo is still written for two iterations (`operator-guide.md` §4, with an optional third).
 
 *After CR-2 (2026-10-05):* the product is SeedFactory. Knowledge holds the four initiation files, whose names step with each iteration that changes them; iterations after the first are tagged Human; the report offers View Agentic Solution, Reject, Approve and Initiate QUAD SI Review Protocol; the Seed page offers Secure and Lock in Secure Repository and a download link for the zip.
+
+*After CR-3 (2026-10-05):* SeedFactory wears the ValueWise SI house style: dark navy by default, flat square panels, IBM Plex Sans, neutral controls, band colours only for a status from the data, gold for the one headline figure (Recoverable a year) and the cost bars. The behaviour, figures and findings are unchanged.

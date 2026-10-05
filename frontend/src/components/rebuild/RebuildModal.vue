@@ -214,7 +214,7 @@ async function start(): Promise<void> {
 }
 
 .rebuild__name {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
 }
 
@@ -259,6 +259,9 @@ async function start(): Promise<void> {
 }
 
 .rebuild__status--error {
-  color: var(--status-negative);
+  /* A status in words: tested text colour, marked with the status fill (D-98) */
+  color: var(--status-negative-text);
+  border-left: 3px solid var(--status-negative);
+  padding-left: var(--space-2);
 }
 </style>

@@ -1,7 +1,9 @@
 // ECharts options for the chart marks (treemap, bar, line, pie), from a panel's descriptor, its data
 // and the token values read at paint time. Pure, so a theme change or the fonts arriving is a
 // rebuild (seed-reuse-notes.md section 1.2 and 1.4). Every colour is a token's value, or a value the
-// descriptor itself gives (iteration 1's V-3, D-60); none is written here.
+// descriptor itself gives (iteration 1's V-3, D-60); none is written here. ValueWise house style
+// (D-99, D-100): flat, square, 14 px text and 16 px tile labels with the count in brackets, and
+// every filled mark outlined in --chart-outline so it holds a 3:1 edge on the card whatever its fill.
 
 import { axisTitle, count, format } from './format'
 import { classColour, labelOn, role, type TokenReader } from './tokens'
@@ -23,8 +25,16 @@ function fonts(read: TokenReader) {
   return { sans: read('--font-sans'), mono: read('--font-mono') }
 }
 
+const TEXT_SIZE = 14
+const TILE_LABEL_SIZE = 16
+
 function textStyle(read: TokenReader) {
-  return { fontFamily: fonts(read).sans, fontSize: 12, color: read('--text-secondary') }
+  return { fontFamily: fonts(read).sans, fontSize: TEXT_SIZE, color: read('--text-secondary') }
+}
+
+/** The 1 px outline every filled mark carries (D-100). */
+function outline(read: TokenReader) {
+  return { borderColor: read('--chart-outline'), borderWidth: 1 }
 }
 
 function tooltip(read: TokenReader, trigger: 'item' | 'axis') {
@@ -35,15 +45,15 @@ function tooltip(read: TokenReader, trigger: 'item' | 'axis') {
     borderColor: read('--border-default'),
     borderWidth: 1,
     padding: [6, 10],
-    textStyle: { fontFamily: fonts(read).sans, fontSize: 13, color: read('--text-primary') },
-    extraCssText: 'box-shadow: var(--shadow-md); border-radius: var(--radius-sm);',
+    textStyle: { fontFamily: fonts(read).sans, fontSize: TEXT_SIZE, color: read('--text-primary') },
+    extraCssText: 'box-shadow: none; border-radius: 0;',
     axisPointer: { type: 'shadow', shadowStyle: { color: read('--chart-brush') } },
   }
 }
 
-/** A tooltip line: a label, then the figure in the figures' face (mono). */
+/** A tooltip line: a label, then the figure in bold. */
 function line(label: string, figure: string): string {
-  return `${escape(label)} <span style="font-family: var(--font-mono); font-weight: 600">${escape(figure)}</span>`
+  return `${escape(label)} <span style="font-weight: 600">${escape(figure)}</span>`
 }
 
 function legend(read: TokenReader) {
@@ -51,20 +61,22 @@ function legend(read: TokenReader) {
     top: 0,
     left: 0,
     icon: 'rect',
-    itemWidth: 10,
-    itemHeight: 10,
+    itemWidth: 12,
+    itemHeight: 12,
     itemGap: 16,
     textStyle: textStyle(read),
   }
 }
 
-function valueAxis(panel: Panel, read: TokenReader) {
+/** `vertical`: the value axis stands on the left (a line chart, a column chart), so its name clears
+ * the tick labels, which at 14 px are wider than they are tall. */
+function valueAxis(panel: Panel, read: TokenReader, vertical: boolean) {
   const value = panel.value!
   return {
     type: 'value',
     name: axisTitle(value.axis),
     nameLocation: 'middle',
-    nameGap: 28,
+    nameGap: vertical ? 56 : 30,
     nameTextStyle: { ...textStyle(read), color: read('--text-muted') },
     axisLabel: { ...textStyle(read), formatter: (v: number) => format(v, value.format) },
     splitLine: { lineStyle: { color: read('--chart-grid') } },
@@ -93,8 +105,9 @@ function categoryAxis(panel: Panel, read: TokenReader, labels: string[], horizon
   }
 }
 
-function grid(horizontal: boolean) {
-  return { left: horizontal ? 4 : 8, right: 24, top: 40, bottom: 36, containLabel: true }
+/** Room on top for a legend at 14 px and, on a horizontal bar chart, the category axis's name. */
+function grid(horizontal: boolean, legend: boolean) {
+  return { left: horizontal ? 4 : 24, right: 24, top: legend ? 56 : 40, bottom: 40, containLabel: true }
 }
 
 export function treemapOption(panel: Panel, data: PanelData, paint: Paint) {
@@ -110,9 +123,16 @@ export function treemapOption(panel: Panel, data: PanelData, paint: Paint) {
       value: n.value,
       step: n.step,
       level: n.level,
-      itemStyle: cls ? { color: classColour(read, panel, cls) } : { color: read('--surface-sunken'), borderColor: read('--border-default') },
+      itemStyle: cls ? { color: classColour(read, panel, cls), ...outline(read) } : { color: read('--surface-sunken'), borderColor: read('--border-default') },
       // A leaf too small for its name shows none rather than a stub; its tooltip still names it.
-      label: cls ? { color: labelOn(read, cls.role), show: total > 0 && n.value / total >= MIN_LABELLED_SHARE } : undefined,
+      // A label is the name with the count in brackets, as on the ValueWise dashboard.
+      label: cls
+        ? {
+            color: labelOn(read, cls.role),
+            show: total > 0 && n.value / total >= MIN_LABELLED_SHARE,
+            formatter: `${n.name} (${format(n.value, panel.format ?? 'count')})`,
+          }
+        : undefined,
       children: n.children?.map(node),
     }
   }
@@ -126,15 +146,15 @@ export function treemapOption(panel: Panel, data: PanelData, paint: Paint) {
     { itemStyle: { borderWidth: 0, gapWidth: 3 } },
     ...Array.from({ length: deepest }, (_, i) =>
       i === deepest - 1
-        ? { itemStyle: { borderWidth: 1, borderColor: read('--surface-raised'), gapWidth: 0 } }
+        ? { itemStyle: { ...outline(read), gapWidth: 0 } }
         : {
             itemStyle: { borderWidth: 2, borderColor: read('--surface-raised'), gapWidth: 2 },
             upperLabel: {
               show: true,
-              height: 20,
+              height: 22,
               color: read('--text-primary'),
               fontFamily: fonts(read).sans,
-              fontSize: 12,
+              fontSize: TEXT_SIZE,
               fontWeight: i === 0 ? 600 : 500,
             },
           },
@@ -164,7 +184,7 @@ export function treemapOption(panel: Panel, data: PanelData, paint: Paint) {
         right: 0,
         top: 0,
         bottom: 0,
-        label: { show: true, fontFamily: fonts(read).sans, fontSize: 11, overflow: 'truncate' },
+        label: { show: true, fontFamily: fonts(read).sans, fontSize: TILE_LABEL_SIZE, overflow: 'truncate' },
         emphasis: { itemStyle: { borderColor: read('--text-primary') } },
         levels,
         data: (data.nodes ?? []).map(node),
@@ -188,21 +208,21 @@ export function barOption(panel: Panel, data: PanelData, paint: Paint) {
       name: s.label,
       barGap: '12%',
       barCategoryGap: series.length > 1 ? '28%' : '36%',
-      itemStyle: { color: role(read, s.role) },
-      emphasis: { focus: 'none', itemStyle: { color: role(read, s.role) } },
+      itemStyle: { color: role(read, s.role), ...outline(read) },
+      emphasis: { focus: 'none', itemStyle: { color: role(read, s.role), ...outline(read) } },
       data: (values ?? []).map((v, i) =>
         withheld[i]
           ? {
               value: 0,
               step: categories[i]?.step,
-              itemStyle: { color: 'transparent' },
+              itemStyle: { color: 'transparent', borderWidth: 0 },
               label: {
                 show: true,
                 position: horizontal ? 'right' : 'top',
                 formatter: panel.withheld!.label,
                 color: read(`--${panel.withheld!.role}`),
                 fontFamily: fonts(read).sans,
-                fontSize: 11,
+                fontSize: TEXT_SIZE,
               },
             }
           : { value: v, step: categories[i]?.step },
@@ -210,12 +230,12 @@ export function barOption(panel: Panel, data: PanelData, paint: Paint) {
     }
   })
 
-  const axes = [valueAxis(panel, read), categoryAxis(panel, read, categories.map((c) => c.name), horizontal)]
+  const axes = [valueAxis(panel, read, !horizontal), categoryAxis(panel, read, categories.map((c) => c.name), horizontal)]
 
   return {
     aria: { enabled: true, label: { description: `${panel.title}, one bar per product` } },
     textStyle: textStyle(read),
-    grid: grid(horizontal),
+    grid: grid(horizontal, series.length > 1),
     legend: series.length > 1 ? legend(read) : undefined,
     tooltip: {
       ...tooltip(read, 'axis'),
@@ -239,7 +259,7 @@ export function lineOption(panel: Panel, data: PanelData, paint: Paint) {
   return {
     aria: { enabled: true, label: { description: `${panel.title}, ${months.length} months` } },
     textStyle: textStyle(read),
-    grid: grid(false),
+    grid: grid(false, true),
     legend: legend(read),
     tooltip: {
       ...tooltip(read, 'axis'),
@@ -250,15 +270,16 @@ export function lineOption(panel: Panel, data: PanelData, paint: Paint) {
         ),
     },
     xAxis: { ...categoryAxis(panel, read, months, false), boundaryGap: false },
-    yAxis: valueAxis(panel, read),
+    yAxis: valueAxis(panel, read, true),
     series: (panel.series ?? []).map((s) => ({
       type: 'line',
       name: s.label,
       data: data.series?.[s.id] ?? [],
-      symbol: 'circle',
-      symbolSize: 5,
+      // Square points, outlined like every filled mark, so each month holds its edge (D-100).
+      symbol: 'rect',
+      symbolSize: 7,
       lineStyle: { width: 2, color: role(read, s.role) },
-      itemStyle: { color: role(read, s.role) },
+      itemStyle: { color: role(read, s.role), ...outline(read) },
       emphasis: { focus: 'none' },
     })),
   }
@@ -288,7 +309,7 @@ export function pieOption(panel: Panel, data: PanelData, paint: Paint) {
         center: ['50%', '52%'],
         label: { ...textStyle(read), formatter: '{b}' },
         labelLine: { lineStyle: { color: read('--border-strong') } },
-        itemStyle: { borderColor: read('--surface-raised'), borderWidth: 1 },
+        itemStyle: outline(read),
         emphasis: { scale: false },
         data: slices.map((slice, n) => ({
           name: slice.category.name,

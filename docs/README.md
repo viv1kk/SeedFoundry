@@ -16,6 +16,7 @@ SeedFactory is a deterministic, offline, no-LLM simulation of a lab that takes E
 | `implementation-plan.md` | Milestones M0 to M13, repo layout, critical path | At the start of every session |
 | `methodology.md` | Working method, build log format, gates | Once, then as needed |
 | `seed-reuse-notes.md` | Written in M0: what is reused from Seed v0.1 and where it lives | Before reusing anything |
+| `valuewise-style.md` | The ValueWise SI house style v3 (the guide, verbatim) and how SeedFactory applies it: tokens, contrast exceptions; with `valuewise-mood-board.png` | Before any visual or frontend work |
 | `operator-guide.md` | Written in M12: set up, start, controls, the timed demo script, rehearsing, checks before a demo, troubleshooting | Before presenting or rehearsing |
 | `ensemble/ensemble_context.md` | The Ensemble architecture: what the four knowledge files are | Before intake, Assay or file generation work |
 | `seed_docs/` | Seed v0.1 reference docs (prior project) | Reference only; never edited |

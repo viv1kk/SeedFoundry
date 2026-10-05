@@ -1,6 +1,7 @@
 <script setup lang="ts">
-// A KPI tile: a small-capitals label over the figure, in the figures' face (seed-reuse-notes.md
-// section 1.4). The primary KPI carries a top rule in its chart role, Seed v0.1's convention.
+// A KPI tile: a small-capitals label over the figure, in tabular figures. The primary KPI is the
+// number the room must read first: one per dashboard, in gold and larger (ValueWise sections 1
+// and 6, D-99). No coloured rule: colour is never decoration.
 // A note's placeholders ("{withheld_seats}") are filled from the panel's data, formatted as counts.
 import { computed } from 'vue'
 import { count, format } from '../../dashboard/format'
@@ -18,7 +19,6 @@ const note = computed(() =>
   <article
     class="kpi"
     :class="{ 'kpi--primary': panel.emphasis === 'primary' }"
-    :style="panel.rule_role ? { '--kpi-rule': `var(--chart-${panel.rule_role})` } : undefined"
     :data-panel="panel.id"
     data-test="kpi"
   >
@@ -40,20 +40,23 @@ const note = computed(() =>
   border-radius: var(--radius-md);
 }
 
-.kpi--primary {
-  border-top: 3px solid var(--kpi-rule);
-  padding-top: calc(var(--space-4) - 2px);
-}
 
 .kpi__label {
   color: var(--text-secondary);
 }
 
 .kpi__figure {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-xl);
   font-weight: 600;
   line-height: 1.2;
+}
+
+.kpi--primary .kpi__figure {
+  color: var(--gold);
+  font-size: var(--text-figure);
+  font-weight: 700;
+  line-height: 1.1;
 }
 
 .kpi__note {

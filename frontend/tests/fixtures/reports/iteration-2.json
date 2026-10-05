@@ -2,7 +2,7 @@
  "build_id": "b-2",
  "iteration": 2,
  "seed_name": "License Optimization",
- "fingerprint": "18b56d",
+ "fingerprint": "b8bbfc",
  "verdict": {
   "id": "passed",
   "label": "Passed",
@@ -406,8 +406,8 @@
  ],
  "usage": {
   "llm_calls": 9,
-  "tokens_in": 18531,
-  "tokens_out": 5323,
+  "tokens_in": 19180,
+  "tokens_out": 5957,
   "api_calls": 26,
   "sandbox_seconds": 36.2,
   "simulated": true
@@ -426,8 +426,8 @@
    {
     "name": "adaptation.md",
     "role": "adaptation",
-    "bytes": 7031,
-    "tokens": 1758,
+    "bytes": 7090,
+    "tokens": 1772,
     "share": 5.5
    },
    {
@@ -438,7 +438,7 @@
     "share": 2.3
    }
   ],
-  "tokens": 5042,
+  "tokens": 5056,
   "share": 15.8,
   "within": true,
   "simulated": true
@@ -580,7 +580,7 @@
     "panel_titles": [
      "Optimisation candidates"
     ],
-    "message": "Optimisation candidates: the caption (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1); 4 problems in all",
+    "message": "Optimisation candidates: the caption (var(--border-default)) at 1.26:1 on the card in the light theme (needs 4.5:1); 4 problems in all",
     "severity": "medium",
     "status": "resolved"
    },

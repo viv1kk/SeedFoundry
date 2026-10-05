@@ -21,8 +21,9 @@ from seedfoundry.data.model import CLASS_LABELS, CLASS_ROLES, CLASSES, RECOVERAB
 DASHBOARD_ID = "license-optimization"
 GRID_COLUMNS = 12
 
-# Font roles: one family per role (seed-reuse-notes.md §1.4).
-FONTS = {"title": "sans", "label": "sans", "figure": "mono", "id": "mono"}
+# Font roles: one family per role. IBM Plex Sans for every role, figures in its tabular numerals;
+# IBM Plex Mono is kept for the console and file contents (ValueWise house style, D-101).
+FONTS = {"title": "sans", "label": "sans", "figure": "sans", "id": "sans"}
 
 # One format per measure, on every panel where the measure appears (environment.md, Styling):
 # counts with thousands separators; money in US dollars, compact on charts and KPIs and whole
@@ -74,7 +75,7 @@ _POLISHED: dict[str, Any] = {
         {"id": "records", "title": "Seats"},
     ],
     "panels": [
-        _kpi("k-entitled", "Entitled", "entitled", "seats", 2, emphasis="primary", rule_role="anomaly"),
+        _kpi("k-entitled", "Entitled", "entitled", "seats", 2),
         _kpi("k-assigned", "Assigned", "assigned", "seats", 2),
         _kpi("k-active", "Active", "active", "seats", 2),
         _kpi("k-idle", "Unused or underused", "idle", "seats", 3),
@@ -84,6 +85,8 @@ _POLISHED: dict[str, Any] = {
             "recoverable_year",
             "recoverable_year",
             3,
+            # The number the room reads first: the one gold figure (ValueWise section 1, D-99).
+            emphasis="primary",
             note={"text": "priced products only, {withheld_seats} seats withheld", "role": "text-secondary"},
         ),
         {
@@ -131,7 +134,8 @@ _POLISHED: dict[str, Any] = {
             "value": {"measure": "seats", "format": MEASURES["seats"]["chart"], "axis": {"name": "Seats", "unit": "seats"}},
             "series": [
                 {"id": "assigned", "label": "Assigned", "role": "series-1"},
-                {"id": "in_use", "label": "In use", "role": "positive"},
+                # A count, not a status: grey, not green (ValueWise section 1, D-99).
+                {"id": "in_use", "label": "In use", "role": "series-2"},
             ],
             "drill": False,
             "latency_ms": 0,
@@ -152,7 +156,8 @@ _POLISHED: dict[str, Any] = {
                 "format": MEASURES["recoverable_year"]["chart"],
                 "axis": {"name": "Recoverable a year", "unit": "USD"},
             },
-            "series": [{"id": "recoverable_year", "label": "Recoverable a year", "role": "anomaly"}],
+            # Cost is the Value lens: gold (ValueWise section 5, D-99).
+            "series": [{"id": "recoverable_year", "label": "Recoverable a year", "role": "value"}],
             "withheld": {"label": "Withheld", "role": "text-muted"},
             "drill": True,
             "latency_ms": 0,

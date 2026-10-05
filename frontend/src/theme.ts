@@ -1,6 +1,7 @@
 // Light and dark theme (seed-reuse-notes.md section 1.2). The theme is the data-theme
-// attribute on <html>; tokens.css does the rest. index.html runs the same first-visit
-// rule before the page paints, so there is no flash of the wrong theme.
+// attribute on <html>; tokens.css does the rest. A first visit is dark, the ValueWise
+// presentation default (D-96); light is for print and bright rooms. index.html runs the
+// same first-visit rule before the page paints, so there is no flash of the wrong theme.
 
 import { ref } from 'vue'
 
@@ -30,20 +31,12 @@ function storeTheme(theme: Theme): void {
   }
 }
 
-export function systemTheme(): Theme {
-  try {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  } catch {
-    return 'light'
-  }
-}
-
-/** A remembered choice wins; a first visit follows the operating system. */
+/** A remembered choice wins; a first visit is dark, whatever the operating system prefers. */
 export function initialTheme(): Theme {
-  return storedTheme() ?? systemTheme()
+  return storedTheme() ?? 'dark'
 }
 
-export const theme = ref<Theme>('light')
+export const theme = ref<Theme>('dark')
 
 export function applyTheme(next: Theme): void {
   theme.value = next

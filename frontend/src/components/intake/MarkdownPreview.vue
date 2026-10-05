@@ -154,7 +154,7 @@ const html = computed(() => renderMarkdown(props.text))
 
 /* Links are not followed in Preview (D-40): link style, then the address as text. */
 .markdown :deep(.md-link) {
-  color: var(--accent);
+  color: var(--link);
   text-decoration: underline;
   text-underline-offset: 2px;
 }

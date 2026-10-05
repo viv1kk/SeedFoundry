@@ -18,6 +18,8 @@ body {
   font-family: var(--font-sans);
   font-size: var(--text-md);
   line-height: var(--line-height-body);
+  /* Figures line up in columns: Plex Sans's tabular numerals stand in for a figures face (D-101). */
+  font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -32,8 +34,9 @@ p {
   margin: 0;
 }
 
+/* Link blue only on things that open or act (ValueWise section 1) */
 a {
-  color: var(--accent);
+  color: var(--link);
 }
 
 code,
@@ -73,10 +76,10 @@ pre {
   background: var(--scrollbar-thumb-hover);
 }
 
-/* Small capitals labels */
+/* Kickers and small capitals labels: uppercase, letter-spaced, muted (ValueWise section 6) */
 .caps-label {
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 500;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
   color: var(--text-muted);

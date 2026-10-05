@@ -168,7 +168,7 @@ const groups = computed(() =>
 .checklist__seed {
   margin-left: auto;
   color: var(--text-muted);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-xs);
   font-weight: 400;
   text-align: right;
@@ -187,6 +187,7 @@ const groups = computed(() =>
 .checklist__item--complete .checklist__box {
   border-color: var(--status-positive);
   background: var(--status-positive);
+  color: var(--on-status-positive);
 }
 
 .start-build,
@@ -202,7 +203,10 @@ const groups = computed(() =>
 }
 
 .panel__error {
-  color: var(--status-negative);
+  /* A status in words: tested text colour, marked with the status fill (D-98) */
+  color: var(--status-negative-text);
+  border-left: 3px solid var(--status-negative);
+  padding-left: var(--space-2);
   font-size: var(--text-sm);
 }
 
@@ -247,7 +251,7 @@ const groups = computed(() =>
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--text-primary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
   text-align: left;
   cursor: pointer;
@@ -275,12 +279,12 @@ const groups = computed(() =>
   white-space: nowrap;
 }
 
-/* Unsaved changes (FR-IN-6): work in progress, so the accent */
+/* Unsaved changes (FR-IN-6): work in progress, so the control colour; square like every mark */
 .file__dot {
   flex: none;
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: 0;
   background: var(--accent);
 }
 

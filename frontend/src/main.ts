@@ -1,6 +1,8 @@
-// Fonts are bundled from npm and served with the app, never fetched (D-21, NFR-2).
-import '@fontsource-variable/inter'
-import '@fontsource-variable/jetbrains-mono'
+// Fonts are bundled from npm and served with the app, never fetched (D-21, NFR-2). IBM Plex Sans
+// for everything, IBM Plex Mono for the console and file contents (D-101).
+import '@fontsource-variable/ibm-plex-sans'
+import '@fontsource/ibm-plex-mono/400.css'
+import '@fontsource/ibm-plex-mono/600.css'
 import './styles/tokens.css'
 import './styles/base.css'
 

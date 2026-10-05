@@ -1,5 +1,7 @@
 <script setup lang="ts">
-// Primary: the one main action in view (accent fill). Secondary: everything else.
+// Primary: the one main action in view, a neutral inversion (white fill and navy label in dark,
+// navy fill and white label in light; ValueWise section 1). Secondary: navy with the panel border.
+// Never a band colour.
 // `explainDisabled` keeps a disabled button focusable (aria-disabled instead of disabled), so
 // a tooltip that says why it is disabled can be reached from the keyboard (NFR-6).
 const props = withDefaults(
@@ -68,8 +70,9 @@ function onClick(event: MouseEvent): void {
 }
 
 .button--primary:hover:not(:disabled, [aria-disabled='true']) {
-  /* No colour shift: a lighter or darker accent would change the label's tested contrast. */
-  box-shadow: var(--shadow-md);
+  /* No colour shift: a lighter or darker fill would change the label's tested contrast. A line of
+     the label's colour inside the edge marks the hover instead; flat, not a shadow. */
+  box-shadow: inset 0 0 0 1px var(--text-inverse);
 }
 
 .button--secondary {

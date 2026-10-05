@@ -174,8 +174,9 @@ def test_low_contrast_text_is_caught(monkeypatch):
 
 
 def test_tokens_are_read_from_tokens_css():
-    assert tokens.colour("light", "chart-positive") == "#1b7f4b"
-    assert tokens.colour("dark", "chart-label-on-fill") == tokens.colour("dark", "text-inverse") == "#0e1116"
+    # The ValueWise values (D-96, D-102): the data scale's green, through var(), and dark navy.
+    assert tokens.colour("light", "chart-positive") == "#17ae42"
+    assert tokens.colour("dark", "chart-label-on-fill") == tokens.colour("dark", "text-inverse") == "#020921"
     assert round(tokens.contrast("#000000", "#ffffff"), 2) == 21.0
 
 

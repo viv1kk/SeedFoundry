@@ -103,14 +103,19 @@ describe('chart options (colours from tokens at paint time, D-37)', () => {
     for (const leaf of leaves) {
       const role = root.descriptor.classes.find((c) => c.id === leaf.id)!.role
       expect(leaf.itemStyle.color).toBe(declared(theme, `--chart-${role}`))
-      expect(leaf.label.color).toBe(declared(theme, role === 'muted' ? '--chart-label-on-muted' : '--chart-label-on-fill'))
+      // Each role's own label token where tokens.css gives one, else the default (D-100).
+      const own = `--chart-label-on-${role}`
+      expect(leaf.label.color).toBe(declared(theme, declared(theme, own) ? own : '--chart-label-on-fill'))
+      expect(leaf.itemStyle.borderColor).toBe(declared(theme, '--chart-outline'))
     }
     const bars = barOption(panel('entitlement'), data('entitlement'), paint(theme)) as any
     expect(bars.series.map((s: any) => s.itemStyle.color)).toEqual(['--chart-baseline', '--chart-series-1', '--chart-positive'].map((t) => declared(theme, t)))
     const lines = lineOption(panel('trend'), data('trend'), paint(theme)) as any
-    expect(lines.series.map((s: any) => s.lineStyle.color)).toEqual(['--chart-series-1', '--chart-positive'].map((t) => declared(theme, t)))
+    // ValueWise roles (D-99): In use is a grey count, cost the gold Value lens.
+    expect(lines.series.map((s: any) => s.lineStyle.color)).toEqual(['--chart-series-1', '--chart-series-2'].map((t) => declared(theme, t)))
     const cost = barOption(panel('recoverable'), data('recoverable'), paint(theme)) as any
-    expect(cost.series[0].itemStyle.color).toBe(declared(theme, '--chart-anomaly'))
+    expect(cost.series[0].itemStyle.color).toBe(declared(theme, '--chart-value'))
+    expect(cost.series[0].itemStyle.borderColor).toBe(declared(theme, '--chart-outline'))
   })
 
   it('repaints in the other theme with the other values', () => {

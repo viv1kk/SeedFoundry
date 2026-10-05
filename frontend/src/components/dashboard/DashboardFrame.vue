@@ -146,7 +146,7 @@ function clearHighlight(): void {
 }
 
 .frame__badge {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 
 .frame__note {
@@ -161,7 +161,8 @@ function clearHighlight(): void {
   justify-content: space-between;
   gap: var(--space-2) var(--space-4);
   padding: var(--space-2) var(--space-3);
-  background: var(--accent-subtle);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-default);
   border-left: 3px solid var(--accent);
   border-radius: var(--radius-sm);
   color: var(--text-primary);
@@ -169,7 +170,7 @@ function clearHighlight(): void {
 }
 
 .frame__id {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 600;
 }
 
@@ -181,7 +182,7 @@ function clearHighlight(): void {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--accent);
+  color: var(--link);
   font: inherit;
   font-weight: 600;
   cursor: pointer;

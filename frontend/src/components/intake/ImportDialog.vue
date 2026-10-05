@@ -162,7 +162,7 @@ async function runImport(): Promise<void> {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
 }
 
@@ -183,11 +183,17 @@ async function runImport(): Promise<void> {
 }
 
 .row__note--warning {
-  color: var(--status-warning);
+  /* A status in words: tested text colour, marked with the status fill (D-98) */
+  color: var(--status-warning-text);
+  border-left: 3px solid var(--status-warning);
+  padding-left: var(--space-2);
   font-weight: 600;
 }
 
 .row__note--error {
-  color: var(--status-negative);
+  /* A status in words: tested text colour, marked with the status fill (D-98) */
+  color: var(--status-negative-text);
+  border-left: 3px solid var(--status-negative);
+  padding-left: var(--space-2);
 }
 </style>

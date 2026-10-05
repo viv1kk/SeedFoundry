@@ -15,7 +15,7 @@
     "iteration": 1,
     "status": "running",
     "seed_name": "License Optimization",
-    "fingerprint": "95274b",
+    "fingerprint": "503478",
     "phase": null,
     "plan": [
      {
@@ -428,7 +428,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Inventory: 4 initiation files, 0 context files, 15.6 KB",
+  "message": "Inventory: 4 initiation files, 0 context files, 15.7 KB",
   "data": {
    "files": [
     {
@@ -447,7 +447,7 @@
      "id": "f-3",
      "name": "Environment_01.md",
      "category": "environment",
-     "size": 6483
+     "size": 6542
     },
     {
      "id": "f-4",
@@ -456,7 +456,7 @@
      "size": 3649
     }
    ],
-   "bytes": 15987
+   "bytes": 16046
   },
   "sim_t": 0.0,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -742,10 +742,10 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Intake fingerprint 95274b (sha256 over 4 files)",
+  "message": "Intake fingerprint 503478 (sha256 over 4 files)",
   "data": {
-   "fingerprint": "95274b",
-   "sha256": "95274bcee98fe466f3757bb35019f923efad8841f654d74918d2c54aa7581a0d"
+   "fingerprint": "503478",
+   "sha256": "5034787e70b09ec1b14f7bc833b6b9216f6677f833878715426cd2a2c546f3cd"
   },
   "sim_t": 4.05,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -759,10 +759,10 @@
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Fingerprint intake: 95274b",
+  "message": "Fingerprint intake: 503478",
   "data": {
    "name": "Fingerprint intake",
-   "summary": "95274b"
+   "summary": "503478"
   },
   "sim_t": 4.5,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -902,9 +902,9 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Context budget: about 3,997 tokens of intake over 4 distillation passes, one file at a time",
+  "message": "Context budget: about 4,012 tokens of intake over 4 distillation passes, one file at a time",
   "data": {
-   "estimated_tokens": 3997,
+   "estimated_tokens": 4012,
    "passes": 4
   },
   "sim_t": 5.559,
@@ -919,10 +919,10 @@
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Plan context budget: about 3,997 tokens",
+  "message": "Plan context budget: about 4,012 tokens",
   "data": {
    "name": "Plan context budget",
-   "summary": "about 3,997 tokens"
+   "summary": "about 4,012 tokens"
   },
   "sim_t": 6.088,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -952,13 +952,13 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "distil Value_0001.md: 894 tokens in, 614 out (simulated)",
+  "message": "distil Value_0001.md: 937 tokens in, 724 out (simulated)",
   "data": {
    "task": "distil Value_0001.md",
    "model": "simulated-llm",
-   "tokens_in": 894,
-   "tokens_out": 614,
-   "latency_ms": 1707,
+   "tokens_in": 937,
+   "tokens_out": 724,
+   "latency_ms": 1155,
    "simulated": true
   },
   "sim_t": 6.088,
@@ -1045,13 +1045,13 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "distil Identity.md: 755 tokens in, 538 out (simulated)",
+  "message": "distil Identity.md: 794 tokens in, 666 out (simulated)",
   "data": {
    "task": "distil Identity.md",
    "model": "simulated-llm",
-   "tokens_in": 755,
-   "tokens_out": 538,
-   "latency_ms": 1944,
+   "tokens_in": 794,
+   "tokens_out": 666,
+   "latency_ms": 1209,
    "simulated": true
   },
   "sim_t": 8.735,
@@ -1121,13 +1121,13 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "distil layers of Environment_01.md: 1,597 tokens in, 476 out (simulated)",
+  "message": "distil layers of Environment_01.md: 1,701 tokens in, 404 out (simulated)",
   "data": {
    "task": "distil layers of Environment_01.md",
    "model": "simulated-llm",
-   "tokens_in": 1597,
-   "tokens_out": 476,
-   "latency_ms": 616,
+   "tokens_in": 1701,
+   "tokens_out": 404,
+   "latency_ms": 790,
    "simulated": true
   },
   "sim_t": 10.853,
@@ -1281,13 +1281,13 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "draft core.md: 1,655 tokens in, 794 out (simulated)",
+  "message": "draft core.md: 1,676 tokens in, 729 out (simulated)",
   "data": {
    "task": "draft core.md",
    "model": "simulated-llm",
-   "tokens_in": 1655,
-   "tokens_out": 794,
-   "latency_ms": 1901,
+   "tokens_in": 1676,
+   "tokens_out": 729,
+   "latency_ms": 1279,
    "simulated": true
   },
   "sim_t": 13.5,
@@ -1359,13 +1359,13 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "draft adaptation.md: 1,608 tokens in, 1,038 out (simulated)",
+  "message": "draft adaptation.md: 1,598 tokens in, 1,021 out (simulated)",
   "data": {
    "task": "draft adaptation.md",
    "model": "simulated-llm",
-   "tokens_in": 1608,
-   "tokens_out": 1038,
-   "latency_ms": 1971,
+   "tokens_in": 1598,
+   "tokens_out": 1021,
+   "latency_ms": 1900,
    "simulated": true
   },
   "sim_t": 15.643,
@@ -1380,7 +1380,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Drafted adaptation.md: 4 sections, 5,680 bytes",
+  "message": "Drafted adaptation.md: 4 sections, 5,739 bytes",
   "data": {
    "sections": [
     "Operating context",
@@ -1388,7 +1388,7 @@
     "Account and industry adjustments",
     "Presentation notes"
    ],
-   "bytes": 5680
+   "bytes": 5739
   },
   "sim_t": 17.25,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -1435,13 +1435,13 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "draft protection.md: 2,372 tokens in, 565 out (simulated)",
+  "message": "draft protection.md: 2,358 tokens in, 1,355 out (simulated)",
   "data": {
    "task": "draft protection.md",
    "model": "simulated-llm",
-   "tokens_in": 2372,
-   "tokens_out": 565,
-   "latency_ms": 1352,
+   "tokens_in": 2358,
+   "tokens_out": 1355,
+   "latency_ms": 1198,
    "simulated": true
   },
   "sim_t": 17.786,
@@ -1511,19 +1511,19 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Seed manifest: \"License Optimization\", iteration 1, 3 layers, fingerprint 95274b",
+  "message": "Seed manifest: \"License Optimization\", iteration 1, 3 layers, fingerprint 503478",
   "data": {
    "manifest": {
     "seed": "License Optimization",
     "iteration": 1,
-    "fingerprint": "95274b",
+    "fingerprint": "503478",
     "generator": "SeedFactory",
     "layers": [
      {
       "name": "core.md",
       "role": "core",
       "bytes": 9660,
-      "sha256": "da86f41479e98fc39364269f2ef44d36a19fe76d1ce0cc35260a8413d55d8c89",
+      "sha256": "2c42996533cc9291c02e67e162d2df35fde771b06d311a50e8120c1cbf8fec2c",
       "sections": [
        "Purpose",
        "Core principles",
@@ -1536,8 +1536,8 @@
      {
       "name": "adaptation.md",
       "role": "adaptation",
-      "bytes": 5680,
-      "sha256": "661d3592225c2cb4b5971154d8143485e6388f78106b0ac99bd9aa0dac96dcec",
+      "bytes": 5739,
+      "sha256": "9115f80e99c5eeb47061b16a5c0d0e17bb9156e418032c4dd96402d48a1bd852",
       "sections": [
        "Operating context",
        "Data sources and mappings",
@@ -1549,7 +1549,7 @@
       "name": "protection.md",
       "role": "protection",
       "bytes": 1318,
-      "sha256": "cd587f4d9c4c0df3c31fd7c14dc9367cfe6af611ff56e8676c97d7b75f1d12d9",
+      "sha256": "142c3bd2b2ff479154aa2b33daacb6c9de1bffeaeda8f6beab61cb7c70184382",
       "sections": [
        "Guardrails",
        "Validation checks",
@@ -1664,13 +1664,13 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "review core.md: 3,266 tokens in, 585 out (simulated)",
+  "message": "review core.md: 3,295 tokens in, 304 out (simulated)",
   "data": {
    "task": "review core.md",
    "model": "simulated-llm",
-   "tokens_in": 3266,
-   "tokens_out": 585,
-   "latency_ms": 1276,
+   "tokens_in": 3295,
+   "tokens_out": 304,
+   "latency_ms": 1451,
    "simulated": true
   },
   "sim_t": 21.0,
@@ -1732,13 +1732,13 @@
   "type": "llm.call",
   "level": "LLM",
   "code": null,
-  "message": "review adaptation.md and protection.md: 2,570 tokens in, 590 out (simulated)",
+  "message": "review adaptation.md and protection.md: 2,666 tokens in, 359 out (simulated)",
   "data": {
    "task": "review adaptation.md and protection.md",
    "model": "simulated-llm",
-   "tokens_in": 2570,
-   "tokens_out": 590,
-   "latency_ms": 1298,
+   "tokens_in": 2666,
+   "tokens_out": 359,
+   "latency_ms": 1709,
    "simulated": true
   },
   "sim_t": 23.182,
@@ -2062,9 +2062,9 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Same descriptor (e6a28a) and query engine on 2 estates; payload structure identical",
+  "message": "Same descriptor (830637) and query engine on 2 estates; payload structure identical",
   "data": {
-   "descriptor": "e6a28a",
+   "descriptor": "830637",
    "same_structure": true
   },
   "sim_t": 30.429,
@@ -2224,7 +2224,7 @@
    "method": "GET",
    "path": "/v0.1/health",
    "status": 200,
-   "latency_ms": 86,
+   "latency_ms": 111,
    "simulated": true,
    "response": {
     "status": "ok",
@@ -2248,10 +2248,10 @@
    "method": "POST",
    "path": "/v0.1/seeds",
    "status": 201,
-   "latency_ms": 224,
+   "latency_ms": 41,
    "simulated": true,
    "response": {
-    "seed_id": "seed-ccd9",
+    "seed_id": "seed-1263",
     "name": "License Optimization"
    }
   },
@@ -2267,10 +2267,10 @@
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Seed API handshake: seed seed-ccd9",
+  "message": "Seed API handshake: seed seed-1263",
   "data": {
    "name": "Seed API handshake",
-   "summary": "seed seed-ccd9"
+   "summary": "seed seed-1263"
   },
   "sim_t": 34.26,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -2305,11 +2305,11 @@
    "method": "POST",
    "path": "/v0.1/sandboxes",
    "status": 201,
-   "latency_ms": 51,
+   "latency_ms": 62,
    "simulated": true,
    "response": {
-    "sandbox_id": "sbx-27c1",
-    "seed_id": "seed-ccd9",
+    "sandbox_id": "sbx-691f",
+    "seed_id": "seed-1263",
     "egress": false
    }
   },
@@ -2325,9 +2325,9 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Sandbox sbx-27c1 provisioned (isolated, no egress, simulated)",
+  "message": "Sandbox sbx-691f provisioned (isolated, no egress, simulated)",
   "data": {
-   "sandbox_id": "sbx-27c1"
+   "sandbox_id": "sbx-691f"
   },
   "sim_t": 34.89,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -2341,10 +2341,10 @@
   "type": "step.completed",
   "level": "INFO",
   "code": null,
-  "message": "Provision isolated sandbox: sbx-27c1",
+  "message": "Provision isolated sandbox: sbx-691f",
   "data": {
    "name": "Provision isolated sandbox",
-   "summary": "sbx-27c1"
+   "summary": "sbx-691f"
   },
   "sim_t": 35.31,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -2374,17 +2374,17 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "PUT /v0.1/sandboxes/sbx-27c1/files/core.md 201 (simulated)",
+  "message": "PUT /v0.1/sandboxes/sbx-691f/files/core.md 201 (simulated)",
   "data": {
    "method": "PUT",
-   "path": "/v0.1/sandboxes/sbx-27c1/files/core.md",
+   "path": "/v0.1/sandboxes/sbx-691f/files/core.md",
    "status": 201,
-   "latency_ms": 134,
+   "latency_ms": 66,
    "simulated": true,
    "response": {
     "name": "core.md",
     "bytes": 9660,
-    "sha256": "da86f41479e98fc39364269f2ef44d36a19fe76d1ce0cc35260a8413d55d8c89"
+    "sha256": "2c42996533cc9291c02e67e162d2df35fde771b06d311a50e8120c1cbf8fec2c"
    }
   },
   "sim_t": 35.31,
@@ -2399,17 +2399,17 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "PUT /v0.1/sandboxes/sbx-27c1/files/adaptation.md 201 (simulated)",
+  "message": "PUT /v0.1/sandboxes/sbx-691f/files/adaptation.md 201 (simulated)",
   "data": {
    "method": "PUT",
-   "path": "/v0.1/sandboxes/sbx-27c1/files/adaptation.md",
+   "path": "/v0.1/sandboxes/sbx-691f/files/adaptation.md",
    "status": 201,
-   "latency_ms": 112,
+   "latency_ms": 316,
    "simulated": true,
    "response": {
     "name": "adaptation.md",
-    "bytes": 5680,
-    "sha256": "661d3592225c2cb4b5971154d8143485e6388f78106b0ac99bd9aa0dac96dcec"
+    "bytes": 5739,
+    "sha256": "9115f80e99c5eeb47061b16a5c0d0e17bb9156e418032c4dd96402d48a1bd852"
    }
   },
   "sim_t": 35.73,
@@ -2424,17 +2424,17 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "PUT /v0.1/sandboxes/sbx-27c1/files/protection.md 201 (simulated)",
+  "message": "PUT /v0.1/sandboxes/sbx-691f/files/protection.md 201 (simulated)",
   "data": {
    "method": "PUT",
-   "path": "/v0.1/sandboxes/sbx-27c1/files/protection.md",
+   "path": "/v0.1/sandboxes/sbx-691f/files/protection.md",
    "status": 201,
-   "latency_ms": 78,
+   "latency_ms": 51,
    "simulated": true,
    "response": {
     "name": "protection.md",
     "bytes": 1318,
-    "sha256": "cd587f4d9c4c0df3c31fd7c14dc9367cfe6af611ff56e8676c97d7b75f1d12d9"
+    "sha256": "142c3bd2b2ff479154aa2b33daacb6c9de1bffeaeda8f6beab61cb7c70184382"
    }
   },
   "sim_t": 36.15,
@@ -2449,17 +2449,17 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "PUT /v0.1/sandboxes/sbx-27c1/files/manifest.json 201 (simulated)",
+  "message": "PUT /v0.1/sandboxes/sbx-691f/files/manifest.json 201 (simulated)",
   "data": {
    "method": "PUT",
-   "path": "/v0.1/sandboxes/sbx-27c1/files/manifest.json",
+   "path": "/v0.1/sandboxes/sbx-691f/files/manifest.json",
    "status": 201,
-   "latency_ms": 129,
+   "latency_ms": 295,
    "simulated": true,
    "response": {
     "name": "manifest.json",
     "bytes": 1123,
-    "sha256": "d547180cf43ad6bd800cb035771d4210e21d144f258e6359622241f00d70a052"
+    "sha256": "488dfecab4da3962903b835f22da3ec9cbfc38c54b44cebb7c90ca43643b1c15"
    }
   },
   "sim_t": 36.57,
@@ -2474,7 +2474,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Uploaded 4 files, 17,781 bytes",
+  "message": "Uploaded 4 files, 17,840 bytes",
   "data": {
    "files": [
     "core.md",
@@ -2482,7 +2482,7 @@
     "protection.md",
     "manifest.json"
    ],
-   "bytes": 17781
+   "bytes": 17840
   },
   "sim_t": 36.99,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -2635,12 +2635,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/plant 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/plant 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/plant",
+   "path": "/v0.1/seeds/seed-1263/plant",
    "status": 200,
-   "latency_ms": 44,
+   "latency_ms": 288,
    "simulated": true,
    "response": {
     "phase": "INIT",
@@ -2836,12 +2836,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "GET /v0.1/seeds/seed-ccd9 200 (simulated)",
+  "message": "GET /v0.1/seeds/seed-1263 200 (simulated)",
   "data": {
    "method": "GET",
-   "path": "/v0.1/seeds/seed-ccd9",
+   "path": "/v0.1/seeds/seed-1263",
    "status": 200,
-   "latency_ms": 59,
+   "latency_ms": 143,
    "simulated": true,
    "response": {
     "state": "INITIALIZED"
@@ -2951,12 +2951,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/discovery 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/discovery 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/discovery",
+   "path": "/v0.1/seeds/seed-1263/discovery",
    "status": 202,
-   "latency_ms": 307,
+   "latency_ms": 83,
    "simulated": true,
    "response": {
     "state": "DISCOVERING"
@@ -3031,12 +3031,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/requests/servicenow-incident-api 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/requests/servicenow-incident-api 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/requests/servicenow-incident-api",
+   "path": "/v0.1/seeds/seed-1263/requests/servicenow-incident-api",
    "status": 200,
-   "latency_ms": 69,
+   "latency_ms": 92,
    "simulated": true,
    "response": {
     "request_id": "servicenow-incident-api",
@@ -3072,12 +3072,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/discovery/complete 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/discovery/complete 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/discovery/complete",
+   "path": "/v0.1/seeds/seed-1263/discovery/complete",
    "status": 202,
-   "latency_ms": 172,
+   "latency_ms": 177,
    "simulated": true,
    "response": {
     "state": "DISCOVERY_COMPLETE"
@@ -3128,12 +3128,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/assessment 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/assessment 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/assessment",
+   "path": "/v0.1/seeds/seed-1263/assessment",
    "status": 202,
-   "latency_ms": 199,
+   "latency_ms": 289,
    "simulated": true,
    "response": {
     "state": "ASSESSING"
@@ -3210,12 +3210,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/requests/solution-approval 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/requests/solution-approval 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/requests/solution-approval",
+   "path": "/v0.1/seeds/seed-1263/requests/solution-approval",
    "status": 200,
-   "latency_ms": 91,
+   "latency_ms": 130,
    "simulated": true,
    "response": {
     "request_id": "solution-approval",
@@ -3269,12 +3269,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/implementation 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/implementation 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/implementation",
+   "path": "/v0.1/seeds/seed-1263/implementation",
    "status": 202,
-   "latency_ms": 212,
+   "latency_ms": 292,
    "simulated": true,
    "response": {
     "state": "IMPLEMENTING"
@@ -3320,12 +3320,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/implementation/complete 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/implementation/complete 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/implementation/complete",
+   "path": "/v0.1/seeds/seed-1263/implementation/complete",
    "status": 202,
-   "latency_ms": 87,
+   "latency_ms": 104,
    "simulated": true,
    "response": {
     "state": "IMPLEMENTATION_COMPLETE"
@@ -3419,12 +3419,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/requests/close-seeding 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/requests/close-seeding 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/requests/close-seeding",
+   "path": "/v0.1/seeds/seed-1263/requests/close-seeding",
    "status": 200,
-   "latency_ms": 272,
+   "latency_ms": 264,
    "simulated": true,
    "response": {
     "request_id": "close-seeding",
@@ -3446,12 +3446,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/cleanup/consolidate-notes 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/cleanup/consolidate-notes 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/cleanup/consolidate-notes",
+   "path": "/v0.1/seeds/seed-1263/cleanup/consolidate-notes",
    "status": 200,
-   "latency_ms": 116,
+   "latency_ms": 57,
    "simulated": true,
    "response": {
     "state": "CLOSING_SEEDING",
@@ -3470,12 +3470,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/cleanup/purge-scratch 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/cleanup/purge-scratch 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/cleanup/purge-scratch",
+   "path": "/v0.1/seeds/seed-1263/cleanup/purge-scratch",
    "status": 200,
-   "latency_ms": 211,
+   "latency_ms": 84,
    "simulated": true,
    "response": {
     "state": "CLOSING_SEEDING",
@@ -3494,12 +3494,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/cleanup/promote-interfaces 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/cleanup/promote-interfaces 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/cleanup/promote-interfaces",
+   "path": "/v0.1/seeds/seed-1263/cleanup/promote-interfaces",
    "status": 200,
-   "latency_ms": 249,
+   "latency_ms": 231,
    "simulated": true,
    "response": {
     "state": "CLOSING_SEEDING",
@@ -3518,12 +3518,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/cleanup/retire-build-tools 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/cleanup/retire-build-tools 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/cleanup/retire-build-tools",
+   "path": "/v0.1/seeds/seed-1263/cleanup/retire-build-tools",
    "status": 200,
-   "latency_ms": 300,
+   "latency_ms": 178,
    "simulated": true,
    "response": {
     "state": "CLOSING_SEEDING",
@@ -3596,12 +3596,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/run 202 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/run 202 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/run",
+   "path": "/v0.1/seeds/seed-1263/run",
    "status": 202,
-   "latency_ms": 44,
+   "latency_ms": 94,
    "simulated": true,
    "response": {
     "state": "READY_TO_RUN"
@@ -3619,12 +3619,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/collect 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/collect 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/collect",
+   "path": "/v0.1/seeds/seed-1263/collect",
    "status": 200,
-   "latency_ms": 55,
+   "latency_ms": 227,
    "simulated": true,
    "response": {
     "state": "RUNNING",
@@ -3660,12 +3660,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/collect 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/collect 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/collect",
+   "path": "/v0.1/seeds/seed-1263/collect",
    "status": 200,
-   "latency_ms": 186,
+   "latency_ms": 57,
    "simulated": true,
    "response": {
     "state": "RUNNING",
@@ -3701,12 +3701,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "POST /v0.1/seeds/seed-ccd9/collect 200 (simulated)",
+  "message": "POST /v0.1/seeds/seed-1263/collect 200 (simulated)",
   "data": {
    "method": "POST",
-   "path": "/v0.1/seeds/seed-ccd9/collect",
+   "path": "/v0.1/seeds/seed-1263/collect",
    "status": 200,
-   "latency_ms": 138,
+   "latency_ms": 289,
    "simulated": true,
    "response": {
     "state": "RUNNING",
@@ -4639,7 +4639,7 @@
    "variant": "rough",
    "panels": 11,
    "seats": 13050,
-   "descriptor": "e6a28a"
+   "descriptor": "830637"
   },
   "sim_t": 63.0,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -5858,7 +5858,7 @@
    "panel_titles": [
     "Assigned and in use, by month"
    ],
-   "expected": "a font token (Inter or JetBrains Mono)",
+   "expected": "a font token (IBM Plex Sans or IBM Plex Mono)",
    "shown": "Georgia, 'Times New Roman', Times, serif",
    "severity": "medium",
    "phase": "harvest",
@@ -5871,7 +5871,7 @@
      "test": "T-19",
      "check": "font",
      "panel": "trend",
-     "expected": "a font token (Inter or JetBrains Mono)",
+     "expected": "a font token (IBM Plex Sans or IBM Plex Mono)",
      "shown": "Georgia, 'Times New Roman', Times, serif",
      "message": "Assigned and in use, by month: the title is set in Georgia, 'Times New Roman', Times, serif, not a font token",
      "unit": ""
@@ -5957,7 +5957,7 @@
   "type": "finding.raised",
   "level": "WARN",
   "code": "V-8",
-  "message": "V-8 Optimisation candidates: the caption (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1); 4 problems in all",
+  "message": "V-8 Optimisation candidates: the caption (var(--border-default)) at 1.26:1 on the card in the light theme (needs 4.5:1); 4 problems in all",
   "data": {
    "id": "V-8",
    "category": "Visual",
@@ -5973,11 +5973,11 @@
     "Optimisation candidates"
    ],
    "expected": "4.50:1",
-   "shown": "1.55:1",
+   "shown": "1.26:1",
    "severity": "medium",
    "phase": "harvest",
    "step": "harvest.contrast",
-   "message": "Optimisation candidates: the caption (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1); 4 problems in all",
+   "message": "Optimisation candidates: the caption (var(--border-default)) at 1.26:1 on the card in the light theme (needs 4.5:1); 4 problems in all",
    "catalogued": true,
    "advisory": false,
    "problems": [
@@ -5986,8 +5986,8 @@
      "check": "contrast",
      "panel": "candidates",
      "expected": 4.5,
-     "shown": 1.55,
-     "message": "Optimisation candidates: the caption (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1)",
+     "shown": 1.26,
+     "message": "Optimisation candidates: the caption (var(--border-default)) at 1.26:1 on the card in the light theme (needs 4.5:1)",
      "unit": ":1"
     },
     {
@@ -5995,8 +5995,8 @@
      "check": "contrast",
      "panel": "candidates",
      "expected": 4.5,
-     "shown": 1.44,
-     "message": "Optimisation candidates: the caption (var(--border-default)) at 1.44:1 on the card in the dark theme (needs 4.5:1)",
+     "shown": 1.41,
+     "message": "Optimisation candidates: the caption (var(--border-default)) at 1.41:1 on the card in the dark theme (needs 4.5:1)",
      "unit": ":1"
     },
     {
@@ -6004,8 +6004,8 @@
      "check": "contrast",
      "panel": "candidates",
      "expected": 4.5,
-     "shown": 1.55,
-     "message": "Optimisation candidates: the Withheld cells (var(--border-default)) at 1.55:1 on the card in the light theme (needs 4.5:1)",
+     "shown": 1.26,
+     "message": "Optimisation candidates: the Withheld cells (var(--border-default)) at 1.26:1 on the card in the light theme (needs 4.5:1)",
      "unit": ":1"
     },
     {
@@ -6013,8 +6013,8 @@
      "check": "contrast",
      "panel": "candidates",
      "expected": 4.5,
-     "shown": 1.44,
-     "message": "Optimisation candidates: the Withheld cells (var(--border-default)) at 1.44:1 on the card in the dark theme (needs 4.5:1)",
+     "shown": 1.41,
+     "message": "Optimisation candidates: the Withheld cells (var(--border-default)) at 1.41:1 on the card in the dark theme (needs 4.5:1)",
      "unit": ":1"
     }
    ]
@@ -6127,12 +6127,12 @@
   "type": "api.call",
   "level": "API",
   "code": null,
-  "message": "DELETE /v0.1/sandboxes/sbx-27c1 204 (simulated)",
+  "message": "DELETE /v0.1/sandboxes/sbx-691f 204 (simulated)",
   "data": {
    "method": "DELETE",
-   "path": "/v0.1/sandboxes/sbx-27c1",
+   "path": "/v0.1/sandboxes/sbx-691f",
    "status": 204,
-   "latency_ms": 46,
+   "latency_ms": 197,
    "simulated": true,
    "response": {
     "residue": 0
@@ -6150,7 +6150,7 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Sandbox sbx-27c1 torn down, no residue (simulated)",
+  "message": "Sandbox sbx-691f torn down, no residue (simulated)",
   "data": {},
   "sim_t": 71.727,
   "wall_ts": "2026-10-03T12:00:00.000+00:00"
@@ -6305,11 +6305,11 @@
   "type": "log",
   "level": "INFO",
   "code": null,
-  "message": "Seed files packaged: core.md (9,660 bytes), adaptation.md (5,680 bytes), protection.md (1,318 bytes); Approve offers them one by one and as one zip",
+  "message": "Seed files packaged: core.md (9,660 bytes), adaptation.md (5,739 bytes), protection.md (1,318 bytes); Approve offers them one by one and as one zip",
   "data": {
    "files": {
     "core.md": 9660,
-    "adaptation.md": 5680,
+    "adaptation.md": 5739,
     "protection.md": 1318
    }
   },
@@ -6372,7 +6372,7 @@
     "tone": "warning"
    },
    "seed_name": "License Optimization",
-   "fingerprint": "95274b",
+   "fingerprint": "503478",
    "tests": {
     "T-01": "pass",
     "T-02": "pass",

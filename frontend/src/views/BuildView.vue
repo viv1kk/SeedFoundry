@@ -223,7 +223,7 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
 }
 
 .build__iteration {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 
 .build__title {
@@ -241,7 +241,7 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
 }
 
 .build__clock {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-lg);
   color: var(--text-primary);
 }
@@ -276,7 +276,7 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
 
 .build__percent {
   min-width: 4ch;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
   color: var(--text-secondary);
   text-align: right;
@@ -295,7 +295,7 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
   padding: 0;
   border: 0;
   background: none;
-  color: var(--accent);
+  color: var(--link);
   font: inherit;
   font-weight: 600;
   cursor: pointer;

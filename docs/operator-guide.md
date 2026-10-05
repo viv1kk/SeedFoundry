@@ -118,7 +118,7 @@ It cuts the network off (Chrome resolves no host but this machine; the backend r
 1. `python run.py test` (or `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Dev test`): the backend and frontend suites should both report pass. Run it with nothing else heavy running, the rehearsal included: on a loaded machine a slow frontend test can time out (R-10). If one does, run it again alone; a test that fails alone is a real fault.
 2. `npm run rehearse -- --speed 4` from `frontend/`: every check should pass.
 3. To be sure it is offline: turn the machine's network off, launch, and run through to the Seed page. Nothing changes.
-4. Launch with `python run.py`, open the printed address in Chrome, set the zoom to 100%, choose the theme (Shift+D), and close every other tab on the app.
+4. Launch with `python run.py`, open the printed address in Chrome, set the zoom to 100%, choose the theme (Shift+D; a first visit is dark, the ValueWise presentation default, and light is for bright rooms), and close every other tab on the app.
 5. Reset (Shift+R), speed 1x (Shift+1), demo controller hidden.
 
 ---

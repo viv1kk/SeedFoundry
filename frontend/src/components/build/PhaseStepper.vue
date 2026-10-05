@@ -137,7 +137,7 @@ button.phase__row:hover {
 }
 
 .phase__index {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
   color: var(--text-muted);
   text-align: right;
@@ -154,7 +154,7 @@ button.phase__row:hover {
 }
 
 .phase__duration {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-sm);
   color: var(--text-muted);
 }
@@ -181,13 +181,13 @@ button.phase__row:hover {
   width: 10px;
   height: 10px;
   border: 2px solid var(--border-default);
-  border-radius: 50%;
+  /* Square, like every other mark (ValueWise section 5) */
+  border-radius: 0;
 }
 
 .mark--active .phase__mark {
   border-color: var(--accent);
   background: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-subtle);
 }
 
 .mark--passed .phase__mark {
@@ -255,7 +255,7 @@ button.phase__row:hover {
 .step__state {
   max-width: 28ch;
   overflow: hidden;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-xs);
   color: var(--text-muted);
   text-overflow: ellipsis;
@@ -291,6 +291,9 @@ button.phase__row:hover {
 }
 
 .step--stopped .step__state {
-  color: var(--status-warning);
+  /* A status in words: tested text colour, marked with the status fill (D-98) */
+  color: var(--status-warning-text);
+  border-left: 3px solid var(--status-warning);
+  padding-left: var(--space-2);
 }
 </style>

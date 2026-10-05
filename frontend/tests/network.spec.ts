@@ -15,8 +15,10 @@ describe('source', () => {
   })
 
   it('bundles the fonts from npm instead of fetching them', () => {
-    expect(scan([resolve(FRONTEND, 'node_modules/@fontsource-variable/inter/index.css')], FRONTEND)).toEqual([])
-    expect(scan([resolve(FRONTEND, 'node_modules/@fontsource-variable/jetbrains-mono/index.css')], FRONTEND)).toEqual([])
+    // IBM Plex Sans and IBM Plex Mono (D-101), the files main.ts imports.
+    expect(scan([resolve(FRONTEND, 'node_modules/@fontsource-variable/ibm-plex-sans/index.css')], FRONTEND)).toEqual([])
+    expect(scan([resolve(FRONTEND, 'node_modules/@fontsource/ibm-plex-mono/400.css')], FRONTEND)).toEqual([])
+    expect(scan([resolve(FRONTEND, 'node_modules/@fontsource/ibm-plex-mono/600.css')], FRONTEND)).toEqual([])
   })
 })
 

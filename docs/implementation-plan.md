@@ -22,6 +22,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | | M13 | As-built reconciliation | Done (2026-10-04) | "M13: as-built reconciliation", the commit after `351a1c7` |
 | G. Feedback | CR-1 | Stakeholder feedback after M13: open-ended iterations, Reject everywhere, context footprint, feedback routing panel | Done (2026-10-04) | the commit after `a50bd81` |
 | | CR-2 | Demo feedback: SeedFactory, initiation files and versioned names, Human tag, console note, View Agentic Solution, QUAD SI, Secure and Lock | Done (2026-10-05) | the commit after `b363cd3` |
+| | CR-3 | ValueWise SI house style: palette and data scale, IBM Plex, flat and square, dark by default, dashboard roles | Done (2026-10-05) | branch `ui`, the commit after `ca38577` (not merged to main) |
 
 *As built (M13):* the Commit column was added in M13, as Seed v0.1's status table had one (`seed-reuse-notes.md` §7).
 
@@ -224,6 +225,10 @@ Each milestone lists scope, exit criteria and hand checks. Tag changes in the bu
 ### CR-2: Demo feedback
 - **Scope:** rename to SeedFactory in visible text and docs (D-87); the four initiation files only, renamed Identity.md, Tools_and_Skills.md, Environment.md and Value.md everywhere, with no Misc Context on screen and no vendor notes in the sample (D-84); files named by their category on add and versioned by each iteration that changes them (D-85); the Seed file beside each initiation file (D-86); the console's language note (D-89); the Human tag (D-90); View Agentic Solution (D-91); Initiate QUAD SI Review Protocol (D-92); Secure and Lock in Secure Repository with a download link (D-93); the footprint note's wording (D-94).
 - **Exit:** both suites, `npm run build` and the rehearsal pass; the docs say what the code does.
+
+### CR-3: ValueWise SI house style
+- **Scope:** the guide in `docs/valuewise-style.md` (D-96); `tokens.css` in its palette, with three values lifted for contrast (D-97); status as fills with tested labels (D-98); the dashboard's roles, gold headline figure and cost bars (D-99); outlined marks and per-role labels, in the renderer and in T-20 (D-100); IBM Plex Sans and Mono, screen scale (D-101); dark by default; the sample's Styling text.
+- **Exit:** both suites, `npm run build` and the rehearsal pass; the fourteen findings are still found; iteration 2's figures are M7's (the digest test); the docs say what the code does.
 
 ## 4. Safety gates (every milestone)
 

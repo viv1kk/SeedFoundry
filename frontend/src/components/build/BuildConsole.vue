@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // The build console (ui-spec.md section 3, FR-B-4, build-simulation.md section 4, D-54):
-// `mm:ss.s  LEVEL  message` on the console surface, the same in both themes (D-37), coloured
-// by level with red only for FAIL. It follows new lines unless paused; scrolling up pauses it,
+// `mm:ss.s  LEVEL  message` on the console surface, the same in both themes (D-37). Line kinds
+// (INFO, LLM, API, TEST) are white and grey; PASS, WARN and FAIL are verdicts and take the data
+// scale, FAIL as its level on a red fill (ValueWise section 1, D-98). It follows new lines unless paused; scrolling up pauses it,
 // and Resume jumps back to the latest line. The filter keeps one level (TEST includes PASS).
 // A full build is a few hundred lines, so the list is plain (Seed v0.1 needed no
 // virtualisation for its log either, seed-reuse-notes.md 2.2). A tiny note under the bar says the
@@ -99,7 +100,7 @@ const EMPTY: Record<FilterId, string> = {
     <div ref="body" class="console__body" tabindex="0" aria-label="Build log" data-test="console-body" @scroll="onScroll">
       <ol v-if="shown.length" class="console__lines">
         <li v-for="line in shown" :key="line.seq" class="line" :class="`line--${line.level}`" :data-level="line.level" data-test="console-line">
-          <span class="line__time">{{ `${line.time}  ` }}</span><span class="line__level">{{ line.level.padEnd(7) }}</span><span class="line__message">{{ line.message }}</span>
+          <span class="line__time">{{ `${line.time}  ` }}</span><span class="line__level"><span class="line__tag">{{ line.level }}</span>{{ ''.padEnd(7 - line.level.length) }}</span><span class="line__message">{{ line.message }}</span>
         </li>
       </ol>
       <p v-else class="console__empty">{{ EMPTY[filter] }}</p>
@@ -171,11 +172,11 @@ const EMPTY: Record<FilterId, string> = {
 .console__button[aria-pressed='true'] {
   background: var(--console-surface-raised);
   color: var(--console-text);
-  box-shadow: inset 0 -2px 0 var(--console-llm);
+  box-shadow: inset 0 -2px 0 var(--console-text);
 }
 
 .console__button:focus-visible {
-  outline-color: var(--console-llm);
+  outline-color: var(--console-text);
   outline-offset: -2px;
 }
 
@@ -205,7 +206,7 @@ const EMPTY: Record<FilterId, string> = {
 }
 
 .console__body:focus-visible {
-  outline-color: var(--console-llm);
+  outline-color: var(--console-text);
   outline-offset: -2px;
 }
 
@@ -231,7 +232,7 @@ const EMPTY: Record<FilterId, string> = {
   color: var(--console-text-muted);
 }
 
-/* Level colours (build-simulation.md section 4, D-37). Red only for FAIL. */
+/* Level colours (build-simulation.md section 4, D-98). Kinds neutral, verdicts in the data scale. */
 .line--INFO {
   color: var(--console-text-secondary);
 }
@@ -258,5 +259,12 @@ const EMPTY: Record<FilterId, string> = {
 
 .line--FAIL {
   color: var(--console-fail);
+}
+
+.line--FAIL .line__tag {
+  padding: 0 2px;
+  margin-left: -2px;
+  background: var(--console-fail-mark);
+  font-weight: 600;
 }
 </style>

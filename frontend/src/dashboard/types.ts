@@ -51,7 +51,6 @@ export interface Panel {
   measure?: string
   format?: string
   emphasis?: 'primary'
-  rule_role?: string
   note?: { text: string; role: string }
   legend?: { items: string; measure: string; format: string; of: string }
   orientation?: 'horizontal' | 'vertical'

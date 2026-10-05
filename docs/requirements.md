@@ -160,7 +160,7 @@ Status: draft v1, 2026-10-03. Amendments are added as A-n and applied inline wit
 | NFR-2 | Offline | Works with the network disabled. No runtime fetches outside localhost |
 | NFR-3 | Performance | ~~Intake editor stays responsive with a 1 MB file. Console handles a full build's log without jank. Dashboard first render under 1 s, except the deliberately slow panel in iteration 1~~ Intake editor stays responsive with a 1 MB file: every keystroke is drawn within 100 ms of its key. Console handles a full build's log without jank: no main-thread task over 200 ms while it streams a whole build. Dashboard first render under 1 s, from View Dashboard to every panel drawn, except the deliberately slow panel in iteration 1 (A-6) |
 | NFR-4 | Architecture | State is the single source of truth on the server; event log + SSE with snapshot-then-replay; `LLMClient` and `SeedClient` interfaces with simulated implementations; descriptor-driven dashboard |
-| NFR-5 | Visual | SeedFactory's own UI follows Seed v0.1's design system (tokens, type, colour meaning, contrast). Only the iteration 1 dashboard breaks it, and only through the scoped defect overlay |
+| NFR-5 | Visual | SeedFactory's own UI follows ~~Seed v0.1's design system (tokens, type, colour meaning, contrast)~~ the ValueWise SI house style (`valuewise-style.md`: palette, data scale, type, flat surfaces), with Seed v0.1's token names, colour meaning and contrast test (A-13). Only the iteration 1 dashboard breaks it, and only through the scoped defect overlay |
 | NFR-6 | Accessibility | WCAG AA contrast for SeedFactory's own UI in both themes (test). Keyboard reachable controls |
 | NFR-7 | Delivery | One command to launch both processes, with a Windows fallback like Seed v0.1's `run.ps1`. Operator guide with a timed demo script |
 | NFR-8 | Writing | No em dashes in any UI text, log line, report or generated file. Enforced by a test |
@@ -215,6 +215,7 @@ Recorded in detail in `seed-reuse-notes.md` (written in M0).
 | A-10 | 2026-10-05 | FR-F-3 | The zip downloads from a "download" link beside a "Secure and Lock in Secure Repository" button, which does nothing | D-93 (stakeholder, CR-2) |
 | A-11 | 2026-10-05 | FR-B-4, FR-R-1, FR-R-4 | The console's language note; View Dashboard reads View Agentic Solution; Initiate QUAD SI Review Protocol, shown only, with its footnote; the footprint's window note names the one-thread assumption | D-89, D-91, D-92, D-94 (stakeholder, CR-2) |
 | A-12 | 2026-10-05 | §5, ui-spec.md | An iteration rebuilt from a rejection carries a "Human" tag wherever the screen names it | D-90 (stakeholder, CR-2) |
+| A-13 | 2026-10-05 | NFR-5, FR-IN-4 | The UI follows the ValueWise SI house style v3: navy, white and greys, the data scale only for a status, gold for the one headline figure, link blue only on links, flat and square, IBM Plex Sans at a screen scale, IBM Plex Mono for code (the editor's raw markdown stays monospace), dark by default. Where a guide colour fails WCAG AA (NFR-6), contrast wins | D-96 to D-101 (stakeholder, CR-3) |
 
 ## 11. As built (M13)
 

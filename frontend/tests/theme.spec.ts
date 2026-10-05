@@ -1,5 +1,6 @@
-// Light and dark (seed-reuse-notes.md section 1.2): first visit follows the OS, the toggle
-// switches and remembers under seedfoundry.theme, and storage failures are tolerated.
+// Light and dark (seed-reuse-notes.md section 1.2): a first visit is dark whatever the OS
+// prefers (D-96), the toggle switches and remembers under seedfoundry.theme, and storage
+// failures are tolerated.
 
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
@@ -29,17 +30,17 @@ afterEach(() => {
 })
 
 describe('first visit', () => {
-  it('follows a dark OS preference', () => {
+  it('is dark with a dark OS preference', () => {
     osPrefers(true)
     initTheme()
     expect(html()).toBe('dark')
     expect(theme.value).toBe('dark')
   })
 
-  it('follows a light OS preference', () => {
+  it('is dark with a light OS preference too (D-96)', () => {
     osPrefers(false)
     initTheme()
-    expect(html()).toBe('light')
+    expect(html()).toBe('dark')
   })
 
   it('ignores a stored value that is not a theme', () => {
@@ -83,7 +84,7 @@ describe('the toggle', () => {
 
   it('works when matchMedia is missing', () => {
     vi.stubGlobal('matchMedia', undefined)
-    expect(initialTheme()).toBe('light')
+    expect(initialTheme()).toBe('dark')
   })
 
   it('is a labelled button that flips the theme on click', async () => {
@@ -110,8 +111,8 @@ describe('index.html sets the theme before first paint', () => {
     expect(boot).toContain(`'${THEME_KEY}'`)
   })
 
-  it('applies a stored choice, else the OS preference', () => {
-    osPrefers(true)
+  it('applies a stored choice, else dark (D-96)', () => {
+    osPrefers(false)
     runBoot()
     expect(html()).toBe('dark')
     localStorage.setItem(THEME_KEY, 'light')
@@ -125,6 +126,6 @@ describe('index.html sets the theme before first paint', () => {
     })
     osPrefers(false)
     expect(runBoot).not.toThrow()
-    expect(html()).toBe('light')
+    expect(html()).toBe('dark')
   })
 })

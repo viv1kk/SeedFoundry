@@ -22,6 +22,6 @@ const lab = useLabStore()
 }
 
 .iteration-badge {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 </style>

@@ -469,7 +469,7 @@ describe('console (FR-B-4, build-simulation.md section 4)', () => {
     expect(shownSeqs().find((l) => l.includes('T-01'))).toMatch(/^\d\d:\d\d\.\d {2}PASS {3}T-01 /)
   })
 
-  it('colours each level with its console token, red only for FAIL (D-37)', () => {
+  it('colours each level with its console token, red only for FAIL (D-37, D-98)', () => {
     const source = readFileSync(resolve(__dirname, '../src/components/build/BuildConsole.vue'), 'utf8')
     const colours = Object.fromEntries([...source.matchAll(/\.line--(\w+) \{\s*color: var\((--[\w-]+)\);/g)].map((m) => [m[1], m[2]]))
     expect(colours).toEqual({
@@ -481,7 +481,9 @@ describe('console (FR-B-4, build-simulation.md section 4)', () => {
       WARN: '--console-warn',
       FAIL: '--console-fail',
     })
-    expect(source.match(/--console-fail/g)).toHaveLength(1)
+    // Red is FAIL's level mark, white text on the red fill: no red reads as text on navy (D-98).
+    expect(source.match(/--console-fail-mark/g)).toHaveLength(1)
+    expect(source).toMatch(/\.line--FAIL \.line__tag \{[^}]*background: var\(--console-fail-mark\);/)
   })
 
   it('tags each line with its level for its colour', async () => {

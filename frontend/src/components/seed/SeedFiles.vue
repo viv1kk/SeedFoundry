@@ -69,7 +69,7 @@ const shown = computed<SeedFile | null>(() => props.seed.files.find((f) => f.nam
 }
 
 .files__name {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-md);
   font-weight: 600;
 }
@@ -81,7 +81,7 @@ const shown = computed<SeedFile | null>(() => props.seed.files.find((f) => f.nam
 
 .files__size {
   color: var(--text-secondary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: var(--text-xs);
 }
 
@@ -117,7 +117,7 @@ const shown = computed<SeedFile | null>(() => props.seed.files.find((f) => f.nam
 
 /* The zip's link: a plain hyperlink, beside the button (D-93). */
 .files__link {
-  color: var(--accent);
+  color: var(--link);
   font-size: var(--text-sm);
   font-weight: 600;
   text-decoration: underline;

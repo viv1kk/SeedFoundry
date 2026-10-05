@@ -53,8 +53,8 @@
   "fonts": {
    "title": "sans",
    "label": "sans",
-   "figure": "mono",
-   "id": "mono"
+   "figure": "sans",
+   "id": "sans"
   },
   "measures": {
    "seats": {
@@ -109,9 +109,7 @@
     "field": "entitled",
     "measure": "seats",
     "format": "count",
-    "span": 2,
-    "emphasis": "primary",
-    "rule_role": "anomaly"
+    "span": 2
    },
    {
     "id": "k-assigned",
@@ -152,6 +150,7 @@
     "measure": "recoverable_year",
     "format": "usd_compact",
     "span": 3,
+    "emphasis": "primary",
     "note": {
      "text": "priced products only, {withheld_seats} seats withheld",
      "role": "text-secondary"
@@ -261,7 +260,7 @@
      {
       "id": "in_use",
       "label": "In use",
-      "role": "positive"
+      "role": "series-2"
      }
     ],
     "drill": false,
@@ -296,7 +295,7 @@
      {
       "id": "recoverable_year",
       "label": "Recoverable a year",
-      "role": "anomaly"
+      "role": "value"
      }
     ],
     "withheld": {

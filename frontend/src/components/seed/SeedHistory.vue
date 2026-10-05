@@ -105,7 +105,7 @@ const entries = computed(() =>
   height: var(--space-4);
   margin-top: 2px;
   border: 2px solid var(--border-strong);
-  border-radius: 50%;
+  border-radius: 0;
   background: var(--surface-raised);
 }
 
@@ -140,7 +140,7 @@ const entries = computed(() =>
   padding: 0;
   border: 0;
   background: none;
-  color: var(--accent);
+  color: var(--link);
   font: inherit;
   font-size: var(--text-sm);
   font-weight: 600;

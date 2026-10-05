@@ -11,13 +11,8 @@
         try {
           theme = window.localStorage.getItem('seedfoundry.theme')
         } catch (e) {}
-        if (theme !== 'light' && theme !== 'dark') {
-          try {
-            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-          } catch (e) {
-            theme = 'light'
-          }
-        }
+        // Dark is the presentation default (ValueWise house style, D-96).
+        if (theme !== 'light' && theme !== 'dark') theme = 'dark'
         document.documentElement.setAttribute('data-theme', theme)
       })()
     </script>

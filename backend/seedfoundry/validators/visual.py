@@ -11,7 +11,10 @@ and the resolved token values of tokens.css, in both themes.
   twelve-column grid with one gutter, the first chart spans the full width, and charts on one
   row share a height; one font family per role.
 - T-20 contrast: every text colour the descriptor names against the panel surface at 4.5:1, and
-  every chart role it draws with at 3:1 (except `muted`), in both themes.
+  every chart role it draws with (except `muted`) holding a 3:1 edge on the panel surface, in both
+  themes. The renderer outlines every filled mark in `--chart-outline` (D-100), so a mark's edge is
+  its fill or its outline, whichever stands out more: the ValueWise data scale keeps its exact hues
+  (a red on navy, a green on white) and each mark is still seen against the card.
 
 Styles the descriptor applies beyond the design system (iteration 1's scoped defects.css, read by
 styles.py) are checked too: a card moved off the grid or its gutter, an element wider than its
@@ -33,7 +36,8 @@ from seedfoundry.validators import styles, tokens
 from seedfoundry.validators.problems import Problem
 
 THEMES = ("light", "dark")
-CHART_ROLES = {f"series-{n}" for n in range(1, 9)} | {"positive", "warning", "negative", "anomaly", "baseline", "muted"}
+CHART_ROLES = {f"series-{n}" for n in range(1, 9)} | {"positive", "warning", "negative", "anomaly", "value", "baseline", "muted"}
+OUTLINE = "chart-outline"  # every filled mark's 1 px edge (D-100)
 TEXT_ROLES = {"text-primary", "text-secondary", "text-muted"}
 FAULT_CATEGORIES = {"leaver"}  # red is reserved for faults; a Leaver seat is an access finding
 CATEGORY_FIELDS = {"product", "vendor", "department"}
@@ -252,9 +256,10 @@ def check(descriptor: dict[str, Any], payload: dict[str, Any] | None = None) -> 
                     ratio = tokens.contrast(tokens.colour(theme, token), background)
                     if ratio < TEXT_CONTRAST:
                         add("T-20", "contrast", panel["id"], TEXT_CONTRAST, round(ratio, 2), f"{token} text at {ratio:.2f}:1 on the card in the {theme} theme (needs {TEXT_CONTRAST}:1)", ":1")
+            edge = tokens.contrast(tokens.colour(theme, OUTLINE), background)
             for where, token, _ in _colours(panel):
                 if token in CHART_ROLES and token != "muted" and where not in ("withheld label", "caption", "note"):
-                    ratio = tokens.contrast(tokens.colour(theme, f"chart-{token}"), background)
+                    ratio = max(tokens.contrast(tokens.colour(theme, f"chart-{token}"), background), edge)
                     if ratio < MARK_CONTRAST:
                         add("T-20", "contrast", panel["id"], MARK_CONTRAST, round(ratio, 2), f"chart-{token} at {ratio:.2f}:1 on the card in the {theme} theme (needs {MARK_CONTRAST}:1)", ":1")
     return problems
@@ -290,7 +295,7 @@ def _check_styles(descriptor: dict[str, Any], add: Any) -> None:
             add("T-19", "truncation", where, "every column readable", shown, f"{part} {'are' if part.endswith('s') else 'is'} clipped ({shown})")
         family = rule.value("font-family")
         if family and not family.startswith("var(--font-"):
-            add("T-19", "font", where, "a font token (Inter or JetBrains Mono)", family, f"{part} is set in {family}, not a font token")
+            add("T-19", "font", where, "a font token (IBM Plex Sans or IBM Plex Mono)", family, f"{part} is set in {family}, not a font token")
         colour = rule.value("color")
         if colour:
             for theme in THEMES:

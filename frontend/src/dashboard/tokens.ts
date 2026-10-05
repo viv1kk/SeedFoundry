@@ -30,9 +30,8 @@ export function classColour(read: TokenReader, panel: Panel, cls: ClassInfo): st
   return panel.class_colours?.[cls.id]?.colour ?? role(read, cls.role)
 }
 
-/** The label colour on a role's fill (D-37): dark-on-light roles are baseline and muted. */
+/** The label colour on a role's fill (D-100): the role's own --chart-label-on-<role> where
+ * tokens.css gives one (navy on the light fills, white on the dark ones), else --chart-label-on-fill. */
 export function labelOn(read: TokenReader, fill: string): string {
-  if (fill === 'baseline') return read('--chart-label-on-baseline')
-  if (fill === 'muted') return read('--chart-label-on-muted')
-  return read('--chart-label-on-fill')
+  return read(`--chart-label-on-${fill}`) || read('--chart-label-on-fill')
 }

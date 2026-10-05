@@ -76,10 +76,10 @@ Four bands, in this order:
 
 ### Colours
 
-- Every colour comes from the design system's chart roles. No other colour appears.
-- Each utilisation class keeps one colour everywhere: Active `positive` (green), Underused `warning` (amber), Unused `anomaly` (orange), Leaver `negative` (red), Unassigned `muted` (grey).
-- Red is kept for faults. Only Leaver seats use it; a normal series never does.
-- Entitled seats use `baseline`, assigned seats `series-1`, seats in use `positive`.
+- The ValueWise house style: every colour comes from the chart roles; red, amber and green only where the data gives a status.
+- Each utilisation class keeps one colour everywhere: Active `positive` (green), Underused `warning` (amber), Unused `anomaly` (red), Leaver `negative` (deep red), Unassigned `muted` (navy).
+- The deep red is kept for faults. Only Leaver seats use it; a normal series never does.
+- Entitled seats use `baseline`, assigned `series-1`, in use `series-2`; cost uses `value` (gold).
 
 ### Number formats
 
@@ -94,9 +94,9 @@ Four bands, in this order:
 
 ### Type, grid and themes
 
-- Inter for text and figures, JetBrains Mono for ids such as `LIC-001848`. One family per role on every panel.
-- Cards sit on the twelve-column grid with equal gutters. Nothing overflows its card and no table is cut off.
-- Light and dark themes. All text, muted text included, meets WCAG AA contrast in both.
+- IBM Plex Sans for text, figures and ids such as `LIC-001848`. One family per role on every panel.
+- Flat, square cards on the twelve-column grid with equal gutters. Nothing overflows or is cut off.
+- Dark theme first, light for print. All text, muted text included, meets WCAG AA contrast in both.
 
 ## Adaptation Layer
 

@@ -16,6 +16,8 @@ Citations use the form `seed:file §section`, all under `docs/seed_docs/`.
 
 **Where:** `seed:design-system.md` §§1 to 9 (as built, source of truth was `frontend/src/design/tokens.css`); `seed:decisions.md` D-5 and OQ-3; `seed:project-notes.md` §84.5 "M21 · Design pass" (contrast fixes, fonts).
 
+*As built (CR-3, 2026-10-05, D-96 to D-102):* SeedFactory's look is now the ValueWise SI house style (`valuewise-style.md`). The principles below still hold, and the token names are Seed v0.1's, but the values in §1.3, the faces in §1.4, the radii, the shadows and the first-visit theme rule are history: `valuewise-style.md` Part 2 lists the values `tokens.css` holds, and `contrast.spec.ts` reads them from there.
+
 ### 1.1 Principles we keep
 
 1. Colour carries meaning, never decoration. Every colour is a token with a stated role; a value that means something has one colour on every chart, chip and table.
@@ -306,7 +308,7 @@ Panel ids are SeedFactory's (Seed's descriptor ids for this dashboard are not re
 | `k-recoverable` | KPI | Recoverable a year | kpi, currency | sum over recoverable seats on priced products of unit cost x 12; note "priced products only, N seats withheld" | text |
 | `seats-treemap` | Chart, full width | Seats by vendor and product | treemap | vendor, then product, then class; sized by entitled seats | by class |
 | `entitlement` | Chart | Entitled, assigned and active by product | bar, horizontal, grouped | per product: entitled, assigned, active. "The gap is the finding" | `baseline` (entitled), `series-1` (assigned), `positive` (active) |
-| `trend` | Chart | Assigned and in use, by month (as built) | line | per month, estate-wide: assigned seats and seats in use | `series-1` (assigned), `positive` (in use) |
+| `trend` | Chart | Assigned and in use, by month (as built) | line | per month, estate-wide: assigned seats and seats in use | `series-1` (assigned), ~~`positive`~~ `series-2` (in use, D-99) |
 | `recoverable` | Chart | Recoverable cost by product | bar | per product: recoverable cost a year; unpriced products shown as withheld, not zero | `anomaly` |
 | `candidates` | Focused table | Optimisation candidates (Seed: "optimisation candidates per product") | table | per product: vendor, entitled, active, underused, unused, leaver, unassigned, recoverable a year; total row | class chips |
 | `seats` | Record table | Seats (as built) | table | one row per seat, fields in 5.2; footer with class counts and total | class chip |
@@ -429,7 +431,7 @@ Total 14, as `build-simulation.md` §5 requires. The figures in the N-1 log line
 | V-5 | descriptor | both axes of the entitlement and trend charts without names or units | | holds |
 | V-6 | styles | margins on Assigned and Active (uneven gutters), Unused or underused moved 11 px down and 9 px right, treemap canvas 100% + 40 px, last two Seats columns 34 px and clipped | | holds |
 | V-7 | styles | trend title in Georgia, Times New Roman, serif | | holds |
-| V-8 | styles | candidates caption and Withheld cells in `var(--border-default)`: 1.55:1 light, 1.44:1 dark | | the caption holds; Withheld cells need an unpriced product |
+| V-8 | styles | candidates caption and Withheld cells in `var(--border-default)`: ~~1.55:1 light, 1.44:1 dark~~ 1.26:1 light, 1.41:1 dark with the ValueWise tokens (D-102) | | the caption holds; Withheld cells need an unpriced product |
 | L-1 | descriptor | `latency_ms` 4500; the browser waits that long before drawing the treemap, behind a spinner | | waits on first draw, reload and each drill (OQ-25) |
 
 Every one is found by the minimal validators (numeric, visual over the descriptor and `defects.css`, latency) at All products, and none on iteration 2 (`backend/tests/test_overlay.py`).

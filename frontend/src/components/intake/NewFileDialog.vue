@@ -143,7 +143,7 @@ function onSubmit(): void {
 .form__mono {
   margin-left: var(--space-2);
   color: var(--text-primary);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 
 .form__input[aria-invalid='true'] {
@@ -151,7 +151,10 @@ function onSubmit(): void {
 }
 
 .form__warning {
-  color: var(--status-warning);
+  /* A status in words: tested text colour, marked with the status fill (D-98) */
+  color: var(--status-warning-text);
+  border-left: 3px solid var(--status-warning);
+  padding-left: var(--space-2);
   font-size: var(--text-sm);
   font-weight: 600;
 }
@@ -164,7 +167,10 @@ function onSubmit(): void {
 }
 
 .form__error {
-  color: var(--status-negative);
+  /* A status in words: tested text colour, marked with the status fill (D-98) */
+  color: var(--status-negative-text);
+  border-left: 3px solid var(--status-negative);
+  padding-left: var(--space-2);
   font-size: var(--text-sm);
 }
 </style>

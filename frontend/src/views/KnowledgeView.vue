@@ -173,8 +173,8 @@ async function startBuild(): Promise<void> {
   align-items: center;
   gap: var(--space-4);
   padding: var(--space-2) var(--space-6);
-  background: var(--accent-subtle);
-  border-bottom: 1px solid var(--accent);
+  background: var(--surface-raised);
+  border-bottom: 1px solid var(--border-default);
   color: var(--text-primary);
   font-size: var(--text-sm);
 }
