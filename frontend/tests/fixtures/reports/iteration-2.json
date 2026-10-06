@@ -350,7 +350,7 @@
    "phase": "harvest",
    "phase_name": "Harvest Validation",
    "status": "pass",
-   "detail": "every text colour at 4.5:1 and every chart role at 3:1 on the panel surface, both themes",
+   "detail": "every text colour at 4.5:1 and every chart role outside the data scale at 3:1 on the panel surface, both themes",
    "simulated": false
   },
   {

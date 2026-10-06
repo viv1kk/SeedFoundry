@@ -5,7 +5,8 @@
  * first. Link blue only on things that open or act. Flat: no radius, no shadow, no gradient.
  *
  * Light on :root, dark under [data-theme='dark'] on <html>; dark is the default (theme.ts). No
- * component knows the theme. Three values differ from the guide's hex, because the guide's fail
+ * component knows the theme. Type: one scale, one size per role (D-104, valuewise-style.md).
+ * Three values differ from the guide's hex, because the guide's fail
  * WCAG AA on its own panel colour (D-97): muted text in both themes and the light gold.
  * tests/contrast.spec.ts reads this file, and so do the backend's validators (validators/tokens.py).
  */
@@ -86,10 +87,10 @@
   --chart-muted: #d5dce8;
 
   /*
-   * Every filled mark (bar, treemap cell, slice, line point) is outlined in --chart-outline, which
-   * gives each mark its 3:1 edge against the card whatever its fill (D-100).
+   * The 1 px edge of every filled mark (bar, treemap cell, slice, line point): the panel colour, so
+   * marks sit apart on the card with a flat gap and no white line (D-104).
    */
-  --chart-outline: #0b1f3a;
+  --chart-outline: #f2f5fa;
 
   /* Chart labels on a fill (D-100): navy on the light fills, white on the dark ones. */
   --chart-label-on-fill: #ffffff;
@@ -134,18 +135,22 @@
   --console-fail-mark: #b50e05;
 
   /*
-   * Type (guide section 6, screen scale, D-101): IBM Plex Sans everywhere, IBM Plex Mono only for
-   * the console and file contents. Figures use Plex Sans's tabular numerals (base.css).
+   * Type (guide section 6, screen scale, D-101, D-104, D-105): IBM Plex Sans everywhere, IBM Plex
+   * Mono only for the console and file contents. Figures use Plex Sans's tabular numerals (base.css).
+   * One size per role: --text-2xl a page title, --text-lg a panel or section title and the wordmark
+   * (20 px bold, so the light gold passes as large text), --text-md a sub-heading and body,
+   * --text-sm supporting text, tables and charts, --text-xs labels (uppercase, letter-spaced), chips
+   * and footnotes. Nothing is smaller than 12 px, and only --text-xs is under 14 px.
    */
   --font-sans: 'IBM Plex Sans Variable', 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', Consolas, ui-monospace, monospace;
-  --text-xs: 14px;
+  --text-xs: 12px;
   --text-sm: 14px;
-  --text-md: 16px;
+  --text-md: 15px;
   --text-lg: 20px;
-  --text-xl: 28px;
-  --text-2xl: 32px;
-  --text-figure: 40px;
+  --text-xl: 24px;
+  --text-2xl: 28px;
+  --text-figure: 36px;
   --line-height-body: 1.35;
   --tracking-caps: 0.08em;
 
@@ -214,7 +219,7 @@
   --chart-baseline: #8a93a8;
   --chart-muted: #244a7a;
 
-  --chart-outline: #ffffff;
+  --chart-outline: #15335c;
 
   --chart-label-on-fill: #020921;
   --chart-label-on-positive: #020921;

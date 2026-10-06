@@ -2,8 +2,9 @@
 // and the token values read at paint time. Pure, so a theme change or the fonts arriving is a
 // rebuild (seed-reuse-notes.md section 1.2 and 1.4). Every colour is a token's value, or a value the
 // descriptor itself gives (iteration 1's V-3, D-60); none is written here. ValueWise house style
-// (D-99, D-100): flat, square, 14 px text and 16 px tile labels with the count in brackets, and
-// every filled mark outlined in --chart-outline so it holds a 3:1 edge on the card whatever its fill.
+// (D-99, D-100, D-104): flat, square, 14 px text and 16 px tile labels with the count in brackets;
+// marks sit apart by a 1 px gap in the panel colour (--chart-outline), and nothing in a chart is
+// white unless it is data.
 
 import { axisTitle, count, format } from './format'
 import { classColour, labelOn, role, type TokenReader } from './tokens'
@@ -32,7 +33,7 @@ function textStyle(read: TokenReader) {
   return { fontFamily: fonts(read).sans, fontSize: TEXT_SIZE, color: read('--text-secondary') }
 }
 
-/** The 1 px outline every filled mark carries (D-100). */
+/** The 1 px edge every filled mark carries: a gap in the panel colour (D-104). */
 function outline(read: TokenReader) {
   return { borderColor: read('--chart-outline'), borderWidth: 1 }
 }
@@ -47,7 +48,9 @@ function tooltip(read: TokenReader, trigger: 'item' | 'axis') {
     padding: [6, 10],
     textStyle: { fontFamily: fonts(read).sans, fontSize: TEXT_SIZE, color: read('--text-primary') },
     extraCssText: 'box-shadow: none; border-radius: 0;',
-    axisPointer: { type: 'shadow', shadowStyle: { color: read('--chart-brush') } },
+    // The hover band is a solid palette colour drawn behind the marks (z 1, under the bars' z 2), so
+    // the hovered bars and their labels stay on top of it; ECharts' default z 50 painted it over them.
+    axisPointer: { type: 'shadow', z: 1, shadowStyle: { color: read('--chart-brush') } },
   }
 }
 
@@ -64,6 +67,8 @@ function legend(read: TokenReader) {
     itemWidth: 12,
     itemHeight: 12,
     itemGap: 16,
+    // A swatch is the series' fill alone, without the marks' edge.
+    itemStyle: { borderWidth: 0 },
     textStyle: textStyle(read),
   }
 }
@@ -123,7 +128,8 @@ export function treemapOption(panel: Panel, data: PanelData, paint: Paint) {
       value: n.value,
       step: n.step,
       level: n.level,
-      itemStyle: cls ? { color: classColour(read, panel, cls), ...outline(read) } : { color: read('--surface-sunken'), borderColor: read('--border-default') },
+      // A vendor or product (a parent) is the panel itself, so only the classes' tiles show.
+      itemStyle: cls ? { color: classColour(read, panel, cls), ...outline(read) } : { color: read('--surface-raised'), borderColor: read('--surface-raised') },
       // A leaf too small for its name shows none rather than a stub; its tooltip still names it.
       // A label is the name with the count in brackets, as on the ValueWise dashboard.
       label: cls
@@ -143,7 +149,8 @@ export function treemapOption(panel: Panel, data: PanelData, paint: Paint) {
   const depth = (nodes: TreeNode[] | undefined): number => (nodes?.length ? 1 + Math.max(...nodes.map((n) => depth(n.children))) : 0)
   const deepest = depth(data.nodes)
   const levels = [
-    { itemStyle: { borderWidth: 0, gapWidth: 3 } },
+    // ECharts' virtual root: the panel colour, so the gaps between vendors are the card, not white.
+    { itemStyle: { color: read('--surface-raised'), borderColor: read('--surface-raised'), borderWidth: 0, gapWidth: 3 } },
     ...Array.from({ length: deepest }, (_, i) =>
       i === deepest - 1
         ? { itemStyle: { ...outline(read), gapWidth: 0 } }
@@ -263,7 +270,7 @@ export function lineOption(panel: Panel, data: PanelData, paint: Paint) {
     legend: legend(read),
     tooltip: {
       ...tooltip(read, 'axis'),
-      axisPointer: { type: 'line', lineStyle: { color: read('--border-strong') } },
+      axisPointer: { type: 'line', z: 1, lineStyle: { color: read('--border-strong') } },
       formatter: (items: { dataIndex: number; seriesName: string; value: number }[]) =>
         [`<strong>${escape(format(months[items[0]?.dataIndex ?? 0], 'month'))}</strong>`, ...items.map((item) => line(`${item.seriesName}:`, format(item.value, valueFormat)))].join(
           '<br>',

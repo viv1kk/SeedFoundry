@@ -4,6 +4,12 @@ The four screens, the rebuild modal and the demo controller. This describes inte
 
 *As built (CR-3, 2026-10-05, D-96 to D-101):* every screen follows the ValueWise SI house style (`valuewise-style.md`): dark by default, navy panels with a 1 px border and square corners, no shadows; IBM Plex Sans (IBM Plex Mono only in the console and the markdown editor); primary buttons a neutral inversion (white fill, navy label in dark); status chips filled in the data scale; link blue only on links and link-like actions. On the dashboard the utilisation classes take the data scale, counts are white and grey, recoverable cost is gold and Recoverable a year is the one gold headline figure; treemap cells read "Name (count)". Layouts, wording and controls are unchanged.
 
+*As built (2026-10-06, D-105):* hovering a bar chart highlights the row behind its bars, never over them; type is tighter (28 px page titles, 15 px body, 12 px uppercase labels and chips).
+
+*As built (2026-10-06, D-104):* charts sit flat on their panels with no white lines (gaps in the panel colour); every page title is 32 px and type follows one scale (`valuewise-style.md`).
+
+*As built (2026-10-06, D-103):* the wordmark and the browser tab's title read "ValueWise™ Seed Factory", "Value" in gold, 20 px bold.
+
 ## 1. App shell
 
 - Top bar: SeedFactory wordmark (left), journey indicator (centre): **Knowledge → Build → Review → Seed**, iteration badge ("Iteration 1 of 2") when a build exists, theme toggle (right).

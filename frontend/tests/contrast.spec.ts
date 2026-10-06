@@ -83,6 +83,8 @@ const STATUSES = ['positive', 'warning', 'negative']
 const SERIES = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `series-${n}`)
 // Every chart role but muted, which is drawn as a background (Unassigned).
 const MARK_ROLES = [...SERIES, 'positive', 'warning', 'negative', 'anomaly', 'value', 'baseline']
+// The house style's fixed hues: the data scale and the Value lens's gold keep the guide's values (D-104).
+const DATA_SCALE = ['positive', 'warning', 'negative', 'anomaly', 'value']
 const BANDS: Record<string, string> = {
   '--band-under-20': '#036715',
   '--band-20-50': '#17ae42',
@@ -177,17 +179,13 @@ describe('contrast, both themes (WCAG 2.1)', () => {
     expect(failures(every(['--gold'], SURFACES, 3))).toEqual([])
   })
 
-  it('the chart outline against the panel surface, at 3:1 (D-100)', () => {
-    expect(failures(every(['--chart-outline'], ['--surface-raised'], 3))).toEqual([])
+  it("the marks' edge is the panel colour, a gap and never a white line (D-104)", () => {
+    for (const theme of BOTH) expect(colour(theme, '--chart-outline')).toBe(colour(theme, '--surface-raised'))
   })
 
-  it('every chart role except muted holds a 3:1 edge on the panel surface: its fill or its outline (D-100)', () => {
-    const weak = BOTH.flatMap((theme) => {
-      const panel = colour(theme, '--surface-raised')
-      const edge = contrast(colour(theme, '--chart-outline'), panel)
-      return MARK_ROLES.filter((r) => Math.max(contrast(colour(theme, `--chart-${r}`), panel), edge) < 3).map((r) => `${theme}: ${r}`)
-    })
-    expect(weak).toEqual([])
+  it('every chart role but muted and the fixed data scale against the panel surface, at 3:1 (D-104)', () => {
+    const roles = MARK_ROLES.filter((r) => !DATA_SCALE.includes(r)).map((r) => `--chart-${r}`)
+    expect(failures(every(roles, ['--surface-raised'], 3))).toEqual([])
   })
 
   it('every chart label on its fill, at 4.5:1 (D-100)', () => {

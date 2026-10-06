@@ -27,7 +27,8 @@ defineProps<{ title?: string }>()
 }
 
 .card__title {
-  font-size: var(--text-sm);
+  /* A panel title, as on the dashboard and the report (D-104) */
+  font-size: var(--text-lg);
   font-weight: 600;
 }
 

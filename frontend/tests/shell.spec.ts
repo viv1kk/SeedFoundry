@@ -180,7 +180,7 @@ describe('top bar', () => {
     const { wrapper } = await mountApp('/knowledge', snapshot)
     const columns = wrapper.find('header.top-bar').element.children
     expect(columns).toHaveLength(3)
-    expect(columns[0].textContent?.trim()).toBe('SeedFactory')
+    expect(columns[0].textContent?.trim()).toBe('ValueWise™ Seed Factory') // D-103
     expect(columns[1].matches('nav[aria-label="Journey"]')).toBe(true)
     expect(columns[2].querySelector('[data-test="iteration-badge"]')).not.toBeNull()
     expect(columns[2].querySelector('[data-test="theme-toggle"]')).not.toBeNull()

@@ -37,7 +37,8 @@ const intake = useIntakeStore()
 }
 
 .empty__title {
-  font-size: var(--text-xl);
+  /* A page title, as on every other page (D-104) */
+  font-size: var(--text-2xl);
   font-weight: 600;
   line-height: 1.2;
 }

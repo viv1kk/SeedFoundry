@@ -984,8 +984,8 @@ def visual_check(ctx: BuildContext) -> Step:
 
 
 def contrast_check(ctx: BuildContext) -> Step:
-    yield log("Contrast: text at 4.5:1 and chart roles at 3:1 on the panel surface, light and dark themes")
-    yield from raise_findings(ctx, "T-20", "every text colour at 4.5:1 and every chart role at 3:1 on the panel surface, both themes")
+    yield log("Contrast: text at 4.5:1 and chart roles at 3:1 on the panel surface (the data scale keeps its hues), light and dark themes")
+    yield from raise_findings(ctx, "T-20", "every text colour at 4.5:1 and every chart role outside the data scale at 3:1 on the panel surface, both themes")
     return _summary(ctx, "T-20")
 
 

@@ -15,7 +15,8 @@
 //   dashboards from View Agentic Solution to every panel drawn (NFR-3), long tasks while the console streams,
 //   and keystrokes in a 1 MB file.
 // - Keyboard: on each page, Tab walks every control, and each shows a visible focus ring (NFR-6).
-// - Screenshots of each page in both themes, and results.json, go to the out folder.
+// - Screenshots of each page in both themes, each chart hovered in both themes (D-105), and
+//   results.json, go to the out folder.
 //
 // Plain erasable TypeScript, so Node runs it without a build step. Needs Chrome (or CHROME=<path>)
 // and the backend's environment (backend/.venv). Exits non-zero when a check fails.
@@ -287,6 +288,51 @@ async function bothThemes(name: string): Promise<void> {
 }
 
 /**
+ * Hover each chart and keep a picture of it, in both themes (D-105): the mouse over a point inside the
+ * chart (the treemap's largest tile, a bar row, a line point), a pause for the tooltip, then a
+ * screenshot clipped to the panel. jsdom has no hover; these are for a person to look at.
+ */
+async function hoverCharts(name: string): Promise<void> {
+  const spots: [string, number, number][] = [
+    ['seats-treemap', 0.2, 0.5],
+    ['entitlement', 0.45, 0.2],
+    ['trend', 0.5, 0.35],
+    ['recoverable', 0.55, 0.2],
+  ]
+  for (const theme of ['dark', 'light']) {
+    if ((await page.eval<string>('document.documentElement.dataset.theme')) !== theme) {
+      await shortcut('D')
+      await sleep(600)
+    }
+    for (const [panel, fx, fy] of spots) {
+      const box = await page.eval<{ x: number; y: number; w: number; h: number; px: number; py: number; pw: number; ph: number } | null>(`(() => {
+        const card = document.querySelector('[data-panel="${panel}"]')
+        const canvas = card && card.querySelector('[data-test="chart-canvas"]')
+        if (!canvas) return null
+        card.scrollIntoView({ block: 'center' })
+        const c = canvas.getBoundingClientRect(), p = card.getBoundingClientRect()
+        return { x: c.left, y: c.top, w: c.width, h: c.height, px: p.left + scrollX, py: p.top + scrollY, pw: p.width, ph: p.height }
+      })()`)
+      if (!box) continue
+      await sleep(200)
+      const x = box.x + box.w * fx
+      const y = box.y + box.h * fy
+      await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: x - 4, y })
+      await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y })
+      await sleep(500)
+      const shot = await page.send('Page.captureScreenshot', {
+        format: 'png',
+        captureBeyondViewport: true,
+        clip: { x: box.px, y: box.py, width: box.pw, height: box.ph, scale: 1 },
+      })
+      writeFileSync(join(OUT, `${name}-${panel}-${theme}.png`), Buffer.from(shot.data, 'base64'))
+    }
+  }
+  await page.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 3, y: 3 })
+  await page.eval('(window.scrollTo(0, 0), true)')
+}
+
+/**
  * Tab from the top of the page until focus comes round again. Every control that should take focus
  * (visible, enabled or aria-disabled) must be reached, and each must show a ring when it has keyboard
  * focus: an outline or a box shadow (NFR-6).
@@ -531,6 +577,7 @@ async function rehearse(): Promise<void> {
   check('NFR-3', 'Iteration 2 dashboard renders in under 1 s', render2.ms < 1000 && !render2.waiting.length, `${render2.ms} ms`)
   await sleep(800)
   await bothThemes('06-dashboard-2')
+  await hoverCharts('06-hover')
   await click('[data-test="back-to-report"]')
 
   // Approve and the Seed page (AC-4)

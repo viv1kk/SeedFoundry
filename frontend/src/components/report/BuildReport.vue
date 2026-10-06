@@ -643,9 +643,10 @@ const ids = computed(() => `report-${props.build.id}`)
   font-size: var(--text-xs);
 }
 
+/* The smallest step on the scale: 12 px, muted (D-105; A-11's "very small text") */
 .report__footnote {
   color: var(--text-muted);
-  font-size: calc(var(--text-xs) - 1px);
+  font-size: var(--text-xs);
 }
 
 .report__actions {

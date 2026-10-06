@@ -9,7 +9,8 @@ import ThemeToggle from './ThemeToggle.vue'
 <template>
   <header class="top-bar">
     <div class="top-bar__start">
-      <span class="wordmark" data-test="wordmark">SeedFactory</span>
+      <!-- The title (D-103); "Value" in gold, as the house style asks of the wordmark -->
+      <span class="wordmark" data-test="wordmark"><span class="wordmark__value">Value</span>Wise™ Seed Factory</span>
     </div>
     <JourneyIndicator />
     <div class="top-bar__end">
@@ -46,11 +47,16 @@ import ThemeToggle from './ThemeToggle.vue'
   gap: var(--space-3);
 }
 
+/* 20 px bold is large text, where gold needs 3:1 (D-97, D-103) */
 .wordmark {
   color: var(--text-primary);
-  font-size: var(--text-md);
+  font-size: var(--text-lg);
   font-weight: 700;
   letter-spacing: -0.01em;
   white-space: nowrap;
+}
+
+.wordmark__value {
+  color: var(--gold);
 }
 </style>

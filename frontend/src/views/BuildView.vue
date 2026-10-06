@@ -229,7 +229,8 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
 .build__title {
   flex: 1;
   min-width: 0;
-  font-size: var(--text-lg);
+  /* A page title, as on every other page (D-104) */
+  font-size: var(--text-2xl);
   font-weight: 600;
 }
 

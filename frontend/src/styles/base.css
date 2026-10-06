@@ -79,7 +79,7 @@ pre {
 /* Kickers and small capitals labels: uppercase, letter-spaced, muted (ValueWise section 6) */
 .caps-label {
   font-size: var(--text-xs);
-  font-weight: 500;
+  font-weight: 600; /* as every other uppercase label: table heads, facts (D-104) */
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
   color: var(--text-muted);

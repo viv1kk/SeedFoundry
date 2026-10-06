@@ -104,7 +104,7 @@ const html = computed(() => renderMarkdown(props.text))
   padding: 1px var(--space-1);
   border-radius: var(--radius-sm);
   background: var(--surface-sunken);
-  font-size: 0.9em;
+  font-size: var(--text-sm);
 }
 
 .markdown :deep(pre) {
@@ -162,7 +162,7 @@ const html = computed(() => renderMarkdown(props.text))
 .markdown :deep(.md-address) {
   color: var(--text-muted);
   font-family: var(--font-mono);
-  font-size: 0.85em;
+  font-size: var(--text-sm);
 }
 
 /* Images are not loaded (D-40): a labelled stand-in with the alt text and the address. */
