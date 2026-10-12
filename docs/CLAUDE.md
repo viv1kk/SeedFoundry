@@ -20,7 +20,7 @@ SeedFactory is a lab that generates, tests and refines Seeds. A Seed is an Ensem
 | `docs/implementation-plan.md` | Milestones, repo layout, critical path |
 | `docs/methodology.md` | How work is done, logged and gated |
 | `docs/project-notes.md` | Vision, history, and the build log |
-| `docs/valuewise-style.md` | The ValueWise SI house style every screen, chart and dashboard follows (CR-3), its tokens and contrast exceptions; mood board in `docs/valuewise-mood-board.png` |
+| `docs/valuewise-style.md` | The ValueWise design language, shared by every ValueWise product; SeedFactory's screens, charts and dashboard follow it (CR-3). Part 2 holds the screen rules and tokens, Part 3 SeedFactory's choices; mood board in `docs/valuewise-mood-board.png` |
 | `docs/operator-guide.md` | Set up, controls, the timed demo script, rehearsal, checks before a demo (M12) |
 | `docs/seed-reuse-notes.md` | What is reused from Seed v0.1, where it lives, the dashboard spec and defect mapping (M0) |
 | `docs/ensemble/` | Ensemble architecture context |

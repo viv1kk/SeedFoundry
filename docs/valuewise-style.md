@@ -1,6 +1,10 @@
-# ValueWise SI house style (v3)
+# ValueWise design language
 
-SeedFactory's screens, dashboard and charts follow this house style from change request CR-3 (2026-10-05, D-96 to D-102). Part 1 is the guide as the stakeholder gave it. Part 2 is how SeedFactory applies it, including the tokens `frontend/src/styles/tokens.css` must hold (read by `frontend/tests/contrast.spec.ts`) and the few places SeedFactory departs from it, each with its reason.
+The design language for every ValueWise product: decks, demos, films, review decks, dashboards and apps. It is not specific to any one product.
+
+- **Part 1** is the ValueWise SI house style, v3, as written: the palette, the data scale, type, surfaces and words, with slides in mind.
+- **Part 2** carries it onto a screen, for any app or dashboard: themes, the wordmark, a screen type scale, colour on controls, contrast, charts and hover, and the reference tokens.
+- **Part 3** records how each product applies it, and where its implementation lives.
 
 The mood board: [valuewise-mood-board.png](valuewise-mood-board.png).
 
@@ -78,72 +82,86 @@ Deck, demos, films, dashboards and review decks all follow this file. The mood b
 
 ---
 
-## Part 2. How SeedFactory applies it
+## Part 2. On screen: apps and dashboards
 
-### Choices the stakeholder made (2026-10-05, D-96)
+Part 1 is written for slides. These rules carry it onto a screen, for any ValueWise app, dashboard or demo. They were worked out while building the first product to apply them (SeedFactory, Part 3), and each holds for every product.
 
-- **Screen scale, not slide scale.** The guide's sizes are for slides. SeedFactory's screens keep the guide's type, ratios and rules at a size a dense app can hold: ~~14 px minimum, 16 px body, 20 px panel headings, 28 px KPI figures, 32 px screen titles, a 40 px gold headline figure~~ 12 px uppercase labels and chips, 14 px supporting text, 15 px body, 20 px panel headings, 24 px KPI figures, 28 px screen titles, a 36 px gold headline figure (tightened after review, D-105), and 16 px tile labels on the dashboard (the guide's dashboard minimum). Line height 1.35.
-- **IBM Plex Mono for code only.** IBM Plex Sans for every word and figure, with its tabular numerals so figures line up. Its sibling IBM Plex Mono only where text is code: the build console, the markdown source editor, and code in a markdown preview. Both are bundled from npm (`@fontsource-variable/ibm-plex-sans`, `@fontsource/ibm-plex-mono`), never fetched (NFR-2), so "Google Fonts in decks and demos" does not apply.
-- **Style only, no ValueWise branding**, ~~the wordmark stays SeedFactory~~ except the title: the wordmark and the browser tab read "ValueWise™ Seed Factory", with "Value" in gold (D-103). No footer row reads "ValueWise SI Edition"; other visible names stay SeedFactory.
-- **Dark is the default.** A first visit is dark whatever the operating system prefers; the toggle (Shift+D) still switches to light and remembers it.
+### Themes
 
-### What carries over, and where
+- **Dark is the default.** A first visit opens dark, whatever the operating system prefers. A toggle switches to light and remembers the choice. Light is for print and bright rooms.
+- Both themes use the same hues; only the ground changes (Part 1, sections 2 and 4).
 
-| Rule | In SeedFactory |
-|---|---|
-| Colour has a job | Band colours only for a status from the data: the utilisation classes on the dashboard, verdict and result chips (Passed, Findings, Resolved, Within budget), the stepper's phase and step results, the console's PASS, WARN and FAIL, the Start Build checklist's complete files. Everything else is navy, white and grey |
-| Neutral controls | Primary button: white fill, navy label (dark); navy fill, white label (light). Secondary: panel navy with the panel border. A pressed control (the demo speed, a console filter) is a neutral inversion. The current journey step, the active phase and the focus ring use the control colour (`--accent`: white in dark, navy in light) |
-| Gold | One figure per dashboard: Recoverable a year, the KPI the room reads first, larger and in gold. Recoverable cost by product, the Value lens, draws its bars in gold |
-| Link blue | Links and link-like actions only: drill crumbs and product names, "show on the dashboard", disclosure toggles, the download links, retry |
-| Data scale | Active green (20 to 50), Underused orange (70 to 100), Unused red (100 and above), Leaver the deepest red (150 and above, the fault), Unassigned panel-border navy. Counts that are not a status (Entitled, Assigned, In use, the footprint's three files) take white and greys |
-| Surfaces | Square corners everywhere (`--radius-*` are 0), no shadows (`--shadow-*` are `none`), no gradients, no transparency fades. Panels are flat with a 1 px border. The one scrim is the modal backdrop |
-| Type | IBM Plex Sans, one size per role (the screen type scale below); kickers (`.caps-label`) uppercase, letter-spaced, muted and semibold, like every table head; emphasis by weight |
-| Tile labels | Treemap cells read "Name (count)", 16 px |
-| Charts | Flat on their panel: marks sit apart by a 1 px gap in the panel colour, the treemap's vendors and products are the panel itself, legend swatches have no edge. Nothing in a chart is white unless it is data (D-104) |
-| Hover | A hover never covers what it points at (D-105). On a bar chart the hover band is a solid palette colour (`--chart-brush`: #244A7A dark, #D5DCE8 light), with no transparency, drawn **behind** the bars (ECharts axis pointer `z: 1`, under the bars' `z: 2`), so the hovered bars and their labels stay on top and readable. On the line chart the pointer is a thin dashed line in `--border-strong`; on the treemap the hovered tile takes an edge in the primary text colour. Tooltips are panel navy with a 1 px border and primary text. Any new chart follows the same rule: highlight behind or around the data, never a solid layer over it |
-| Words | No em dashes (already a SeedFactory rule, tested) |
+### The wordmark
 
-### Screen type scale (D-101, D-104, D-105)
+- A product's title reads **ValueWise™ <Product>**, for example "ValueWise™ Seed Factory". The word **Value** is gold, as section 1 asks; the rest is primary text.
+- On screen the wordmark is at least 20 px bold. That makes it large text, the only size at which the light theme's gold passes contrast (see Contrast below).
+- Elsewhere a product may keep its short name in running text, logs and generated files.
 
-One size per role, on every page. Nothing is smaller than 12 px, only uppercase labels, chips and footnotes are under 14 px, and nothing sets a size outside these tokens (no `em`, no `calc`). The sizes were tightened after a review found the first screen scale too large (D-105).
+### Type
 
-| Role | Token | Size, weight | Where |
+- **IBM Plex Sans** for every word and figure, with its tabular numerals so figures line up in columns. **IBM Plex Mono** only where the text is code: logs and consoles, source editors, code in a preview. Nothing else.
+- Fonts are bundled with the product when it must work offline. Decks and web demos may load them from Google Fonts (section 6).
+- One size per role, on every page (the screen type scale below). Emphasis by weight, never by a new size. Nothing sets a size outside the scale's tokens.
+
+### Screen type scale
+
+The slide scale (section 6) is too large for a dense screen. A screen keeps its ratios at this scale. Nothing is smaller than 12 px, and only uppercase labels, chips and footnotes are under 14 px.
+
+| Role | Token | Size, weight | Use |
 |---|---|---|---|
-| Page title | `--text-2xl` | 28 px, 600 | The `h1` of Knowledge (the empty state), Build (the Seed's name), Review, the dashboard and the Seed page |
-| Headline figure | `--text-figure` | 36 px, 700, gold | Recoverable a year, once per dashboard |
-| KPI figure | `--text-xl` | 24 px, 600 | The other KPI tiles |
-| Panel or section title | `--text-lg` | 20 px, 600 | Dashboard panels, the Build Report's title, the Seed page's sections, modal titles, cards; the wordmark (20 px, 700) |
-| Sub-heading | `--text-md` | 15 px, 600 | The report's sections (Changes since iteration 1, Context footprint, Findings, Tests), a Seed file's name |
-| Body | `--text-md` | 15 px, 400, line height 1.35 | Running text, the stepper's phases, markdown |
-| Tile label | 16 px | 16 px | Treemap cells |
-| Supporting | `--text-sm` | 14 px | Tables, notes, captions, buttons, chart text (axes, legends, tooltips), the console |
-| Label | `--text-xs` | 12 px, 600, uppercase, letter-spaced, muted | Kickers, table heads, report facts, chips, console buttons, tooltips on controls; the smallest step, also for footnotes |
+| Page title | `--text-2xl` | 28 px, 600 | The `h1` of each page |
+| Headline figure | `--text-figure` | 36 px, 700, gold | The one figure the room reads first, at most once per screen |
+| KPI figure | `--text-xl` | 24 px, 600 | Every other KPI tile |
+| Panel or section title | `--text-lg` | 20 px, 600 | Dashboard panels, report titles, page sections, modal titles, cards; the wordmark (20 px, 700) |
+| Sub-heading | `--text-md` | 15 px, 600 | Sections inside a panel or report |
+| Body | `--text-md` | 15 px, 400, line height 1.35 | Running text, lists, markdown |
+| Tile label | 16 px | 16 px | Treemap and score tiles (section 3's dashboard minimum) |
+| Supporting | `--text-sm` | 14 px | Tables, notes, captions, buttons, chart text (axes, legends, tooltips), consoles |
+| Label | `--text-xs` | 12 px, 600, uppercase, letter-spaced, muted | Kickers, table heads, facts, chips, small controls, footnotes |
 
-### What does not apply
+### Colour on screen
 
-Slide furniture has no place on an app screen: the kicker, action title and "n of N" footer row of section 7, the 22 px slide minimum, split slides, the gold demo-insert frame, gold bracket placeholders (SeedFactory has none to fill), and the score-tile thresholds for decks.
+| Rule | On screen |
+|---|---|
+| Colour has a job | Band colours only for a status that comes from the data: a verdict or result chip, a measured value against its target, a class or grade the data assigns, a test outcome in a log. Everything else is navy, white and grey |
+| Neutral controls | Primary button: white fill, navy label (dark); navy fill, white label (light). Secondary: panel navy with the panel border. A pressed control (a segmented choice, a filter, a speed) is a neutral inversion. The current step in a journey, the active item and the focus ring use the control colour (white in dark, navy in light) |
+| Gold | The one headline figure per screen, and the Value lens in charts (cost, savings, value). Never headings, borders or emphasis |
+| Link blue | Links and link-like actions only: drill-downs, "open", "show", disclosure toggles, downloads, retry |
+| Counts are not statuses | A plain count or total that is not measured against anything takes white and greys, never a band colour |
+| Surfaces | Square corners (radius 0), no shadows, no gradients, no transparency fades. Panels are flat with a 1 px border. The one scrim allowed is a modal's backdrop |
 
-### Where SeedFactory departs from the guide (D-97, D-98, D-100, D-104)
+### Contrast
 
-The binding contrast rule (NFR-6, WCAG 2.1 AA, `contrast.spec.ts`) wins over a hex value. Three guide values fail it on the guide's own panel colour, so each takes the nearest value in its own hue that passes:
+WCAG 2.1 AA wins over a hex value. Three values in Part 1 fail it on the guide's own panel colour, so each product uses the nearest value in its own hue that passes:
 
-| Token | Guide | Fails | SeedFactory | Passes |
+| Value | Guide | Fails | Use instead | Passes |
 |---|---|---|---|---|
 | Muted text, dark | #8A93A8 | 4.11:1 on panel #15335C | #949DB1 | 4.6:1 on the panel |
 | Muted text, light | #6B778C | 4.14:1 on panel #F2F5FA | #626F84 | 4.7:1 on the panel |
 | Gold, light | #B8962E | 2.58:1 on panel #F2F5FA, under 3:1 even for large text | #A68728 | 3.1:1, large text only |
 
-#8A93A8 is kept as a chart grey (a mark needs 3:1, which it has). Two further rules follow from the same test:
+#8A93A8 stays usable as a chart grey (a mark needs 3:1, which it has). Two further rules follow:
 
-- **A status is a fill, with a tested label.** Most band colours cannot be read as text: no red reaches 4.5:1 on navy, and no green or orange does on white. So a status shows as a filled chip, dot or bar with its label in the colour tested on that fill (navy on green, orange and gold; white on red, dark green and navy). Where a status must also be words (a form error, a stopped step), the words are in a tested colour (`--status-*-text`: bright green or orange on dark, dark green or red on light, otherwise primary text) and marked with a 3 px bar of the status fill. The guide's dark tile labels are white on every band; white on green or orange is under 3:1, so the dashboard uses the light theme's rule (navy on green and orange) in both themes.
-- ~~**Every filled mark is outlined.** The red and deep red on navy, and the green, orange and gold on white, are under the 3:1 a chart mark needs against its card. Every bar, treemap cell, pie slice and line point carries a 1 px outline in `--chart-outline` (white in dark, navy in light), so each mark keeps a visible edge and the bands keep their exact hues. The guide's diagrams are outlined in white too (section 7).~~ *Superseded by D-104:* the white outlines read as residue on the charts.
-- **The data scale keeps its exact hues, without outlines (D-104).** The red and deep red on navy, and the green, orange and gold on white, are under the 3:1 a chart mark would need against its card. They keep the guide's values anyway, and marks sit apart by a 1 px gap in the panel colour, as on the mood board. The 3:1 mark check (T-20, the contrast test) therefore covers the navy and grey roles only; every figure the data-scale colours draw is also given in text (tile labels with counts, the legend's shares and counts, tooltips, the tables).
+- **A status is a fill, with a tested label.** Most band colours cannot be read as text: no red reaches 4.5:1 on navy, and no green or orange does on white. So a status shows as a filled chip, dot or bar, its label in the colour tested on that fill: navy on green, orange and gold; white on red, dark green and navy. Where a status must also be words (a form error, a stopped step), the words take a tested colour (bright green or orange on dark, dark green or red on light, otherwise primary text) and a 3 px bar of the status fill. In a log, a failure is white text with its level on a red fill.
+- **Tile labels follow the light theme's rule in both themes.** Section 3 puts white labels on every band in dark, but white on green or orange is under 3:1. Use navy on green and orange, white on red and dark green, in both themes.
+
+### Charts
+
+- **The data scale for anything measured against a target**, by how bad it is (section 3). A class or grade the data assigns maps to the band of its severity; the deepest red is kept for faults. The **Value lens** (cost, savings) is gold. Everything else (counts, totals, series) is a white, navy and grey ramp.
+- **Flat on the panel.** Marks sit apart by a 1 px gap in the panel colour, never a white outline. A treemap's group levels are the panel itself. Legend swatches have no edge. Nothing in a chart is white unless it is data.
+- **Labels.** Tiles read "Name (count)" at 16 px, in the label colour tested on their fill. Axes are named, with units.
+- **Contrast of marks.** Navy and grey marks need 3:1 against the panel. The data scale and gold keep their exact hues even where they fall under 3:1 (red on navy, green, orange and gold on white). That is allowed only because every figure they draw is also given in text: tile labels with counts, a legend with figures, tooltips, a table.
+- **Hover never covers what it points at.** A bar chart's hover band is a solid palette colour (#244A7A dark, #D5DCE8 light), with no transparency, drawn **behind** the bars, so the hovered bars and their labels stay on top. A line chart's pointer is a thin dashed line in the strong border colour. A hovered tile takes an edge in the primary text colour. Tooltips are panel navy (or the light panel) with a 1 px border and primary text. Any new chart follows the same rule: highlight behind or around the data, never a solid layer over it.
+
+### What does not apply on a screen
+
+Slide furniture: the kicker, action title and "n of N" footer row of section 7, the 22 px slide minimum, split slides, the gold demo-insert frame, and the deck score-tile thresholds. Gold bracket placeholders apply only where a product has text for a team to fill.
 
 ### Tokens
 
-`frontend/src/styles/tokens.css` holds these values; `contrast.spec.ts` checks each one, after following `var()`, in both themes.
+The reference values, as CSS custom properties. A product implements them under these names (Part 3 says where); each is checked in both themes.
 
-| Token | Light | Dark | From the guide |
+| Token | Light | Dark | Role |
 |---|---|---|---|
 | `--surface-base` | `#ffffff` | `#020921` | Background |
 | `--surface-raised` | `#f2f5fa` | `#15335c` | Panel |
@@ -154,27 +172,44 @@ The binding contrast rule (NFR-6, WCAG 2.1 AA, `contrast.spec.ts`) wins over a h
 | `--border-strong` | `#44516b` | `#b8c0d4` | Secondary text, as a control outline |
 | `--text-primary` | `#0b1f3a` | `#ffffff` | Primary text |
 | `--text-secondary` | `#44516b` | `#b8c0d4` | Secondary text |
-| `--text-muted` | `#626f84` | `#949db1` | Muted labels, adjusted (D-97) |
+| `--text-muted` | `#626f84` | `#949db1` | Muted labels, adjusted for contrast |
 | `--text-inverse` | `#ffffff` | `#020921` | A label on a control fill |
 | `--accent` | `#0b1f3a` | `#ffffff` | The control colour: navy or white |
 | `--accent-subtle` | `#ffffff` | `#020921` | A selected row: the ground |
 | `--link` | `#0b5fd6` | `#4da3ff` | Link blue |
-| `--gold` | `#a68728` | `#f2d27a` | Gold, light adjusted (D-97) |
+| `--gold` | `#a68728` | `#f2d27a` | Gold, light adjusted for contrast |
 | `--status-positive` | `#17ae42` | `#17ae42` | Green, 20 to 50 |
 | `--status-warning` | `#e9973a` | `#e9973a` | Orange, 70 to 100 |
 | `--status-negative` | `#b50e05` | `#b50e05` | Red, 100 and above |
-| `--chart-positive` | `#17ae42` | `#17ae42` | Active |
-| `--chart-warning` | `#e9973a` | `#e9973a` | Underused |
-| `--chart-anomaly` | `#b50e05` | `#b50e05` | Unused |
-| `--chart-negative` | `#7a0a02` | `#7a0a02` | Leaver, the fault: 150 and above |
-| `--chart-value` | `#a68728` | `#f2d27a` | Cost, the Value lens |
-| `--chart-baseline` | `#626f84` | `#8a93a8` | Entitled: grey |
-| `--chart-muted` | `#d5dce8` | `#244a7a` | Unassigned: panel border |
-| `--chart-series-1` | `#0b1f3a` | `#ffffff` | Assigned: primary text |
-| `--chart-series-2` | `#44516b` | `#b8c0d4` | In use: secondary text |
-| `--chart-series-3` | `#626f84` | `#8a93a8` | Muted grey |
-| `--chart-outline` | `#f2f5fa` | `#15335c` | The gap between marks: the panel (D-104) |
-| `--console-surface` | `#020921` | `#020921` | Background, both themes |
-| `--console-surface-raised` | `#15335c` | `#15335c` | Panel, both themes |
+| `--chart-positive` | `#17ae42` | `#17ae42` | Data scale: good |
+| `--chart-warning` | `#e9973a` | `#e9973a` | Data scale: caution, 70 to 100 |
+| `--chart-anomaly` | `#b50e05` | `#b50e05` | Data scale: bad, 100 and above |
+| `--chart-negative` | `#7a0a02` | `#7a0a02` | Data scale: a fault, 150 and above |
+| `--chart-value` | `#a68728` | `#f2d27a` | The Value lens: gold |
+| `--chart-baseline` | `#626f84` | `#8a93a8` | A baseline or total: grey |
+| `--chart-muted` | `#d5dce8` | `#244a7a` | A background class: the panel border |
+| `--chart-series-1` | `#0b1f3a` | `#ffffff` | First series: primary text |
+| `--chart-series-2` | `#44516b` | `#b8c0d4` | Second series: secondary text |
+| `--chart-series-3` | `#626f84` | `#8a93a8` | Third series: muted grey |
+| `--chart-outline` | `#f2f5fa` | `#15335c` | The gap between marks: the panel |
+| `--console-surface` | `#020921` | `#020921` | A log or console: background, both themes |
+| `--console-surface-raised` | `#15335c` | `#15335c` | A log or console: panel, both themes |
 
-The data scale's six values are tokens too (`--band-under-20` to `--band-150`), identical in both themes; series-4 to series-8 continue the navy and grey ramp for a chart with more series (only iteration 1's planted pie draws them).
+The data scale's six values are tokens too (`--band-under-20` to `--band-150`), identical in both themes. `--chart-series-4` to `--chart-series-8` continue the navy and grey ramp for charts with more series. Radii are 0, shadows `none`.
+
+---
+
+## Part 3. Products
+
+### SeedFactory (ValueWise™ Seed Factory)
+
+The first product to apply this language (change request CR-3 and its follow-ups, 2026-10-05 and 2026-10-06, decisions D-96 to D-105 in `decisions.md`).
+
+- **Where it lives.** `frontend/src/styles/tokens.css` holds the Part 2 tokens; `frontend/tests/contrast.spec.ts` reads the Part 2 table and checks every value and contrast pair in both themes; the dashboard validator's contrast test (T-20, `backend/seedfoundry/validators/visual.py`) applies the chart rules. Fonts are bundled from npm (`@fontsource-variable/ibm-plex-sans`, `@fontsource/ibm-plex-mono`), as the product runs offline.
+- **Title.** The wordmark and the browser tab read "ValueWise™ Seed Factory" (D-103). The launcher, the Seed files and the docs keep the short name SeedFactory.
+- **Mono.** IBM Plex Mono in the build console, the markdown source editor and code in a preview.
+- **Statuses in colour.** Verdict and result chips (Passed, Completed with findings, Resolved, Within budget, the findings' severity), the build stepper's results, the console's PASS, WARN and FAIL, the Start Build checklist's complete files.
+- **Dashboard (License Optimization).** Utilisation classes on the data scale: Active green, Underused orange, Unused red, Leaver the deepest red (the fault), Unassigned panel-border navy. Entitled, Assigned and In use are grey and white counts. Recoverable cost by product is gold, the Value lens, and Recoverable a year is the screen's one gold headline figure (D-99).
+- **Link blue.** Drill crumbs and product names, "show on the dashboard", disclosure toggles, the download links, retry.
+- **Footnote.** "* Assuming default 10 cycles", asked for in very small text, is the scale's smallest step: 12 px, muted.
+- **Checked.** The rehearsal (`npm run rehearse`) takes screenshots of every page in both themes and hovers each chart in both themes.
