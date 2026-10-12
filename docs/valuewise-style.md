@@ -89,7 +89,7 @@ Part 1 is written for slides. These rules carry it onto a screen, for any ValueW
 ### Themes
 
 - **Dark is the default.** A first visit opens dark, whatever the operating system prefers. A toggle switches to light and remembers the choice. Light is for print and bright rooms.
-- Both themes use the same hues; only the ground changes (Part 1, sections 2 and 4).
+- ~~Both themes use the same hues; only the ground changes (Part 1, sections 2 and 4).~~ *As built (D-107, 2026-10-12):* the dark theme follows `VW-style-demos-and-videos.md` section 2 (its own palette and the watermelon bands); the light theme keeps the hues of Part 1, section 4.
 
 ### The wordmark
 
@@ -99,7 +99,7 @@ Part 1 is written for slides. These rules carry it onto a screen, for any ValueW
 
 ### Type
 
-- **IBM Plex Sans** for every word and figure, with its tabular numerals so figures line up in columns. **IBM Plex Mono** only where the text is code: logs and consoles, source editors, code in a preview. Nothing else.
+- ~~**IBM Plex Sans** for every word and figure, with its tabular numerals so figures line up in columns. **IBM Plex Mono** only where the text is code: logs and consoles, source editors, code in a preview. Nothing else.~~ *As built (D-107, 2026-10-12):* **Arial, Helvetica, sans-serif** for every word and figure, regular and bold only, with tabular numerals; **Consolas, Menlo, Courier New** only where the text is code.
 - Fonts are bundled with the product when it must work offline. Decks and web demos may load them from Google Fonts (section 6).
 - One size per role, on every page (the screen type scale below). Emphasis by weight, never by a new size. Nothing sets a size outside the scale's tokens.
 
@@ -124,7 +124,7 @@ The slide scale (section 6) is too large for a dense screen. A screen keeps its 
 | Rule | On screen |
 |---|---|
 | Colour has a job | Band colours only for a status that comes from the data: a verdict or result chip, a measured value against its target, a class or grade the data assigns, a test outcome in a log. Everything else is navy, white and grey |
-| Neutral controls | Primary button: white fill, navy label (dark); navy fill, white label (light). Secondary: panel navy with the panel border. A pressed control (a segmented choice, a filter, a speed) is a neutral inversion. The current step in a journey, the active item and the focus ring use the control colour (white in dark, navy in light) |
+| Neutral controls | Primary button: white fill, navy label (dark); navy fill, white label (light). Secondary: panel navy with the panel border. A pressed control (a segmented choice, a filter, a speed) is a neutral inversion. The current step in a journey, the active item and the focus ring use the control colour (white in dark, navy in light). *As built (D-107, 2026-10-12):* the secondary button is transparent with a 1.5 px silver border, the panel fill and a white border on hover; the focus ring is a 2 px gold outline, 3 px off the edge |
 | Gold | The one headline figure per screen, and the Value lens in charts (cost, savings, value). Never headings, borders or emphasis |
 | Link blue | Links and link-like actions only: drill-downs, "open", "show", disclosure toggles, downloads, retry |
 | Counts are not statuses | A plain count or total that is not measured against anything takes white and greys, never a band colour |
@@ -164,38 +164,40 @@ The reference values, as CSS custom properties. A product implements them under 
 | Token | Light | Dark | Role |
 |---|---|---|---|
 | `--surface-base` | `#ffffff` | `#020921` | Background |
-| `--surface-raised` | `#f2f5fa` | `#15335c` | Panel |
+| `--surface-raised` | `#f2f5fa` | `#0d182e` | Panel |
 | `--surface-sunken` | `#ffffff` | `#020921` | Inputs and wells: the ground |
-| `--surface-overlay` | `#f2f5fa` | `#15335c` | Panel, tooltip |
-| `--border-subtle` | `#d5dce8` | `#244a7a` | Panel border |
-| `--border-default` | `#d5dce8` | `#244a7a` | Panel border |
-| `--border-strong` | `#44516b` | `#b8c0d4` | Secondary text, as a control outline |
-| `--text-primary` | `#0b1f3a` | `#ffffff` | Primary text |
-| `--text-secondary` | `#44516b` | `#b8c0d4` | Secondary text |
-| `--text-muted` | `#626f84` | `#949db1` | Muted labels, adjusted for contrast |
+| `--surface-overlay` | `#f2f5fa` | `#0d182e` | Panel, tooltip |
+| `--border-subtle` | `#d5dce8` | `#223049` | Panel border |
+| `--border-default` | `#d5dce8` | `#435168` | Panel border |
+| `--border-strong` | `#44516b` | `#c5cbd5` | Secondary text, as a control outline |
+| `--text-primary` | `#0b1f3a` | `#f4f5f7` | Primary text |
+| `--text-secondary` | `#44516b` | `#c5cbd5` | Secondary text |
+| `--text-muted` | `#626f84` | `#9aa5b7` | Muted labels, adjusted for contrast |
 | `--text-inverse` | `#ffffff` | `#020921` | A label on a control fill |
-| `--accent` | `#0b1f3a` | `#ffffff` | The control colour: navy or white |
+| `--accent` | `#0b1f3a` | `#f4f5f7` | The control colour: navy or white |
 | `--accent-subtle` | `#ffffff` | `#020921` | A selected row: the ground |
-| `--link` | `#0b5fd6` | `#4da3ff` | Link blue |
-| `--gold` | `#a68728` | `#f2d27a` | Gold, light adjusted for contrast |
-| `--status-positive` | `#17ae42` | `#17ae42` | Green, 20 to 50 |
-| `--status-warning` | `#e9973a` | `#e9973a` | Orange, 70 to 100 |
-| `--status-negative` | `#b50e05` | `#b50e05` | Red, 100 and above |
-| `--chart-positive` | `#17ae42` | `#17ae42` | Data scale: good |
-| `--chart-warning` | `#e9973a` | `#e9973a` | Data scale: caution, 70 to 100 |
-| `--chart-anomaly` | `#b50e05` | `#b50e05` | Data scale: bad, 100 and above |
-| `--chart-negative` | `#7a0a02` | `#7a0a02` | Data scale: a fault, 150 and above |
-| `--chart-value` | `#a68728` | `#f2d27a` | The Value lens: gold |
-| `--chart-baseline` | `#626f84` | `#8a93a8` | A baseline or total: grey |
-| `--chart-muted` | `#d5dce8` | `#244a7a` | A background class: the panel border |
-| `--chart-series-1` | `#0b1f3a` | `#ffffff` | First series: primary text |
-| `--chart-series-2` | `#44516b` | `#b8c0d4` | Second series: secondary text |
-| `--chart-series-3` | `#626f84` | `#8a93a8` | Third series: muted grey |
-| `--chart-outline` | `#f2f5fa` | `#15335c` | The gap between marks: the panel |
+| `--link` | `#0b5fd6` | `#7297ba` | Link blue |
+| `--gold` | `#a68728` | `#d8c397` | Gold, light adjusted for contrast |
+| `--status-positive` | `#17ae42` | `#79aa87` | Green, 20 to 50 |
+| `--status-warning` | `#e9973a` | `#c2a46c` | Orange, 70 to 100 |
+| `--status-negative` | `#b50e05` | `#bb7374` | Red, 100 and above |
+| `--chart-positive` | `#17ae42` | `#79aa87` | Data scale: good |
+| `--chart-warning` | `#e9973a` | `#c2a46c` | Data scale: caution, 70 to 100 |
+| `--chart-anomaly` | `#b50e05` | `#bb7374` | Data scale: bad, 100 and above |
+| `--chart-negative` | `#7a0a02` | `#96545b` | Data scale: a fault, 150 and above |
+| `--chart-value` | `#a68728` | `#c5cbd5` | The Value lens: gold |
+| `--chart-baseline` | `#626f84` | `#9aa5b7` | A baseline or total: grey |
+| `--chart-muted` | `#d5dce8` | `#435168` | A background class: the panel border |
+| `--chart-series-1` | `#0b1f3a` | `#f4f5f7` | First series: primary text |
+| `--chart-series-2` | `#44516b` | `#c5cbd5` | Second series: secondary text |
+| `--chart-series-3` | `#626f84` | `#7297ba` | Third series: muted grey |
+| `--chart-outline` | `#f2f5fa` | `#0d182e` | The gap between marks: the panel |
 | `--console-surface` | `#020921` | `#020921` | A log or console: background, both themes |
-| `--console-surface-raised` | `#15335c` | `#15335c` | A log or console: panel, both themes |
+| `--console-surface-raised` | `#0d182e` | `#0d182e` | A log or console: panel, both themes |
 
-The data scale's six values are tokens too (`--band-under-20` to `--band-150`), identical in both themes. `--chart-series-4` to `--chart-series-8` continue the navy and grey ramp for charts with more series. Radii are 0, shadows `none`.
+The data scale's six values are tokens too (`--band-under-20` to `--band-150`), ~~identical in both themes~~ *as built (D-107):* Part 1's in light, the watermelon bands in dark (#4f9875, #79aa87, #a2c4a1, #c2a46c, #bb7374, #96545b).
+
+*As built (D-107, 2026-10-12):* the dark column and the console rows follow `VW-style-demos-and-videos.md` section 2. Superseded dark values: `--surface-raised`, `--surface-overlay`, `--chart-outline` and `--console-surface-raised` #15335c; `--border-subtle`, `--border-default` and `--chart-muted` #244a7a; `--border-strong`, `--text-secondary` and `--chart-series-2` #b8c0d4; `--text-primary`, `--accent` and `--chart-series-1` #ffffff; `--text-muted` #949db1; `--link` #4da3ff; `--gold` #f2d27a; `--chart-value` #f2d27a (now silver, so the headline figure is the screen's one gold); `--chart-baseline` and `--chart-series-3` #8a93a8; the status and chart band tokens Part 1's values. The light column is unchanged. `--chart-series-4` to `--chart-series-8` continue the navy and grey ramp for charts with more series. Radii are 0, shadows `none`.
 
 ---
 
@@ -205,11 +207,11 @@ The data scale's six values are tokens too (`--band-under-20` to `--band-150`), 
 
 The first product to apply this language (change request CR-3 and its follow-ups, 2026-10-05 and 2026-10-06, decisions D-96 to D-105 in `decisions.md`).
 
-- **Where it lives.** `frontend/src/styles/tokens.css` holds the Part 2 tokens; `frontend/tests/contrast.spec.ts` reads the Part 2 table and checks every value and contrast pair in both themes; the dashboard validator's contrast test (T-20, `backend/seedfoundry/validators/visual.py`) applies the chart rules. Fonts are bundled from npm (`@fontsource-variable/ibm-plex-sans`, `@fontsource/ibm-plex-mono`), as the product runs offline.
+- **Where it lives.** `frontend/src/styles/tokens.css` holds the Part 2 tokens; `frontend/tests/contrast.spec.ts` reads the Part 2 table and checks every value and contrast pair in both themes; the dashboard validator's contrast test (T-20, `backend/seedfoundry/validators/visual.py`) applies the chart rules. ~~Fonts are bundled from npm (`@fontsource-variable/ibm-plex-sans`, `@fontsource/ibm-plex-mono`), as the product runs offline.~~ *As built (D-107):* the font stacks are Arial and Consolas, installed on the machine, so nothing loads; the Plex packages are still imported by `main.ts` and unused.
 - **Title.** The wordmark and the browser tab read "ValueWise™ Seed Factory" (D-103). The launcher, the Seed files and the docs keep the short name SeedFactory.
-- **Mono.** IBM Plex Mono in the build console, the markdown source editor and code in a preview.
+- **Mono.** ~~IBM Plex Mono~~ Consolas (D-107) in the build console, the markdown source editor and code in a preview.
 - **Statuses in colour.** Verdict and result chips (Passed, Completed with findings, Resolved, Within budget, the findings' severity), the build stepper's results, the console's PASS, WARN and FAIL, the Start Build checklist's complete files.
-- **Dashboard (License Optimization).** Utilisation classes on the data scale: Active green, Underused orange, Unused red, Leaver the deepest red (the fault), Unassigned panel-border navy. Entitled, Assigned and In use are grey and white counts. Recoverable cost by product is gold, the Value lens, and Recoverable a year is the screen's one gold headline figure (D-99).
+- **Dashboard (License Optimization).** Utilisation classes on the data scale: Active green, Underused orange, Unused red, Leaver the deepest red (the fault), Unassigned panel-border navy. Entitled, Assigned and In use are grey and white counts. Recoverable cost by product is gold, the Value lens, and Recoverable a year is the screen's one gold headline figure (D-99). *As built (D-107):* in dark the cost bars are silver and the classes take the watermelon bands, so Recoverable a year is the screen's only gold.
 - **Link blue.** Drill crumbs and product names, "show on the dashboard", disclosure toggles, the download links, retry.
 - **Footnote.** "* Assuming default 10 cycles", asked for in very small text, is the scale's smallest step: 12 px, muted.
 - **Checked.** The rehearsal (`npm run rehearse`) takes screenshots of every page in both themes and hovers each chart in both themes.

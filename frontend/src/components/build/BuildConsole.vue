@@ -161,7 +161,7 @@ const EMPTY: Record<FilterId, string> = {
   color: var(--console-text-secondary);
   font: inherit;
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -176,7 +176,7 @@ const EMPTY: Record<FilterId, string> = {
 }
 
 .console__button:focus-visible {
-  outline-color: var(--console-text);
+  outline-color: var(--gold);
   outline-offset: -2px;
 }
 
@@ -206,7 +206,7 @@ const EMPTY: Record<FilterId, string> = {
 }
 
 .console__body:focus-visible {
-  outline-color: var(--console-text);
+  outline-color: var(--gold);
   outline-offset: -2px;
 }
 
@@ -265,6 +265,6 @@ const EMPTY: Record<FilterId, string> = {
   padding: 0 2px;
   margin-left: -2px;
   background: var(--console-fail-mark);
-  font-weight: 600;
+  font-weight: 700;
 }
 </style>

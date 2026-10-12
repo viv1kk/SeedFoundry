@@ -206,7 +206,7 @@ watch(theme, () => paint())
 
 .chart-panel__title {
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.3;
 }
 
@@ -293,7 +293,7 @@ watch(theme, () => paint())
 
 .chart-panel__legend-figure {
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .chart-panel__legend-count {

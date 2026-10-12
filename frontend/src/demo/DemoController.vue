@@ -280,7 +280,7 @@ const whyId = (action: DemoAction) => `${uid}-why-${action}`
 }
 
 .demo:focus-visible {
-  outline-offset: 0;
+  outline-offset: 3px;
 }
 
 .demo__header {
@@ -315,7 +315,7 @@ const whyId = (action: DemoAction) => `${uid}-why-${action}`
 .demo__title {
   color: var(--text-secondary);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .demo__speeds {
@@ -362,7 +362,7 @@ const whyId = (action: DemoAction) => `${uid}-why-${action}`
   border-color: var(--accent);
   background: var(--accent);
   color: var(--text-inverse);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 kbd {

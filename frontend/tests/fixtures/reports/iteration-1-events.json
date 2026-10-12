@@ -5995,8 +5995,8 @@
      "check": "contrast",
      "panel": "candidates",
      "expected": 4.5,
-     "shown": 1.41,
-     "message": "Optimisation candidates: the caption (var(--border-default)) at 1.41:1 on the card in the dark theme (needs 4.5:1)",
+     "shown": 2.2,
+     "message": "Optimisation candidates: the caption (var(--border-default)) at 2.20:1 on the card in the dark theme (needs 4.5:1)",
      "unit": ":1"
     },
     {
@@ -6013,8 +6013,8 @@
      "check": "contrast",
      "panel": "candidates",
      "expected": 4.5,
-     "shown": 1.41,
-     "message": "Optimisation candidates: the Withheld cells (var(--border-default)) at 1.41:1 on the card in the dark theme (needs 4.5:1)",
+     "shown": 2.2,
+     "message": "Optimisation candidates: the Withheld cells (var(--border-default)) at 2.20:1 on the card in the dark theme (needs 4.5:1)",
      "unit": ":1"
     }
    ]

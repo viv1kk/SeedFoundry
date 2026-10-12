@@ -48,7 +48,7 @@ const note = computed(() =>
 .kpi__figure {
   font-family: var(--font-sans);
   font-size: var(--text-xl);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
 }
 

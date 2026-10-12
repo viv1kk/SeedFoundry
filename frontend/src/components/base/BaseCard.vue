@@ -29,7 +29,7 @@ defineProps<{ title?: string }>()
 .card__title {
   /* A panel title, as on the dashboard and the report (D-104) */
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .card__body {

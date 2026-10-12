@@ -121,7 +121,7 @@ function onSubmit(): void {
 
 .form__label {
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .form__input {
@@ -156,7 +156,7 @@ function onSubmit(): void {
   border-left: 3px solid var(--status-warning);
   padding-left: var(--space-2);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .form__confirm {

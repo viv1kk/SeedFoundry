@@ -47,9 +47,10 @@ import ThemeToggle from './ThemeToggle.vue'
   gap: var(--space-3);
 }
 
-/* 20 px bold is large text, where gold needs 3:1 (D-97, D-103) */
+/* 20 px bold is large text, where gold needs 3:1 (D-97, D-103). Value in gold, the rest in
+   silver (VW-style-demos-and-videos.md section 3, D-107). */
 .wordmark {
-  color: var(--text-primary);
+  color: var(--text-secondary);
   font-size: var(--text-lg);
   font-weight: 700;
   letter-spacing: -0.01em;

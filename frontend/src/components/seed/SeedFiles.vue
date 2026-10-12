@@ -71,7 +71,7 @@ const shown = computed<SeedFile | null>(() => props.seed.files.find((f) => f.nam
 .files__name {
   font-family: var(--font-sans);
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .files__description {
@@ -105,7 +105,7 @@ const shown = computed<SeedFile | null>(() => props.seed.files.find((f) => f.nam
   background: var(--surface-raised);
   color: var(--text-primary);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1;
   text-decoration: none;
 }
@@ -119,7 +119,7 @@ const shown = computed<SeedFile | null>(() => props.seed.files.find((f) => f.nam
 .files__link {
   color: var(--link);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 2px;
 }

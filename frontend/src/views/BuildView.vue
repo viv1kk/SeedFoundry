@@ -158,7 +158,7 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
 
 .build__empty h1 {
   font-size: var(--text-2xl);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -167,7 +167,7 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
 }
 
 .build__link {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .banner {
@@ -231,7 +231,7 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
   min-width: 0;
   /* A page title, as on every other page (D-104) */
   font-size: var(--text-2xl);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .build__elapsed {
@@ -298,7 +298,7 @@ const previousBuild = computed(() => lab.snapshot?.builds.find((b) => b.iteratio
   background: none;
   color: var(--link);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
 }
 </style>

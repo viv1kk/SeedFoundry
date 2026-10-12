@@ -85,13 +85,24 @@ const SERIES = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => `series-${n}`)
 const MARK_ROLES = [...SERIES, 'positive', 'warning', 'negative', 'anomaly', 'value', 'baseline']
 // The house style's fixed hues: the data scale and the Value lens's gold keep the guide's values (D-104).
 const DATA_SCALE = ['positive', 'warning', 'negative', 'anomaly', 'value']
-const BANDS: Record<string, string> = {
-  '--band-under-20': '#036715',
-  '--band-20-50': '#17ae42',
-  '--band-50-70': '#37eb67',
-  '--band-70-100': '#e9973a',
-  '--band-100': '#b50e05',
-  '--band-150': '#7a0a02',
+// The light theme keeps D-96's data scale; dark takes the watermelon bands (D-107).
+const BANDS: Record<ThemeName, Record<string, string>> = {
+  light: {
+    '--band-under-20': '#036715',
+    '--band-20-50': '#17ae42',
+    '--band-50-70': '#37eb67',
+    '--band-70-100': '#e9973a',
+    '--band-100': '#b50e05',
+    '--band-150': '#7a0a02',
+  },
+  dark: {
+    '--band-under-20': '#4f9875',
+    '--band-20-50': '#79aa87',
+    '--band-50-70': '#a2c4a1',
+    '--band-70-100': '#c2a46c',
+    '--band-100': '#bb7374',
+    '--band-150': '#96545b',
+  },
 }
 const CONSOLE_SURFACES = ['--console-surface', '--console-surface-raised']
 const CONSOLE_TEXT = [
@@ -133,10 +144,9 @@ describe('tokens.css holds the ValueWise values (docs/valuewise-style.md)', () =
     expect(colour('dark', token)).toBe(dark)
   })
 
-  it("holds the guide's data scale, the same in both themes", () => {
-    for (const [token, hex] of Object.entries(BANDS)) {
-      expect(colour('light', token)).toBe(hex)
-      expect(colour('dark', token)).toBe(hex)
+  it("holds the guide's data scale: D-96's in light, the watermelon bands in dark (D-107)", () => {
+    for (const theme of BOTH) {
+      for (const [token, hex] of Object.entries(BANDS[theme])) expect(colour(theme, token)).toBe(hex)
     }
   })
 
@@ -147,9 +157,9 @@ describe('tokens.css holds the ValueWise values (docs/valuewise-style.md)', () =
     }
   })
 
-  it('sets IBM Plex Sans, and IBM Plex Mono for code (D-101)', () => {
-    expect(THEMES.light['--font-sans']).toMatch(/^'IBM Plex Sans Variable'/)
-    expect(THEMES.light['--font-mono']).toMatch(/^'IBM Plex Mono'/)
+  it('sets Arial, and Consolas for code (D-101, D-107)', () => {
+    expect(THEMES.light['--font-sans']).toMatch(/^Arial, Helvetica, sans-serif$/)
+    expect(THEMES.light['--font-mono']).toMatch(/^Consolas, Menlo, 'Courier New', monospace$/)
   })
 })
 

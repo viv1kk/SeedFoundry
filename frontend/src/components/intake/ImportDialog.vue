@@ -187,7 +187,7 @@ async function runImport(): Promise<void> {
   color: var(--status-warning-text);
   border-left: 3px solid var(--status-warning);
   padding-left: var(--space-2);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .row__note--error {

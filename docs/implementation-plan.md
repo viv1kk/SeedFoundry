@@ -23,6 +23,7 @@ Status values: Not started, In progress, Done, Blocked. Update the table and add
 | G. Feedback | CR-1 | Stakeholder feedback after M13: open-ended iterations, Reject everywhere, context footprint, feedback routing panel | Done (2026-10-04) | the commit after `a50bd81` |
 | | CR-2 | Demo feedback: SeedFactory, initiation files and versioned names, Human tag, console note, View Agentic Solution, QUAD SI, Secure and Lock | Done (2026-10-05) | the commit after `b363cd3` |
 | | CR-3 | ValueWise SI house style: palette and data scale, IBM Plex, flat and square, dark by default, dashboard roles | Done (2026-10-05) | branch `ui`, the commit after `ca38577` (not merged to main) |
+| | D-107 | The demos and videos style file applied, style only: dark tokens, watermelon bands, Arial, gold focus ring, neutral buttons | Done (2026-10-12) | branch `ui-vw-si`, the commit after `1604081` (not merged to main) |
 
 *As built (M13):* the Commit column was added in M13, as Seed v0.1's status table had one (`seed-reuse-notes.md` §7).
 

@@ -62,7 +62,7 @@ const dashboardOpen = computed(() => route.query.dashboard === DASHBOARD_ID && c
 
 h1 {
   font-size: var(--text-2xl);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -78,6 +78,6 @@ h1 {
 
 .review__link {
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
 }
 </style>

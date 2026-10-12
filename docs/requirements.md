@@ -216,6 +216,7 @@ Recorded in detail in `seed-reuse-notes.md` (written in M0).
 | A-11 | 2026-10-05 | FR-B-4, FR-R-1, FR-R-4 | The console's language note; View Dashboard reads View Agentic Solution; Initiate QUAD SI Review Protocol, shown only, with its footnote; the footprint's window note names the one-thread assumption | D-89, D-91, D-92, D-94 (stakeholder, CR-2) |
 | A-12 | 2026-10-05 | §5, ui-spec.md | An iteration rebuilt from a rejection carries a "Human" tag wherever the screen names it | D-90 (stakeholder, CR-2) |
 | A-13 | 2026-10-05 | NFR-5, FR-IN-4 | The UI follows the ValueWise SI house style v3: navy, white and greys, the data scale only for a status, gold for the one headline figure, link blue only on links, flat and square, IBM Plex Sans at a screen scale, IBM Plex Mono for code (the editor's raw markdown stays monospace), dark by default. Where a guide colour fails WCAG AA (NFR-6), contrast wins | D-96 to D-101 (stakeholder, CR-3) |
+| A-14 | 2026-10-12 | NFR-5, A-13 | The dark theme follows `VW-style-demos-and-videos.md` (the source of truth for visual style): its navy, panel, text and line values, the watermelon data scale, the pale gold once per screen, Arial for every word (~~IBM Plex Sans at a screen scale, IBM Plex Mono for code~~ in A-13), Consolas for code, regular and bold only, a 2 px gold focus ring with a 3 px offset, and no transitions or animations under reduced motion. The light theme is unchanged. Contrast still wins (NFR-6) | D-107 (stakeholder, 2026-10-12) |
 
 ## 11. As built (M13)
 

@@ -173,7 +173,7 @@ function drillStep(row: Row): Step | null {
 
 .table-panel__title {
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.3;
 }
 
@@ -202,7 +202,7 @@ td {
 thead th {
   color: var(--text-secondary);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
   border-bottom-color: var(--border-default);
@@ -224,7 +224,7 @@ tfoot th,
 tfoot td {
   border-top: 1px solid var(--border-strong);
   border-bottom: 0;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .table-panel__sort {
@@ -308,11 +308,11 @@ tfoot td {
 .table-panel__figure {
   color: var(--text-primary);
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .table-panel__total {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .table-panel__pages {

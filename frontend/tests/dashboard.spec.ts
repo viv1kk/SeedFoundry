@@ -390,7 +390,7 @@ describe('theme and fonts (seed-reuse-notes.md section 1.2 and 1.4)', () => {
     await settle()
     expect(bars.options.length).toBe(before + 1)
     expect(bars.option.series[1].itemStyle.color).not.toBe(light)
-    expect(bars.option.series[1].itemStyle.color).toBe('#ffffff') // dark --chart-series-1 (D-102)
+    expect(bars.option.series[1].itemStyle.color).toBe('#f4f5f7') // dark --chart-series-1 (D-102, D-107)
     for (const id of ['seats-treemap', 'trend', 'recoverable']) expect(chartFor(id).options.length).toBeGreaterThan(1)
   })
 

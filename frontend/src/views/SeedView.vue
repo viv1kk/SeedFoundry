@@ -214,13 +214,13 @@ const issuesLine = computed(() => {
 
 h1 {
   font-size: var(--text-2xl);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
 }
 
 h2 {
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .seed__note {
@@ -231,7 +231,7 @@ h2 {
 .seed__link,
 .seed__inline-link {
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .seed__retry {
@@ -240,7 +240,7 @@ h2 {
   background: none;
   color: var(--link);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: underline;
   cursor: pointer;
 }
@@ -310,7 +310,7 @@ h2 {
 .seed__table thead th {
   color: var(--text-secondary);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
   white-space: nowrap;
@@ -331,7 +331,7 @@ h2 {
 
 .seed__id {
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
 }
 

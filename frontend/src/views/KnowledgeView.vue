@@ -180,6 +180,6 @@ async function startBuild(): Promise<void> {
 }
 
 .banner__link {
-  font-weight: 600;
+  font-weight: 700;
 }
 </style>

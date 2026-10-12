@@ -161,7 +161,7 @@ const groups = computed(() =>
 
 .checklist__item--complete {
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* The Seed file beside an initiation file: a high-level picture, so muted and small (D-86) */
@@ -230,7 +230,7 @@ const groups = computed(() =>
 .group__title {
   color: var(--text-secondary);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .group__files {
@@ -264,7 +264,7 @@ const groups = computed(() =>
 .file--selected {
   background: var(--accent-subtle);
   border-color: var(--accent);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .file--selected:hover {

@@ -93,7 +93,7 @@ const steps = computed(() =>
   border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   color: var(--text-muted);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 400;
   text-decoration: none;
 }
 

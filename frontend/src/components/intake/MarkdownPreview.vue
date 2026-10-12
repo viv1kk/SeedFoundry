@@ -45,7 +45,7 @@ const html = computed(() => renderMarkdown(props.text))
 .markdown :deep(h5),
 .markdown :deep(h6) {
   margin: var(--space-6) 0 var(--space-2);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.25;
 }
 
@@ -140,7 +140,7 @@ const html = computed(() => renderMarkdown(props.text))
 
 .markdown :deep(th) {
   background: var(--surface-sunken);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .markdown :deep(.md-align-center) {
@@ -180,7 +180,7 @@ const html = computed(() => renderMarkdown(props.text))
 
 .markdown :deep(.md-image-label) {
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
   color: var(--text-muted);

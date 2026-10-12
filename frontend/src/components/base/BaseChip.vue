@@ -23,7 +23,7 @@ withDefaults(defineProps<{ tone?: ChipTone }>(), { tone: 'neutral' })
   border-radius: var(--radius-sm);
   background: transparent;
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.5;
   white-space: nowrap;
 }

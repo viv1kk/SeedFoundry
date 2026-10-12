@@ -39,7 +39,7 @@ const intake = useIntakeStore()
 .empty__title {
   /* A page title, as on every other page (D-104) */
   font-size: var(--text-2xl);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
 }
 
@@ -64,7 +64,7 @@ const intake = useIntakeStore()
 }
 
 .empty__item dt {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .empty__item dd {

@@ -150,7 +150,7 @@ function onKeydown(event: KeyboardEvent): void {
 
 .modal__title {
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .modal__controls {

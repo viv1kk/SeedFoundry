@@ -128,7 +128,7 @@ const entries = computed(() =>
 }
 
 .history__title {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .history__detail {
@@ -143,7 +143,7 @@ const entries = computed(() =>
   color: var(--link);
   font: inherit;
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 2px;
   cursor: pointer;

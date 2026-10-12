@@ -167,7 +167,7 @@ button.phase__row:hover {
 .phase--active .phase__row,
 .phase--stopped .phase__row {
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 700;
   background: var(--surface-raised);
   border-color: var(--border-default);
 }
@@ -268,7 +268,7 @@ button.phase__row:hover {
 
 .step--active {
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .step--active .step__mark {
@@ -278,7 +278,7 @@ button.phase__row:hover {
 
 .step--active .step__state {
   color: var(--accent);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .step--done .step__mark {

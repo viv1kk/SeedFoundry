@@ -114,7 +114,7 @@ defineExpose({
   color: var(--text-secondary);
   font: inherit;
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 400;
   cursor: pointer;
 }
 
@@ -122,7 +122,7 @@ defineExpose({
   background: var(--surface-raised);
   border-color: var(--border-default);
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .icon-button,
@@ -133,17 +133,17 @@ defineExpose({
   height: 32px;
   min-height: 32px;
   padding: 0;
-  border: 1px solid var(--border-default);
+  border: 1.5px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  background: var(--surface-raised);
-  color: var(--text-secondary);
+  background: transparent;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
 .icon-button:hover,
 .editor__tools :deep(.icon-button:hover) {
-  border-color: var(--border-strong);
-  color: var(--text-primary);
+  border-color: var(--text-primary);
+  background: var(--surface-raised);
 }
 
 .editor__body {

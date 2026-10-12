@@ -40,15 +40,15 @@ const label = computed(() => (theme.value === 'dark' ? 'Switch to light theme' :
   width: 32px;
   height: 32px;
   padding: 0;
-  border: 1px solid var(--border-default);
+  border: 1.5px solid var(--border-strong);
   border-radius: var(--radius-sm);
-  background: var(--surface-raised);
-  color: var(--text-secondary);
+  background: transparent;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
 .theme-toggle:hover {
-  border-color: var(--border-strong);
-  color: var(--text-primary);
+  border-color: var(--text-primary);
+  background: var(--surface-raised);
 }
 </style>

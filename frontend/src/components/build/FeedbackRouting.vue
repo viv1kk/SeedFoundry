@@ -117,7 +117,7 @@ const lines = (n: number) => plural(n, 'line')
 
 .tile__version {
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .routing__lead {
@@ -170,7 +170,7 @@ const lines = (n: number) => plural(n, 'line')
 
 .tile__name {
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 700;
   overflow-wrap: anywhere;
 }
 
@@ -188,6 +188,6 @@ const lines = (n: number) => plural(n, 'line')
 
 .tile__lines {
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 700;
 }
 </style>

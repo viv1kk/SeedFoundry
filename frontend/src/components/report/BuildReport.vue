@@ -495,7 +495,7 @@ const ids = computed(() => `report-${props.build.id}`)
 
 .report__title {
   font-size: var(--text-lg);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .report__verdict {
@@ -519,7 +519,7 @@ const ids = computed(() => `report-${props.build.id}`)
 .report__fact dt {
   color: var(--text-secondary);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
 }
@@ -539,7 +539,7 @@ const ids = computed(() => `report-${props.build.id}`)
 
 .report__heading {
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .report__group {
@@ -553,7 +553,7 @@ const ids = computed(() => `report-${props.build.id}`)
   gap: var(--space-2);
   color: var(--text-secondary);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
 }
@@ -584,7 +584,7 @@ const ids = computed(() => `report-${props.build.id}`)
 .report__table thead th {
   color: var(--text-secondary);
   font-size: var(--text-xs);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
   white-space: nowrap;
@@ -602,7 +602,7 @@ const ids = computed(() => `report-${props.build.id}`)
 
 .report__id {
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -749,7 +749,7 @@ const ids = computed(() => `report-${props.build.id}`)
 .context__budget-label {
   position: absolute;
   transform: translateX(-50%);
-  font-weight: 600;
+  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -771,7 +771,7 @@ const ids = computed(() => `report-${props.build.id}`)
 
 .context__total th,
 .context__total td {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .report__said {

@@ -51,11 +51,11 @@ function onClick(event: MouseEvent): void {
   gap: var(--space-2);
   min-height: 32px;
   padding: 0 var(--space-4);
-  border: 1px solid transparent;
+  border: 1.5px solid transparent;
   border-radius: var(--radius-sm);
   font: inherit;
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1;
   cursor: pointer;
   transition:
@@ -76,14 +76,16 @@ function onClick(event: MouseEvent): void {
 }
 
 .button--secondary {
-  background: var(--surface-raised);
-  border-color: var(--border-default);
+  /* The neutral button (VW-style-demos-and-videos.md section 3, D-107): white text, a 1.5 px
+     silver border, no fill; the panel fill and a white border on hover. */
+  background: transparent;
+  border-color: var(--border-strong);
   color: var(--text-primary);
 }
 
 .button--secondary:hover:not(:disabled, [aria-disabled='true']) {
-  border-color: var(--border-strong);
-  background: var(--surface-sunken);
+  border-color: var(--text-primary);
+  background: var(--surface-raised);
 }
 
 .button:disabled,

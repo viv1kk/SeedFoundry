@@ -20,6 +20,7 @@ SeedFactory is a lab that generates, tests and refines Seeds. A Seed is an Ensem
 | `docs/implementation-plan.md` | Milestones, repo layout, critical path |
 | `docs/methodology.md` | How work is done, logged and gated |
 | `docs/project-notes.md` | Vision, history, and the build log |
+| `docs/VW-style-demos-and-videos.md` | The ValueWise.SI style file for demos and the two prototype videos: the source of truth for visual style (D-107). Its last section lists every style change made to follow it |
 | `docs/valuewise-style.md` | The ValueWise design language, shared by every ValueWise product; SeedFactory's screens, charts and dashboard follow it (CR-3). Part 2 holds the screen rules and tokens, Part 3 SeedFactory's choices; mood board in `docs/valuewise-mood-board.png` |
 | `docs/operator-guide.md` | Set up, controls, the timed demo script, rehearsal, checks before a demo (M12) |
 | `docs/seed-reuse-notes.md` | What is reused from Seed v0.1, where it lives, the dashboard spec and defect mapping (M0) |
@@ -42,7 +43,7 @@ SeedFactory is a lab that generates, tests and refines Seeds. A Seed is an Ensem
 
 - No em dashes anywhere: UI copy, logs, reports, generated files, docs. Use a colon, comma, parentheses or a full stop instead.
 - Plain, direct English. UI copy is short and specific.
-- Visuals follow `docs/valuewise-style.md`: band colours (red, amber, green) only for a status from the data, never on controls or decoration; gold only for the one headline figure; link blue only on links; flat and square; IBM Plex Sans. A colour that fails the contrast test does not ship, whatever the guide says.
+- Visuals follow `docs/VW-style-demos-and-videos.md` (the source of truth for visual style, D-107) and `docs/valuewise-style.md`: band colours only for a status from the data, never on controls or decoration; gold only for the one headline figure; link blue only on links; flat and square; Arial, regular and bold only. A colour that fails the contrast test does not ship, whatever the guide says.
 - Screen terms vs code terms: code uses the code terms listed in `docs/requirements.md` §Naming. Only the UI layer renames.
 
 ## Commands

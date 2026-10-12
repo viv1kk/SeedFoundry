@@ -176,7 +176,7 @@ async function start(): Promise<void> {
   color: var(--text-secondary);
   font: inherit;
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: 400;
   cursor: pointer;
 }
 
@@ -184,7 +184,7 @@ async function start(): Promise<void> {
   background: var(--surface-raised);
   border-color: var(--border-default);
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .rebuild {

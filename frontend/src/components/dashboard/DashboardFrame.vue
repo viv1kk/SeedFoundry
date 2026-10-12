@@ -142,7 +142,7 @@ function clearHighlight(): void {
 .frame__back,
 .frame__findings {
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .frame__badge {
@@ -171,7 +171,7 @@ function clearHighlight(): void {
 
 .frame__id {
   font-family: var(--font-sans);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .frame__message {
@@ -184,7 +184,7 @@ function clearHighlight(): void {
   background: none;
   color: var(--link);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
 }
 </style>

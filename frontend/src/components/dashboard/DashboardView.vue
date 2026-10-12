@@ -155,7 +155,7 @@ const source = computed(() => {
 
 .dashboard__title {
   font-size: var(--text-2xl);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
 }
 
