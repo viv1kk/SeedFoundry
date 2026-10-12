@@ -6,17 +6,56 @@ For whoever sets up the demo and presents it. Written 2026-10-04 for the build a
 
 ## 1. Set up, once per machine
 
-You need **Python 3.12 or newer** and **Node.js 22.18 or newer** on the path (the target machine has Node 24; the test runner and the rehearsal need 22.18). Both install per user, without admin rights. The first launch needs the network, to install packages. Nothing after that does (NFR-2, AC-9).
+*Rewritten 2026-10-12 (D-108): on Windows, `run.ps1` now installs everything itself.*
 
-**On Windows**, where Windows Application Control may block uv, use `run.ps1` (D-25):
+The set-up needs the network once, to download Python, Node.js and the packages. After that nothing does: the app runs offline (NFR-2, AC-9). Nothing needs admin rights.
+
+**Get the code.** Clone the repository (or unzip a copy) and open a terminal in its folder:
 
 ```
-powershell -ExecutionPolicy Bypass -File .\run.ps1
+git clone https://github.com/viv1kk/SeedFoundry.git
+cd SeedFoundry
 ```
 
-It makes `backend\.venv` with pip, installs the Python packages, installs the frontend's packages on the first run, and starts the app. Run the same command every time; it installs again only when `requirements.txt` changes. Add `-Dev` to install the test packages as well.
+### Windows: one command
 
-**Elsewhere, or where uv works:** `python run.py` (it makes `backend/.venv` with uv on the first run).
+```
+powershell -ExecutionPolicy Bypass -File .\run.ps1 setup
+```
+
+It assumes nothing is installed and skips each step that is already done, so it is safe to run again at any time:
+
+1. **Python 3.12 or newer**, for this user: with winget, else the python.org installer (3.12.10). A Python already on the machine is used if it is 3.12 or newer, including one that uv manages. The Microsoft Store's Python is passed over (section 8).
+2. **Node.js 22.18 or newer**: the current LTS zip from nodejs.org, checked against nodejs.org's checksums, unpacked to `%LOCALAPPDATA%\Programs\nodejs` and put first on your user PATH. A Node.js already on the machine is used if it is new enough.
+3. **`backend\.venv`**, the backend's Python environment, made with pip. A venv that does not work, or was made from the Store's Python, is made again.
+4. **The Python packages**, pinned in `backend\requirements-dev.txt` (the app's and the tests'). They install again only when that file changes.
+5. **The frontend packages**, with `npm ci` from `frontend\package-lock.json`. They install again only when the lock file changes.
+6. **Chrome or Edge**: only reported, as only the rehearsal (section 6) needs one.
+
+It ends with "SeedFactory is set up". The first run takes a few minutes; a run with nothing to do takes seconds. `-ExecutionPolicy Bypass` applies to this one command only and changes no setting.
+
+Then:
+
+| Command | What it does |
+|---|---|
+| `powershell -ExecutionPolicy Bypass -File .\run.ps1` | Sets up anything missing, then starts the app (section 2) |
+| `powershell -ExecutionPolicy Bypass -File .\run.ps1 test` | Sets up with the test packages, then runs both test suites |
+| `powershell -ExecutionPolicy Bypass -File .\run.ps1 setup` | Sets up, then stops |
+
+After pulling a new version, run the same command: changed packages install, everything else is skipped. A new terminal window sees the Node.js that the set-up installed; the window the set-up ran in already does.
+
+### macOS and Linux, or Windows by hand
+
+Install **Python 3.12 or newer** and **Node.js 22.18 or newer** yourself, then from the repository folder:
+
+```
+python3 -m venv backend/.venv
+backend/.venv/bin/python -m pip install -r backend/requirements-dev.txt
+cd frontend && npm ci && cd ..
+python3 run.py
+```
+
+On Windows by hand the venv's Python is `backend\.venv\Scripts\python.exe`, and the Microsoft Store's Python should not be used (section 8). Where uv works, `uv sync --project backend` replaces the first two lines, and `python run.py` runs it by itself on the first launch if `backend/.venv` is missing (D-25). After changing the backend's dependencies, re-export the pip files as `CLAUDE.md` says.
 
 For the rehearsal (section 6) you also need **Google Chrome** (or Edge; set `CHROME` to its path if it is somewhere unusual).
 
@@ -115,7 +154,7 @@ It cuts the network off (Chrome resolves no host but this machine; the backend r
 
 ## 7. Checks before a demo
 
-1. `python run.py test` (or `powershell -ExecutionPolicy Bypass -File .\run.ps1 -Dev test`): the backend and frontend suites should both report pass. Run it with nothing else heavy running, the rehearsal included: on a loaded machine a slow frontend test can time out (R-10). If one does, run it again alone; a test that fails alone is a real fault.
+1. `python run.py test` (or `powershell -ExecutionPolicy Bypass -File .\run.ps1 test`): the backend and frontend suites should both report pass. Run it with nothing else heavy running, the rehearsal included: on a loaded machine a slow frontend test can time out (R-10). If one does, run it again alone; a test that fails alone is a real fault.
 2. `npm run rehearse -- --speed 4` from `frontend/`: every check should pass.
 3. To be sure it is offline: turn the machine's network off, launch, and run through to the Seed page. Nothing changes.
 4. Launch with `python run.py`, open the printed address in Chrome, set the zoom to 100%, choose the theme (Shift+D; a first visit is dark, the ValueWise presentation default, and light is for bright rooms), and close every other tab on the app.
@@ -131,6 +170,11 @@ It cuts the network off (Chrome resolves no host but this machine; the backend r
 | The app behaves like an older version | A stale server on the port from before an update. Stop everything and launch again |
 | Not on Windows: the ports stay taken after the launcher was ended from outside | Only Ctrl+C stops both processes there. End the uvicorn and Vite processes (they hold 8100 and 5273), then launch again. On Windows the launcher's children end with it (D-78) |
 | `uv` or the venv's `python.exe` is blocked by Windows | Application Control. Use `run.ps1` (section 1) |
+| `run.ps1` says "Set-up stopped: could not download ..." | The set-up needs the network once. Connect, or set a proxy that PowerShell can use, and run it again; it carries on from where it stopped |
+| `run.ps1` installs a Python although one is installed | The one installed is older than 3.12, or is the Microsoft Store's. The Store's Python runs in a package container whose child processes escape the launcher's job object, so a launcher ended from outside would leave uvicorn and Vite running (D-78, D-108). The set-up installs the python.org one for your user instead |
+| `run.ps1` says Node.js is "still not first on the PATH" | An older Node.js installed for all users comes first on the PATH. Uninstall it, or move `%LOCALAPPDATA%\Programs\nodejs` before it, and run the set-up again |
+| `node` or `npm` is not found in a window opened before the set-up | That window has the old PATH. Open a new one |
+| A frontend test finds Windows line ends (`\r\n`) in a fixture | A checkout from before `.gitattributes` (D-108). Delete the `.md` files in `frontend/tests/fixtures`, then run `git checkout -- frontend/tests/fixtures` |
 | `localhost:5273` does not load | Use the printed address, `http://127.0.0.1:5273/` |
 | The treemap shows a spinner for 4.5 s on iteration 1 | Planted (L-1). Every other panel draws at once |
 | Start Build is refused: "This Seed is approved" | Reset to start (Shift+R) |

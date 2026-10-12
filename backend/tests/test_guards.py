@@ -24,6 +24,9 @@ SOURCE_SUFFIXES = {".py", ".ps1", ".ts", ".js", ".vue", ".html", ".css", ".json"
 LOCAL_HOSTS = {"127.0.0.1", "localhost"}
 # XML namespace names (for example in inline SVG) look like URLs but are never fetched.
 NAMESPACE_HOSTS = {"www.w3.org"}
+# The Windows set-up downloads Python and Node.js once, before the app first runs; the app itself
+# never calls out (NFR-2, D-108). Allowed in run.ps1 only.
+SETUP_HOSTS = {"run.ps1": {"www.python.org", "nodejs.org"}}
 
 URL = re.compile(r"\b(?:https?|wss?)://([^/\s'\"`:)]*)")
 
@@ -57,7 +60,8 @@ def test_no_url_names_a_host_other_than_this_machine():
         for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
             for host in URL.findall(line):
                 # A templated host ({BACKEND_HOST}, ${host}) is built from config.py, which is checked here too.
-                if host and host not in LOCAL_HOSTS | NAMESPACE_HOSTS and not host.startswith(("{", "$")):
+                allowed = LOCAL_HOSTS | NAMESPACE_HOSTS | SETUP_HOSTS.get(str(path.relative_to(ROOT)), set())
+                if host and host not in allowed and not host.startswith(("{", "$")):
                     offenders.append(f"{path.relative_to(ROOT)}:{line_number}: {host}")
     assert offenders == []
 

@@ -1,0 +1,2 @@
+# Test fixtures are compared byte for byte; keep them at LF on every checkout (D-108).
+frontend/tests/fixtures/** text eol=lf

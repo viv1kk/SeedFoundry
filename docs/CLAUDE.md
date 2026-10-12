@@ -22,7 +22,8 @@ SeedFactory is a lab that generates, tests and refines Seeds. A Seed is an Ensem
 | `docs/project-notes.md` | Vision, history, and the build log |
 | `docs/VW-style-demos-and-videos.md` | The ValueWise.SI style file for demos and the two prototype videos: the source of truth for visual style (D-107). Its last section lists every style change made to follow it |
 | `docs/valuewise-style.md` | The ValueWise design language, shared by every ValueWise product; SeedFactory's screens, charts and dashboard follow it (CR-3). Part 2 holds the screen rules and tokens, Part 3 SeedFactory's choices; mood board in `docs/valuewise-mood-board.png` |
-| `docs/operator-guide.md` | Set up, controls, the timed demo script, rehearsal, checks before a demo (M12) |
+| `README.md` (repository root) | The quick start: set up and run on Windows (`run.ps1 setup`), macOS and Linux (D-108) |
+| `docs/operator-guide.md` | Set up (section 1, in full), controls, the timed demo script, rehearsal, checks before a demo (M12) |
 | `docs/seed-reuse-notes.md` | What is reused from Seed v0.1, where it lives, the dashboard spec and defect mapping (M0) |
 | `docs/ensemble/` | Ensemble architecture context |
 | `docs/seed_docs/` | Seed v0.1 reference docs (prior project, read-only) |
@@ -68,9 +69,10 @@ python run.py test
 
 # launch both (from the repo root): app at http://127.0.0.1:5273, API at http://127.0.0.1:8100/api
 python run.py
-# Windows fallback where uv is blocked (pip into backend/.venv, then run.py):
-powershell -ExecutionPolicy Bypass -File .\run.ps1          # launch
-powershell -ExecutionPolicy Bypass -File .\run.ps1 -Dev test   # install test packages, run all tests
+# Windows from nothing (D-108): installs Python, Node.js, backend/.venv and every package, per user, skipping what is done:
+powershell -ExecutionPolicy Bypass -File .\run.ps1 setup    # set up, then stop
+powershell -ExecutionPolicy Bypass -File .\run.ps1          # set up what is missing, then launch
+powershell -ExecutionPolicy Bypass -File .\run.ps1 test     # set up with the test packages, then run all tests
 ```
 
 After changing backend dependencies, re-export the pip files: `uv export --no-dev --no-hashes --no-emit-project -o requirements.txt` and `uv export --no-hashes --no-emit-project -o requirements-dev.txt` (D-25).
